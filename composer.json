@@ -10,7 +10,11 @@
         "doctrine/doctrine-bundle": "^2.18",
         "doctrine/doctrine-migrations-bundle": "^3.7",
         "doctrine/orm": "^3.6",
+<<<<<<< HEAD
         "phpdocumentor/reflection-docblock": "^6.0",
+=======
+        "phpdocumentor/reflection-docblock": "5.2",
+>>>>>>> user
         "phpstan/phpdoc-parser": "^2.3",
         "symfony/asset": "6.4.*",
         "symfony/asset-mapper": "6.4.*",
@@ -94,12 +98,19 @@
         }
     },
     "require-dev": {
+<<<<<<< HEAD
         "phpunit/phpunit": "^9.5",
+=======
+        "phpunit/phpunit": "^11.5",
+>>>>>>> user
         "symfony/browser-kit": "6.4.*",
         "symfony/css-selector": "6.4.*",
         "symfony/debug-bundle": "6.4.*",
         "symfony/maker-bundle": "^1.0",
+<<<<<<< HEAD
         "symfony/phpunit-bridge": "^8.0",
+=======
+>>>>>>> user
         "symfony/stopwatch": "6.4.*",
         "symfony/web-profiler-bundle": "6.4.*"
     }
