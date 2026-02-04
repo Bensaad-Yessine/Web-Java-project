@@ -6,6 +6,7 @@ use App\Repository\ClasseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ClasseRepository::class)]
 class Classe
@@ -15,25 +16,55 @@ class Classe
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    // =====================
+    // NOM DE LA CLASSE
+    // =====================
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom de la classe est obligatoire")]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: "Le nom doit contenir au moins 2 caractères",
+        maxMessage: "Le nom ne doit pas dépasser 50 caractères"
+    )]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    // =====================
+    // NIVEAU
+    // =====================
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le niveau est obligatoire")]
     private ?string $niveau = null;
 
+    // =====================
+    // ANNÉE UNIVERSITAIRE
+    // =====================
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "L'année universitaire est obligatoire")]
+    #[Assert\Regex(
+        pattern: "/^\d{4}-\d{4}$/",
+        message: "Format invalide (ex: 2024-2025)"
+    )]
     private ?string $anneeuniversitaire = null;
 
     /**
      * @var Collection<int, MatiereClasse>
      */
-    #[ORM\OneToMany(targetEntity: MatiereClasse::class, mappedBy: 'Classe', orphanRemoval: true)]
+    #[ORM\OneToMany(
+        targetEntity: MatiereClasse::class,
+        mappedBy: 'classe',
+        orphanRemoval: true
+    )]
     private Collection $matiereclasses;
 
     public function __construct()
     {
         $this->matiereclasses = new ArrayCollection();
     }
+
+    // =====================
+    // GETTERS & SETTERS
+    // =====================
 
     public function getId(): ?int
     {
@@ -48,7 +79,6 @@ class Classe
     public function setNom(?string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
@@ -60,7 +90,6 @@ class Classe
     public function setNiveau(?string $niveau): static
     {
         $this->niveau = $niveau;
-
         return $this;
     }
 
@@ -69,10 +98,9 @@ class Classe
         return $this->anneeuniversitaire;
     }
 
-    public function setAnneeuniversitaire(string $anneeuniversitaire): static
+    public function setAnneeuniversitaire(?string $anneeuniversitaire): static
     {
         $this->anneeuniversitaire = $anneeuniversitaire;
-
         return $this;
     }
 
@@ -97,7 +125,6 @@ class Classe
     public function removeMatiereclass(MatiereClasse $matiereclass): static
     {
         if ($this->matiereclasses->removeElement($matiereclass)) {
-            // set the owning side to null (unless already changed)
             if ($matiereclass->getClasse() === $this) {
                 $matiereclass->setClasse(null);
             }
