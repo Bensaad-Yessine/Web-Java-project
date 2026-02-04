@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -38,6 +40,17 @@ class User
 
     #[ORM\Column(length: 255)]
     private ?string $role = null;
+
+    /**
+     * @var Collection<int, GroupeProjet>
+     */
+    #[ORM\ManyToMany(targetEntity: GroupeProjet::class, mappedBy: 'idUser')]
+    private Collection $idGroupe;
+
+    public function __construct()
+    {
+        $this->idGroupe = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -143,6 +156,33 @@ class User
     public function setRole(string $role): static
     {
         $this->role = $role;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GroupeProjet>
+     */
+    public function getIdGroupe(): Collection
+    {
+        return $this->idGroupe;
+    }
+
+    public function addIdGroupe(GroupeProjet $idGroupe): static
+    {
+        if (!$this->idGroupe->contains($idGroupe)) {
+            $this->idGroupe->add($idGroupe);
+            $idGroupe->addIdUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIdGroupe(GroupeProjet $idGroupe): static
+    {
+        if ($this->idGroupe->removeElement($idGroupe)) {
+            $idGroupe->removeIdUser($this);
+        }
 
         return $this;
     }
