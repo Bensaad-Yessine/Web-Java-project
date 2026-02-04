@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/matiere/classe')]
+#[Route('/matiereclasse')]
 final class MatiereClasseController extends AbstractController
 {
     #[Route(name: 'app_matiere_classe_index', methods: ['GET'])]
