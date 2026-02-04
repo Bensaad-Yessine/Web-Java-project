@@ -24,7 +24,7 @@ class MatiereClasse
 
     #[ORM\ManyToOne(inversedBy: 'matiereclasses')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Classe $Classe = null;
+    private ?classe $classe = null;
 
     public function getId(): ?int
     {
