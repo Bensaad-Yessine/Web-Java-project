@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Propositions de Réunion{% endblock %}
+
+{% block body %}
+    <h1>Propositions de Réunion</h1>
+
+    <a href="{{ path('proposition_reunion_new') }}" class="btn btn-success mb-3">Ajouter une Proposition</a>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Titre</th>
+                <th>Date</th>
+                <th>Heure Début</th>
+                <th>Heure Fin</th>
+                <th>Lieu</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Votes Acceptés</th>
+                <th>Groupe</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for prop in propositions %}
+                <tr>
+                    <td>{{ prop.id }}</td>
+                    <td>{{ prop.titre }}</td>
+                    <td>{{ prop.dateReunion|date('d/m/Y') }}</td>
+                    <td>{{ prop.heureDebut|date('H:i') }}</td>
+                    <td>{{ prop.heureFin|date('H:i') }}</td>
+                    <td>{{ prop.lieu }}</td>
+                    <td>{{ prop.description }}</td>
+                    <td>{{ prop.status }}</td>
+                    <td>{{ prop.nbrVoteAccept }}</td>
+                    <td>{{ prop.idGroupe.nomProjet ?? 'N/A' }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="10">Aucune proposition trouvée.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
