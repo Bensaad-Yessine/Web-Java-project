@@ -13,7 +13,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class UserType extends AbstractType
 {
@@ -28,6 +30,9 @@ class UserType extends AbstractType
             ])
             ->add('email',EmailType::class, [
                 'label' => 'Adresse e-mail',
+            ])
+            ->add('password',PasswordType::class, [
+                'label' => 'Mot de passe',
             ])
             ->add('DateDeNaissance',DateType::class, [
                 'widget' => 'single_text',
@@ -86,6 +91,11 @@ class UserType extends AbstractType
                         'message' => 'Veuillez choisir un rôle valide.',
                     ]),
                 ],
+            ])
+             ->add('profilePic', FileType::class, [
+                'label' => 'Photo de profil',
+                'required' => false,
+                'mapped' => false, // Important: not mapped directly to entity
             ])
             ->add('Submit',SubmitType::class, [
                 'label' => 'Enregistrer',
