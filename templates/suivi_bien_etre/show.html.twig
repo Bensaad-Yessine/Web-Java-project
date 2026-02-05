@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails Suivi{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Détails du suivi #{{ suivi.id }}</h1>
+
+    <table class="table table-bordered">
+        <tr><th>Date</th><td>{{ suivi.dateSaisie ? suivi.dateSaisie|date('Y-m-d') : '' }}</td></tr>
+        <tr><th>Humeur</th><td>{{ suivi.humeur }}</td></tr>
+        <tr><th>Qualité sommeil</th><td>{{ suivi.qualiteSommeil }}</td></tr>
+        <tr><th>Niveau énergie</th><td>{{ suivi.niveauEnergie }}</td></tr>
+        <tr><th>Niveau stress</th><td>{{ suivi.niveauStress }}</td></tr>
+        <tr><th>Qualité alimentation</th><td>{{ suivi.qualiteAlimentation }}</td></tr>
+        <tr><th>Notes</th><td>{{ suivi.notesLibres }}</td></tr>
+    </table>
+
+    <a class="btn btn-secondary" href="{{ path('app_suivi_bien_etre_index') }}">Retour</a>
+    <a class="btn btn-warning" href="{{ path('app_suivi_bien_etre_edit', {id: suivi.id}) }}">Edit</a>
+
+    {# ✅ REMOVE #}
+    <form method="post"
+          action="{{ path('app_suivi_bien_etre_delete', {id: suivi.id}) }}"
+          style="display:inline-block"
+          onsubmit="return confirm('Supprimer ce suivi ?');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ suivi.id) }}">
+        <button class="btn btn-danger">Remove</button>
+    </form>
+</div>
+{% endblock %}

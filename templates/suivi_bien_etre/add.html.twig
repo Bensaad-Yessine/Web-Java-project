@@ -1,0 +1,184 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter Suivi Bien-être{% endblock %}
+
+
+
+{% block body %}
+<style>
+  /* Titres */
+  h1, h3, h4 {
+    font-weight: 800;
+    font-size: 2rem;
+  }
+
+  /* User info (ID + nom) */
+  .user-info {
+    font-weight: 800;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+
+  /* Labels du formulaire */
+  form label {
+    font-weight: 700;
+    font-size: 1.15rem;
+  }
+
+  /* Champs input / select */
+  form input,
+  form select {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  /* Slider (range) */
+  input[type=range] {
+    height: 8px;
+  }
+
+  /* Valeur 5/10 */
+  .range-value {
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin-left: 10px;
+  }
+
+  /* Boutons */
+  .btn {
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 8px 18px;
+  }
+</style>
+
+<h4  class="user-info"">
+  👤 Utilisateur :
+  <span class="text-primary">ID {{ user.id }}</span>
+  —
+  {{ user.nom }} {{ user.prenom }}
+</h4>
+<div class="container py-4">
+
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-white border-0">
+      <h4 class="mb-0">➕ Ajouter un suivi bien-être</h4>
+      <small class="text-muted">Les niveaux sont sur 10</small>
+    </div>
+
+    <div class="card-body">
+      {{ form_start(form) }}
+
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          {{ form_label(form.dateSaisie) }}
+          {{ form_widget(form.dateSaisie, {'attr': {'class': 'form-control'}}) }}
+          {{ form_errors(form.dateSaisie) }}
+        </div>
+
+        <div class="col-12 col-md-8">
+          {{ form_label(form.humeur) }}
+          {{ form_widget(form.humeur, {'attr': {'class': 'form-select'}}) }}
+          {{ form_errors(form.humeur) }}
+        </div>
+
+        {# ✅ Slider helper macro style (reused blocks) #}
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Niveau stress</label>
+          <div class="position-relative pt-3">
+            <span class="badge bg-dark position-absolute top-0 translate-middle"
+                  style="left:0%;" data-range-badge>0/10</span>
+            {{ form_widget(form.niveauStress, {'attr': {'class': 'form-range range-10'}}) }}
+          </div>
+          {{ form_errors(form.niveauStress) }}
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Niveau énergie</label>
+          <div class="position-relative pt-3">
+            <span class="badge bg-dark position-absolute top-0 translate-middle"
+                  style="left:0%;" data-range-badge>0/10</span>
+            {{ form_widget(form.niveauEnergie, {'attr': {'class': 'form-range range-10'}}) }}
+          </div>
+          {{ form_errors(form.niveauEnergie) }}
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Qualité sommeil</label>
+          <div class="position-relative pt-3">
+            <span class="badge bg-dark position-absolute top-0 translate-middle"
+                  style="left:0%;" data-range-badge>0/10</span>
+            {{ form_widget(form.qualiteSommeil, {'attr': {'class': 'form-range range-10'}}) }}
+          </div>
+          {{ form_errors(form.qualiteSommeil) }}
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Qualité alimentation</label>
+          <div class="position-relative pt-3">
+            <span class="badge bg-dark position-absolute top-0 translate-middle"
+                  style="left:0%;" data-range-badge>0/10</span>
+            {{ form_widget(form.qualiteAlimentation, {'attr': {'class': 'form-range range-10'}}) }}
+          </div>
+          {{ form_errors(form.qualiteAlimentation) }}
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Niveau anxiété</label>
+          <div class="position-relative pt-3">
+            <span class="badge bg-dark position-absolute top-0 translate-middle"
+                  style="left:0%;" data-range-badge>0/10</span>
+            {{ form_widget(form.niveauAnxiete, {'attr': {'class': 'form-range range-10'}}) }}
+          </div>
+          {{ form_errors(form.niveauAnxiete) }}
+        </div>
+
+        <div class="col-12">
+          <label class="form-label fw-semibold">Niveau activité physique</label>
+          <div class="position-relative pt-3">
+            <span class="badge bg-dark position-absolute top-0 translate-middle"
+                  style="left:0%;" data-range-badge>0/10</span>
+            {{ form_widget(form.niveauActivitePhysique, {'attr': {'class': 'form-range range-10'}}) }}
+          </div>
+          {{ form_errors(form.niveauActivitePhysique) }}
+        </div>
+
+
+      <div class="d-flex gap-2 mt-4">
+        <button class="btn btn-success px-4">Enregistrer</button>
+
+        {# ✅ Retour vers show_user (pas index) #}
+        <a class="btn btn-outline-secondary"
+           href="{{ path('app_suivi_bien_etre_show_user', { idUser: idUser }) }}">
+          ↩ Retour
+        </a>
+      </div>
+
+      {{ form_end(form) }}
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function updateBadge(range) {
+    const wrap = range.closest('.position-relative');
+    const badge = wrap ? wrap.querySelector('[data-range-badge]') : null;
+    if (!badge) return;
+
+    const min = Number(range.min || 0);
+    const max = Number(range.max || 10);
+    const val = Number(range.value || 0);
+
+    const pct = ((val - min) / (max - min)) * 100;
+    badge.style.left = pct + '%';
+    badge.textContent = val + '/' + max;
+  }
+
+  document.querySelectorAll('input.range-10[type="range"]').forEach((range) => {
+    updateBadge(range);
+    range.addEventListener('input', () => updateBadge(range));
+  });
+</script>
+{% endblock %}
