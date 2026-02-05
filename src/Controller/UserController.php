@@ -83,7 +83,13 @@ final class UserController extends AbstractController
             'user' => $user,
         ]);
     }
-
+ #[Route('/delete/{id}/confirm', name: 'app_user_delete_confirm', methods: ['GET'])]
+    public function deleteConfirm(User $user): Response
+    {
+        return $this->render('user/delete.html.twig', [
+            'user' => $user,
+        ]);
+    }
     // ✅ DELETE
     #[Route('/delete/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(
