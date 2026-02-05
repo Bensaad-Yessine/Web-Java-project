@@ -16,9 +16,6 @@ class Classe
     #[ORM\Column]
     private ?int $id = null;
 
-    // =====================
-    // NOM DE LA CLASSE
-    // =====================
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Le nom de la classe est obligatoire")]
     #[Assert\Length(
@@ -29,16 +26,12 @@ class Classe
     )]
     private ?string $nom = null;
 
-    // =====================
-    // NIVEAU
-    // =====================
+  
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Le niveau est obligatoire")]
     private ?string $niveau = null;
 
-    // =====================
-    // ANNÉE UNIVERSITAIRE
-    // =====================
+    
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "L'année universitaire est obligatoire")]
     #[Assert\Regex(
@@ -62,9 +55,7 @@ class Classe
         $this->matiereclasses = new ArrayCollection();
     }
 
-    // =====================
-    // GETTERS & SETTERS
-    // =====================
+   
 
     public function getId(): ?int
     {
