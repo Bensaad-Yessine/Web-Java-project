@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Proposition de Réunion{% endblock %}
+
+{% block body %}
+    <h1>Créer une nouvelle proposition de réunion</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.propositionId) }}
+        {{ form_row(form.titre) }}
+        {{ form_row(form.dateReunion) }}
+        {{ form_row(form.heureDebut) }}
+        {{ form_row(form.heureFin) }}
+        {{ form_row(form.lieu) }}
+        {{ form_row(form.description) }}
+        {{ form_row(form.status) }}
+        {{ form_row(form.nbrVoteAccept) }}
+        {{ form_row(form.idGroupe) }}
+
+        <button class="btn btn-primary">Créer</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('proposition_reunion_list') }}">Retour à la liste</a>
+{% endblock %}

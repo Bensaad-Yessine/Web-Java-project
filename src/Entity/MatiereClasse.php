@@ -14,27 +14,21 @@ class MatiereClasse
     #[ORM\Column]
     private ?int $id = null;
 
-    // =====================
-    // COEFFICIENT
-    // =====================
+    
     #[ORM\Column(nullable: true)]
     #[Assert\NotNull(message: "Le coefficient est obligatoire.")]
     #[Assert\Type(type: 'numeric', message: "Le coefficient doit être un nombre.")]
     #[Assert\PositiveOrZero(message: "Le coefficient doit être supérieur ou égal à 0.")]
     private ?float $coefficient = null;
 
-    // =====================
-    // CHARGE HORAIRE
-    // =====================
+   
     #[ORM\Column(nullable: true)]
     #[Assert\NotNull(message: "La charge horaire est obligatoire.")]
     #[Assert\Type(type: 'integer', message: "La charge horaire doit être un entier.")]
     #[Assert\PositiveOrZero(message: "La charge horaire doit être supérieur ou égal à 0.")]
     private ?int $chargehoraire = null;
 
-    // =====================
-    // SCORE DE COMPLEXITE
-    // =====================
+   
     #[ORM\Column(nullable: true)]
     #[Assert\NotNull(message: "Le score de complexité est obligatoire.")]
     #[Assert\Type(type: 'numeric', message: "Le score de complexité doit être un nombre.")]
@@ -45,17 +39,13 @@ class MatiereClasse
     )]
     private ?float $scorecomplexite = null;
 
-    // =====================
-    // RELATION AVEC CLASSE
-    // =====================
+   
     #[ORM\ManyToOne(inversedBy: 'matiereclasses')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: "Vous devez sélectionner une classe.")]
     private ?Classe $classe = null;
 
-    // =====================
-    // GETTERS & SETTERS
-    // =====================
+  
     public function getId(): ?int
     {
         return $this->id;

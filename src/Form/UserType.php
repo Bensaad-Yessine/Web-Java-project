@@ -13,7 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class UserType extends AbstractType
 {
@@ -42,12 +42,7 @@ class UserType extends AbstractType
                     '2P' => '2P',
                 ],
                 'label' => 'Classe actuelle',
-                'constraints' => [
-                    new Choice([
-                        'choices' => ['ARCTIC', 'NIDS', 'DS', 'DATA', 'BI'],
-                        'message' => 'Veuillez choisir une classe valide.',
-                    ]),
-                ],
+                
             ])
             ->add('specialiteFuture',ChoiceType::class, [
                 'choices' => [
@@ -91,6 +86,9 @@ class UserType extends AbstractType
                         'message' => 'Veuillez choisir un rôle valide.',
                     ]),
                 ],
+            ])
+            ->add('Submit',SubmitType::class, [
+                'label' => 'Enregistrer',
             ])
             
         ;

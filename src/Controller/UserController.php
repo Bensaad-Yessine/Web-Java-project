@@ -9,6 +9,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
 
 #[Route('/user')]
 final class UserController extends AbstractController
@@ -39,7 +41,7 @@ final class UserController extends AbstractController
 
             $this->addFlash('success', 'User added successfully ✅');
 
-            return $this->redirectToRoute('app_user_index');
+            return $this->redirectToRoute('app_user_show');
         }
 
         return $this->render('user/add.html.twig', [
@@ -48,12 +50,14 @@ final class UserController extends AbstractController
     }
 
     // ✅ READ ONE
-    #[Route('/{id}', name: 'app_user_show')]
-    public function show(User $user): Response
+    #[Route('/show', name: 'app_user_show')]
+    public function show(EntityManagerInterface $em): Response
     {
-        return $this->render('user/show.html.twig', [
-            'user' => $user,
-        ]);
+        $users = $em->getRepository(User::class)->findAll();
+
+       return $this->render('user/show.html.twig', [
+        'users' => $users,
+    ]);
     }
 
     // ✅ UPDATE
@@ -101,6 +105,6 @@ final class UserController extends AbstractController
     #[Route('/profile', name: 'app_user_profile')]
     public function profile(): Response
     {
-        return $this->render('user/profile.html.twig');
+        return $this->render('user/showD.html.twig');
     }
 }
