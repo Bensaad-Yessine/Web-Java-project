@@ -36,7 +36,6 @@
         ]
     },
     "phpunit/phpunit": {
-<<<<<<< HEAD
         "version": "9.6",
         "recipe": {
             "repo": "github.com/symfony/recipes",
@@ -48,20 +47,6 @@
             "./.env.test",
             "./phpunit.xml.dist",
             "./tests/bootstrap.php"
-=======
-        "version": "11.5",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "11.1",
-            "ref": "1117deb12541f35793eec9fff7494d7aa12283fc"
-        },
-        "files": [
-            "./.env.test",
-            "./phpunit.dist.xml",
-            "./tests/bootstrap.php",
-            "./bin/phpunit"
->>>>>>> user
         ]
     },
     "symfony/asset-mapper": {
@@ -192,9 +177,8 @@
             "./config/packages/notifier.yaml"
         ]
     },
-<<<<<<< HEAD
     "symfony/phpunit-bridge": {
-        "version": "8.0",
+        "version": "6.4",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
@@ -208,8 +192,6 @@
             "./tests/bootstrap.php"
         ]
     },
-=======
->>>>>>> user
     "symfony/routing": {
         "version": "6.4",
         "recipe": {
@@ -308,18 +290,6 @@
         "files": [
             "./config/packages/web_profiler.yaml",
             "./config/routes/web_profiler.yaml"
-        ]
-    },
-    "symfony/webapp-pack": {
-        "version": "1.4",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "1.0",
-            "ref": "b9e6cc8e7b6069d0e8a816665809a423864eb4dd"
-        },
-        "files": [
-            "./config/packages/messenger.yaml"
         ]
     },
     "twig/extra-bundle": {

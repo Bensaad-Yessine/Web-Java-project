@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Suivi Bien-être{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Liste des suivis bien-être</h1>
+
+    <a href="{{ path('app_suivi_bien_etre_add') }}" class="btn btn-success mb-3">
+        + Ajouter un suivi
+    </a>
+
+    {% if suivis is empty %}
+        <div class="alert alert-info">Aucun suivi trouvé.</div>
+    {% else %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Humeur</th>
+                    <th>Énergie</th>
+                    <th>Stress</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for s in suivis %}
+                <tr>
+                    <td>{{ s.id }}</td>
+                    <td>{{ s.dateSaisie|date('Y-m-d') }}</td>
+                    <td>{{ s.humeur }}</td>
+                    <td>{{ s.niveauEnergie }}</td>
+                    <td>{{ s.niveauStress }}</td>
+                    <td>
+                        <a href="{{ path('app_suivi_bien_etre_show', {id: s.id}) }}" class="btn btn-info btn-sm">Voir</a>
+                        <a href="{{ path('app_suivi_bien_etre_edit', {id: s.id}) }}" class="btn btn-warning btn-sm">Edit</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}
