@@ -75,7 +75,7 @@ final class UserController extends AbstractController
 
             $this->addFlash('success', 'User updated successfully ✏️');
 
-            return $this->redirectToRoute('app_user_index');
+            return $this->redirectToRoute('app_user_show');
         }
 
         return $this->render('user/edit.html.twig', [
@@ -98,7 +98,7 @@ final class UserController extends AbstractController
             $this->addFlash('success', 'User deleted 🗑️');
         }
 
-        return $this->redirectToRoute('app_user_index');
+        return $this->redirectToRoute('app_user_show');
     }
 
     // ✅ PROFILE

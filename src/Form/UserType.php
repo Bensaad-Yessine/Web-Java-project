@@ -29,6 +29,9 @@ class UserType extends AbstractType
             ->add('email',EmailType::class, [
                 'label' => 'Adresse e-mail',
             ])
+            ->add('password',TextType::class, [
+                'label' => 'Mot de passe',
+            ])
             ->add('DateDeNaissance',DateType::class, [
                 'widget' => 'single_text',
                 'label' => 'Date de naissance',

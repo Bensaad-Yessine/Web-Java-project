@@ -4,7 +4,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Corona Admin - Ajouter Utilisateur</title>
+    <title>Corona Admin - Supprimer Utilisateur</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
@@ -14,9 +14,15 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
     <style>
-      .form-container {
-        max-width: 800px;
-        margin: 0 auto;
+      .warning-card {
+        border-left: 5px solid #ff5252;
+        background: #fff5f5;
+      }
+      .user-details-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin: 20px 0;
       }
     </style>
   </head>
@@ -110,100 +116,81 @@
           <div class="content-wrapper">
             <div class="row">
               <div class="col-12">
-                <div class="card">
+                <div class="card warning-card">
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                      <h4 class="card-title">➕ Ajouter un nouvel utilisateur</h4>
+                      <h4 class="card-title text-danger">🗑️ Supprimer l'utilisateur</h4>
                       <a href="{{ path('app_user_show') }}" class="btn btn-secondary">
-                        <i class="mdi mdi-arrow-left"></i> Retour à la liste
+                        <i class="mdi mdi-arrow-left"></i> Retour
                       </a>
                     </div>
                     
-                    <div class="form-container">
-                      <form method="post" action="{{ path('app_user_add') }}">
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label for="nom">Nom *</label>
-                              <input type="text" class="form-control" id="nom" name="nom" required>
+                    <div class="text-center mb-4">
+                      <div class="alert alert-danger" role="alert">
+                        <i class="mdi mdi-alert-circle-outline" style="font-size: 48px;"></i>
+                        <h3 class="mt-3">Attention!</h3>
+                        <p class="mb-0">Cette action est irréversible. Voulez-vous vraiment supprimer cet utilisateur ?</p>
+                      </div>
+                    </div>
+                    
+                    <div class="user-details-card">
+                      <div class="row">
+                        <div class="col-md-4 text-center">
+                          <div class="mb-3">
+                            <div class="avatar-circle" style="width: 80px; height: 80px; background: #007bff; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+                              <span style="color: white; font-size: 32px; font-weight: bold;">
+                                {{ user.prenom|first|upper }}{{ user.nom|first|upper }}
+                              </span>
                             </div>
                           </div>
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label for="prenom">Prénom *</label>
-                              <input type="text" class="form-control" id="prenom" name="prenom" required>
-                            </div>
-                          </div>
+                          <h5>{{ user.prenom }} {{ user.nom }}</h5>
+                          <p class="text-muted">ID: #{{ user.id }}</p>
                         </div>
-                        
-                        <div class="form-group">
-                          <label for="email">Email *</label>
-                          <input type="email" class="form-control" id="email" name="email" required>
-                        </div>
-                        
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label for="dateDeNaissance">Date de naissance</label>
-                              <input type="date" class="form-control" id="dateDeNaissance" name="dateDeNaissance">
+                        <div class="col-md-8">
+                          <div class="row">
+                            <div class="col-md-6">
+                              <p><strong>Email:</strong><br>{{ user.email }}</p>
+                              <p><strong>Rôle:</strong><br>
+                                {% if user.role == 'Étudiant' %}
+                                  <span class="badge badge-gradient-primary">{{ user.role }}</span>
+                                {% elseif user.role == 'Administrateur' %}
+                                  <span class="badge badge-gradient-danger">{{ user.role }}</span>
+                                {% else %}
+                                  <span class="badge badge-gradient-secondary">{{ user.role }}</span>
+                                {% endif %}
+                              </p>
+                              <p><strong>Sexe:</strong><br>{{ user.sexe }}</p>
                             </div>
-                          </div>
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label for="classe">Classe</label>
-                              <input type="text" class="form-control" id="classe" name="classe">
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div class="form-group">
-                          <label for="specialiteFuture">Spécialité future</label>
-                          <input type="text" class="form-control" id="specialiteFuture" name="specialiteFuture">
-                        </div>
-                        
-                        <div class="row">
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label for="sexe">Sexe *</label>
-                              <select class="form-control" id="sexe" name="sexe" required>
-                                <option value="">Sélectionner</option>
-                                <option value="Homme">Homme</option>
-                                <option value="Femme">Femme</option>
-                              </select>
-                            </div>
-                          </div>
-                          <div class="col-md-6">
-                            <div class="form-group">
-                              <label for="role">Rôle *</label>
-                              <select class="form-control" id="role" name="role" required>
-                                <option value="">Sélectionner</option>
-                                <option value="Étudiant">Étudiant</option>
-                                <option value="Administrateur">Administrateur</option>
-                                <option value="Enseignant">Enseignant</option>
-                              </select>
+                            <div class="col-md-6">
+                              <p><strong>Date de naissance:</strong><br>{{ user.dateDeNaissance ? user.dateDeNaissance|date('d/m/Y') : '—' }}</p>
+                              <p><strong>Classe:</strong><br>{{ user.classe ?: '—' }}</p>
+                              <p><strong>Spécialité future:</strong><br>{{ user.specialiteFuture ?: '—' }}</p>
                             </div>
                           </div>
                         </div>
-                        
-                        <div class="form-group">
-                          <label for="password">Mot de passe *</label>
-                          <input type="password" class="form-control" id="password" name="password" required>
-                        </div>
-                        
-                        <div class="form-group">
-                          <label for="confirm_password">Confirmer le mot de passe *</label>
-                          <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                        </div>
-                        
-                        <div class="mt-4">
-                          <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="mdi mdi-content-save"></i> Enregistrer
+                      </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                      <form method="post" action="{{ path('app_user_delete', { id: user.id }) }}" id="deleteForm">
+                        <div class="d-flex justify-content-center">
+                          <button type="submit" class="btn btn-danger btn-lg me-3">
+                            <i class="mdi mdi-delete"></i> Oui, supprimer définitivement
                           </button>
-                          <button type="reset" class="btn btn-light btn-lg ms-2">
-                            <i class="mdi mdi-refresh"></i> Réinitialiser
-                          </button>
+                          <a href="{{ path('app_user_show') }}" class="btn btn-success btn-lg">
+                            <i class="mdi mdi-cancel"></i> Non, annuler
+                          </a>
                         </div>
                       </form>
+                      
+                      <div class="mt-4">
+                        <p class="text-muted">
+                          <small>
+                            <i class="mdi mdi-information-outline"></i>
+                            Cette action supprimera toutes les données associées à cet utilisateur.
+                          </small>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -225,14 +212,11 @@
     <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
     <script src="{{ asset('assets/js/misc.js') }}"></script>
     <script>
-      // Password confirmation validation
-      document.querySelector('form').addEventListener('submit', function(e) {
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm_password').value;
-        
-        if (password !== confirmPassword) {
-          e.preventDefault();
-          alert('Les mots de passe ne correspondent pas!');
+      // Confirm before submitting delete
+      document.getElementById('deleteForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (confirm('Êtes-vous ABSOLUMENT SÛR de vouloir supprimer cet utilisateur ? Cette action est IRREVERSIBLE.')) {
+          this.submit();
         }
       });
     </script>

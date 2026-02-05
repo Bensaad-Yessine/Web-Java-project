@@ -47,6 +47,12 @@ class User
     #[ORM\ManyToMany(targetEntity: GroupeProjet::class, mappedBy: 'idUser')]
     private Collection $idGroupe;
 
+    #[ORM\Column(length: 255)]
+    private ?string $password = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $profilepic = null;
+
     public function __construct()
     {
         $this->idGroupe = new ArrayCollection();
@@ -183,6 +189,30 @@ class User
         if ($this->idGroupe->removeElement($idGroupe)) {
             $idGroupe->removeIdUser($this);
         }
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getProfilepic(): ?string
+    {
+        return $this->profilepic;
+    }
+
+    public function setProfilepic(?string $profilepic): static
+    {
+        $this->profilepic = $profilepic;
 
         return $this;
     }
