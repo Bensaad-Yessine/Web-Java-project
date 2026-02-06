@@ -14,6 +14,10 @@ class Tache
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\ManyToOne(inversedBy: 'taches')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Etudiant $etudiant = null;
+
     #[ORM\Column(length: 255)]
     private ?string $titre = null;
 
@@ -46,7 +50,16 @@ class Tache
     {
         return $this->id;
     }
+    public function getEtudiant(): ?Etudiant
+    {
+        return $this->etudiant;
+    }
 
+    public function setEtudiant(?Etudiant $etudiant): static
+    {
+        $this->etudiant = $etudiant;
+        return $this;
+    }
     public function getTitre(): ?string
     {
         return $this->titre;
