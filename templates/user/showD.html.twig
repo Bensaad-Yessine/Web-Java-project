@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html lang="fr">
   <head>
+    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>ESPRIT - Gestion des Utilisateurs</title>
+    <title>ESPRIT - Tableau de Bord</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{{ asset('assets/vendors/jvectormap/jquery-jvectormap.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/flag-icon-css/css/flag-icons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/owl-carousel-2/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/owl-carousel-2/owl.theme.default.min.css') }}">
     <!-- Layout styles -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
@@ -49,63 +55,54 @@
       .card-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
       .card-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
       .card-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-      
-      .user-avatar {
+      .card-6 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+      .recent-activity {
+        max-height: 400px;
+        overflow-y: auto;
+      }
+      .activity-item {
+        border-left: 3px solid;
+        padding-left: 15px;
+        margin-bottom: 20px;
+      }
+      .activity-item.unread {
+        border-left-color: #667eea;
+        background-color: rgba(102, 126, 234, 0.05);
+      }
+      .activity-item.read {
+        border-left-color: #6c757d;
+      }
+      .activity-time {
+        font-size: 0.8rem;
+        color: #6c757d;
+      }
+      .calendar-day {
         width: 40px;
         height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
-        font-size: 16px;
+        border-radius: 8px;
+        margin: 2px;
+        cursor: pointer;
+        transition: all 0.2s ease;
       }
-      
-      .badge-etudiant {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      .calendar-day:hover {
+        background-color: #f8f9fa;
+      }
+      .calendar-day.today {
+        background-color: #667eea;
         color: white;
       }
-      
-      .badge-admin {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-      }
-      
-      .badge-prof {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        color: white;
-      }
-      
-      .action-buttons .btn {
-        padding: 5px 10px;
-        margin: 0 2px;
-      }
-      
-      .search-box {
-        max-width: 300px;
-      }
-      
-      .table-hover tbody tr:hover {
-        background-color: rgba(102, 126, 234, 0.05);
-      }
-      
-      .empty-state {
-        text-align: center;
-        padding: 50px 20px;
-      }
-      
-      .empty-state i {
-        font-size: 60px;
-        color: #dee2e6;
-        margin-bottom: 20px;
+      .calendar-day.event {
+        background-color: #ffcc00;
+        color: #333;
       }
     </style>
   </head>
   <body>
     <div class="container-scroller">
-      <!-- Sidebar -->
+      <!-- partial:partials/_sidebar.html -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
           <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
@@ -245,10 +242,9 @@
           </li>
         </ul>
       </nav>
-
-      <!-- Main Content -->
+      <!-- partial -->
       <div class="container-fluid page-body-wrapper">
-        <!-- Navbar -->
+        <!-- partial:partials/_navbar.html -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
           <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
             <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
@@ -260,11 +256,12 @@
             <ul class="navbar-nav w-100">
               <li class="nav-item w-100">
                 <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                  <input type="text" class="form-control" placeholder="Rechercher un utilisateur...">
+                  <input type="text" class="form-control" placeholder="Rechercher...">
                 </form>
               </li>
             </ul>
             <ul class="navbar-nav navbar-nav-right">
+              <!-- Notifications -->
               <li class="nav-item dropdown border-left">
                 <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
                   <i class="mdi mdi-bell"></i>
@@ -276,6 +273,18 @@
                   <a class="dropdown-item preview-item">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-warning rounded-circle">
+                        <i class="mdi mdi-calendar"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Séance aujourd'hui</p>
+                      <p class="text-muted ellipsis mb-0"> Algorithmique à 10h00 </p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-info rounded-circle">
                         <i class="mdi mdi-account-plus"></i>
                       </div>
                     </div>
@@ -284,9 +293,24 @@
                       <p class="text-muted ellipsis mb-0"> Ahmed Ben Ali inscrit</p>
                     </div>
                   </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-success rounded-circle">
+                        <i class="mdi mdi-check-circle"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Tâche complétée</p>
+                      <p class="text-muted ellipsis mb-0"> Rapport mensuel approuvé</p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <p class="p-3 mb-0 text-center">Voir toutes les notifications</p>
                 </div>
               </li>
               
+              <!-- User Profile -->
               <li class="nav-item dropdown">
                 <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
                   <div class="navbar-profile">
@@ -301,6 +325,17 @@
                   <a class="dropdown-item preview-item" href="#">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-account-cog text-primary"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Paramètres</p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item" href="#">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-logout text-danger"></i>
                       </div>
                     </div>
@@ -311,26 +346,28 @@
                 </div>
               </li>
             </ul>
+            <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+              <span class="mdi mdi-format-line-spacing"></span>
+            </button>
           </div>
         </nav>
-
-        <!-- Content -->
+        <!-- partial -->
         <div class="main-panel">
           <div class="content-wrapper">
-            <!-- Header -->
+            <!-- Welcome Header -->
             <div class="row">
               <div class="col-12">
                 <div class="page-header">
                   <h3 class="page-title">
                     <span class="page-title-icon bg-gradient-primary text-white me-2">
-                      <i class="mdi mdi-account-group"></i>
+                      <i class="mdi mdi-speedometer"></i>
                     </span> 
-                    Gestion des Utilisateurs
+                    Tableau de Bord - ESPRIT
                   </h3>
                   <nav aria-label="breadcrumb">
                     <ul class="breadcrumb">
                       <li class="breadcrumb-item active" aria-current="page">
-                        <span></span>Liste complète des utilisateurs ESPRIT
+                        <span></span>Bienvenue dans le système de gestion ESPRIT
                       </li>
                     </ul>
                   </nav>
@@ -338,7 +375,7 @@
               </div>
             </div>
             
-            <!-- Statistics -->
+            <!-- Statistics Cards -->
             <div class="row">
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                 <div class="card stat-card">
@@ -346,8 +383,8 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0 stat-count">{{ users|length }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(5, 15) }}%</p>
+                          <h3 class="mb-0 stat-count">856</h3>
+                          <p class="text-success ms-2 mb-0 font-weight-medium">+12%</p>
                         </div>
                       </div>
                       <div class="col-3">
@@ -356,7 +393,7 @@
                         </div>
                       </div>
                     </div>
-                    <h6 class="stat-label">Total Utilisateurs</h6>
+                    <h6 class="stat-label">Utilisateurs</h6>
                   </div>
                 </div>
               </div>
@@ -366,18 +403,17 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set etudiants = users|filter(u => u.role == 'Étudiant')|length %}
-                          <h3 class="mb-0 stat-count">{{ etudiants }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(2, 8) }}%</p>
+                          <h3 class="mb-0 stat-count">42</h3>
+                          <p class="text-success ms-2 mb-0 font-weight-medium">+3</p>
                         </div>
                       </div>
                       <div class="col-3">
                         <div class="stat-icon card-2">
-                          <i class="mdi mdi-school"></i>
+                          <i class="mdi mdi-book-open-page-variant"></i>
                         </div>
                       </div>
                     </div>
-                    <h6 class="stat-label">Étudiants</h6>
+                    <h6 class="stat-label">Matieres</h6>
                   </div>
                 </div>
               </div>
@@ -387,18 +423,17 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set admins = users|filter(u => u.role == 'Administrateur')|length %}
-                          <h3 class="mb-0 stat-count">{{ admins }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+0%</p>
+                          <h3 class="mb-0 stat-count">24</h3>
+                          <p class="text-success ms-2 mb-0 font-weight-medium">+2</p>
                         </div>
                       </div>
                       <div class="col-3">
                         <div class="stat-icon card-3">
-                          <i class="mdi mdi-shield-account"></i>
+                          <i class="mdi mdi-school"></i>
                         </div>
                       </div>
                     </div>
-                    <h6 class="stat-label">Administrateurs</h6>
+                    <h6 class="stat-label">Classes</h6>
                   </div>
                 </div>
               </div>
@@ -408,173 +443,197 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set profs = users|filter(u => u.role == 'Professeur')|length %}
-                          <h3 class="mb-0 stat-count">{{ profs }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(1, 5) }}%</p>
+                          <h3 class="mb-0 stat-count">15</h3>
+                          <p class="text-danger ms-2 mb-0 font-weight-medium">-1</p>
                         </div>
                       </div>
                       <div class="col-3">
                         <div class="stat-icon card-4">
-                          <i class="mdi mdi-teach"></i>
+                          <i class="mdi mdi-office-building"></i>
                         </div>
                       </div>
                     </div>
-                    <h6 class="stat-label">Professeurs</h6>
+                    <h6 class="stat-label">Salles Occupees</h6>
                   </div>
                 </div>
               </div>
             </div>
             
-            <!-- Users Table -->
             <div class="row">
-              <div class="col-12 grid-margin">
+              <div class="col-md-6 grid-margin stretch-card">
                 <div class="card">
                   <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                      <h4 class="card-title">👥 Liste des Utilisateurs</h4>
-                      <div class="d-flex">
-                        <div class="search-box me-3">
-                          <input type="text" class="form-control" placeholder="Rechercher..." id="searchInput">
+                    <h4 class="card-title">Séances Aujourd'hui</h4>
+                    <div class="recent-activity">
+                      <div class="activity-item unread">
+                        <div class="d-flex justify-content-between">
+                          <h6 class="mb-1">Algorithmique Avancée</h6>
+                          <small class="activity-time">10:00 - 12:00</small>
                         </div>
-                        <a href="{{ path('app_user_add') }}" class="btn btn-gradient-primary btn-icon-text">
-                          <i class="mdi mdi-account-plus btn-icon-prepend"></i>
-                          Ajouter un utilisateur
-                        </a>
+                        <p class="text-muted mb-1">Salle B2.2 • Prof. Dr. Karim Ben Ali</p>
+                        <small>Classe: 3A • Groupe: 1</small>
+                      </div>
+                      <div class="activity-item unread">
+                        <div class="d-flex justify-content-between">
+                          <h6 class="mb-1">Base de Données</h6>
+                          <small class="activity-time">13:00 - 15:00</small>
+                        </div>
+                        <p class="text-muted mb-1">Salle A1.1 • Prof. Dr. Leila Mahfoudh</p>
+                        <small>Classe: 2A • Groupe: 2</small>
+                      </div>
+                      <div class="activity-item read">
+                        <div class="d-flex justify-content-between">
+                          <h6 class="mb-1">Web Development</h6>
+                          <small class="activity-time">15:30 - 17:30</small>
+                        </div>
+                        <p class="text-muted mb-1">Salle C3.3 • Prof. Dr. Sami Bouaziz</p>
+                        <small>Classe: 1A • Groupe: 3</small>
+                      </div>
+                      <div class="activity-item read">
+                        <div class="d-flex justify-content-between">
+                          <h6 class="mb-1">Intelligence Artificielle</h6>
+                          <small class="activity-time">18:00 - 20:00</small>
+                        </div>
+                        <p class="text-muted mb-1">Salle D4.4 • Prof. Dr. Hatem Bellaaj</p>
+                        <small>Classe: 3A • Groupe: 4</small>
                       </div>
                     </div>
-
-                    {% if users is empty %}
-                      <div class="empty-state">
-                        <i class="mdi mdi-account-off"></i>
-                        <h4 class="text-muted">Aucun utilisateur trouvé</h4>
-                        <p class="text-muted mb-4">Commencez par ajouter un nouvel utilisateur</p>
-                        <a href="{{ path('app_user_add') }}" class="btn btn-gradient-primary">
-                          <i class="mdi mdi-account-plus"></i>
-                          Ajouter le premier utilisateur
-                        </a>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Calendrier</h4>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                      <h5 class="mb-0">Février 2024</h5>
+                      <div>
+                        <button class="btn btn-outline-secondary btn-sm"><i class="mdi mdi-chevron-left"></i></button>
+                        <button class="btn btn-outline-secondary btn-sm"><i class="mdi mdi-chevron-right"></i></button>
                       </div>
-                    {% else %}
-                      <div class="table-responsive">
-                        <table class="table table-hover" id="usersTable">
-                          <thead>
-                            <tr>
-                              <th>ID</th>
-                              <th>Utilisateur</th>
-                              <th>Email</th>
-                              <th>Date de naissance</th>
-                              <th>Classe</th>
-                              <th>Spécialité</th>
-                              <th>Sexe</th>
-                              <th>Rôle</th>
-                              <th>Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {% for user in users %}
-                              <tr>
-                                <td>{{ user.id }}</td>
-                                <td>
-                                  <div class="d-flex align-items-center">
-                                    <div class="user-avatar me-3">
-                                      {{ user.prenom|first|upper }}{{ user.nom|first|upper }}
-                                    </div>
-                                    <div>
-                                      <h6 class="mb-0">{{ user.prenom }} {{ user.nom }}</h6>
-                                      <small class="text-muted">Membre depuis {{ user.dateDeNaissance ? user.dateDeNaissance|date('d/m/Y') }}</small>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>{{ user.email }}</td>
-                                <td>{{ user.dateDeNaissance ? user.dateDeNaissance|date('d/m/Y') : '—' }}</td>
-                                <td>
-                                  {% if user.classe %}
-                                    <span class="badge badge-light">{{ user.classe }}</span>
-                                  {% else %}
-                                    <span class="text-muted">—</span>
-                                  {% endif %}
-                                </td>
-                                <td>
-                                  {% if user.specialiteFuture %}
-                                    <span class="badge badge-info">{{ user.specialiteFuture }}</span>
-                                  {% else %}
-                                    <span class="text-muted">—</span>
-                                  {% endif %}
-                                </td>
-                                <td>
-                                  {% if user.sexe == 'Masculin' %}
-                                    <span class="badge badge-primary">{{ user.sexe }}</span>
-                                  {% else %}
-                                    <span class="badge badge-pink">{{ user.sexe }}</span>
-                                  {% endif %}
-                                </td>
-                                <td>
-                                  {% if user.role == 'Étudiant' %}
-                                    <span class="badge badge-etudiant">{{ user.role }}</span>
-                                  {% elseif user.role == 'Administrateur' %}
-                                    <span class="badge badge-admin">{{ user.role }}</span>
-                                  {% elseif user.role == 'Professeur' %}
-                                    <span class="badge badge-prof">{{ user.role }}</span>
-                                  {% else %}
-                                    <span class="badge badge-secondary">{{ user.role }}</span>
-                                  {% endif %}
-                                </td>
-                                <td>
-                                  <div class="action-buttons">
-                                    <a href="{{ path('app_user_show', { id: user.id }) }}" 
-                                       class="btn btn-info btn-sm btn-icon"
-                                       title="Voir">
-                                      <i class="mdi mdi-eye"></i>
-                                    </a>
-                                    <a href="{{ path('app_user_edit', { id: user.id }) }}" 
-                                       class="btn btn-warning btn-sm btn-icon"
-                                       title="Modifier">
-                                      <i class="mdi mdi-pencil"></i>
-                                    </a>
-                                    <button type="button" 
-                                            class="btn btn-danger btn-sm btn-icon delete-btn"
-                                            data-user-id="{{ user.id }}"
-                                            data-user-name="{{ user.prenom }} {{ user.nom }}"
-                                            title="Supprimer">
-                                      <i class="mdi mdi-delete"></i>
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                            {% endfor %}
-                          </tbody>
-                        </table>
-                      </div>
-                      
-                      <!-- Delete Confirmation Modal -->
-                      <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
-                        <div class="modal-dialog" role="document">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title">Confirmer la suppression</h5>
-                              <button type="button" class="close" data-dismiss="modal">
-                                <span>&times;</span>
-                              </button>
-                            </div>
-                            <div class="modal-body">
-                              <p>Êtes-vous sûr de vouloir supprimer l'utilisateur <strong id="userName"></strong> ?</p>
-                              <p class="text-danger"><small>Cette action est irréversible.</small></p>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                              <form id="deleteForm" method="POST" style="display: inline;">
-                                <input type="hidden" name="_token" value="">
-                                <button type="submit" class="btn btn-danger">Supprimer</button>
-                              </form>
-                            </div>
-                          </div>
+                    </div>
+                    <div class="d-flex flex-wrap">
+                      {% for day in 1..28 %}
+                        <div class="calendar-day {% if day == 12 %}today{% endif %} {% if day in [5, 8, 15, 22] %}event{% endif %}">
+                          {{ day }}
                         </div>
+                      {% endfor %}
+                    </div>
+                    <div class="mt-4">
+                      <h6>Légende:</h6>
+                      <div class="d-flex align-items-center mt-2">
+                        <div class="calendar-day today me-2"></div>
+                        <small>Aujourd'hui</small>
                       </div>
-                    {% endif %}
+                      <div class="d-flex align-items-center mt-2">
+                        <div class="calendar-day event me-2"></div>
+                        <small>Séance prévue</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-8 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Alertes Récentes</h4>
+                    <div class="table-responsive">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><span class="badge badge-warning">Salle</span></td>
+                            <td>Salle B2.2 non disponible</td>
+                            <td>10 Fév 2024</td>
+                            <td><span class="badge badge-danger">En attente</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary">Voir</button></td>
+                          </tr>
+                          <tr>
+                            <td><span class="badge badge-info">Étudiant</span></td>
+                            <td>Absence non justifiée - Ahmed Ben Ali</td>
+                            <td>9 Fév 2024</td>
+                            <td><span class="badge badge-success">Traité</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary">Voir</button></td>
+                          </tr>
+                          <tr>
+                            <td><span class="badge badge-danger">Système</span></td>
+                            <td>Erreur de sauvegarde automatique</td>
+                            <td>8 Fév 2024</td>
+                            <td><span class="badge badge-warning">En cours</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary">Voir</button></td>
+                          </tr>
+                          <tr>
+                            <td><span class="badge badge-success">Tâche</span></td>
+                            <td>Rapport mensuel à valider</td>
+                            <td>7 Fév 2024</td>
+                            <td><span class="badge badge-info">Assigné</span></td>
+                            <td><button class="btn btn-sm btn-outline-primary">Voir</button></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-4 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title">Statistiques Rapides</h4>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                      <div>
+                        <h2 class="mb-0">78%</h2>
+                        <p class="text-muted mb-0">Taux de présence</p>
+                      </div>
+                      <div class="icon icon-box-success">
+                        <i class="mdi mdi-account-check"></i>
+                      </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                      <div>
+                        <h2 class="mb-0">92%</h2>
+                        <p class="text-muted mb-0">Taux de réussite</p>
+                      </div>
+                      <div class="icon icon-box-warning">
+                        <i class="mdi mdi-school"></i>
+                      </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                      <div>
+                        <h2 class="mb-0">15</h2>
+                        <p class="text-muted mb-0">Tâches en attente</p>
+                      </div>
+                      <div class="icon icon-box-danger">
+                        <i class="mdi mdi-alert-circle"></i>
+                      </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                        <h2 class="mb-0">24</h2>
+                        <p class="text-muted mb-0">Séances cette semaine</p>
+                      </div>
+                      <div class="icon icon-box-info">
+                        <i class="mdi mdi-calendar-clock"></i>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <!-- content-wrapper ends -->
           
           <!-- Footer -->
           <footer class="footer">
@@ -583,60 +642,42 @@
                 © 2024 ESPRIT École d'Ingénieurs. Tous droits réservés.
               </span>
               <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
-                Gestion des Utilisateurs - {{ users|length }} utilisateurs
+                Système de Gestion ESPRIT v2.0
               </span>
             </div>
           </footer>
+          <!-- partial -->
         </div>
+        <!-- main-panel ends -->
       </div>
+      <!-- page-body-wrapper ends -->
     </div>
-
-    <!-- Scripts -->
+    <!-- container-scroller -->
+    
+    <!-- plugins:js -->
     <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <!-- Plugin js for this page -->
+    <script src="{{ asset('assets/vendors/chart.js/chart.umd.js') }}"></script>
+    <script src="{{ asset('assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
+    <script src="{{ asset('assets/vendors/jvectormap/jquery-jvectormap.min.js') }}"></script>
+    <script src="{{ asset('assets/vendors/jvectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
+    <script src="{{ asset('assets/vendors/owl-carousel-2/owl.carousel.min.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.cookie.js') }}" type="text/javascript"></script>
+    <!-- Custom js -->
     <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
     <script src="{{ asset('assets/js/misc.js') }}"></script>
+    <script src="{{ asset('assets/js/settings.js') }}"></script>
+    <script src="{{ asset('assets/js/todolist.js') }}"></script>
+    <script src="{{ asset('assets/js/proBanner.js') }}"></script>
     
     <script>
-      // Search functionality
-      document.getElementById('searchInput').addEventListener('keyup', function() {
-        const filter = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#usersTable tbody tr');
-        
-        rows.forEach(row => {
-          const text = row.textContent.toLowerCase();
-          row.style.display = text.includes(filter) ? '' : 'none';
+      // Simple calendar interaction
+      document.querySelectorAll('.calendar-day').forEach(day => {
+        day.addEventListener('click', function() {
+          const date = this.textContent;
+          alert('Date sélectionnée: ' + date + ' Février 2024');
         });
       });
-      
-      // Delete confirmation modal
-      document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', function() {
-          const userId = this.getAttribute('data-user-id');
-          const userName = this.getAttribute('data-user-name');
-          
-          document.getElementById('userName').textContent = userName;
-          
-          // Set the form action
-          const form = document.getElementById('deleteForm');
-          form.action = "{{ path('app_user_delete', { id: 'USER_ID' }) }}".replace('USER_ID', userId);
-          
-          // Set CSRF token
-          const csrfToken = "{{ csrf_token('delete' ~ 'USER_ID') }}".replace('USER_ID', userId);
-          form.querySelector('input[name="_token"]').value = csrfToken;
-          
-          // Show modal
-          $('#deleteModal').modal('show');
-        });
-      });
-      
-      // Auto-hide alerts after 5 seconds
-      setTimeout(() => {
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(alert => {
-          const closeBtn = alert.querySelector('.close');
-          if (closeBtn) closeBtn.click();
-        });
-      }, 5000);
     </script>
   </body>
 </html>

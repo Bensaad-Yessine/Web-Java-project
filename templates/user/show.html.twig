@@ -1,0 +1,273 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ESPRIT - Détails Utilisateur{% endblock %}
+
+{% block stylesheets %}
+<style>
+  .profile-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 40px 30px;
+    color: white;
+    margin-bottom: 30px;
+  }
+  
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    font-weight: bold;
+    color: white;
+    border: 4px solid white;
+    margin: 0 auto 20px;
+  }
+  
+  .info-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  }
+  
+  .info-title {
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f8f9fa;
+  }
+  
+  .info-item:last-child {
+    border-bottom: none;
+  }
+  
+  .info-label {
+    font-weight: 500;
+    color: #6c757d;
+  }
+  
+  .info-value {
+    font-weight: 500;
+    color: #2c3e50;
+  }
+  
+  .badge-etudiant {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+  }
+  
+  .badge-admin {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+  
+  .badge-prof {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="main-panel">
+  <div class="content-wrapper">
+    <!-- Header -->
+    <div class="row">
+      <div class="col-12">
+        <div class="page-header">
+          <h3 class="page-title">
+            <span class="page-title-icon bg-gradient-primary text-white me-2">
+              <i class="mdi mdi-account-eye"></i>
+            </span> 
+            Détails de l'Utilisateur
+          </h3>
+          <nav aria-label="breadcrumb">
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{{ path('app_user_index') }}">Utilisateurs</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Détails</li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12 grid-margin">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h4 class="card-title">👤 Profil Utilisateur</h4>
+              <a href="{{ path('app_user_index') }}" class="btn btn-light btn-icon-text">
+                <i class="mdi mdi-arrow-left"></i> Retour à la liste
+              </a>
+            </div>
+
+            <!-- Profile Header -->
+            <div class="profile-header">
+              <div class="text-center">
+                <div class="profile-avatar">
+                  {{ user.prenom|first|upper }}{{ user.nom|first|upper }}
+                </div>
+                <h2>{{ user.prenom }} {{ user.nom }}</h2>
+                <p class="mb-0">
+                  {% if user.role == 'Étudiant' %}
+                    <span class="badge badge-etudiant">{{ user.role }}</span>
+                  {% elseif user.role == 'Administrateur' %}
+                    <span class="badge badge-admin">{{ user.role }}</span>
+                  {% elseif user.role == 'Professeur' %}
+                    <span class="badge badge-prof">{{ user.role }}</span>
+                  {% else %}
+                    <span class="badge badge-secondary">{{ user.role }}</span>
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+
+            <!-- User Information -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="info-card">
+                  <h5 class="info-title">Informations Personnelles</h5>
+                  <div class="info-item">
+                    <span class="info-label">Email</span>
+                    <span class="info-value">{{ user.email }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Date de naissance</span>
+                    <span class="info-value">{{ user.dateDeNaissance ? user.dateDeNaissance|date('d/m/Y') : '—' }}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Sexe</span>
+                    <span class="info-value">
+                      {% if user.sexe == 'Masculin' %}
+                        <span class="badge badge-primary">{{ user.sexe }}</span>
+                      {% else %}
+                        <span class="badge badge-pink">{{ user.sexe }}</span>
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="info-card">
+                  <h5 class="info-title">Informations Académiques</h5>
+                  <div class="info-item">
+                    <span class="info-label">Classe</span>
+                    <span class="info-value">
+                      {% if user.classe %}
+                        <span class="badge badge-light">{{ user.classe }}</span>
+                      {% else %}
+                        <span class="text-muted">—</span>
+                      {% endif %}
+                    </span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Spécialité future</span>
+                    <span class="info-value">
+                      {% if user.specialiteFuture %}
+                        <span class="badge badge-info">{{ user.specialiteFuture }}</span>
+                      {% else %}
+                        <span class="text-muted">—</span>
+                      {% endif %}
+                    </span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">ID Utilisateur</span>
+                    <span class="info-value">#{{ user.id }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="info-card">
+              <h5 class="info-title">Actions</h5>
+              <div class="d-flex justify-content-center gap-3">
+                <a href="{{ path('app_user_edit', { id: user.id }) }}" 
+                   class="btn btn-gradient-primary btn-icon-text">
+                  <i class="mdi mdi-pencil btn-icon-prepend"></i>
+                  Modifier
+                </a>
+                <button type="button" 
+                        class="btn btn-danger btn-icon-text delete-btn"
+                        data-user-id="{{ user.id }}"
+                        data-user-name="{{ user.prenom }} {{ user.nom }}">
+                  <i class="mdi mdi-delete btn-icon-prepend"></i>
+                  Supprimer
+                </button>
+                <a href="{{ path('app_user_index') }}" 
+                   class="btn btn-light btn-icon-text">
+                  <i class="mdi mdi-arrow-left btn-icon-prepend"></i>
+                  Retour
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmer la suppression</h5>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Êtes-vous sûr de vouloir supprimer l'utilisateur <strong id="userName"></strong> ?</p>
+        <p class="text-danger"><small>Cette action est irréversible.</small></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+        <form id="deleteForm" method="POST" style="display: inline;">
+          <input type="hidden" name="_token" value="">
+          <button type="submit" class="btn btn-danger">Supprimer</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Delete confirmation
+  document.querySelector('.delete-btn').addEventListener('click', function() {
+    const userId = this.getAttribute('data-user-id');
+    const userName = this.getAttribute('data-user-name');
+    
+    document.getElementById('userName').textContent = userName;
+    
+    // Set the form action
+    const form = document.getElementById('deleteForm');
+    form.action = "{{ path('app_user_delete', { id: 'USER_ID' }) }}".replace('USER_ID', userId);
+    
+    // Set CSRF token
+    const csrfToken = "{{ csrf_token('delete' ~ 'USER_ID') }}".replace('USER_ID', userId);
+    form.querySelector('input[name="_token"]').value = csrfToken;
+    
+    // Show modal
+    $('#deleteModal').modal('show');
+  });
+</script>
+{% endblock %}
