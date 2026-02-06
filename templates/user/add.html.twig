@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Corona Admin - Ajouter Utilisateur</title>
+    <title>ESPRIT - Ajouter un Utilisateur</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
@@ -14,145 +13,317 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
     <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f5f7fa;
+      }
+
       .form-container {
-        max-width: 900px;
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        max-width: 1200px;
         margin: 0 auto;
-        animation: fadeIn 0.5s ease-in;
       }
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+
+      .form-header {
+        border-bottom: 3px solid #667eea;
+        padding-bottom: 25px;
+        margin-bottom: 40px;
       }
-      .form-section {
-        background: #fff;
-        border-radius: 10px;
-        padding: 25px;
-        margin-bottom: 25px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-      }
-      .form-section:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-      }
-      .form-section-title {
-        color: #2c3e50;
-        border-bottom: 2px solid #4CAF50;
-        padding-bottom: 10px;
-        margin-bottom: 20px;
+
+      .form-header h4 {
+        font-size: 1.75rem;
         font-weight: 600;
-      }
-      .profile-pic-preview {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid #ddd;
-        display: none;
-        margin: 0 auto 15px;
-      }
-      .profile-upload-area {
-        border: 2px dashed #4CAF50;
-        border-radius: 10px;
-        padding: 20px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: #f8f9fa;
-      }
-      .profile-upload-area:hover {
-        background: #e8f5e9;
-        border-color: #2E7D32;
-      }
-      .form-group-animated {
-        position: relative;
-        margin-bottom: 25px;
-      }
-      .form-group-animated label {
-        display: block;
+        color: #2d3748;
         margin-bottom: 8px;
-        font-weight: 500;
-        color: #495057;
-        transition: color 0.3s ease;
       }
-      .form-group-animated input:focus + label,
-      .form-group-animated select:focus + label {
-        color: #4CAF50;
+
+      .form-header p {
+        font-size: 1rem;
+        color: #718096;
+        margin: 0;
       }
+
+      .form-section {
+        background: #ffffff;
+        border: 2px solid #e2e8f0;
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        transition: all 0.3s ease;
+      }
+
+      .form-section:hover {
+        border-color: #cbd5e0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      }
+
+      .form-section-title {
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 25px;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f4f8;
+      }
+
+      .form-section-title i {
+        margin-right: 12px;
+        font-size: 1.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
       .required-field::after {
         content: " *";
-        color: #dc3545;
+        color: #e53e3e;
+        font-weight: 700;
       }
-      .btn-submit {
-        background: linear-gradient(45deg, #4CAF50, #2E7D32);
-        border: none;
-        padding: 12px 30px;
-        font-size: 16px;
-        font-weight: 500;
+
+      .form-group {
+        margin-bottom: 25px;
+      }
+
+      .form-group label {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+        display: block;
+        letter-spacing: 0.3px;
+      }
+
+      .form-control {
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 1rem;
+        color: #2d3748;
         transition: all 0.3s ease;
+        background-color: #ffffff;
+        width: 100%;
+        font-weight: 400;
       }
-      .btn-submit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+
+      .form-control:hover {
+        border-color: #cbd5e0;
       }
-      .password-strength {
-        height: 4px;
-        background: #e0e0e0;
-        border-radius: 2px;
-        margin-top: 5px;
-        overflow: hidden;
+
+      .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+        outline: none;
+        background-color: #ffffff;
       }
-      .strength-bar {
-        height: 100%;
-        width: 0;
-        transition: width 0.3s ease;
+
+      .form-control::placeholder {
+        color: #a0aec0;
+        font-weight: 400;
       }
-      .weak { background: #ff5252; }
-      .medium { background: #ffb74d; }
-      .strong { background: #4CAF50; }
-      .error-message {
-        color: #dc3545;
+
+      select.form-control {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        padding-right: 40px;
+      }
+
+      input[type="file"].form-control {
+        padding: 10px 16px;
+        line-height: 1.5;
+      }
+
+      .form-text {
         font-size: 0.875rem;
-        margin-top: 5px;
-        display: none;
-        animation: shake 0.5s ease;
+        color: #718096;
+        margin-top: 8px;
+        display: block;
+        font-style: italic;
       }
-      @keyframes shake {
-        0%, 100% { transform: translateX(0); }
-        25% { transform: translateX(-5px); }
-        75% { transform: translateX(5px); }
+
+      .btn-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 14px 36px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
       }
-      .success-check {
-        color: #4CAF50;
-        font-size: 1.2rem;
-        display: none;
-        animation: bounce 0.5s ease;
+
+      .btn-gradient-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        color: white;
       }
-      @keyframes bounce {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.2); }
+
+      .btn-gradient-primary:active {
+        transform: translateY(0);
+      }
+
+      .btn-light {
+        background: #f7fafc;
+        border: 2px solid #e2e8f0;
+        color: #4a5568;
+        padding: 14px 36px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-light:hover {
+        background: #edf2f7;
+        border-color: #cbd5e0;
+        color: #2d3748;
+      }
+
+      .error-message,
+      .invalid-feedback {
+        color: #e53e3e;
+        font-size: 0.875rem;
+        margin-top: 8px;
+        font-weight: 500;
+        display: block;
+      }
+
+      .form-actions {
+        border-top: 2px solid #e2e8f0;
+        padding-top: 30px;
+        margin-top: 40px;
+        text-align: right;
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+      }
+
+      .img-thumbnail {
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 8px;
+        background: #f7fafc;
+      }
+
+      .row {
+        margin-left: -12px;
+        margin-right: -12px;
+      }
+
+      .col-md-6 {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+
+      /* Improved file upload styling */
+      .file-upload-wrapper {
+        position: relative;
+      }
+
+      .file-upload-label {
+        display: inline-block;
+        padding: 12px 24px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+      }
+
+      .file-upload-label:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+
+      .file-upload-label i {
+        margin-right: 8px;
+      }
+
+      .current-photo-section {
+        margin-top: 20px;
+        padding: 20px;
+        background: #f7fafc;
+        border-radius: 8px;
+        border: 2px dashed #cbd5e0;
+      }
+
+      .current-photo-section p {
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 12px;
+      }
+
+      /* Better form validation styles */
+      .form-control.is-invalid {
+        border-color: #e53e3e;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23e53e3e' viewBox='0 0 16 16'%3E%3Cpath d='M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z'/%3E%3Cpath d='M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        padding-right: 40px;
+      }
+
+      /* Responsive improvements */
+      @media (max-width: 768px) {
+        .form-container {
+          padding: 25px;
+        }
+
+        .form-section {
+          padding: 20px;
+        }
+
+        .form-actions {
+          flex-direction: column-reverse;
+        }
+
+        .form-actions .btn {
+          width: 100%;
+          justify-content: center;
+        }
       }
     </style>
   </head>
   <body>
     <div class="container-scroller">
-      <!-- partial:partials/_sidebar.html -->
+      <!-- Sidebar -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a class="sidebar-brand brand-logo" href="index.html"><img src="assets/images/logo.svg" alt="logo" /></a>
-          <a class="sidebar-brand brand-logo-mini" href="index.html"><img src="assets/images/logo-mini.svg" alt="logo" /></a>
+          <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </a>
+          <a class="sidebar-brand brand-logo-mini" href="{{ path('app_user_index') }}">
+            <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+          </a>
         </div>
         <ul class="nav">
           <li class="nav-item profile">
             <div class="profile-desc">
               <div class="profile-pic">
                 <div class="count-indicator">
-                  <img class="img-xs rounded-circle " src="assets/images/faces/face15.jpg" alt="">
+                  <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
                   <span class="count bg-success"></span>
                 </div>
                 <div class="profile-name">
-                  <h5 class="mb-0 font-weight-normal">Henry Klein</h5>
-                  <span>Gold Member</span>
+                  <h5 class="mb-0 font-weight-normal">Administrateur</h5>
+                  <span>ESPRIT</span>
                 </div>
               </div>
             </div>
@@ -160,27 +331,122 @@
           <li class="nav-item nav-category">
             <span class="nav-link">Navigation</span>
           </li>
+          
+          <!-- Dashboard -->
           <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ path('app_user_show') }}">
+            <a class="nav-link" href="{{ path('app_user_index') }}">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
               <span class="menu-title">Dashboard</span>
             </a>
           </li>
+          
+          <!-- Utilisateurs -->
           <li class="nav-item menu-items active">
-            <a class="nav-link" href="{{ path('app_user_show') }}">
+            <a class="nav-link" href="{{ path('app_user_index') }}">
               <span class="menu-icon">
                 <i class="mdi mdi-account-group"></i>
               </span>
               <span class="menu-title">Utilisateurs</span>
             </a>
           </li>
+          
+          <!-- Matières -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-book-open-page-variant"></i>
+              </span>
+              <span class="menu-title">Matieres</span>
+            </a>
+          </li>
+          
+          <!-- Classes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-school"></i>
+              </span>
+              <span class="menu-title">Classes</span>
+            </a>
+          </li>
+          
+          <!-- Salles -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-office-building"></i>
+              </span>
+              <span class="menu-title">Salles</span>
+            </a>
+          </li>
+          
+          <!-- Séances -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-calendar-clock"></i>
+              </span>
+              <span class="menu-title">Séances</span>
+            </a>
+          </li>
+          
+          <!-- Groupes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-multiple"></i>
+              </span>
+              <span class="menu-title">Groupes</span>
+            </a>
+          </li>
+          
+          <!-- Tâches -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+              </span>
+              <span class="menu-title">Tâches</span>
+            </a>
+          </li>
+          
+          <!-- Alertes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-alert-circle-outline"></i>
+              </span>
+              <span class="menu-title">Alertes</span>
+            </a>
+          </li>
+          
+          <!-- Exercices de santé -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-heart-pulse"></i>
+              </span>
+              <span class="menu-title">Exercices de santé</span>
+            </a>
+          </li>
+          
+          <!-- Logout -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-logout text-danger"></i>
+              </span>
+              <span class="menu-title text-danger">Déconnexion</span>
+            </a>
+          </li>
         </ul>
       </nav>
-      <!-- partial -->
+
+      <!-- Main Content -->
       <div class="container-fluid page-body-wrapper">
-        <!-- partial:partials/_navbar.html -->
+        <!-- Navbar -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
           <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
             <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
@@ -189,498 +455,341 @@
             <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
               <span class="mdi mdi-menu"></span>
             </button>
+            <ul class="navbar-nav w-100">
+              <li class="nav-item w-100">
+                <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                  <input type="text" class="form-control" placeholder="Rechercher...">
+                </form>
+              </li>
+            </ul>
             <ul class="navbar-nav navbar-nav-right">
+              <li class="nav-item dropdown border-left">
+                <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                  <i class="mdi mdi-bell"></i>
+                  <span class="count bg-danger">3</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                  <h6 class="p-3 mb-0">Notifications</h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-warning rounded-circle">
+                        <i class="mdi mdi-account-plus"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Nouvel utilisateur</p>
+                      <p class="text-muted ellipsis mb-0"> Ahmed Ben Ali inscrit</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+              
               <li class="nav-item dropdown">
                 <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
                   <div class="navbar-profile">
                     <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
-                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Henry Klein</p>
+                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Admin ESPRIT</p>
                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
                   </div>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
-                  <h6 class="p-3 mb-0">Profile</h6>
+                  <h6 class="p-3 mb-0">Profil Administrateur</h6>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item">
+                  <a class="dropdown-item preview-item" href="#">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-logout text-danger"></i>
                       </div>
                     </div>
                     <div class="preview-item-content">
-                      <p class="preview-subject mb-1">Log out</p>
+                      <p class="preview-subject mb-1">Déconnexion</p>
                     </div>
                   </a>
                 </div>
               </li>
             </ul>
-            <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-              <span class="mdi mdi-format-line-spacing"></span>
-            </button>
           </div>
         </nav>
-        <!-- partial -->
+
+        <!-- Content -->
         <div class="main-panel">
           <div class="content-wrapper">
+            <!-- Header -->
             <div class="row">
-              <div class="col-12 grid-margin">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                      <h4 class="card-title">➕ Ajouter un nouvel utilisateur</h4>
-                      <a href="{{ path('app_user_show') }}" class="btn btn-secondary btn-icon-text">
-                        <i class="mdi mdi-arrow-left"></i> Retour à la liste
-                      </a>
+              <div class="col-12">
+                <div class="page-header">
+                  <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                      <i class="mdi mdi-account-plus"></i>
+                    </span> 
+                    Ajouter un Utilisateur
+                  </h3>
+                  <nav aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                      <li class="breadcrumb-item">
+                        <a href="{{ path('app_user_index') }}">Utilisateurs</a>
+                      </li>
+                      <li class="breadcrumb-item active" aria-current="page">
+                        Ajouter un nouvel utilisateur
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Form Container -->
+            <div class="row">
+              <div class="col-12">
+                <div class="form-container">
+                  <div class="form-header">
+                    <h4>Informations du nouvel utilisateur</h4>
+                    <p class="text-muted mb-0">Remplissez les informations ci-dessous pour ajouter un nouvel utilisateur au système ESPRIT.</p>
+                  </div>
+                  
+                  {{ form_start(form, {'attr': {'class': 'form-horizontal', 'enctype': 'multipart/form-data'}}) }}
+                  
+                  {{ form_errors(form) }}
+                  
+                  <!-- Informations Personnelles -->
+                  <div class="form-section">
+                    <h5 class="form-section-title">
+                      <i class="mdi mdi-account-outline"></i>
+                      Informations Personnelles
+                    </h5>
+                    
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          {{ form_label(form.nom, 'Nom', {'label_attr': {'class': 'required-field'}}) }}
+                          {{ form_widget(form.nom, {
+                            'attr': {
+                              'class': 'form-control',
+                              'placeholder': 'Entrez le nom de famille'
+                            }
+                          }) }}
+                          {{ form_errors(form.nom) }}
+                          <small class="form-text">Le nom de famille de l'utilisateur</small>
+                        </div>
+                      </div>
+                      
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          {{ form_label(form.prenom, 'Prénom', {'label_attr': {'class': 'required-field'}}) }}
+                          {{ form_widget(form.prenom, {
+                            'attr': {
+                              'class': 'form-control',
+                              'placeholder': 'Entrez le prénom'
+                            }
+                          }) }}
+                          {{ form_errors(form.prenom) }}
+                          <small class="form-text">Le prénom de l'utilisateur</small>
+                        </div>
+                      </div>
                     </div>
-
-                    <div class="form-container">
-                      {{ form_start(form, {'attr': {'class': 'form-sample', 'id': 'userForm', 'novalidate': 'novalidate'}}) }}
-                        
-                        <!-- Profile Picture Section -->
-                        <div class="form-section">
-                          <h5 class="form-section-title">
-                            <i class="mdi mdi-camera"></i> Photo de profil
-                          </h5>
-                          <div class="row">
-                            <div class="col-md-4">
-                              <img id="profilePreview" class="profile-pic-preview" src="" alt="Profile Preview">
-                            </div>
-                            <div class="col-md-8">
-                              <div class="profile-upload-area" id="profileUploadArea">
-                                <i class="mdi mdi-cloud-upload" style="font-size: 48px; color: #4CAF50;"></i>
-                                <p class="mt-2">Cliquez ou glissez-déposez une photo</p>
-                                <p class="text-muted small">PNG, JPG jusqu'à 2MB</p>
-                                {{ form_widget(form.profilePic, {'attr': {
-                                  'class': 'd-none',
-                                  'id': 'profilePicInput',
-                                  'accept': 'image/*'
-                                }}) }}
-                                {{ form_errors(form.profilePic) }}
-                              </div>
-                            </div>
-                          </div>
+                    
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          {{ form_label(form.sexe, 'Sexe', {'label_attr': {'class': 'required-field'}}) }}
+                          {{ form_widget(form.sexe, {
+                            'attr': {
+                              'class': 'form-control'
+                            }
+                          }) }}
+                          {{ form_errors(form.sexe) }}
+                          <small class="form-text">Sélectionnez le sexe de l'utilisateur</small>
                         </div>
-
-                        <!-- Personal Information Section -->
-                        <div class="form-section">
-                          <h5 class="form-section-title">
-                            <i class="mdi mdi-account"></i> Informations personnelles
-                          </h5>
-                          <div class="row">
-                            <div class="col-md-6">
-                              <div class="form-group-animated">
-                                <label class="required-field">Nom</label>
-                                <div class="input-group">
-                                  <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="mdi mdi-account"></i></span>
-                                  </div>
-                                  {{ form_widget(form.nom, {'attr': {
-                                    'class': 'form-control',
-                                    'placeholder': 'Entrez le nom'
-                                  }}) }}
-                                </div>
-                                {{ form_errors(form.nom) }}
-                              </div>
-                            </div>
-                            <div class="col-md-6">
-                              <div class="form-group-animated">
-                                <label class="required-field">Prénom</label>
-                                <div class="input-group">
-                                  <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="mdi mdi-account-outline"></i></span>
-                                  </div>
-                                  {{ form_widget(form.prenom, {'attr': {
-                                    'class': 'form-control',
-                                    'placeholder': 'Entrez le prénom'
-                                  }}) }}
-                                </div>
-                                {{ form_errors(form.prenom) }}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="row">
-                            <div class="col-md-6">
-                              <div class="form-group-animated">
-                                <label class="required-field">Email</label>
-                                <div class="input-group">
-                                  <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="mdi mdi-email"></i></span>
-                                  </div>
-                                  {{ form_widget(form.email, {'attr': {
-                                    'class': 'form-control',
-                                    'placeholder': 'exemple@email.com'
-                                  }}) }}
-                                </div>
-                                {{ form_errors(form.email) }}
-                              </div>
-                            </div>
-                            <div class="col-md-6">
-                              <div class="form-group-animated">
-                                <label>Date de naissance</label>
-                                <div class="input-group">
-                                  <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="mdi mdi-calendar"></i></span>
-                                  </div>
-                                  {{ form_widget(form.DateDeNaissance, {'attr': {
-                                    'class': 'form-control'
-                                  }}) }}
-                                </div>
-                                {{ form_errors(form.DateDeNaissance) }}
-                              </div>
-                            </div>
-                          </div>
+                      </div>
+                      
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          {{ form_label(form.DateDeNaissance, 'Date de Naissance') }}
+                          {{ form_widget(form.DateDeNaissance, {
+                            'attr': {
+                              'class': 'form-control'
+                            }
+                          }) }}
+                          {{ form_errors(form.DateDeNaissance) }}
+                          <small class="form-text">Sélectionnez la date de naissance (format: JJ/MM/AAAA)</small>
                         </div>
-
-                        <!-- Academic Information Section -->
-                        <div class="form-section">
-                          <h5 class="form-section-title">
-                            <i class="mdi mdi-school"></i> Informations académiques
-                          </h5>
-                          <div class="row">
-                            <div class="col-md-6">
-                              <div class="form-group-animated">
-                                <label>Classe</label>
-                                <div class="input-group">
-                                  <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="mdi mdi-book-open-page-variant"></i></span>
-                                  </div>
-                                  {{ form_widget(form.classe, {'attr': {
-                                    'class': 'form-control'
-                                  }}) }}
-                                </div>
-                                {{ form_errors(form.classe) }}
-                              </div>
-                            </div>
-                            <div class="col-md-6">
-                              <div class="form-group-animated">
-                                <label>Spécialité future</label>
-                                <div class="input-group">
-                                  <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="mdi mdi-briefcase"></i></span>
-                                  </div>
-                                  {{ form_widget(form.specialiteFuture, {'attr': {
-                                    'class': 'form-control'
-                                  }}) }}
-                                </div>
-                                {{ form_errors(form.specialiteFuture) }}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Account Settings Section -->
-                        <div class="form-section">
-                          <h5 class="form-section-title">
-                            <i class="mdi mdi-account-cog"></i> Paramètres du compte
-                          </h5>
-                          <div class="row">
-                            <div class="col-md-6">
-                              <div class="form-group-animated">
-                                <label class="required-field">Sexe</label>
-                                <div class="input-group">
-                                  <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="mdi mdi-gender-male-female"></i></span>
-                                  </div>
-                                  {{ form_widget(form.sexe, {'attr': {
-                                    'class': 'form-control'
-                                  }}) }}
-                                </div>
-                                {{ form_errors(form.sexe) }}
-                              </div>
-                            </div>
-                            <div class="col-md-6">
-                              <div class="form-group-animated">
-                                <label class="required-field">Rôle</label>
-                                <div class="input-group">
-                                  <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="mdi mdi-shield-account"></i></span>
-                                  </div>
-                                  {{ form_widget(form.role, {'attr': {
-                                    'class': 'form-control'
-                                  }}) }}
-                                </div>
-                                {{ form_errors(form.role) }}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Password Section -->
-                        <div class="form-section">
-                          <h5 class="form-section-title">
-                            <i class="mdi mdi-lock"></i> Sécurité du compte
-                          </h5>
-                          <div class="row">
-                            <div class="col-md-6">
-                              <div class="form-group-animated">
-                                <label class="required-field">Mot de passe</label>
-                                <div class="input-group">
-                                  <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="mdi mdi-key"></i></span>
-                                  </div>
-                                  {{ form_widget(form.password, {'attr': {
-                                    'class': 'form-control',
-                                    'id': 'password',
-                                    'placeholder': 'Minimum 8 caractères'
-                                  }}) }}
-                                  <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                                      <i class="mdi mdi-eye"></i>
-                                    </button>
-                                  </div>
-                                </div>
-                                <div class="password-strength">
-                                  <div class="strength-bar" id="passwordStrength"></div>
-                                </div>
-                                <small class="text-muted">Utilisez au moins 8 caractères avec chiffres et lettres</small>
-                                {{ form_errors(form.password) }}
-                              </div>
-                            </div>
-                            <div class="col-md-6">
-                              <div class="form-group-animated">
-                                <label class="required-field">Confirmer le mot de passe</label>
-                                <div class="input-group">
-                                  <div class="input-group-prepend">
-                                    <span class="input-group-text"><i class="mdi mdi-key-change"></i></span>
-                                  </div>
-                                  <input type="password" class="form-control" id="confirmPassword" 
-                                         placeholder="Répétez le mot de passe" required>
-                                  <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
-                                      <i class="mdi mdi-eye"></i>
-                                    </button>
-                                  </div>
-                                </div>
-                                <div class="error-message" id="passwordError">Les mots de passe ne correspondent pas</div>
-                                <div class="success-check" id="passwordSuccess">
-                                  <i class="mdi mdi-check-circle"></i> Les mots de passe correspondent
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="form-section text-center">
-                          <div class="d-flex justify-content-center gap-3">
-                            <button type="submit" class="btn btn-submit btn-icon-text">
-                              <i class="mdi mdi-content-save btn-icon-prepend"></i>
-                              Enregistrer l'utilisateur
-                            </button>
-                            <button type="reset" class="btn btn-light btn-icon-text">
-                              <i class="mdi mdi-refresh btn-icon-prepend"></i>
-                              Réinitialiser
-                            </button>
-                            <a href="{{ path('app_user_show') }}" class="btn btn-outline-secondary btn-icon-text">
-                              <i class="mdi mdi-close btn-icon-prepend"></i>
-                              Annuler
-                            </a>
-                          </div>
-                        </div>
-
-                      {{ form_end(form) }}
+                      </div>
                     </div>
                   </div>
+                  
+                  <!-- Informations Académiques -->
+                  <div class="form-section">
+                    <h5 class="form-section-title">
+                      <i class="mdi mdi-school-outline"></i>
+                      Informations Académiques
+                    </h5>
+                    
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          {{ form_label(form.classe, 'Classe') }}
+                          {{ form_widget(form.classe, {
+                            'attr': {
+                              'class': 'form-control',
+                              'placeholder': 'Ex: 3ème année Informatique'
+                            }
+                          }) }}
+                          {{ form_errors(form.classe) }}
+                          <small class="form-text">La classe ou niveau académique actuel</small>
+                        </div>
+                      </div>
+                      
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          {{ form_label(form.specialiteFuture, 'Spécialité Future') }}
+                          {{ form_widget(form.specialiteFuture, {
+                            'attr': {
+                              'class': 'form-control',
+                              'placeholder': 'Ex: Génie Logiciel, Réseaux & Sécurité'
+                            }
+                          }) }}
+                          {{ form_errors(form.specialiteFuture) }}
+                          <small class="form-text">La spécialité envisagée ou actuelle</small>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          {{ form_label(form.role, 'Rôle', {'label_attr': {'class': 'required-field'}}) }}
+                          {{ form_widget(form.role, {
+                            'attr': {
+                              'class': 'form-control'
+                            }
+                          }) }}
+                          {{ form_errors(form.role) }}
+                          <small class="form-text">Détermine les permissions et droits d'accès de l'utilisateur</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Informations de Connexion -->
+                  <div class="form-section">
+                    <h5 class="form-section-title">
+                      <i class="mdi mdi-lock-outline"></i>
+                      Informations de Connexion
+                    </h5>
+                    
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          {{ form_label(form.email, 'Adresse Email', {'label_attr': {'class': 'required-field'}}) }}
+                          {{ form_widget(form.email, {
+                            'attr': {
+                              'class': 'form-control',
+                              'placeholder': 'exemple@esprit.tn'
+                            }
+                          }) }}
+                          {{ form_errors(form.email) }}
+                          <small class="form-text">Adresse email unique pour la connexion et la communication</small>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          {{ form_label(form.plainPassword, 'Mot de passe', {'label_attr': {'class': 'required-field'}}) }}
+                          {{ form_widget(form.plainPassword, {
+                            'attr': {
+                              'class': 'form-control',
+                              'placeholder': 'Minimum 8 caractères'
+                            }
+                          }) }}
+                          {{ form_errors(form.plainPassword) }}
+                          <small class="form-text">Mot de passe initial (minimum 8 caractères)</small>
+                        </div>
+                      </div>
+                      
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="required-field">Confirmer le mot de passe</label>
+                          <input type="password" class="form-control" placeholder="Retapez le mot de passe">
+                          <small class="form-text">Confirmez le mot de passe pour éviter les erreurs</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Photo de Profil -->
+                  <div class="form-section">
+                    <h5 class="form-section-title">
+                      <i class="mdi mdi-camera-outline"></i>
+                      Photo de Profil
+                    </h5>
+                    
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          {{ form_label(form.profilePic, 'Photo de profil') }}
+                          <div class="file-upload-wrapper">
+                            {{ form_widget(form.profilePic, {
+                              'attr': {
+                                'class': 'form-control'
+                              }
+                            }) }}
+                          </div>
+                          {{ form_errors(form.profilePic) }}
+                          <small class="form-text">Formats acceptés: JPG, PNG, GIF • Taille maximale: 5 MB</small>
+                        </div>
+                        
+                        {% if form.vars.data and form.vars.data.profilePic %}
+                          <div class="current-photo-section">
+                            <p>Photo actuelle:</p>
+                            <img src="{{ asset('uploads/profile_pics/' ~ form.vars.data.profilePic) }}" 
+                                 alt="Photo actuelle" 
+                                 class="img-thumbnail"
+                                 style="max-width: 150px;">
+                          </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Form Actions -->
+                  <div class="form-actions">
+                    <a href="{{ path('app_user_index') }}" class="btn btn-light">
+                      <i class="mdi mdi-arrow-left"></i> Annuler
+                    </a>
+                    <button type="submit" class="btn btn-gradient-primary">
+                      <i class="mdi mdi-content-save"></i> Enregistrer l'utilisateur
+                    </button>
+                  </div>
+                  
+                  {{ form_end(form) }}
                 </div>
               </div>
             </div>
           </div>
-          <!-- content-wrapper ends -->
+          
+          <!-- Footer -->
           <footer class="footer">
             <div class="d-sm-flex justify-content-center justify-content-sm-between">
-              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2024</span>
+              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                © 2024 ESPRIT École d'Ingénieurs. Tous droits réservés.
+              </span>
+              <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                Formulaire d'ajout d'utilisateur
+              </span>
             </div>
           </footer>
         </div>
       </div>
     </div>
-    <!-- plugins:js -->
+
+    <!-- Scripts -->
     <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
-    <!-- Custom js -->
     <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
     <script src="{{ asset('assets/js/misc.js') }}"></script>
     
-    <script>
-      // Profile picture preview
-      document.getElementById('profileUploadArea').addEventListener('click', function() {
-        document.getElementById('profilePicInput').click();
-      });
-
-      document.getElementById('profilePicInput').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            const preview = document.getElementById('profilePreview');
-            preview.src = e.target.result;
-            preview.style.display = 'block';
-            document.getElementById('profileUploadArea').style.borderStyle = 'solid';
-          }
-          reader.readAsDataURL(file);
-        }
-      });
-
-      // Drag and drop for profile picture
-      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        document.getElementById('profileUploadArea').addEventListener(eventName, preventDefaults, false);
-      });
-
-      function preventDefaults(e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-
-      ['dragenter', 'dragover'].forEach(eventName => {
-        document.getElementById('profileUploadArea').addEventListener(eventName, highlight, false);
-      });
-
-      ['dragleave', 'drop'].forEach(eventName => {
-        document.getElementById('profileUploadArea').addEventListener(eventName, unhighlight, false);
-      });
-
-      function highlight(e) {
-        document.getElementById('profileUploadArea').classList.add('highlight');
-      }
-
-      function unhighlight(e) {
-        document.getElementById('profileUploadArea').classList.remove('highlight');
-      }
-
-      document.getElementById('profileUploadArea').addEventListener('drop', handleDrop, false);
-
-      function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        document.getElementById('profilePicInput').files = files;
-        const event = new Event('change');
-        document.getElementById('profilePicInput').dispatchEvent(event);
-      }
-
-      // Password visibility toggle
-      document.getElementById('togglePassword').addEventListener('click', function() {
-        const passwordField = document.getElementById('password');
-        const icon = this.querySelector('i');
-        if (passwordField.type === 'password') {
-          passwordField.type = 'text';
-          icon.classList.remove('mdi-eye');
-          icon.classList.add('mdi-eye-off');
-        } else {
-          passwordField.type = 'password';
-          icon.classList.remove('mdi-eye-off');
-          icon.classList.add('mdi-eye');
-        }
-      });
-
-      document.getElementById('toggleConfirmPassword').addEventListener('click', function() {
-        const confirmField = document.getElementById('confirmPassword');
-        const icon = this.querySelector('i');
-        if (confirmField.type === 'password') {
-          confirmField.type = 'text';
-          icon.classList.remove('mdi-eye');
-          icon.classList.add('mdi-eye-off');
-        } else {
-          confirmField.type = 'password';
-          icon.classList.remove('mdi-eye-off');
-          icon.classList.add('mdi-eye');
-        }
-      });
-
-      // Password strength checker
-      document.getElementById('password').addEventListener('input', function() {
-        const password = this.value;
-        const strengthBar = document.getElementById('passwordStrength');
-        let strength = 0;
-        
-        if (password.length >= 8) strength++;
-        if (/[A-Z]/.test(password)) strength++;
-        if (/[0-9]/.test(password)) strength++;
-        if (/[^A-Za-z0-9]/.test(password)) strength++;
-        
-        let width = '0%';
-        let className = 'weak';
-        
-        if (strength === 1) {
-          width = '25%';
-          className = 'weak';
-        } else if (strength === 2) {
-          width = '50%';
-          className = 'medium';
-        } else if (strength === 3) {
-          width = '75%';
-          className = 'medium';
-        } else if (strength >= 4) {
-          width = '100%';
-          className = 'strong';
-        }
-        
-        strengthBar.style.width = width;
-        strengthBar.className = 'strength-bar ' + className;
-        
-        // Check password match
-        checkPasswordMatch();
-      });
-
-      // Password confirmation check
-      document.getElementById('confirmPassword').addEventListener('input', checkPasswordMatch);
-
-      function checkPasswordMatch() {
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        const errorElement = document.getElementById('passwordError');
-        const successElement = document.getElementById('passwordSuccess');
-        
-        if (confirmPassword === '') {
-          errorElement.style.display = 'none';
-          successElement.style.display = 'none';
-          return;
-        }
-        
-        if (password === confirmPassword) {
-          errorElement.style.display = 'none';
-          successElement.style.display = 'block';
-        } else {
-          errorElement.style.display = 'block';
-          successElement.style.display = 'none';
-        }
-      }
-
-      // Form validation
-      document.getElementById('userForm').addEventListener('submit', function(e) {
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        
-        if (password !== confirmPassword) {
-          e.preventDefault();
-          document.getElementById('passwordError').style.display = 'block';
-          document.getElementById('passwordSuccess').style.display = 'none';
-          document.getElementById('confirmPassword').focus();
-        }
-        
-        // Add animation to required fields
-        const requiredFields = document.querySelectorAll('[required]');
-        requiredFields.forEach(field => {
-          if (!field.value) {
-            field.style.borderColor = '#dc3545';
-            field.style.animation = 'shake 0.5s ease';
-            setTimeout(() => {
-              field.style.animation = '';
-            }, 500);
-          }
-        });
-      });
-
-      // Form field focus effects
-      const formInputs = document.querySelectorAll('.form-control, .form-select');
-      formInputs.forEach(input => {
-        input.addEventListener('focus', function() {
-          this.parentElement.parentElement.style.transform = 'scale(1.02)';
-        });
-        
-        input.addEventListener('blur', function() {
-          this.parentElement.parentElement.style.transform = 'scale(1)';
-        });
-      });
-    </script>
+    
   </body>
 </html>
