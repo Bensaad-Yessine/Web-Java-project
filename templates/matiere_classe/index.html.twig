@@ -1,39 +1,882 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}MatiereClasse index{% endblock %}
+{% block title %}Gestion Matières-Classes - ESPRIT{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+<link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+<style>
+    .stat-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+        margin: 0 auto;
+    }
+    .stat-count {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    .stat-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .card-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .card-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .card-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .card-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .card-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+    
+    .badge-custom {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    
+    .badge-coefficient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .badge-charge {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+    
+    .badge-complexite {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+    }
+    
+    .badge-classe {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+    }
+    
+    .action-buttons .btn {
+        padding: 5px 10px;
+        margin: 0 2px;
+    }
+    
+    .search-box {
+        max-width: 300px;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+    }
+    
+    .empty-state i {
+        font-size: 60px;
+        color: #dee2e6;
+        margin-bottom: 20px;
+    }
+    
+    .entity-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+    }
+    
+    .complexity-bar {
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 5px;
+    }
+    
+    .complexity-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.3s ease;
+    }
+    
+    .complexity-low { background: #43e97b; }
+    .complexity-medium { background: #4facfe; }
+    .complexity-high { background: #f093fb; }
+    .complexity-very-high { background: #f5576c; }
+    
+    .charge-indicator {
+        display: inline-flex;
+        align-items: center;
+    }
+    
+    .charge-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 8px;
+    }
+    
+    .charge-light { background: #43e97b; }
+    .charge-medium { background: #4facfe; }
+    .charge-heavy { background: #f5576c; }
+    
+    .filter-buttons {
+        margin-bottom: 20px;
+    }
+    
+    .filter-btn {
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+</style>
+{% endblock %}
 
 {% block body %}
-    <h1>MatiereClasse index</h1>
+<div class="container-scroller">
+    <!-- Sidebar -->
+    <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+            <a class="sidebar-brand brand-logo" href="{{ path('app_matiere_classe_index') }}">
+                <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+            </a>
+            <a class="sidebar-brand brand-logo-mini" href="{{ path('app_matiere_classe_index') }}">
+                <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+            </a>
+        </div>
+        <ul class="nav">
+            <li class="nav-item profile">
+                <div class="profile-desc">
+                    <div class="profile-pic">
+                        <div class="count-indicator">
+                            <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                            <span class="count bg-success"></span>
+                        </div>
+                        <div class="profile-name">
+                            <h5 class="mb-0 font-weight-normal">Administrateur</h5>
+                            <span>ESPRIT</span>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item nav-category">
+                <span class="nav-link">Navigation</span>
+            </li>
+            
+            <!-- Dashboard -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_user_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-speedometer"></i>
+                    </span>
+                    <span class="menu-title">Dashboard</span>
+                </a>
+            </li>
+            
+            <!-- Utilisateurs -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_user_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-account-group"></i>
+                    </span>
+                    <span class="menu-title">Utilisateurs</span>
+                </a>
+            </li>
+            
+            <!-- Matières -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="#">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-book-open-page-variant"></i>
+                    </span>
+                    <span class="menu-title">Matieres</span>
+                </a>
+            </li>
+            
+            <!-- Classes -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_classe_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-school"></i>
+                    </span>
+                    <span class="menu-title">Classes</span>
+                </a>
+            </li>
+            
+            <!-- Matières-Classes -->
+            <li class="nav-item menu-items active">
+                <a class="nav-link" href="{{ path('app_matiere_classe_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-book-multiple"></i>
+                    </span>
+                    <span class="menu-title">Matieres-Classes</span>
+                </a>
+            </li>
+            
+            <!-- Salles -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="#">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-office-building"></i>
+                    </span>
+                    <span class="menu-title">Salles</span>
+                </a>
+            </li>
+            
+            <!-- Séances -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="#">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-calendar-clock"></i>
+                    </span>
+                    <span class="menu-title">Séances</span>
+                </a>
+            </li>
+            
+            <!-- Groupes -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="#">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-account-multiple"></i>
+                    </span>
+                    <span class="menu-title">Groupes</span>
+                </a>
+            </li>
+            
+            <!-- Tâches -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="#">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+                    </span>
+                    <span class="menu-title">Tâches</span>
+                </a>
+            </li>
+            
+            <!-- Alertes -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="#">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-alert-circle-outline"></i>
+                    </span>
+                    <span class="menu-title">Alertes</span>
+                </a>
+            </li>
+            
+            <!-- Exercices de santé -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="#">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-heart-pulse"></i>
+                    </span>
+                    <span class="menu-title">Exercices de santé</span>
+                </a>
+            </li>
+            
+            <!-- Logout -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="#">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-logout text-danger"></i>
+                    </span>
+                    <span class="menu-title text-danger">Déconnexion</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Coefficient</th>
-                <th>Chargehoraire</th>
-                <th>Scorecomplexite</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for matiere_classe in matiere_classes %}
-            <tr>
-                <td>{{ matiere_classe.id }}</td>
-                <td>{{ matiere_classe.coefficient }}</td>
-                <td>{{ matiere_classe.chargehoraire }}</td>
-                <td>{{ matiere_classe.scorecomplexite }}</td>
-                <td>
-                    <a href="{{ path('app_matiere_classe_show', {'id': matiere_classe.id}) }}">show</a>
-                    <a href="{{ path('app_matiere_classe_edit', {'id': matiere_classe.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <!-- Main Content -->
+    <div class="container-fluid page-body-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+            <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+                <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+            </div>
+            <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+                <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                    <span class="mdi mdi-menu"></span>
+                </button>
+                <ul class="navbar-nav w-100">
+                    <li class="nav-item w-100">
+                        <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                            <input type="text" class="form-control" placeholder="Rechercher une matière-classe...">
+                        </form>
+                    </li>
+                </ul>
+                <ul class="navbar-nav navbar-nav-right">
+                    <li class="nav-item dropdown border-left">
+                        <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                            <i class="mdi mdi-bell"></i>
+                            <span class="count bg-danger">3</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                            <h6 class="p-3 mb-0">Notifications</h6>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item preview-item">
+                                <div class="preview-thumbnail">
+                                    <div class="preview-icon bg-warning rounded-circle">
+                                        <i class="mdi mdi-book-multiple"></i>
+                                    </div>
+                                </div>
+                                <div class="preview-item-content">
+                                    <p class="preview-subject mb-1">Nouvelle affectation</p>
+                                    <p class="text-muted ellipsis mb-0">Matière affectée à une classe</p>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                            <div class="navbar-profile">
+                                <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                                <p class="mb-0 d-none d-sm-block navbar-profile-name">Admin ESPRIT</p>
+                                <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                            </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                            <h6 class="p-3 mb-0">Profil Administrateur</h6>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item preview-item" href="#">
+                                <div class="preview-thumbnail">
+                                    <div class="preview-icon bg-dark rounded-circle">
+                                        <i class="mdi mdi-logout text-danger"></i>
+                                    </div>
+                                </div>
+                                <div class="preview-item-content">
+                                    <p class="preview-subject mb-1">Déconnexion</p>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
 
-    <a href="{{ path('app_matiere_classe_new') }}">Create new</a>
+        <!-- Content -->
+        <div class="main-panel">
+            <div class="content-wrapper">
+                <!-- Header -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-header">
+                            <h3 class="page-title">
+                                <span class="page-title-icon bg-gradient-primary text-white me-2">
+                                    <i class="mdi mdi-book-multiple"></i>
+                                </span> 
+                                Gestion des Matières-Classes
+                            </h3>
+                            <nav aria-label="breadcrumb">
+                                <ul class="breadcrumb">
+                                    <li class="breadcrumb-item active" aria-current="page">
+                                        <span></span>Affectation des matières aux classes
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Statistics -->
+                <div class="row">
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            <h3 class="mb-0 stat-count">{{ matiere_classes|length }}</h3>
+                                            <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(2, 10) }}%</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="stat-icon card-1">
+                                            <i class="mdi mdi-book-multiple"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="stat-label">Total Affectations</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            {% set highComplexity = matiere_classes|filter(mc => mc.scorecomplexite > 7)|length %}
+                                            <h3 class="mb-0 stat-count">{{ highComplexity }}</h3>
+                                            <p class="text-warning ms-2 mb-0 font-weight-medium">Haute</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="stat-icon card-2">
+                                            <i class="mdi mdi-chart-line"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="stat-label">Haute Complexité</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            {% set totalHours = matiere_classes|reduce((sum, mc) => sum + mc.chargehoraire, 0) %}
+                                            <h3 class="mb-0 stat-count">{{ totalHours }}</h3>
+                                            <p class="text-info ms-2 mb-0 font-weight-medium">heures</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="stat-icon card-3">
+                                            <i class="mdi mdi-clock-outline"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="stat-label">Charge Totale (h)</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            {% set avgCoefficient = matiere_classes|length > 0 ? (matiere_classes|reduce((sum, mc) => sum + mc.coefficient, 0) / matiere_classes|length)|number_format(1) : 0 %}
+                                            <h3 class="mb-0 stat-count">{{ avgCoefficient }}</h3>
+                                            <p class="text-success ms-2 mb-0 font-weight-medium">moyenne</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="stat-icon card-4">
+                                            <i class="mdi mdi-weight"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="stat-label">Coefficient Moyen</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- MatiereClasses Table -->
+                <div class="row">
+                    <div class="col-12 grid-margin">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+                                    <h4 class="card-title">📚 Liste des Affectations Matières-Classes</h4>
+                                    <div class="d-flex">
+                                        <form method="GET" class="d-flex gap-2">
+                                            <input type="text" class="form-control" placeholder="Rechercher..." name="search" value="{{ search }}">
+                                            <button type="submit" class="btn btn-gradient-primary">
+                                                <i class="mdi mdi-magnify"></i> Rechercher
+                                            </button>
+                                            {% if search %}
+                                                <a href="{{ path('app_matiere_classe_index') }}" class="btn btn-secondary">
+                                                    <i class="mdi mdi-close"></i> Réinitialiser
+                                                </a>
+                                            {% endif %}
+                                        </form>
+                                        <a href="{{ path('app_matiere_classe_new') }}" class="btn btn-gradient-primary btn-icon-text">
+                                            <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
+                                            Nouvelle Affectation
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Filter Buttons -->
+                                <div class="filter-buttons mb-4">
+                                    <button class="btn btn-outline-primary filter-btn active" data-filter="all">
+                                        Tous ({{ matiere_classes|length }})
+                                    </button>
+                                    <button class="btn btn-outline-info filter-btn" data-filter="complexity-low">
+                                        Complexité Faible
+                                    </button>
+                                    <button class="btn btn-outline-warning filter-btn" data-filter="complexity-medium">
+                                        Complexité Moyenne
+                                    </button>
+                                    <button class="btn btn-outline-danger filter-btn" data-filter="complexity-high">
+                                        Complexité Élevée
+                                    </button>
+                                </div>
+
+                                {% if matiere_classes is empty %}
+                                    <div class="empty-state">
+                                        <i class="mdi mdi-book-multiple-outline"></i>
+                                        <h4 class="text-muted">Aucune affectation trouvée</h4>
+                                        <p class="text-muted mb-4">Commencez par affecter une matière à une classe</p>
+                                        <a href="{{ path('app_matiere_classe_new') }}" class="btn btn-gradient-primary">
+                                            <i class="mdi mdi-plus-circle"></i>
+                                            Créer la première affectation
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="table-responsive">
+                                        <table class="table table-hover" id="matiereClassesTable">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>
+                                                        <a href="?{{ app.request.queryString ? app.request.queryString ~ '&' : '' }}sort=classe_{{ sort == 'classe_asc' ? 'desc' : 'asc' }}" class="text-decoration-none">
+                                                            Classe
+                                                            {% if sort == 'classe_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'classe_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
+                                                        </a>
+                                                    </th>
+                                                    <th>
+                                                        <a href="?{{ app.request.queryString ? app.request.queryString ~ '&' : '' }}sort=coefficient_{{ sort == 'coefficient_asc' ? 'desc' : 'asc' }}" class="text-decoration-none">
+                                                            Coefficient
+                                                            {% if sort == 'coefficient_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'coefficient_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
+                                                        </a>
+                                                    </th>
+                                                    <th>
+                                                        <a href="?{{ app.request.queryString ? app.request.queryString ~ '&' : '' }}sort=chargehoraire_{{ sort == 'chargehoraire_asc' ? 'desc' : 'asc' }}" class="text-decoration-none">
+                                                            Charge Horaire
+                                                            {% if sort == 'chargehoraire_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'chargehoraire_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
+                                                        </a>
+                                                    </th>
+                                                    <th>
+                                                        <a href="?{{ app.request.queryString ? app.request.queryString ~ '&' : '' }}sort=scorecomplexite_{{ sort == 'scorecomplexite_asc' ? 'desc' : 'asc' }}" class="text-decoration-none">
+                                                            Score Complexité
+                                                            {% if sort == 'scorecomplexite_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'scorecomplexite_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
+                                                        </a>
+                                                    </th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for matiere_classe in matiere_classes %}
+                                                    {% set complexityClass = '' %}
+                                                    {% set complexityWidth = 0 %}
+                                                    {% if matiere_classe.scorecomplexite <= 3 %}
+                                                        {% set complexityClass = 'complexity-low' %}
+                                                        {% set complexityWidth = matiere_classe.scorecomplexite * 33.33 %}
+                                                    {% elseif matiere_classe.scorecomplexite <= 6 %}
+                                                        {% set complexityClass = 'complexity-medium' %}
+                                                        {% set complexityWidth = matiere_classe.scorecomplexite * 16.67 %}
+                                                    {% elseif matiere_classe.scorecomplexite <= 8 %}
+                                                        {% set complexityClass = 'complexity-high' %}
+                                                        {% set complexityWidth = matiere_classe.scorecomplexite * 12.5 %}
+                                                    {% else %}
+                                                        {% set complexityClass = 'complexity-very-high' %}
+                                                        {% set complexityWidth = matiere_classe.scorecomplexite * 10 %}
+                                                    {% endif %}
+                                                    
+                                                    {% set chargeClass = '' %}
+                                                    {% if matiere_classe.chargehoraire <= 20 %}
+                                                        {% set chargeClass = 'charge-light' %}
+                                                    {% elseif matiere_classe.chargehoraire <= 40 %}
+                                                        {% set chargeClass = 'charge-medium' %}
+                                                    {% else %}
+                                                        {% set chargeClass = 'charge-heavy' %}
+                                                    {% endif %}
+                                                    
+                                                    <tr class="matiere-class-row" 
+                                                        data-complexity="{{ matiere_classe.scorecomplexite }}"
+                                                        data-charge="{{ matiere_classe.chargehoraire }}">
+                                                        <td>
+                                                            <span class="text-muted">#{{ matiere_classe.id }}</span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="entity-avatar me-3">
+                                                                    <i class="mdi mdi-school"></i>
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="mb-0 font-weight-bold">
+                                                                        {% if matiere_classe.classe %}
+                                                                            Classe #{{ matiere_classe.classe.id }}
+                                                                        {% else %}
+                                                                            <span class="text-muted">Non assigné</span>
+                                                                        {% endif %}
+                                                                    </h6>
+                                                                    <small class="text-muted">
+                                                                        {% if matiere_classe.classe and matiere_classe.classe.nom %}
+                                                                            {{ matiere_classe.classe.nom }}
+                                                                        {% endif %}
+                                                                    </small>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge-custom badge-coefficient">
+                                                                <i class="mdi mdi-weight me-1"></i>
+                                                                {{ matiere_classe.coefficient }}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div class="charge-indicator">
+                                                                <span class="charge-dot {{ chargeClass }}"></span>
+                                                                <span>{{ matiere_classe.chargehoraire }}h</span>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div>
+                                                                <span>{{ matiere_classe.scorecomplexite }}/10</span>
+                                                                <div class="complexity-bar">
+                                                                    <div class="complexity-fill {{ complexityClass }}" 
+                                                                         style="width: {{ complexityWidth }}%"></div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="action-buttons">
+                                                                <a href="{{ path('app_matiere_classe_show', {'id': matiere_classe.id}) }}" 
+                                                                   class="btn btn-info btn-sm btn-icon"
+                                                                   title="Voir détails">
+                                                                    <i class="mdi mdi-eye"></i>
+                                                                </a>
+                                                                <a href="{{ path('app_matiere_classe_edit', {'id': matiere_classe.id}) }}" 
+                                                                   class="btn btn-warning btn-sm btn-icon"
+                                                                   title="Modifier">
+                                                                    <i class="mdi mdi-pencil"></i>
+                                                                </a>
+                                                                <form method="post" action="{{ path('app_matiere_classe_delete', {'id': matiere_classe.id}) }}" 
+                                                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette affectation ?');"
+                                                                      style="display: inline;">
+                                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ matiere_classe.id) }}">
+                                                                    <button type="submit" 
+                                                                            class="btn btn-danger btn-sm btn-icon"
+                                                                            title="Supprimer">
+                                                                        <i class="mdi mdi-delete"></i>
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    <!-- Quick Stats -->
+                                    <div class="row mt-4">
+                                        <div class="col-md-12">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">📊 Vue d'ensemble des affectations</h5>
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="me-3">
+                                                                    <span class="badge-custom badge-coefficient">
+                                                                        Total
+                                                                    </span>
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="mb-0">{{ matiere_classes|length }} affectations</h6>
+                                                                    <small class="text-muted">Actives</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="me-3">
+                                                                    <span class="badge-custom" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                                                                        Heures
+                                                                    </span>
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="mb-0">{{ totalHours }}h</h6>
+                                                                    <small class="text-muted">Charge totale</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="me-3">
+                                                                    <span class="badge-custom" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+                                                                        Moyenne
+                                                                    </span>
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="mb-0">{{ avgCoefficient }}</h6>
+                                                                    <small class="text-muted">Coefficient moyen</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="me-3">
+                                                                    <span class="badge-custom" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
+                                                                        Complexe
+                                                                    </span>
+                                                                </div>
+                                                                <div>
+                                                                    <h6 class="mb-0">{{ highComplexity }}</h6>
+                                                                    <small class="text-muted">Matières complexes</small>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                    <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                        © 2024 ESPRIT École d'Ingénieurs. Tous droits réservés.
+                    </span>
+                    <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                        Gestion Matières-Classes - {{ matiere_classes|length }} affectations actives
+                    </span>
+                </div>
+            </footer>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+<script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+<script src="{{ asset('assets/js/misc.js') }}"></script>
+
+<script>
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#matiereClassesTable tbody tr');
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+    
+    // Filter functionality
+    document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            const filter = this.getAttribute('data-filter');
+            const rows = document.querySelectorAll('.matiere-class-row');
+            
+            rows.forEach(row => {
+                const complexity = parseInt(row.getAttribute('data-complexity'));
+                const charge = parseInt(row.getAttribute('data-charge'));
+                
+                let show = false;
+                
+                switch(filter) {
+                    case 'all':
+                        show = true;
+                        break;
+                    case 'complexity-low':
+                        show = complexity <= 3;
+                        break;
+                    case 'complexity-medium':
+                        show = complexity > 3 && complexity <= 6;
+                        break;
+                    case 'complexity-high':
+                        show = complexity > 6;
+                        break;
+                    default:
+                        show = true;
+                }
+                
+                row.style.display = show ? '' : 'none';
+            });
+        });
+    });
+    
+    // Auto-hide alerts after 5 seconds
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            const closeBtn = alert.querySelector('.close');
+            if (closeBtn) closeBtn.click();
+        });
+    }, 5000);
+    
+    // Sort table by column
+    document.querySelectorAll('#matiereClassesTable th').forEach((th, index) => {
+        th.addEventListener('click', () => {
+            const table = th.closest('table');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            rows.sort((a, b) => {
+                const aText = a.children[index].textContent.trim();
+                const bText = b.children[index].textContent.trim();
+                
+                if (index === 0 || index === 5) { // ID or Actions column
+                    return aText.localeCompare(bText, undefined, { numeric: true });
+                }
+                
+                // For numeric columns
+                if (index === 2 || index === 3 || index === 4) { // Coefficient, Charge, Complexity
+                    const aNum = parseFloat(aText) || 0;
+                    const bNum = parseFloat(bText) || 0;
+                    return aNum - bNum;
+                }
+                
+                return aText.localeCompare(bText);
+            });
+            
+            // Clear and re-add sorted rows
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+        });
+    });
+    
+    // Animate complexity bars on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const complexityBars = document.querySelectorAll('.complexity-fill');
+        complexityBars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
+        });
+    });
+</script>
 {% endblock %}

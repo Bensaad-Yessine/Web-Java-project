@@ -16,28 +16,39 @@ class ClasseRepository extends ServiceEntityRepository
         parent::__construct($registry, Classe::class);
     }
 
-    //    /**
-    //     * @return Classe[] Returns an array of Classe objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Recherche et tri dynamique
+     *
+     * @param string|null $nom
+     * @param string|null $sortField (nom | niveau | anneeuniversitaire)
+     * @param string|null $sortOrder (asc | desc)
+     * @return Classe[]
+     */
+    public function searchAndSort(?string $nom, ?string $sortField, ?string $sortOrder): array
+    {
+        $qb = $this->createQueryBuilder('c');
 
-    //    public function findOneBySomeField($value): ?Classe
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        // 🔍 Recherche par nom
+        if ($nom) {
+            $qb->andWhere('c.nom LIKE :nom')
+               ->setParameter('nom', '%'.$nom.'%');
+        }
+
+        // 🔃 Tri dynamique
+        $allowedFields = [
+            'nom' => 'c.nom',
+            'niveau' => 'c.niveau',
+            'anneeuniversitaire' => 'c.anneeuniversitaire' // <-- met ici exactement le nom de ton attribut dans l'entité
+        ];
+
+        $allowedOrder = ['asc', 'desc'];
+
+        if (isset($allowedFields[$sortField]) && in_array(strtolower($sortOrder), $allowedOrder)) {
+            $qb->orderBy($allowedFields[$sortField], strtoupper($sortOrder));
+        } else {
+            $qb->orderBy('c.id', 'DESC'); // tri par défaut
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }
