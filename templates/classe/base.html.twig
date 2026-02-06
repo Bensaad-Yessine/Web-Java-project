@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}PIdev{% endblock %}</title>
+
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+
+    {% block stylesheets %}{% endblock %}
+</head>
+
+<body>
+
+<div class="container">
+    {% block body %}{% endblock %}
+</div>
+
+{% block javascripts %}{% endblock %}
+
+</body>
+</html>

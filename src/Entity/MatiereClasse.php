@@ -14,38 +14,33 @@ class MatiereClasse
     #[ORM\Column]
     private ?int $id = null;
 
-    
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column]
     #[Assert\NotNull(message: "Le coefficient est obligatoire.")]
-    #[Assert\Type(type: 'numeric', message: "Le coefficient doit être un nombre.")]
-    #[Assert\PositiveOrZero(message: "Le coefficient doit être supérieur ou égal à 0.")]
+    #[Assert\Type(type: 'float', message: "Le coefficient doit être un nombre.")]
+    #[Assert\Positive(message: "Le coefficient doit être supérieur à 0.")]
     private ?float $coefficient = null;
 
-   
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column]
     #[Assert\NotNull(message: "La charge horaire est obligatoire.")]
     #[Assert\Type(type: 'integer', message: "La charge horaire doit être un entier.")]
-    #[Assert\PositiveOrZero(message: "La charge horaire doit être supérieur ou égal à 0.")]
+    #[Assert\Positive(message: "La charge horaire doit être supérieure à 0.")]
     private ?int $chargehoraire = null;
 
-   
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column]
     #[Assert\NotNull(message: "Le score de complexité est obligatoire.")]
-    #[Assert\Type(type: 'numeric', message: "Le score de complexité doit être un nombre.")]
+    #[Assert\Type(type: 'integer', message: "Le score de complexité doit être un entier.")]
     #[Assert\Range(
-        min: 0,
+        min: 1,
         max: 10,
         notInRangeMessage: "Le score de complexité doit être compris entre {{ min }} et {{ max }}."
     )]
-    private ?float $scorecomplexite = null;
+    private ?int $scorecomplexite = null;
 
-   
-    #[ORM\ManyToOne(inversedBy: 'matiereclasses')]
+    #[ORM\ManyToOne(inversedBy: 'matiereClasses')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: "Vous devez sélectionner une classe.")]
     private ?Classe $classe = null;
 
-  
     public function getId(): ?int
     {
         return $this->id;
@@ -56,7 +51,7 @@ class MatiereClasse
         return $this->coefficient;
     }
 
-    public function setCoefficient(?float $coefficient): static
+    public function setCoefficient(float $coefficient): static
     {
         $this->coefficient = $coefficient;
         return $this;
@@ -67,18 +62,18 @@ class MatiereClasse
         return $this->chargehoraire;
     }
 
-    public function setChargehoraire(?int $chargehoraire): static
+    public function setChargehoraire(int $chargehoraire): static
     {
         $this->chargehoraire = $chargehoraire;
         return $this;
     }
 
-    public function getScorecomplexite(): ?float
+    public function getScorecomplexite(): ?int
     {
         return $this->scorecomplexite;
     }
 
-    public function setScorecomplexite(?float $scorecomplexite): static
+    public function setScorecomplexite(int $scorecomplexite): static
     {
         $this->scorecomplexite = $scorecomplexite;
         return $this;

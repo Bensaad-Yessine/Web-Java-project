@@ -15,10 +15,26 @@ use Symfony\Component\Routing\Attribute\Route;
 final class MatiereClasseController extends AbstractController
 {
     #[Route(name: 'app_matiere_classe_index', methods: ['GET'])]
-    public function index(MatiereClasseRepository $matiereClasseRepository): Response
+    public function index(Request $request, MatiereClasseRepository $matiereClasseRepository): Response
     {
+        // 🔍 Recherche
+        $search = $request->query->get('search');
+
+        // 🔃 Tri
+        $sortParam = $request->query->get('sort'); // ex: coefficient_asc
+        $sortField = null;
+        $sortOrder = null;
+        if ($sortParam) {
+            [$sortField, $sortOrder] = explode('_', $sortParam);
+        }
+
+        // 📦 Récupération des matières de classe
+        $matiereClasses = $matiereClasseRepository->searchAndSort($search, $sortField, $sortOrder);
+
         return $this->render('matiere_classe/index.html.twig', [
-            'matiere_classes' => $matiereClasseRepository->findAll(),
+            'matiere_classes' => $matiereClasses,
+            'search' => $search,
+            'sort' => $sortParam
         ]);
     }
 

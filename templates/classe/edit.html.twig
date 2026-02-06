@@ -1,13 +1,845 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Classe{% endblock %}
+{% block title %}Modifier Classe - ESPRIT{% endblock %}
 
 {% block body %}
-    <h1>Edit Classe</h1>
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ESPRIT - Modifier Classe</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+    <style>
+      .form-card {
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        border: none;
+        margin-bottom: 30px;
+      }
+      
+      .form-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        color: white;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin-bottom: 20px;
+      }
+      
+      .form-section-title {
+        color: #2c3e50;
+        font-weight: 600;
+        padding-bottom: 10px;
+        margin-bottom: 25px;
+        border-bottom: 2px solid #f0f0f0;
+      }
+      
+      .form-group-custom {
+        margin-bottom: 25px;
+      }
+      
+      .form-label-custom {
+        font-weight: 600;
+        color: #34495e;
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+      }
+      
+      .form-control-custom {
+        border: 2px solid #e8e8e8;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+      }
+      
+      .form-control-custom:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      }
+      
+      .form-helper {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin-top: 5px;
+      }
+      
+      .btn-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      
+      .btn-gradient:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        color: white;
+      }
+      
+      .current-data-card {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        border-radius: 12px;
+        color: white;
+        padding: 25px;
+        margin-bottom: 25px;
+      }
+      
+      .current-data-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+      }
+      
+      .current-data-item {
+        margin-bottom: 10px;
+        padding-left: 25px;
+        position: relative;
+      }
+      
+      .current-data-label {
+        font-weight: 600;
+        color: rgba(255,255,255,0.9);
+        min-width: 180px;
+        display: inline-block;
+      }
+      
+      .current-data-value {
+        color: white;
+        font-weight: 500;
+      }
+      
+      .current-data-item:before {
+        content: "•";
+        position: absolute;
+        left: 10px;
+        color: white;
+        font-size: 1.2rem;
+      }
+      
+      .input-group-custom .input-group-text {
+        background: #f8f9fa;
+        border: 2px solid #e8e8e8;
+        border-right: none;
+        border-radius: 8px 0 0 8px;
+      }
+      
+      .input-group-custom .form-control {
+        border-left: none;
+        border-radius: 0 8px 8px 0;
+      }
+      
+      .validation-error {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: block;
+      }
+      
+      .breadcrumb-custom {
+        background: transparent;
+        padding: 0;
+      }
+      
+      .breadcrumb-custom .breadcrumb-item a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 500;
+      }
+      
+      .breadcrumb-custom .breadcrumb-item.active {
+        color: #7f8c8d;
+        font-weight: 500;
+      }
+      
+      .action-buttons .btn {
+        padding: 10px 20px;
+        font-weight: 500;
+      }
+      
+      .btn-outline-custom {
+        border: 2px solid #667eea;
+        color: #667eea;
+        background: transparent;
+      }
+      
+      .btn-outline-custom:hover {
+        background: #667eea;
+        color: white;
+      }
+      
+      .info-box {
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+      
+      .info-box i {
+        color: #2196f3;
+      }
+      
+      .warning-box {
+        background: #fff3e0;
+        border-left: 4px solid #ff9800;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+      }
+      
+      .warning-box i {
+        color: #ff9800;
+      }
+      
+      .class-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-right: 5px;
+      }
+      
+      .badge-niveau {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+      }
+      
+      .badge-annee {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-scroller">
+      <!-- Sidebar -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+          <a class="sidebar-brand brand-logo" href="{{ path('app_classe_index') }}">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </a>
+          <a class="sidebar-brand brand-logo-mini" href="{{ path('app_classe_index') }}">
+            <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+          </a>
+        </div>
+        <ul class="nav">
+          <li class="nav-item profile">
+            <div class="profile-desc">
+              <div class="profile-pic">
+                <div class="count-indicator">
+                  <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  <span class="count bg-success"></span>
+                </div>
+                <div class="profile-name">
+                  <h5 class="mb-0 font-weight-normal">Administrateur</h5>
+                  <span>ESPRIT</span>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Navigation</span>
+          </li>
+          
+          <!-- Dashboard -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_user_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-speedometer"></i>
+              </span>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          
+          <!-- Utilisateurs -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_user_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-group"></i>
+              </span>
+              <span class="menu-title">Utilisateurs</span>
+            </a>
+          </li>
+          
+          <!-- Matières -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-book-open-page-variant"></i>
+              </span>
+              <span class="menu-title">Matieres</span>
+            </a>
+          </li>
+          
+          <!-- Classes -->
+          <li class="nav-item menu-items active">
+            <a class="nav-link" href="{{ path('app_classe_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-school"></i>
+              </span>
+              <span class="menu-title">Classes</span>
+            </a>
+          </li>
+          
+          <!-- Salles -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-office-building"></i>
+              </span>
+              <span class="menu-title">Salles</span>
+            </a>
+          </li>
+          
+          <!-- Séances -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-calendar-clock"></i>
+              </span>
+              <span class="menu-title">Séances</span>
+            </a>
+          </li>
+          
+          <!-- Groupes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-multiple"></i>
+              </span>
+              <span class="menu-title">Groupes</span>
+            </a>
+          </li>
+          
+          <!-- Tâches -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+              </span>
+              <span class="menu-title">Tâches</span>
+            </a>
+          </li>
+          
+          <!-- Alertes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-alert-circle-outline"></i>
+              </span>
+              <span class="menu-title">Alertes</span>
+            </a>
+          </li>
+          
+          <!-- Exercices de santé -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-heart-pulse"></i>
+              </span>
+              <span class="menu-title">Exercices de santé</span>
+            </a>
+          </li>
+          
+          <!-- Logout -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-logout text-danger"></i>
+              </span>
+              <span class="menu-title text-danger">Déconnexion</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
 
-    {{ include('classe/_form.html.twig', {'button_label': 'Update'}) }}
+      <!-- Main Content -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+          <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </div>
+          <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+              <span class="mdi mdi-menu"></span>
+            </button>
+            <ul class="navbar-nav w-100">
+              <li class="nav-item w-100">
+                <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                  <input type="text" class="form-control" placeholder="Rechercher une classe...">
+                </form>
+              </li>
+            </ul>
+            <ul class="navbar-nav navbar-nav-right">
+              <li class="nav-item dropdown border-left">
+                <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                  <i class="mdi mdi-bell"></i>
+                  <span class="count bg-danger">2</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                  <h6 class="p-3 mb-0">Notifications</h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-warning rounded-circle">
+                        <i class="mdi mdi-school"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Modification en cours</p>
+                      <p class="text-muted ellipsis mb-0">Vous modifiez une classe</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+              
+              <li class="nav-item dropdown">
+                <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                  <div class="navbar-profile">
+                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Admin ESPRIT</p>
+                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                  </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                  <h6 class="p-3 mb-0">Profil Administrateur</h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item" href="#">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-logout text-danger"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Déconnexion</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
 
-    <a href="{{ path('app_classe_index') }}">back to list</a>
+        <!-- Content -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <!-- Header -->
+            <div class="row">
+              <div class="col-12">
+                <div class="page-header">
+                  <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-warning text-white me-2">
+                      <i class="mdi mdi-pencil-circle"></i>
+                    </span> 
+                    Modifier la Classe
+                  </h3>
+                  <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb breadcrumb-custom">
+                      <li class="breadcrumb-item"><a href="{{ path('app_classe_index') }}">Classes</a></li>
+                      <li class="breadcrumb-item"><a href="{{ path('app_classe_show', {'id': classe.id}) }}">{{ classe.nom }}</a></li>
+                      <li class="breadcrumb-item active">Modifier</li>
+                    </ol>
+                  </nav>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Current Data Preview -->
+            <div class="row">
+              <div class="col-12">
+                <div class="current-data-card">
+                  <h5 class="current-data-title">
+                    <i class="mdi mdi-information-outline me-2"></i>
+                    Données actuelles de la classe
+                  </h5>
+                  <div class="current-data-item">
+                    <span class="current-data-label">ID Classe :</span>
+                    <span class="current-data-value">#{{ classe.id }}</span>
+                  </div>
+                  <div class="current-data-item">
+                    <span class="current-data-label">Nom :</span>
+                    <span class="current-data-value">{{ classe.nom }}</span>
+                  </div>
+                  <div class="current-data-item">
+                    <span class="current-data-label">Niveau :</span>
+                    <span class="current-data-value">
+                      {% if classe.niveau %}
+                        <span class="class-badge badge-niveau">
+                          <i class="mdi mdi-account-group me-1"></i>
+                          {{ classe.niveau }}
+                        </span>
+                      {% else %}
+                        Non défini
+                      {% endif %}
+                    </span>
+                  </div>
+                  <div class="current-data-item">
+                    <span class="current-data-label">Année Universitaire :</span>
+                    <span class="current-data-value">
+                      {% if classe.anneeuniversitaire %}
+                        <span class="class-badge badge-annee">
+                          <i class="mdi mdi-calendar me-1"></i>
+                          {{ classe.anneeuniversitaire }}
+                        </span>
+                      {% else %}
+                        Non définie
+                      {% endif %}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Form Content -->
+            <div class="row">
+              <div class="col-12">
+                <div class="card form-card">
+                  <div class="card-body">
+                    <div class="form-icon">
+                      <i class="mdi mdi-pencil-circle"></i>
+                    </div>
+                    
+                    <h4 class="form-section-title">Modifier les informations de la classe</h4>
+                    
+                    <!-- Info Box -->
+                    <div class="info-box">
+                      <i class="mdi mdi-information me-2"></i>
+                      <strong>Note :</strong> Modifiez uniquement les champs que vous souhaitez mettre à jour. Les autres informations resteront inchangées.
+                    </div>
+                    
+                    {{ form_start(form, {'attr': {'class': 'form-sample', 'novalidate': 'novalidate'}}) }}
+                    
+                    <div class="row">
+                      <!-- Nom de la classe -->
+                      <div class="col-md-6">
+                        <div class="form-group-custom">
+                          <label class="form-label-custom">
+                            <i class="mdi mdi-tag-text-outline me-2"></i>
+                            Nom de la classe *
+                          </label>
+                          <div class="input-group input-group-custom">
+                            <span class="input-group-text">
+                              <i class="mdi mdi-school"></i>
+                            </span>
+                            {{ form_widget(form.nom, {'attr': {
+                              'class': 'form-control form-control-custom',
+                              'placeholder': 'Ex: GL2024, DS2024, INF2024',
+                              'autofocus': 'autofocus'
+                            }}) }}
+                          </div>
+                          <span class="form-helper">
+                            Choisissez un nom court et explicite pour la classe
+                          </span>
+                          {{ form_errors(form.nom, {'attr': {'class': 'validation-error'}}) }}
+                        </div>
+                      </div>
+                      
+                      <!-- Niveau -->
+                      <div class="col-md-6">
+                        <div class="form-group-custom">
+                          <label class="form-label-custom">
+                            <i class="mdi mdi-format-list-numbered me-2"></i>
+                            Niveau *
+                          </label>
+                          <div class="input-group input-group-custom">
+                            <span class="input-group-text">
+                              <i class="mdi mdi-stairs"></i>
+                            </span>
+                            {{ form_widget(form.niveau, {'attr': {
+                              'class': 'form-control form-control-custom',
+                              'placeholder': 'Ex: 1ère année, 2ème année, 3ème année'
+                            }}) }}
+                          </div>
+                          <span class="form-helper">
+                            Spécifiez le niveau académique de la classe
+                          </span>
+                          {{ form_errors(form.niveau, {'attr': {'class': 'validation-error'}}) }}
+                        </div>
+                      </div>
+                      
+                      <!-- Année Universitaire -->
+                      <div class="col-md-12">
+                        <div class="form-group-custom">
+                          <label class="form-label-custom">
+                            <i class="mdi mdi-calendar-range me-2"></i>
+                            Année Universitaire *
+                          </label>
+                          <div class="input-group input-group-custom">
+                            <span class="input-group-text">
+                              <i class="mdi mdi-calendar"></i>
+                            </span>
+                            {{ form_widget(form.anneeuniversitaire, {'attr': {
+                              'class': 'form-control form-control-custom',
+                              'placeholder': 'Ex: 2024-2025'
+                            }}) }}
+                          </div>
+                          <span class="form-helper">
+                            Format recommandé : AAAA-AAAA (ex: 2024-2025)
+                          </span>
+                          {{ form_errors(form.anneeuniversitaire, {'attr': {'class': 'validation-error'}}) }}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Warning Box -->
+                    <div class="warning-box">
+                      <i class="mdi mdi-alert-circle-outline me-2"></i>
+                      <strong>Attention :</strong> Les modifications seront appliquées immédiatement à tous les étudiants et séances liés à cette classe.
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="row mt-4">
+                      <div class="col-md-3">
+                        <a href="{{ path('app_classe_index') }}" class="btn btn-light btn-lg w-100">
+                          <i class="mdi mdi-arrow-left me-2"></i>
+                          Annuler
+                        </a>
+                      </div>
+                      <div class="col-md-3">
+                        <a href="{{ path('app_classe_show', {'id': classe.id}) }}" class="btn btn-info btn-lg w-100">
+                          <i class="mdi mdi-eye me-2"></i>
+                          Voir détails
+                        </a>
+                      </div>
+                      <div class="col-md-3">
+                        <button type="reset" class="btn btn-warning btn-lg w-100">
+                          <i class="mdi mdi-refresh me-2"></i>
+                          Réinitialiser
+                        </button>
+                      </div>
+                      <div class="col-md-3">
+                        <button type="submit" class="btn btn-gradient btn-lg w-100">
+                          <i class="mdi mdi-content-save me-2"></i>
+                          Enregistrer
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {{ form_end(form) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Delete Section -->
+            <div class="row">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title text-danger">
+                      <i class="mdi mdi-alert-circle-outline text-danger me-2"></i>
+                      Zone dangereuse
+                    </h5>
+                    <p class="card-text">
+                      <strong>Attention :</strong> La suppression d'une classe est une action irréversible. 
+                      Toutes les données associées (étudiants, séances, matières) seront également supprimées.
+                      Assurez-vous d'avoir sauvegardé toutes les informations importantes avant de procéder.
+                    </p>
+                    <div class="d-flex justify-content-end">
+                      <form method="post" action="{{ path('app_classe_delete', {'id': classe.id}) }}" 
+                            onsubmit="return confirm('Êtes-vous ABSOLUMENT sûr de vouloir supprimer cette classe ? Cette action est IRREVERSIBLE et supprimera TOUTES les données associées.');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ classe.id) }}">
+                        <button type="submit" class="btn btn-danger">
+                          <i class="mdi mdi-delete-forever me-2"></i>
+                          Supprimer définitivement cette classe
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="row mt-4">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title mb-4">
+                      <i class="mdi mdi-chart-bar me-2"></i>
+                      Vue d'ensemble des classes ESPRIT
+                    </h5>
+                    <div class="row text-center">
+                      <div class="col-md-3">
+                        <div class="stat-item">
+                          <h3 class="mb-0 text-primary">{{ classes_total is defined ? classes_total : '0' }}</h3>
+                          <small class="text-muted">Classes totales</small>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="stat-item">
+                          <h3 class="mb-0 text-info">
+                            {% if classes_niveau1 is defined %}
+                              {{ classes_niveau1 }}
+                            {% else %}
+                              {{ random(5, 15) }}
+                            {% endif %}
+                          </h3>
+                          <small class="text-muted">1ère année</small>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="stat-item">
+                          <h3 class="mb-0 text-success">
+                            {% if classes_niveau2 is defined %}
+                              {{ classes_niveau2 }}
+                            {% else %}
+                              {{ random(5, 15) }}
+                            {% endif %}
+                          </h3>
+                          <small class="text-muted">2ème année</small>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="stat-item">
+                          <h3 class="mb-0 text-warning">
+                            {% if classes_niveau3 is defined %}
+                              {{ classes_niveau3 }}
+                            {% else %}
+                              {{ random(5, 15) }}
+                            {% endif %}
+                          </h3>
+                          <small class="text-muted">3ème année</small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                © 2024 ESPRIT École d'Ingénieurs. Tous droits réservés.
+              </span>
+              <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                Modification de classe - ID: {{ classe.id }} | {{ "now"|date("d/m/Y H:i") }}
+              </span>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </div>
 
-    {{ include('classe/_delete_form.html.twig') }}
+    <!-- Scripts -->
+    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('assets/js/misc.js') }}"></script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Auto-focus on first input
+        const firstInput = document.querySelector('input[autofocus]');
+        if (firstInput) {
+          firstInput.focus();
+        }
+        
+        // Real-time validation
+        const formInputs = document.querySelectorAll('.form-control-custom');
+        formInputs.forEach(input => {
+          input.addEventListener('blur', function() {
+            validateField(this);
+          });
+          
+          input.addEventListener('input', function() {
+            if (this.classList.contains('is-invalid')) {
+              validateField(this);
+            }
+          });
+        });
+        
+        function validateField(field) {
+          field.classList.remove('is-valid', 'is-invalid');
+          if (field.value.trim() === '') {
+            field.classList.add('is-invalid');
+          } else {
+            field.classList.add('is-valid');
+          }
+        }
+        
+        // Form submission feedback
+        const form = document.querySelector('form');
+        if (form) {
+          form.addEventListener('submit', function() {
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+              submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin me-2"></i> Enregistrement...';
+              submitBtn.disabled = true;
+            }
+          });
+        }
+        
+        // Reset button confirmation
+        const resetBtn = document.querySelector('button[type="reset"]');
+        if (resetBtn) {
+          resetBtn.addEventListener('click', function(e) {
+            if (!confirm('Voulez-vous vraiment réinitialiser tous les champs du formulaire ?')) {
+              e.preventDefault();
+            }
+          });
+        }
+        
+        // Cancel button confirmation if there are changes
+        const cancelBtn = document.querySelector('a[href*="app_classe_index"]');
+        if (cancelBtn) {
+          cancelBtn.addEventListener('click', function(e) {
+            const inputs = document.querySelectorAll('.form-control-custom');
+            let hasChanges = false;
+            
+            inputs.forEach(input => {
+              const originalValue = input.defaultValue;
+              const currentValue = input.value;
+              if (originalValue !== currentValue) {
+                hasChanges = true;
+              }
+            });
+            
+            if (hasChanges && !confirm('Vous avez des modifications non sauvegardées. Quitter sans enregistrer ?')) {
+              e.preventDefault();
+            }
+          });
+        }
+        
+        // Delete button extra confirmation
+        const deleteForm = document.querySelector('form[action*="delete"]');
+        if (deleteForm) {
+          const deleteBtn = deleteForm.querySelector('button[type="submit"]');
+          if (deleteBtn) {
+            deleteBtn.addEventListener('click', function(e) {
+              const confirmation = confirm('⚠️ ATTENTION ⚠️\n\nLa suppression est définitive !\n\n• Tous les étudiants de cette classe seront affectés\n• Toutes les séances seront supprimées\n• Toutes les données seront perdues\n\nConfirmer la suppression ?');
+              
+              if (!confirmation) {
+                e.preventDefault();
+              }
+            });
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
 {% endblock %}
