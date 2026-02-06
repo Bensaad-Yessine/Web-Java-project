@@ -25,7 +25,9 @@ class TacheController extends AbstractController
     public function addTache(Request $request, EntityManagerInterface $em, TacheRepository $repo): Response
     {
         $tache = new Tache();
-        $form = $this->createForm(TacheType::class, $tache);
+        $form = $this->createForm(TacheType::class, $tache, [
+            'attr' => ['novalidate' => 'novalidate']
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -65,7 +67,9 @@ class TacheController extends AbstractController
     #[Route('/{id}/editTache', name: 'editTache')]
     public function editTache(Request $request, Tache $tache, EntityManagerInterface $em, TacheRepository $repo): Response
     {
-        $form = $this->createForm(TacheType::class, $tache);
+        $form = $this->createForm(TacheType::class, $tache, [
+            'attr' => ['novalidate' => 'novalidate']
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -119,5 +123,37 @@ class TacheController extends AbstractController
             'taches' => $taches
         ]);
     }
+
+    //search by titre
+    #[Route('/taches/search', name: 'searchTache')]
+    public function searchTache(Request $request, TacheRepository $repo): Response
+    {
+        $titre = $request->query->get('titre',''); //default empty
+        //call repository function
+        $taches = $repo->searchByTitre($titre);
+
+        return $this->render('tache/showTache.html.twig', [
+            'taches' => $taches,
+            'titre' => $titre,
+        ]);
+    }
+    
+    // filter tasks in days intervale 
+    #[Route('/taches/filter', name: 'filterTasks')]
+    public function filterTasks(Request $request, TacheRepository $repo): Response
+    {
+        $startInput = $request->query->get('start');
+        $endInput = $request->query->get('end');
+
+        $startDate = $startInput ? new \DateTime($startInput) : null;
+        $endDate   = $endInput ? new \DateTime($endInput) : null;
+
+        $tasks = $repo->findTasksInInterval($startDate, $endDate);
+
+        return $this->render('tache/showTache.html.twig', [
+            'taches' => $tasks,
+        ]);
+    }
+ 
 
 }

@@ -4,498 +4,50 @@
 
 {% block title %}Liste des Tâches{% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <style>
-        /* Base Container */
-        .task-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Glassmorphism Header */
-        .page-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2.5rem 2rem;
-            border-radius: 20px;
-            margin-bottom: 2rem;
-            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .page-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 300px;
-            height: 300px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-
-        .page-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Action Bar */
-        .action-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        /* Modern Button Styles */
-        .btn-add-task {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
-            text-decoration: none;
-        }
-
-        .btn-add-task:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.5);
-            color: white;
-        }
-
-        .btn-add-task:active {
-            transform: scale(0.98);
-        }
-
-        /* Badge Counter */
-        .task-counter {
-            background: rgba(255, 255, 255, 0.95);
-            color: #667eea;
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Glass Table Container */
-        .table-wrapper {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        /* Table Styling */
-        .task-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin: 0;
-        }
-
-        .task-table thead {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-        }
-
-        .task-table th {
-            color: white;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 0.05em;
-            padding: 1.25rem 1rem;
-            text-align: left;
-            white-space: nowrap;
-        }
-
-        .task-table th:first-child {
-            border-top-left-radius: 20px;
-        }
-
-        .task-table th:last-child {
-            border-top-right-radius: 20px;
-        }
-
-        .task-table tbody tr {
-            transition: all 0.3s ease;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .task-table tbody tr:hover {
-            background: linear-gradient(90deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-            transform: scale(1.005);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .task-table td {
-            padding: 1.25rem 1rem;
-            color: #475569;
-            font-weight: 500;
-            vertical-align: middle;
-        }
-
-        /* ID Cell */
-        .task-id {
-            font-family: 'Courier New', monospace;
-            font-weight: 700;
-            color: #64748b;
-            font-size: 0.9rem;
-            background: #f1f5f9;
-            padding: 0.25rem 0.75rem;
-            border-radius: 8px;
-            display: inline-block;
-        }
-
-        /* Title Cell */
-        .task-title {
-            font-weight: 600;
-            color: #1e293b;
-            font-size: 1rem;
-        }
-
-        /* Type Badge */
-        .type-badge {
-            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
-            color: #4338ca;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: capitalize;
-        }
-
-        /* Date Cells */
-        .date-cell {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .date-main {
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .date-time {
-            font-size: 0.85rem;
-            color: #94a3b8;
-            font-weight: 500;
-        }
-
-        /* Duration Badge */
-        .duration-badge {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 0.5rem 1rem;
-            border-radius: 12px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        /* Priority Badges */
-        .priority-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .priority-low {
-            background: linear-gradient(135deg, #86efac 0%, #22c55e 100%);
-            color: #14532d;
-            box-shadow: 0 2px 10px rgba(34, 197, 94, 0.3);
-        }
-
-        .priority-medium {
-            background: linear-gradient(135deg, #fde047 0%, #eab308 100%);
-            color: #713f12;
-            box-shadow: 0 2px 10px rgba(234, 179, 8, 0.3);
-        }
-
-        .priority-high {
-            background: linear-gradient(135deg, #fca5a5 0%, #ef4444 100%);
-            color: #7f1d1d;
-            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        /* Status Badges */
-        .status-badge {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            text-transform: capitalize;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .status-todo {
-            background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
-            color: #475569;
-        }
-
-        .status-progress {
-            background: linear-gradient(135deg, #7dd3fc 0%, #0ea5e9 100%);
-            color: #0c4a6e;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-            from { box-shadow: 0 0 5px rgba(14, 165, 233, 0.3); }
-            to { box-shadow: 0 0 20px rgba(14, 165, 233, 0.6); }
-        }
-
-        .status-done {
-            background: linear-gradient(135deg, #86efac 0%, #22c55e 100%);
-            color: #14532d;
-        }
-
-        .status-cancelled {
-            background: linear-gradient(135deg, #fda4af 0%, #e11d48 100%);
-            color: #881337;
-        }
-
-        /* Origin Badge */
-        .origin-badge {
-            background: #f3f4f6;
-            color: #4b5563;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: 500;
-            text-transform: capitalize;
-        }
-
-        /* Action Buttons */
-        .action-cell {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .btn-action {
-            padding: 0.5rem 1rem;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            text-decoration: none;
-        }
-
-        .btn-edit {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: #78350f;
-        }
-
-        .btn-edit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
-            color: #78350f;
-        }
-
-        .btn-delete {
-            background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);
-            color: white;
-        }
-
-        .btn-delete:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
-            color: white;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: #94a3b8;
-        }
-
-        .empty-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        .empty-text {
-            font-size: 1.25rem;
-            font-weight: 500;
-        }
-
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .task-table {
-                font-size: 0.9rem;
-            }
-            
-            .task-table th,
-            .task-table td {
-                padding: 1rem 0.75rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .task-container {
-                padding: 1rem;
-            }
-            
-            .page-title {
-                font-size: 1.75rem;
-            }
-            
-            .action-bar {
-                flex-direction: column;
-                width: 100%;
-            }
-            
-            .btn-add-task {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .task-counter {
-                width: 100%;
-                justify-content: center;
-            }
-
-            /* Mobile Card View */
-            .table-wrapper {
-                background: transparent;
-                box-shadow: none;
-                border-radius: 0;
-            }
-
-            .task-table thead {
-                display: none;
-            }
-
-            .task-table tbody tr {
-                display: block;
-                background: white;
-                margin-bottom: 1rem;
-                border-radius: 16px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-                padding: 1.5rem;
-                border: none;
-            }
-
-            .task-table td {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 0.75rem 0;
-                border-bottom: 1px solid #e2e8f0;
-            }
-
-            .task-table td:last-child {
-                border-bottom: none;
-                padding-top: 1rem;
-                margin-top: 0.5rem;
-                border-top: 2px solid #e2e8f0;
-            }
-
-            .task-table td::before {
-                content: attr(data-label);
-                font-weight: 700;
-                color: #64748b;
-                text-transform: uppercase;
-                font-size: 0.75rem;
-                letter-spacing: 0.05em;
-            }
-
-            .action-cell {
-                width: 100%;
-                justify-content: stretch;
-            }
-
-            .btn-action {
-                flex: 1;
-                justify-content: center;
-            }
-        }
-    </style>
-{% endblock %}
-
 {% block body %}
-<div class="task-container">
-    <!-- Glass Header -->
-    <div class="page-header">
-        <h1 class="page-title">
-            <span>📋</span>
-            <span>Liste des Tâches</span>
-        </h1>
+<div class="main-panel">
+  <div class="content-wrapper">
+
+    <h1>Liste des Tâches</h1>
+
+    {# Search + Date Filter Form with separate actions #}
+    <div class="mb-3 d-flex gap-2 align-items-end">
+
+        {# 1️⃣ Title search form #}
+        <form method="get" action="{{ path('searchTache') }}" class="d-flex gap-2 align-items-end">
+            <div class="d-flex flex-column">
+                <label for="titre">Titre</label>
+                <input type="text" id="titre" name="titre" placeholder="Titre..." value="{{ titre|default('') }}" class="form-control">
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary mt-2">Rechercher</button>
+            </div>
+        </form>
+
+        {# Date interval filter form with dd-mm-yyyy #}
+        <form method="get" action="{{ path('filterTasks') }}" class="d-flex gap-2 align-items-end">
+            <div class="d-flex flex-column">
+                <label for="start">Date début</label>
+                <input type="text" id="start" name="start" value="{{ start|default('') }}" class="form-control datepicker" placeholder="dd-mm-yyyy">
+            </div>
+            <div class="d-flex flex-column">
+                <label for="end">Date fin</label>
+                <input type="text" id="end" name="end" value="{{ end|default('') }}" class="form-control datepicker" placeholder="dd-mm-yyyy">
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary mt-2">Filtrer</button>
+            </div>
+        </form>
+
     </div>
 
-    <!-- Action Bar -->
-    <div class="action-bar">
-        <a href="{{ path('addTache') }}" class="btn-add-task">
-            <span>➕</span>
-            <span>Ajouter une Tâche</span>
-        </a>
-        
-        <div class="task-counter">
-            <span>📊</span>
-            <span>Total: {{ taches|length }}</span>
-        </div>
-    </div>
 
-    <!-- Glass Table -->
-    <div class="table-wrapper">
-        <table class="task-table">
+    {# Add Task Button #}
+    <a href="{{ path('addTache') }}" class="btn btn-success mb-3">Ajouter une tâche</a>
+
+    {# Tasks Table #}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -513,97 +65,34 @@
             <tbody>
                 {% for tache in taches %}
                     <tr>
-                        <td data-label="ID">
-                            <span class="task-id">#{{ tache.id }}</span>
-                        </td>
-                        <td data-label="Titre">
-                            <span class="task-title">{{ tache.titre }}</span>
-                        </td>
-                        <td data-label="Type">
-                            <span class="type-badge">{{ tache.type|capitalize }}</span>
-                        </td>
-                        <td data-label="Date Début">
-                            {% if tache.dateDebut %}
-                                <div class="date-cell">
-                                    <span class="date-main">{{ tache.dateDebut|date('d/m/Y') }}</span>
-                                    <span class="date-time">{{ tache.dateDebut|date('H:i') }}</span>
-                                </div>
-                            {% else %}
-                                <span class="text-muted">—</span>
-                            {% endif %}
-                        </td>
-                        <td data-label="Date Fin">
-                            {% if tache.dateFin %}
-                                <div class="date-cell">
-                                    <span class="date-main">{{ tache.dateFin|date('d/m/Y') }}</span>
-                                    <span class="date-time">{{ tache.dateFin|date('H:i') }}</span>
-                                </div>
-                            {% else %}
-                                <span class="text-muted">—</span>
-                            {% endif %}
-                        </td>
-                        <td data-label="Durée">
-                            <span class="duration-badge">
-                                ⏱️ {{ tache.dureeEstimee }} min
-                            </span>
-                        </td>
-                        <td data-label="Priorité">
-                            {% if tache.priorite == 'faible' %}
-                                <span class="priority-badge priority-low">
-                                    🟢 Faible
-                                </span>
-                            {% elseif tache.priorite == 'moyenne' %}
-                                <span class="priority-badge priority-medium">
-                                    🟡 Moyenne
-                                </span>
-                            {% else %}
-                                <span class="priority-badge priority-high">
-                                    🔴 Élevée
-                                </span>
-                            {% endif %}
-                        </td>
-                        <td data-label="Statut">
-                            {% set status = tache.statut|replace({'_': ' '})|capitalize %}
-                            {% if tache.statut == 'a_faire' %}
-                                <span class="status-badge status-todo">⏳ {{ status }}</span>
-                            {% elseif tache.statut == 'en_cours' %}
-                                <span class="status-badge status-progress">🔄 {{ status }}</span>
-                            {% elseif tache.statut == 'terminee' %}
-                                <span class="status-badge status-done">✅ {{ status }}</span>
-                            {% else %}
-                                <span class="status-badge status-cancelled">❌ {{ status }}</span>
-                            {% endif %}
-                        </td>
-                        <td data-label="Origine">
-                            <span class="origin-badge">{{ tache.origine|capitalize }}</span>
-                        </td>
-                        <td data-label="Actions">
-                            <div class="action-cell">
-                                <a href="{{ path('editTache', {'id': tache.id}) }}" class="btn-action btn-edit">
-                                    ✏️ Modifier
-                                </a>
-                                <form method="post" action="{{ path('deleteTache', {'id': tache.id}) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer cette tâche ?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tache.id) }}">
-                                    <button type="submit" class="btn-action btn-delete">
-                                        🗑 Supprimer
-                                    </button>
-                                </form>
-                            </div>
+                        <td>{{ tache.id }}</td>
+                        <td>{{ tache.titre }}</td>
+                        <td>{{ tache.type }}</td>
+                        <td>{{ tache.dateDebut ? tache.dateDebut|date('d/m/Y H:i') : '—' }}</td>
+                        <td>{{ tache.dateFin ? tache.dateFin|date('d/m/Y H:i') : '—' }}</td>
+                        <td>{{ tache.dureeEstimee }} min</td>
+                        <td>{{ tache.priorite }}</td>
+                        <td>{{ tache.statut }}</td>
+                        <td>{{ tache.origine }}</td>
+                        <td>
+                            <a href="{{ path('editTache', {'id': tache.id}) }}" class="btn btn-sm btn-info">Modifier</a>
+                            <form method="post" action="{{ path('deleteTache', {'id': tache.id}) }}" style="display:inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tache.id) }}">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Voulez-vous vraiment supprimer cette tâche ?');">
+                                    Supprimer
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="10">
-                            <div class="empty-state">
-                                <div class="empty-icon">📭</div>
-                                <div class="empty-text">Aucune tâche trouvée</div>
-                                <p class="text-muted mt-2">Commencez par ajouter votre première tâche</p>
-                            </div>
-                        </td>
+                        <td colspan="10">Aucune tâche trouvée</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+  </div>
 </div>
 {% endblock %}

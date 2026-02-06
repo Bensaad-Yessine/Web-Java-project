@@ -76,6 +76,26 @@ class TacheRepository extends ServiceEntityRepository
      * @param \DateTime $end
      * @return Tache[]
      */
+
+
+    // SEARCH : 
+    public function searchByTitre(?string $titre)
+    {
+        $qb = $this->createQueryBuilder('t');
+
+        //search by titre if provided
+        if ($titre) {
+            $qb->andWhere('t.titre Like :titre')
+            ->setParameter('titre', '%'.$titre.'%'); //partial match
+        }
+
+        // order by dateDebut ascending
+        $qb->orderBy('t.dateDebut', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+
     public function findTasksInInterval(\DateTime $start, \DateTime $end): array
     {
         return $this->createQueryBuilder('t')
@@ -87,4 +107,6 @@ class TacheRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+
 }
