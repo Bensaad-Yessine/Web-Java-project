@@ -17,13 +17,14 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route('/user')]
 class UserController extends AbstractController
 {
-    #[Route('/', name: 'app_user_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
-    {
-        return $this->render('user/index.html.twig', [
-            'users' => $userRepository->findAll(),
-        ]);
-    }
+  #[Route('/', name: 'app_user_index', methods: ['GET'])]
+public function index(UserRepository $userRepository): Response
+{
+    return $this->render('user/index.html.twig', [
+        'users' => $userRepository->findAll(),
+        'current_user' => $this->getUser(), // Add this line
+    ]);
+}
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher, SluggerInterface $slugger): Response

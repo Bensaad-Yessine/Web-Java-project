@@ -74,15 +74,16 @@
                             <form method="post">
                                 <div class="form-group">
                                     <label for="inputEmail">Email address *</label>
-                                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" 
-                                           class="form-control p_input" autocomplete="email" required autofocus
-                                           placeholder="Enter your email">
+                                    <input type="email" value="{{ last_username }}" name="_username" id="inputEmail" 
+       class="form-control p_input" autocomplete="email" required autofocus
+       placeholder="Enter your email">
                                 </div>
                                 <div class="form-group">
                                     <label for="inputPassword">Password *</label>
-                                    <input type="password" name="password" id="inputPassword" 
-                                           class="form-control p_input" autocomplete="current-password" required
-                                           placeholder="Enter your password">
+                                    
+<input type="password" name="_password" id="inputPassword" 
+       class="form-control p_input" autocomplete="current-password" required
+       placeholder="Enter your password">
                                 </div>
                                 
                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
