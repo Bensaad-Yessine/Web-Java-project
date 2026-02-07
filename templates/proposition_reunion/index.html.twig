@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PropositionReunion index{% endblock %}
+
+{% block body %}
+    <h1>PropositionReunion index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>PropositionId</th>
+                <th>Titre</th>
+                <th>DateReunion</th>
+                <th>HeureDebut</th>
+                <th>HeureFin</th>
+                <th>Lieu</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>DateCreation</th>
+                <th>NbrVoteAccept</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for proposition_reunion in proposition_reunions %}
+            <tr>
+                <td>{{ proposition_reunion.id }}</td>
+                <td>{{ proposition_reunion.propositionId }}</td>
+                <td>{{ proposition_reunion.titre }}</td>
+                <td>{{ proposition_reunion.dateReunion ? proposition_reunion.dateReunion|date('Y-m-d') : '' }}</td>
+                <td>{{ proposition_reunion.heureDebut ? proposition_reunion.heureDebut|date('H:i:s') : '' }}</td>
+                <td>{{ proposition_reunion.heureFin ? proposition_reunion.heureFin|date('H:i:s') : '' }}</td>
+                <td>{{ proposition_reunion.lieu }}</td>
+                <td>{{ proposition_reunion.description }}</td>
+                <td>{{ proposition_reunion.status }}</td>
+                <td>{{ proposition_reunion.dateCreation ? proposition_reunion.dateCreation|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ proposition_reunion.nbrVoteAccept }}</td>
+                <td>
+                    <a href="{{ path('app_proposition_reunion_show', {'id': proposition_reunion.id}) }}">show</a>
+                    <a href="{{ path('app_proposition_reunion_edit', {'id': proposition_reunion.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="12">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_proposition_reunion_new') }}">Create new</a>
+{% endblock %}

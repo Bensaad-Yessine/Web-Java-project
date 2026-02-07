@@ -182,6 +182,99 @@
         color: #95a5a6;
         font-style: italic;
       }
+      
+      /* Profile avatar styles */
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      
+      .sidebar-profile-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 20px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      
+      .user-avatar-img, .sidebar-profile-avatar-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      
+      .sidebar-profile-avatar-img {
+        width: 50px;
+        height: 50px;
+        border: 3px solid #fff;
+      }
+      
+      .user-role-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 10px;
+        margin-top: 5px;
+        display: inline-block;
+      }
+      
+      .badge-admin {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+      }
+      
+      .badge-etudiant {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border: none;
+      }
+      
+      /* Profile section alignment */
+      .profile-pic {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+      }
+      
+      .count-indicator {
+        position: relative;
+        margin-right: 15px;
+      }
+      
+      .profile-name {
+        flex-grow: 1;
+      }
+      
+      .navbar-profile {
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+      }
+      
+      .avatar-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
     </style>
   </head>
   <body>
@@ -201,12 +294,36 @@
             <div class="profile-desc">
               <div class="profile-pic">
                 <div class="count-indicator">
-                  <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  {% if app.user %}
+                    {% if app.user.profilePic %}
+                      <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                           alt="{{ app.user.prenom }}" 
+                           class="sidebar-profile-avatar-img">
+                    {% else %}
+                      <div class="sidebar-profile-avatar">
+                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                      </div>
+                    {% endif %}
+                  {% else %}
+                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  {% endif %}
                   <span class="count bg-success"></span>
                 </div>
                 <div class="profile-name">
-                  <h5 class="mb-0 font-weight-normal">Administrateur</h5>
-                  <span>ESPRIT</span>
+                  {% if app.user %}
+                    <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                    <span class="text-muted">{{ app.user.email }}</span>
+                    <div class="mt-1">
+                      {% if 'ROLE_ADMIN' in app.user.roles %}
+                        <span class="user-role-badge badge-admin">Administrateur</span>
+                      {% else %}
+                        <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                    <span>Veuillez vous connecter</span>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -215,8 +332,9 @@
             <span class="nav-link">Navigation</span>
           </li>
           
+          <!-- Dashboard -->
           <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ path('app_user_index') }}">
+            <a class="nav-link" href="#">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
@@ -224,6 +342,7 @@
             </a>
           </li>
           
+          <!-- Utilisateurs -->
           <li class="nav-item menu-items active">
             <a class="nav-link" href="{{ path('app_user_index') }}">
               <span class="menu-icon">
@@ -233,6 +352,7 @@
             </a>
           </li>
           
+          <!-- Matières -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="#">
               <span class="menu-icon">
@@ -242,6 +362,7 @@
             </a>
           </li>
           
+          <!-- Classes -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="#">
               <span class="menu-icon">
@@ -251,6 +372,7 @@
             </a>
           </li>
           
+          <!-- Salles -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="#">
               <span class="menu-icon">
@@ -260,6 +382,7 @@
             </a>
           </li>
           
+          <!-- Séances -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="#">
               <span class="menu-icon">
@@ -269,6 +392,7 @@
             </a>
           </li>
           
+          <!-- Groupes -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="#">
               <span class="menu-icon">
@@ -278,6 +402,7 @@
             </a>
           </li>
           
+          <!-- Tâches -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="#">
               <span class="menu-icon">
@@ -287,6 +412,7 @@
             </a>
           </li>
           
+          <!-- Alertes -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="#">
               <span class="menu-icon">
@@ -296,6 +422,7 @@
             </a>
           </li>
           
+          <!-- Exercices de santé -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="#">
               <span class="menu-icon">
@@ -305,6 +432,7 @@
             </a>
           </li>
           
+          <!-- Logout -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="{{ path('app_logout') }}">
               <span class="menu-icon">
@@ -345,14 +473,78 @@
               <li class="nav-item dropdown">
                 <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
                   <div class="navbar-profile">
-                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
-                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Admin ESPRIT</p>
+                    {% if app.user %}
+                      <div class="avatar-container">
+                        {% if app.user.profilePic %}
+                          <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                               alt="{{ app.user.prenom }}" 
+                               class="user-avatar-img">
+                        {% else %}
+                          <div class="user-avatar">
+                            {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                          </div>
+                        {% endif %}
+                        <div class="text-start ms-2">
+                          <p class="mb-0 d-none d-sm-block navbar-profile-name">
+                            {{ app.user.prenom }} {{ app.user.nom }}
+                          </p>
+                          <small class="text-muted d-none d-sm-block">
+                            {% if 'ROLE_ADMIN' in app.user.roles %}
+                              <span class="badge badge-admin">Admin</span>
+                            {% else %}
+                              <span class="badge badge-etudiant">Utilisateur</span>
+                            {% endif %}
+                          </small>
+                        </div>
+                      </div>
+                    {% else %}
+                      <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                      <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                    {% endif %}
                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
                   </div>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
-                  <h6 class="p-3 mb-0">Profil Administrateur</h6>
+                  <div class="dropdown-header p-3">
+                    {% if app.user %}
+                      <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                      <p class="text-muted mb-0">{{ app.user.email }}</p>
+                      <small class="text-muted">
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin">Administrateur</span>
+                        {% else %}
+                          <span class="badge badge-etudiant">Utilisateur</span>
+                        {% endif %}
+                      </small>
+                    {% else %}
+                      <h6 class="mb-0">Non connecté</h6>
+                      <p class="text-muted mb-0">Veuillez vous connecter</p>
+                    {% endif %}
+                  </div>
                   <div class="dropdown-divider"></div>
+                  {% if app.user %}
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-primary rounded-circle">
+                          <i class="mdi mdi-account"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Mon profil</p>
+                      </div>
+                    </a>
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-warning rounded-circle">
+                          <i class="mdi mdi-account-edit"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Modifier mon profil</p>
+                      </div>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                  {% endif %}
                   <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
@@ -399,6 +591,17 @@
                       <li class="breadcrumb-item active" aria-current="page">{{ user.prenom }} {{ user.nom }}</li>
                     </ul>
                   </nav>
+                  {% if app.user %}
+                    <div class="mt-2">
+                      <small class="text-muted">
+                        <i class="mdi mdi-account me-1"></i>
+                        Connecté en tant que: <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong>
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin ms-2">Administrateur</span>
+                        {% endif %}
+                      </small>
+                    </div>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -409,18 +612,16 @@
                 <div class="profile-header">
                   <div class="row align-items-center">
                     <div class="col-md-3 text-center">
-                      <div class="profile-avatar">
-                        {% if user.profilePic %}
-    <img src="{{ asset('uploads/profile_pics/' ~ user.profilePic) }}" 
-         alt="{{ user.prenom }}" 
-         class="profile-avatar"
-         style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; box-shadow: 0 5px 20px rgba(0,0,0,0.2);">
-{% else %}
-    <div class="profile-avatar">
-        {{ user.prenom|first|upper }}{{ user.nom|first|upper }}
-    </div>
-{% endif %}
-                      </div>
+                      {% if user.profilePic %}
+                        <img src="{{ asset('uploads/profile_pics/' ~ user.profilePic) }}" 
+                             alt="{{ user.prenom }}" 
+                             class="profile-avatar"
+                             style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; box-shadow: 0 5px 20px rgba(0,0,0,0.2);">
+                      {% else %}
+                        <div class="profile-avatar">
+                          {{ user.prenom|first|upper }}{{ user.nom|first|upper }}
+                        </div>
+                      {% endif %}
                     </div>
                     <div class="col-md-9">
                       <h2 class="mb-2">{{ user.prenom }} {{ user.nom }}</h2>
@@ -686,6 +887,13 @@
             bsAlert.close();
           });
         }, 5000);
+        
+        // Add current year to footer
+        const currentYear = new Date().getFullYear();
+        const footerText = document.querySelector('.footer span:first-child');
+        if (footerText) {
+          footerText.innerHTML = footerText.innerHTML.replace('2024', currentYear);
+        }
       });
     </script>
   </body>

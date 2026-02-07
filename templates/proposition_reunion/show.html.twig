@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PropositionReunion{% endblock %}
+
+{% block body %}
+    <h1>PropositionReunion</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ proposition_reunion.id }}</td>
+            </tr>
+            <tr>
+                <th>PropositionId</th>
+                <td>{{ proposition_reunion.propositionId }}</td>
+            </tr>
+            <tr>
+                <th>Titre</th>
+                <td>{{ proposition_reunion.titre }}</td>
+            </tr>
+            <tr>
+                <th>DateReunion</th>
+                <td>{{ proposition_reunion.dateReunion ? proposition_reunion.dateReunion|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>HeureDebut</th>
+                <td>{{ proposition_reunion.heureDebut ? proposition_reunion.heureDebut|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>HeureFin</th>
+                <td>{{ proposition_reunion.heureFin ? proposition_reunion.heureFin|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Lieu</th>
+                <td>{{ proposition_reunion.lieu }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ proposition_reunion.description }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ proposition_reunion.status }}</td>
+            </tr>
+            <tr>
+                <th>DateCreation</th>
+                <td>{{ proposition_reunion.dateCreation ? proposition_reunion.dateCreation|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>NbrVoteAccept</th>
+                <td>{{ proposition_reunion.nbrVoteAccept }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_proposition_reunion_index') }}">back to list</a>
+
+    <a href="{{ path('app_proposition_reunion_edit', {'id': proposition_reunion.id}) }}">edit</a>
+
+    {{ include('proposition_reunion/_delete_form.html.twig') }}
+{% endblock %}

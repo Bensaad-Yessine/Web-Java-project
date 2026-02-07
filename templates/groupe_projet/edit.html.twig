@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit GroupeProjet{% endblock %}
+
+{% block body %}
+    <h1>Edit GroupeProjet</h1>
+
+    {{ include('groupe_projet/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_groupe_projet_index') }}">back to list</a>
+
+    {{ include('groupe_projet/_delete_form.html.twig') }}
+{% endblock %}
