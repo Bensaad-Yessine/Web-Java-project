@@ -1,0 +1,961 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un Utilisateur{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <style>
+        /* Form container with colored background */
+        .form-container {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+            padding: 35px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Input fields with colored background */
+        .form-control, .form-select {
+            border: 2px solid #5766b1;
+            border-radius: 10px;
+            padding: 14px 18px;
+            height: 50px;
+            background-color: #ffffff;
+            color: #2ecade;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            background-color: #4577b9;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* Form sections with subtle borders */
+        .form-section {
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 2px dashed #d1d9ff;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        
+        /* Form section title with gradient */
+        .form-section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #667eea;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .form-section-title i {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-right: 10px;
+        }
+        
+        /* Labels with better visibility */
+        .form-group label {
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+        
+        /* Radio buttons styling */
+        .radio-group {
+            display: flex;
+            gap: 30px;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #e8edff;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #5977e5;
+            transition: all 0.3s ease;
+        }
+        
+        .form-check:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .form-check-input {
+            margin-right: 10px;
+            margin-top: 0;
+            border: 2px solid #bdc3ff;
+            width: 20px;
+            height: 20px;
+        }
+        
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        
+        /* Checkbox group styling */
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e8edff;
+        }
+        
+        /* Button styling */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 14px 35px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            border: none;
+            padding: 14px 35px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(149, 165, 166, 0.4);
+        }
+        
+        /* Action buttons container */
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: flex-end;
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 2px dashed #d1d9ff;
+        }
+        
+        /* Validation styles */
+        .invalid-feedback {
+            display: block;
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-top: 8px;
+            font-weight: 500;
+            padding: 8px 12px;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 6px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        /* Form text hints */
+        .form-text {
+            font-size: 0.9em;
+            color: #000000;
+            margin-top: 8px;
+            font-style: italic;
+        }
+        
+        /* Password strength indicator */
+        .password-strength {
+            margin-top: 15px;
+            background: rgba(226, 78, 78, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ced2df;
+        }
+        
+        .password-strength .progress {
+            height: 10px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            background-color: #ecf0f1;
+            overflow: hidden;
+        }
+        
+        /* Terms link */
+        .terms-link {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 8px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(52, 152, 219, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .terms-link:hover {
+            background: rgba(52, 152, 219, 0.2);
+            text-decoration: none;
+        }
+        
+        /* Required field indicator */
+        .required-field::after {
+            content: " *";
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        /* Placeholder styling */
+        .form-control::placeholder {
+            color: #95a5a6;
+            font-weight: 400;
+        }
+        
+        /* Date input styling */
+        input[type="date"] {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            background-color: #667eea;
+            padding: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+        }
+        
+        /* Select dropdown styling */
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23667eea' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px 12px;
+            padding-right: 45px;
+        }
+        
+        /* Custom focus glow for all inputs */
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+        }
+        
+        /* Make invalid inputs more visible */
+        .form-control.is-invalid {
+            border-color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.05);
+        }
+        
+        /* Row spacing */
+        .row {
+            margin-bottom: 10px;
+        }
+        
+        /* Make sure all text is visible */
+        body {
+            background-color: #f5f7ff;
+        }
+        
+        .content-wrapper {
+            background-color: #f5f7ff;
+        }
+        
+        /* Card header for form */
+        .form-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px 15px 0 0;
+            margin: -35px -35px 30px -35px;
+        }
+        
+        .form-header h3 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        
+        .form-header i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<body>
+    <div class="container-scroller">
+        <!-- Sidebar -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+            <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+                <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
+                    <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+                </a>
+                <a class="sidebar-brand brand-logo-mini" href="{{ path('app_user_index') }}">
+                    <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+                </a>
+            </div>
+            <ul class="nav">
+                <li class="nav-item profile">
+                    <div class="profile-desc">
+                        <div class="profile-pic">
+                            <div class="count-indicator">
+                                <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                                <span class="count bg-success"></span>
+                            </div>
+                            <div class="profile-name">
+                                <h5 class="mb-0 font-weight-normal">Administrateur</h5>
+                                <span>ESPRIT</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item nav-category">
+                    <span class="nav-link">Navigation</span>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="{{ path('app_user_index') }}">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-speedometer"></i>
+                        </span>
+                        <span class="menu-title">Dashboard</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items active">
+                    <a class="nav-link" href="{{ path('app_user_index') }}">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-account-group"></i>
+                        </span>
+                        <span class="menu-title">Utilisateurs</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-book-open-page-variant"></i>
+                        </span>
+                        <span class="menu-title">Matieres</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-school"></i>
+                        </span>
+                        <span class="menu-title">Classes</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-office-building"></i>
+                        </span>
+                        <span class="menu-title">Salles</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-calendar-clock"></i>
+                        </span>
+                        <span class="menu-title">Séances</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-account-multiple"></i>
+                        </span>
+                        <span class="menu-title">Groupes</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+                        </span>
+                        <span class="menu-title">Tâches</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-alert-circle-outline"></i>
+                        </span>
+                        <span class="menu-title">Alertes</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-heart-pulse"></i>
+                        </span>
+                        <span class="menu-title">Exercices de santé</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="{{ logout_path() }}">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-logout text-danger"></i>
+                        </span>
+                        <span class="menu-title text-danger">Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container-fluid page-body-wrapper">
+            <!-- Navbar -->
+            <nav class="navbar p-0 fixed-top d-flex flex-row">
+                <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+                    <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+                </div>
+                <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+                    <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                        <span class="mdi mdi-menu"></span>
+                    </button>
+                    <ul class="navbar-nav w-100">
+                        <li class="nav-item w-100">
+                            <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                                <input type="text" class="form-control" placeholder="Rechercher..." style="border-color: #d1d9ff; background: white;">
+                            </form>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav navbar-nav-right">
+                        <li class="nav-item dropdown border-left">
+                            <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                                <i class="mdi mdi-bell"></i>
+                                <span class="count bg-danger">3</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                                <h6 class="p-3 mb-0">Notifications</h6>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-warning rounded-circle">
+                                            <i class="mdi mdi-account-plus"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Nouvel utilisateur</p>
+                                        <p class="text-muted ellipsis mb-0"> Ajouter un nouvel utilisateur</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </li>
+                        
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                                <div class="navbar-profile">
+                                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Admin ESPRIT</p>
+                                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                                </div>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                                <h6 class="p-3 mb-0">Profil Administrateur</h6>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item" href="{{ logout_path() }}">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-dark rounded-circle">
+                                            <i class="mdi mdi-logout text-danger"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Déconnexion</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Panel -->
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <!-- Header -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-header">
+                                <h3 class="page-title">
+                                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                                        <i class="mdi mdi-account-plus"></i>
+                                    </span> 
+                                    Ajouter un Utilisateur
+                                </h3>
+                                <nav aria-label="breadcrumb">
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="{{ path('app_user_index') }}">Utilisateurs</a></li>
+                                        <li class="breadcrumb-item active" aria-current="page">Nouvel utilisateur</li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Container -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-container">
+                                <!-- Form Header -->
+                                <div class="form-header">
+                                    <h3><i class="mdi mdi-account-plus"></i> Création d'un Nouvel Utilisateur</h3>
+                                    <p class="mb-0 opacity-75">Remplissez tous les champs requis pour ajouter un nouvel utilisateur</p>
+                                </div>
+                                
+{{ form_start(form, {'attr': {'novalidate': 'novalidate', 'id': 'userForm'}}) }}
+                                
+                                <!-- Personal Information Section -->
+                                <div class="form-section">
+                                    <h4 class="form-section-title">
+                                        <i class="mdi mdi-account-circle"></i>
+                                        Informations Personnelles
+                                    </h4>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.nom, null, {'label_attr': {'class': 'required-field'}}) }}
+                                                {{ form_widget(form.nom, {
+                                                    'attr': {
+                                                        'class': 'form-control',
+                                                        'placeholder': 'Entrez le nom de famille'
+                                                    }
+                                                }) }}
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.nom) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.prenom, null, {'label_attr': {'class': 'required-field'}}) }}
+                                                {{ form_widget(form.prenom, {
+                                                    'attr': {
+                                                        'class': 'form-control',
+                                                        'placeholder': 'Entrez le prénom'
+                                                    }
+                                                }) }}
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.prenom) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.email, null, {'label_attr': {'class': 'required-field'}}) }}
+                                                {{ form_widget(form.email, {
+                                                    'attr': {
+                                                        'class': 'form-control',
+                                                        'placeholder': 'exemple@esprit.tn'
+                                                    }
+                                                }) }}
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.email) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.numTel) }}
+                                                {{ form_widget(form.numTel, {
+                                                    'attr': {
+                                                        'class': 'form-control',
+                                                        'placeholder': '+216 XX XXX XXX'
+                                                    }
+                                                }) }}
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.numTel) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.DateDeNaissance, null, {'label_attr': {'class': 'required-field'}}) }}
+                                                {{ form_widget(form.DateDeNaissance, {
+                                                    'attr': {
+                                                        'class': 'form-control'
+                                                    }
+                                                }) }}
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.DateDeNaissance) }}
+                                                </div>
+                                                <small class="form-text">Format: JJ/MM/AAAA</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.sexe, null, {'label_attr': {'class': 'required-field'}}) }}
+                                                <div class="radio-group">
+                                                    {{ form_widget(form.sexe) }}
+                                                </div>
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.sexe) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Academic Information Section -->
+                                <div class="form-section">
+                                    <h4 class="form-section-title">
+                                        <i class="mdi mdi-school"></i>
+                                        Informations Académiques
+                                    </h4>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.classe, null, {'label_attr': {'class': 'required-field'}}) }}
+                                                {{ form_widget(form.classe, {
+                                                    'attr': {
+                                                        'class': 'form-select'
+                                                    }
+                                                }) }}
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.classe) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.roles, null, {'label_attr': {'class': 'required-field'}}) }}
+                                                <div class="checkbox-group">
+                                                    {{ form_widget(form.roles) }}
+                                                </div>
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.roles) }}
+                                                </div>
+                                                <small class="form-text">Sélectionnez au moins un rôle</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Security Section -->
+                                <div class="form-section">
+                                    <h4 class="form-section-title">
+                                        <i class="mdi mdi-lock"></i>
+                                        Sécurité
+                                    </h4>
+                                    
+                                    <div class="form-group mb-4">
+                                        {{ form_label(form.plainPassword, null, {'label_attr': {'class': 'required-field'}}) }}
+                                        {{ form_widget(form.plainPassword, {
+                                            'attr': {
+                                                'class': 'form-control',
+                                                'placeholder': 'Minimum 6 caractères',
+                                                'id': 'password-input'
+                                            }
+                                        }) }}
+                                        <div class="password-strength">
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                            </div>
+                                            <small class="form-text">Force du mot de passe: <span id="password-strength-text">Aucun</span></small>
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            {{ form_errors(form.plainPassword) }}
+                                        </div>
+                                        <small class="form-text">Le mot de passe doit contenir au moins 6 caractères</small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Terms and Conditions -->
+                                <div class="form-section">
+                                    <h4 class="form-section-title">
+                                        <i class="mdi mdi-file-document"></i>
+                                        Conditions d'Utilisation
+                                    </h4>
+                                    
+                                    <div class="form-group mb-4">
+                                        <div class="form-check" style="background: white; padding: 15px; border-radius: 10px; border: 2px solid #e8edff;">
+                                            {{ form_widget(form.agreeTerms, {
+                                                'attr': {
+                                                    'class': 'form-check-input',
+                                                    'id': 'agreeTerms'
+                                                }
+                                            }) }}
+                                            {{ form_label(form.agreeTerms, null, {
+                                                'label_attr': {
+                                                    'class': 'form-check-label required-field'
+                                                }
+                                            }) }}
+                                            <a href="#" class="terms-link" data-bs-toggle="modal" data-bs-target="#termsModal">
+                                                Lire les conditions
+                                            </a>
+                                        </div>
+                                        <div class="invalid-feedback">
+                                            {{ form_errors(form.agreeTerms) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Profile Picture Section -->
+<div class="form-section">
+    <h4 class="form-section-title">
+        <i class="mdi mdi-account-box"></i>
+        Photo de Profil
+    </h4>
+    
+    <div class="form-group mb-4">
+        {{ form_label(form.profilePicFile) }}
+        {{ form_widget(form.profilePicFile, {
+            'attr': {
+                'class': 'form-control',
+                'id': 'profilePicInput'
+            }
+        }) }}
+        <div class="invalid-feedback">
+            {{ form_errors(form.profilePicFile) }}
+        </div>
+        <small class="form-text">Formats acceptés: JPG, PNG, GIF, WEBP. Taille maximale: 2 Mo</small>
+        
+        <!-- Image Preview -->
+        <div id="imagePreview" class="mt-3" style="display: none;">
+            <img id="previewImg" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 10px; border: 2px solid #667eea;">
+        </div>
+    </div>
+</div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="action-buttons">
+                                    <a href="{{ path('app_user_index') }}" class="btn btn-secondary">
+                                        <i class="mdi mdi-arrow-left me-2"></i>Retour à la liste
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="mdi mdi-content-save me-2"></i>Créer l'utilisateur
+                                    </button>
+                                </div>
+                                
+                                {{ form_end(form) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <footer class="footer">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                            © 2024 ESPRIT École d'Ingénieurs. Tous droits réservés.
+                        </span>
+                        <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                            Formulaire d'ajout d'utilisateur
+                        </span>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="modal-title" id="termsModalLabel">
+                        <i class="mdi mdi-file-document me-2"></i>
+                        Conditions d'Utilisation
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>1. Acceptation des conditions</h6>
+                    <p>En créant un compte, vous acceptez nos conditions d'utilisation et notre politique de confidentialité.</p>
+                    
+                    <h6>2. Responsabilités de l'utilisateur</h6>
+                    <p>Vous êtes responsable de la confidentialité de votre compte et de toutes les activités qui y sont liées.</p>
+                    
+                    <h6>3. Protection des données</h6>
+                    <p>Nous nous engageons à protéger vos données personnelles conformément au RGPD.</p>
+                    
+                    <h6>4. Utilisation appropriée</h6>
+                    <p>Vous vous engagez à utiliser la plateforme de manière appropriée et à respecter les autres utilisateurs.</p>
+                    
+                    <h6>5. Modifications</h6>
+                    <p>Nous nous réservons le droit de modifier ces conditions à tout moment.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('assets/js/misc.js') }}"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Password strength indicator
+            const passwordInput = document.getElementById('password-input');
+            if (passwordInput) {
+                const progressBar = document.querySelector('.password-strength .progress-bar');
+                const strengthText = document.getElementById('password-strength-text');
+                
+                passwordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    let strength = 0;
+                    
+                    // Length check
+                    if (password.length >= 6) strength += 25;
+                    if (password.length >= 8) strength += 25;
+                    
+                    // Complexity checks
+                    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
+                    if (/\d/.test(password)) strength += 15;
+                    if (/[^A-Za-z0-9]/.test(password)) strength += 10;
+                    
+                    // Update progress bar
+                    progressBar.style.width = strength + '%';
+                    
+                    // Update text and color
+                    let text = 'Aucun';
+                    let color = 'bg-secondary';
+                    
+                    if (password.length > 0) {
+                        if (strength < 50) {
+                            text = 'Faible';
+                            color = 'bg-danger';
+                        } else if (strength < 75) {
+                            text = 'Moyen';
+                            color = 'bg-warning';
+                        } else if (strength < 90) {
+                            text = 'Bon';
+                            color = 'bg-info';
+                        } else {
+                            text = 'Fort';
+                            color = 'bg-success';
+                        }
+                    }
+                    
+                    progressBar.className = 'progress-bar ' + color;
+                    strengthText.textContent = text;
+                });
+            }
+            
+            
+            
+            // Style form elements
+            const requiredLabels = document.querySelectorAll('.required-field');
+            requiredLabels.forEach(label => {
+                if (!label.innerHTML.includes('*')) {
+                    label.innerHTML = label.innerHTML + ' *';
+                }
+            });
+            
+            // Style radio buttons
+            const radioButtons = document.querySelectorAll('input[type="radio"]');
+            radioButtons.forEach(radio => {
+                radio.classList.add('form-check-input');
+                const label = radio.nextElementSibling;
+                if (label && label.tagName === 'LABEL') {
+                    label.classList.add('form-check-label');
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'form-check form-check-inline';
+                    radio.parentNode.insertBefore(wrapper, radio);
+                    wrapper.appendChild(radio);
+                    wrapper.appendChild(label);
+                }
+            });
+            
+            // Style checkboxes
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.classList.add('form-check-input');
+                const label = checkbox.nextElementSibling;
+                if (label && label.tagName === 'LABEL') {
+                    label.classList.add('form-check-label');
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'form-check';
+                    checkbox.parentNode.insertBefore(wrapper, checkbox);
+                    wrapper.appendChild(checkbox);
+                    wrapper.appendChild(label);
+                }
+            });
+            
+            // Add current year to footer
+            const currentYear = new Date().getFullYear();
+            const footerText = document.querySelector('.footer span:first-child');
+            if (footerText) {
+                footerText.innerHTML = footerText.innerHTML.replace('2024', currentYear);
+            }
+        });
+    </script>
+    <script>
+    // Image preview
+    document.getElementById('profilePicInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}

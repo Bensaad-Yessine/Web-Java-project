@@ -1,0 +1,196 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <style>
+        .login-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: cover;
+            background-position: center;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 10px 40px 0 rgba(0,0,0,0.1);
+            border: none;
+        }
+        .form-control {
+            border: 1px solid #e6e6e6;
+            border-radius: 5px;
+            padding: 12px 15px;
+            height: 45px;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-facebook {
+            background-color: #3b5998;
+            border-color: #3b5998;
+            color: white;
+        }
+        .btn-google {
+            background-color: #dd4b39;
+            border-color: #dd4b39;
+            color: white;
+        }
+        .alert {
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-scroller">
+        <div class="container-fluid page-body-wrapper full-page-wrapper">
+            <div class="row w-100">
+                <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg">
+                    <div class="card col-lg-4 mx-auto">
+                        <div class="card-body px-5 py-5">
+                            <h3 class="card-title text-start mb-3">Login</h3>
+                            
+                            {% if error %}
+                                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                    {{ error.messageKey|trans(error.messageData, 'security') }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endif %}
+
+                            {% if app.user %}
+                                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                    You are logged in as {{ app.user.userIdentifier }}, 
+                                    <a href="{{ logout_path() }}" class="alert-link">Logout</a>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endif %}
+
+                            <form method="post">
+                                <div class="form-group">
+                                    <label for="inputEmail">Email address *</label>
+                                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" 
+                                           class="form-control p_input" autocomplete="email" required autofocus
+                                           placeholder="Enter your email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="inputPassword">Password *</label>
+                                    <input type="password" name="password" id="inputPassword" 
+                                           class="form-control p_input" autocomplete="current-password" required
+                                           placeholder="Enter your password">
+                                </div>
+                                
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                                <div class="form-group d-flex align-items-center justify-content-between">
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" name="_remember_me" class="form-check-input">
+                                            Remember me
+                                        </label>
+                                    </div>
+                                    <a href="#" class="forgot-pass">Forgot password</a>
+                                </div>
+                                <div class="text-center d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-block enter-btn">
+                                        <i class="mdi mdi-login mr-2"></i>Login
+                                    </button>
+                                </div>
+                                
+                                {# Uncomment if you want social login buttons
+                                <div class="d-flex mt-4">
+                                    <button class="btn btn-facebook me-2 col" type="button">
+                                        <i class="mdi mdi-facebook"></i> Facebook
+                                    </button>
+                                    <button class="btn btn-google col" type="button">
+                                        <i class="mdi mdi-google-plus"></i> Google
+                                    </button>
+                                </div>
+                                #}
+                                
+                                <p class="sign-up text-center mt-4">
+                                    Don't have an Account?<a href="{{ path('app_register') }}"> Sign Up</a>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('assets/js/misc.js') }}"></script>
+    <script src="{{ asset('assets/js/settings.js') }}"></script>
+    <script src="{{ asset('assets/js/todolist.js') }}"></script>
+    
+    <script>
+        // Add form validation and interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.querySelector('form');
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            
+            loginForm.addEventListener('submit', function(e) {
+                // Validate form
+                const email = document.getElementById('inputEmail');
+                const password = document.getElementById('inputPassword');
+                
+                if (!email.value || !password.value) {
+                    e.preventDefault();
+                    if (!email.value) {
+                        email.classList.add('is-invalid');
+                    }
+                    if (!password.value) {
+                        password.classList.add('is-invalid');
+                    }
+                    return false;
+                }
+                
+                // Show loading state
+                submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin mr-2"></i>Logging in...';
+                submitBtn.disabled = true;
+            });
+            
+            // Remove invalid class on input
+            const inputs = document.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.classList.remove('is-invalid');
+                });
+            });
+            
+            // Password visibility toggle
+            const passwordInput = document.getElementById('inputPassword');
+            const passwordGroup = passwordInput.closest('.form-group');
+            
+            // Add eye icon to password field
+            const eyeIcon = document.createElement('span');
+            eyeIcon.className = 'mdi mdi-eye-off input-icon';
+            eyeIcon.style.cssText = 'position: absolute; right: 15px; top: 40px; cursor: pointer; color: #777;';
+            
+            passwordGroup.style.position = 'relative';
+            passwordGroup.appendChild(eyeIcon);
+            
+            eyeIcon.addEventListener('click', function() {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    this.classList.remove('mdi-eye-off');
+                    this.classList.add('mdi-eye');
+                } else {
+                    passwordInput.type = 'password';
+                    this.classList.remove('mdi-eye');
+                    this.classList.add('mdi-eye-off');
+                }
+            });
+        });
+    </script>
+{% endblock %}
