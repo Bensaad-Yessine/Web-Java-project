@@ -1,21 +1,648 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ESPRIT - Gestion des Utilisateurs</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+    <style>
+      .stat-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      }
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+        margin: 0 auto;
+      }
+      .stat-count {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+      .stat-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .card-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+      .card-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+      .card-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+      .card-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+      .card-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+      
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+      }
+      
+      .badge-etudiant {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+      }
+      
+      .badge-admin {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      
+      .badge-prof {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+      }
+      
+      .action-buttons .btn {
+        padding: 5px 10px;
+        margin: 0 2px;
+      }
+      
+      .search-box {
+        max-width: 300px;
+      }
+      
+      .table-hover tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+      }
+      
+      .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+      }
+      
+      .empty-state i {
+        font-size: 60px;
+        color: #dee2e6;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-scroller">
+      <!-- Sidebar -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+          <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </a>
+          <a class="sidebar-brand brand-logo-mini" href="{{ path('app_user_index') }}">
+            <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+          </a>
+        </div>
+        <ul class="nav">
+          <li class="nav-item profile">
+            <div class="profile-desc">
+              <div class="profile-pic">
+                <div class="count-indicator">
+                  <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  <span class="count bg-success"></span>
+                </div>
+                <div class="profile-name">
+                  <h5 class="mb-0 font-weight-normal">Administrateur</h5>
+                  <span>ESPRIT</span>
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Navigation</span>
+          </li>
+          
+          <!-- Dashboard -->
+          <li class="nav-item menu-items active">
+            <a class="nav-link" href="{{ path('app_user_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-speedometer"></i>
+              </span>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          
+          <!-- Utilisateurs -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_user_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-group"></i>
+              </span>
+              <span class="menu-title">Utilisateurs</span>
+            </a>
+          </li>
+          
+          <!-- Matières -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-book-open-page-variant"></i>
+              </span>
+              <span class="menu-title">Matieres</span>
+            </a>
+          </li>
+          
+          <!-- Classes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-school"></i>
+              </span>
+              <span class="menu-title">Classes</span>
+            </a>
+          </li>
+          
+          <!-- Salles -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-office-building"></i>
+              </span>
+              <span class="menu-title">Salles</span>
+            </a>
+          </li>
+          
+          <!-- Séances -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-calendar-clock"></i>
+              </span>
+              <span class="menu-title">Séances</span>
+            </a>
+          </li>
+          
+          <!-- Groupes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-multiple"></i>
+              </span>
+              <span class="menu-title">Groupes</span>
+            </a>
+          </li>
+          
+          <!-- Tâches -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+              </span>
+              <span class="menu-title">Tâches</span>
+            </a>
+          </li>
+          
+          <!-- Alertes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-alert-circle-outline"></i>
+              </span>
+              <span class="menu-title">Alertes</span>
+            </a>
+          </li>
+          
+          <!-- Exercices de santé -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-heart-pulse"></i>
+              </span>
+              <span class="menu-title">Exercices de santé</span>
+            </a>
+          </li>
+          
+          <!-- Logout -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-logout text-danger"></i>
+              </span>
+              <span class="menu-title text-danger">Déconnexion</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
 
-{% block title %}Hello UserController!{% endblock %}
+      <!-- Main Content -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+          <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </div>
+          <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+              <span class="mdi mdi-menu"></span>
+            </button>
+            <ul class="navbar-nav w-100">
+              <li class="nav-item w-100">
+                <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                  <input type="text" class="form-control" placeholder="Rechercher un utilisateur...">
+                </form>
+              </li>
+            </ul>
+            <ul class="navbar-nav navbar-nav-right">
+              <li class="nav-item dropdown border-left">
+                <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                  <i class="mdi mdi-bell"></i>
+                  <span class="count bg-danger">3</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                  <h6 class="p-3 mb-0">Notifications</h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-warning rounded-circle">
+                        <i class="mdi mdi-account-plus"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Nouvel utilisateur</p>
+                      <p class="text-muted ellipsis mb-0"> Ahmed Ben Ali inscrit</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+              
+              <li class="nav-item dropdown">
+                <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                  <div class="navbar-profile">
+                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Admin ESPRIT</p>
+                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                  </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                  <h6 class="p-3 mb-0">Profil Administrateur</h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item" href="#">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-logout text-danger"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Déconnexion</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
 
-{% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+        <!-- Content -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <!-- Header -->
+            <div class="row">
+              <div class="col-12">
+                <div class="page-header">
+                  <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                      <i class="mdi mdi-account-group"></i>
+                    </span> 
+                    Gestion des Utilisateurs
+                  </h3>
+                  <nav aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                      <li class="breadcrumb-item active" aria-current="page">
+                        <span></span>Liste complète des utilisateurs ESPRIT
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Statistics -->
+            <div class="row">
+              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          <h3 class="mb-0 stat-count">{{ users|length }}</h3>
+                          <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(5, 15) }}%</p>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-icon card-1">
+                          <i class="mdi mdi-account-group"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="stat-label">Total Utilisateurs</h6>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          {% set etudiants = users|filter(u => u.role == 'Étudiant')|length %}
+                          <h3 class="mb-0 stat-count">{{ etudiants }}</h3>
+                          <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(2, 8) }}%</p>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-icon card-2">
+                          <i class="mdi mdi-school"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="stat-label">Étudiants</h6>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          {% set admins = users|filter(u => u.role == 'Administrateur')|length %}
+                          <h3 class="mb-0 stat-count">{{ admins }}</h3>
+                          <p class="text-success ms-2 mb-0 font-weight-medium">+0%</p>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-icon card-3">
+                          <i class="mdi mdi-shield-account"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="stat-label">Administrateurs</h6>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          {% set profs = users|filter(u => u.role == 'Professeur')|length %}
+                          <h3 class="mb-0 stat-count">{{ profs }}</h3>
+                          <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(1, 5) }}%</p>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-icon card-4">
+                          <i class="mdi mdi-teach"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="stat-label">Professeurs</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Users Table -->
+            <div class="row">
+              <div class="col-12 grid-margin">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                      <h4 class="card-title">👥 Liste des Utilisateurs</h4>
+                      <div class="d-flex">
+                        <div class="search-box me-3">
+                          <input type="text" class="form-control" placeholder="Rechercher..." id="searchInput">
+                        </div>
+                        <a href="{{ path('app_user_add') }}" class="btn btn-gradient-primary btn-icon-text">
+                          <i class="mdi mdi-account-plus btn-icon-prepend"></i>
+                          Ajouter un utilisateur
+                        </a>
+                      </div>
+                    </div>
 
+<<<<<<< HEAD
 <div class="example-wrapper">
     <h1>Hello UserController ✅</h1>
 
+=======
+                    {% if users is empty %}
+                      <div class="empty-state">
+                        <i class="mdi mdi-account-off"></i>
+                        <h4 class="text-muted">Aucun utilisateur trouvé</h4>
+                        <p class="text-muted mb-4">Commencez par ajouter un nouvel utilisateur</p>
+                        <a href="{{ path('app_user_add') }}" class="btn btn-gradient-primary">
+                          <i class="mdi mdi-account-plus"></i>
+                          Ajouter le premier utilisateur
+                        </a>
+                      </div>
+                    {% else %}
+                      <div class="table-responsive">
+                        <table class="table table-hover" id="usersTable">
+                          <thead>
+                            <tr>
+                              <th>ID</th>
+                              <th>Utilisateur</th>
+                              <th>Email</th>
+                              <th>Date de naissance</th>
+                              <th>Classe</th>
+                              <th>Spécialité</th>
+                              <th>Sexe</th>
+                              <th>Rôle</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for user in users %}
+                              <tr>
+                                <td>{{ user.id }}</td>
+                                <td>
+                                  <div class="d-flex align-items-center">
+                                    <div class="user-avatar me-3">
+                                      {{ user.prenom|first|upper }}{{ user.nom|first|upper }}
+                                    </div>
+                                    <div>
+                                      <h6 class="mb-0">{{ user.prenom }} {{ user.nom }}</h6>
+                                      <small class="text-muted">Membre depuis {{ user.dateDeNaissance ? user.dateDeNaissance|date('d/m/Y') }}</small>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.dateDeNaissance ? user.dateDeNaissance|date('d/m/Y') : '—' }}</td>
+                                <td>
+                                  {% if user.classe %}
+                                    <span class="badge badge-light">{{ user.classe }}</span>
+                                  {% else %}
+                                    <span class="text-muted">—</span>
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  {% if user.specialiteFuture %}
+                                    <span class="badge badge-info">{{ user.specialiteFuture }}</span>
+                                  {% else %}
+                                    <span class="text-muted">—</span>
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  {% if user.sexe == 'Masculin' %}
+                                    <span class="badge badge-primary">{{ user.sexe }}</span>
+                                  {% else %}
+                                    <span class="badge badge-pink">{{ user.sexe }}</span>
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  {% if user.role == 'Étudiant' %}
+                                    <span class="badge badge-etudiant">{{ user.role }}</span>
+                                  {% elseif user.role == 'Administrateur' %}
+                                    <span class="badge badge-admin">{{ user.role }}</span>
+                                  {% elseif user.role == 'Professeur' %}
+                                    <span class="badge badge-prof">{{ user.role }}</span>
+                                  {% else %}
+                                    <span class="badge badge-secondary">{{ user.role }}</span>
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  <div class="action-buttons">
+                                    <a href="{{ path('app_user_show', { id: user.id }) }}" 
+                                       class="btn btn-info btn-sm btn-icon"
+                                       title="Voir">
+                                      <i class="mdi mdi-eye"></i>
+                                    </a>
+                                    <a href="{{ path('app_user_edit', { id: user.id }) }}" 
+                                       class="btn btn-warning btn-sm btn-icon"
+                                       title="Modifier">
+                                      <i class="mdi mdi-pencil"></i>
+                                    </a>
+                                    <button type="button" 
+                                            class="btn btn-danger btn-sm btn-icon delete-btn"
+                                            data-user-id="{{ user.id }}"
+                                            data-user-name="{{ user.prenom }} {{ user.nom }}"
+                                            title="Supprimer">
+                                      <i class="mdi mdi-delete"></i>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                      
+                      <!-- Delete Confirmation Modal -->
+                      <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Confirmer la suppression</h5>
+                              <button type="button" class="close" data-dismiss="modal">
+                                <span>&times;</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              <p>Êtes-vous sûr de vouloir supprimer l'utilisateur <strong id="userName"></strong> ?</p>
+                              <p class="text-danger"><small>Cette action est irréversible.</small></p>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                              <form id="deleteForm" method="POST" style="display: inline;">
+                                <input type="hidden" name="_token" value="">
+                                <button type="submit" class="btn btn-danger">Supprimer</button>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                © 2024 ESPRIT École d'Ingénieurs. Tous droits réservés.
+              </span>
+              <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                Gestion des Utilisateurs - {{ users|length }} utilisateurs
+              </span>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </div>
+>>>>>>> origin/user
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/MSI/Documents/Symfonyweb/src/Controller/UserController.php</code></li>
-        <li>Your template at <code>C:/Users/MSI/Documents/Symfonyweb/templates/user/index.html.twig</code></li>
-    </ul>
-</div>
-{% endblock %}
+    <!-- Scripts -->
+    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('assets/js/misc.js') }}"></script>
+    
+    <script>
+      // Search functionality
+      document.getElementById('searchInput').addEventListener('keyup', function() {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#usersTable tbody tr');
+        
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(filter) ? '' : 'none';
+        });
+      });
+      
+      // Delete confirmation modal
+      document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const userId = this.getAttribute('data-user-id');
+          const userName = this.getAttribute('data-user-name');
+          
+          document.getElementById('userName').textContent = userName;
+          
+          // Set the form action
+          const form = document.getElementById('deleteForm');
+          form.action = "{{ path('app_user_delete', { id: 'USER_ID' }) }}".replace('USER_ID', userId);
+          
+          // Set CSRF token
+          const csrfToken = "{{ csrf_token('delete' ~ 'USER_ID') }}".replace('USER_ID', userId);
+          form.querySelector('input[name="_token"]').value = csrfToken;
+          
+          // Show modal
+          $('#deleteModal').modal('show');
+        });
+      });
+      
+      // Auto-hide alerts after 5 seconds
+      setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+          const closeBtn = alert.querySelector('.close');
+          if (closeBtn) closeBtn.click();
+        });
+      }, 5000);
+    </script>
+  </body>
+</html>
