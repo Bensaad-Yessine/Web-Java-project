@@ -61,6 +61,16 @@
         justify-content: center;
         font-weight: bold;
         font-size: 16px;
+        flex-shrink: 0;
+      }
+      
+      .user-avatar-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       }
       
       .profile-avatar {
@@ -74,26 +84,45 @@
         justify-content: center;
         font-weight: bold;
         font-size: 20px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      
+      .profile-avatar-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #fff;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
       }
       
       .badge-etudiant {
         background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         color: white;
+        border: none;
       }
       
       .badge-admin {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
+        border: none;
       }
       
       .badge-prof {
         background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
         color: white;
+        border: none;
+      }
+      
+      .action-buttons {
+        display: flex;
+        gap: 5px;
       }
       
       .action-buttons .btn {
         padding: 5px 10px;
-        margin: 0 2px;
+        border-radius: 5px;
       }
       
       .search-box {
@@ -124,9 +153,45 @@
       
       .user-role-badge {
         font-size: 0.75rem;
-        padding: 2px 8px;
+        padding: 3px 10px;
         border-radius: 10px;
-        margin-top: 3px;
+        margin-top: 5px;
+        display: inline-block;
+      }
+      
+      /* Fix for profile section alignment */
+      .profile-pic {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+      }
+      
+      .count-indicator {
+        position: relative;
+        margin-right: 15px;
+      }
+      
+      .profile-name {
+        flex-grow: 1;
+      }
+      
+      /* Fix for navbar profile alignment */
+      .navbar-profile {
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+      }
+      
+      /* Ensure table cells align properly */
+      .table td {
+        vertical-align: middle;
+      }
+      
+      /* Fix for duplicate avatar display */
+      .avatar-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
       }
     </style>
   </head>
@@ -148,18 +213,15 @@
               <div class="profile-pic">
                 <div class="count-indicator">
                   {% if app.user %}
-                    <div class="profile-avatar">
-                      
-                      <div class="user-avatar me-3">
-    {% if app.user.profilePic %}
-        <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
-             alt="{{ app.user.prenom }}" 
-             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
-    {% else %}
-        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
-    {% endif %}
-</div>
-                    </div>
+                    {% if app.user.profilePic %}
+                      <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                           alt="{{ app.user.prenom }}" 
+                           class="profile-avatar-img">
+                    {% else %}
+                      <div class="profile-avatar">
+                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                      </div>
+                    {% endif %}
                   {% else %}
                     <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
                   {% endif %}
@@ -168,12 +230,14 @@
                 <div class="profile-name">
                   {% if app.user %}
                     <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
-                    <span>{{ app.user.email }}</span>
-                    {% if 'ROLE_ADMIN' in app.user.roles %}
-                      <div class="user-role-badge badge-admin mt-1">Administrateur</div>
-                    {% else %}
-                      <div class="user-role-badge badge-etudiant mt-1">Utilisateur</div>
-                    {% endif %}
+                    <span class="text-muted">{{ app.user.email }}</span>
+                    <div class="mt-1">
+                      {% if 'ROLE_ADMIN' in app.user.roles %}
+                        <span class="user-role-badge badge-admin">Administrateur</span>
+                      {% else %}
+                        <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                      {% endif %}
+                    </div>
                   {% else %}
                     <h5 class="mb-0 font-weight-normal">Non connecté</h5>
                     <span>Veuillez vous connecter</span>
@@ -187,8 +251,8 @@
           </li>
           
           <!-- Dashboard -->
-          <li class="nav-item menu-items active">
-            <a class="nav-link" href="{{ path('app_user_index') }}">
+          <li class="nav-item menu-items ">
+            <a class="nav-link" href="#">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
@@ -197,7 +261,7 @@
           </li>
           
           <!-- Utilisateurs -->
-          <li class="nav-item menu-items">
+          <li class="nav-item menu-items active">
             <a class="nav-link" href="{{ path('app_user_index') }}">
               <span class="menu-icon">
                 <i class="mdi mdi-account-group"></i>
@@ -343,29 +407,28 @@
                 <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
                   <div class="navbar-profile">
                     {% if app.user %}
-                      <div class="user-avatar me-2">
-                        
-                        <div class="user-avatar me-3">
-    {% if app.user.profilePic %}
-        <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
-             alt="{{ app.user.prenom }}" 
-             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
-    {% else %}
-        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
-    {% endif %}
-</div>
-                      </div>
-                      <div class="text-start">
-                        <p class="mb-0 d-none d-sm-block navbar-profile-name">
-                          {{ app.user.prenom }} {{ app.user.nom }}
-                        </p>
-                        <small class="text-muted d-none d-sm-block">
-                          {% if 'ROLE_ADMIN' in app.user.roles %}
-                            <span class="badge badge-admin">Admin</span>
-                          {% else %}
-                            <span class="badge badge-etudiant">Utilisateur</span>
-                          {% endif %}
-                        </small>
+                      <div class="avatar-container">
+                        {% if app.user.profilePic %}
+                          <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                               alt="{{ app.user.prenom }}" 
+                               class="user-avatar-img">
+                        {% else %}
+                          <div class="user-avatar">
+                            {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                          </div>
+                        {% endif %}
+                        <div class="text-start ms-2">
+                          <p class="mb-0 d-none d-sm-block navbar-profile-name">
+                            {{ app.user.prenom }} {{ app.user.nom }}
+                          </p>
+                          <small class="text-muted d-none d-sm-block">
+                            {% if 'ROLE_ADMIN' in app.user.roles %}
+                              <span class="badge badge-admin">Admin</span>
+                            {% else %}
+                              <span class="badge badge-etudiant">Utilisateur</span>
+                            {% endif %}
+                          </small>
+                        </div>
                       </div>
                     {% else %}
                       <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
@@ -616,23 +679,24 @@
                                 <td>{{ user.id }}</td>
                                 <td>
                                   <div class="d-flex align-items-center">
-                                    <div class="user-avatar me-3">
-<div class="user-avatar me-3">
-    {% if user.profilePic %}
-        <img src="{{ asset('uploads/profile_pics/' ~ user.profilePic) }}" 
-             alt="{{ user.prenom }}" 
-             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
-    {% else %}
-        {{ user.prenom|first|upper }}{{ user.nom|first|upper }}
-    {% endif %}
-</div>                                    </div>
+                                    {% if user.profilePic %}
+                                      <img src="{{ asset('uploads/profile_pics/' ~ user.profilePic) }}" 
+                                           alt="{{ user.prenom }}" 
+                                           class="user-avatar-img me-3">
+                                    {% else %}
+                                      <div class="user-avatar me-3">
+                                        {{ user.prenom|first|upper }}{{ user.nom|first|upper }}
+                                      </div>
+                                    {% endif %}
                                     <div>
                                       <h6 class="mb-0">{{ user.prenom }} {{ user.nom }}</h6>
                                       <small class="text-muted">{{ user.email }}</small>
-                                      {% if user.id == app.user.id %}
-                                        <small class="text-primary">
-                                          <i class="mdi mdi-account-circle me-1"></i>C'est vous
-                                        </small>
+                                      {% if user.id == app.user?.id %}
+                                        <div class="mt-1">
+                                          <small class="text-primary">
+                                            <i class="mdi mdi-account-circle me-1"></i>C'est vous
+                                          </small>
+                                        </div>
                                       {% endif %}
                                     </div>
                                   </div>
@@ -686,7 +750,7 @@
                                        title="Modifier">
                                       <i class="mdi mdi-pencil"></i>
                                     </a>
-                                    {% if user.id != app.user.id %}
+                                    {% if user.id != app.user?.id %}
                                       <button type="button" 
                                               class="btn btn-danger btn-sm btn-icon delete-btn"
                                               data-user-id="{{ user.id }}"

@@ -496,7 +496,16 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
                                 <div class="navbar-profile">
-                                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                                {% if app.user.profilePic %}
+    <img class="img-xs rounded-circle" src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+         alt="{{ app.user.prenom }}" 
+         class="profile-avatar"
+         style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; box-shadow: 0 5px 20px rgba(0,0,0,0.2);">
+{% else %}
+    <div class="profile-avatar">
+        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+    </div>
+{% endif %}
                                     <p class="mb-0 d-none d-sm-block navbar-profile-name">Admin ESPRIT</p>
                                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
                                 </div>
