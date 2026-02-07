@@ -11,37 +11,65 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-
 #[Route('/user')]
 final class UserController extends AbstractController
 {
-    // ✅ READ ALL
     #[Route('/', name: 'app_user_index')]
     public function index(EntityManagerInterface $em): Response
     {
-        $users = $em->getRepository(User::class)->findAll();
-
         return $this->render('user/index.html.twig', [
-            'users' => $users,
+            'users' => $em->getRepository(User::class)->findAll(),
         ]);
     }
 
     // ✅ CREATE
     #[Route('/add', name: 'app_user_add')]
-    public function add(Request $request, EntityManagerInterface $em): Response
-    {
+    public function add(
+        Request $request,
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $hasher
+    ): Response {
         $user = new User();
-        $form = $this->createForm(UserType::class, $user);
 
+        $form = $this->createForm(UserType::class, $user, [
+            'is_edit' => false,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // ✅ PASSWORD (required)
+            $plainPassword = $form->get('plainPassword')->getData();
+            if (!$plainPassword) {
+                $this->addFlash('error', 'Mot de passe obligatoire');
+                return $this->redirectToRoute('app_user_add');
+            }
+
+            $user->setPassword(
+                $hasher->hashPassword($user, $plainPassword)
+            );
+
+            // ✅ DEFAULT ROLE (important)
+            if (!$user->getRole()) {
+                $user->setRole('student');
+            }
+
+            // ✅ PROFILE PIC (fixed setter name)
+            $file = $form->get('profilePic')->getData();
+            if ($file) {
+                $name = uniqid().'.'.$file->guessExtension();
+                $file->move(
+                    $this->getParameter('uploads_directory'),
+                    $name
+                );
+                $user->setProfilepic($name); // ✅ CORRECT
+            }
+
             $em->persist($user);
             $em->flush();
 
-            $this->addFlash('success', 'User added successfully ✅');
-
-            return $this->redirectToRoute('app_user_show');
+            $this->addFlash('success', 'Utilisateur ajouté avec succès ✅');
+            return $this->redirectToRoute('app_user_index');
         }
 
         return $this->render('user/add.html.twig', [
@@ -49,47 +77,58 @@ final class UserController extends AbstractController
         ]);
     }
 
-    // ✅ READ ONE
-    #[Route('/show', name: 'app_user_show')]
-    public function show(EntityManagerInterface $em): Response
+    // ✅ SHOW
+    #[Route('/show/{id}', name: 'app_user_show')]
+    public function show(User $user): Response
     {
-        $users = $em->getRepository(User::class)->findAll();
-
-       return $this->render('user/show.html.twig', [
-        'users' => $users,
-    ]);
+        return $this->render('user/show.html.twig', [
+            'user' => $user,
+        ]);
     }
 
-    // ✅ UPDATE
+    // ✅ EDIT
     #[Route('/edit/{id}', name: 'app_user_edit')]
     public function edit(
         Request $request,
         User $user,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $hasher
     ): Response {
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $user, [
+            'is_edit' => true,
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $plainPassword = $form->get('plainPassword')->getData();
+            if ($plainPassword) {
+                $user->setPassword(
+                    $hasher->hashPassword($user, $plainPassword)
+                );
+            }
+
+            $file = $form->get('profilePic')->getData();
+            if ($file) {
+                $name = uniqid().'.'.$file->guessExtension();
+                $file->move(
+                    $this->getParameter('uploads_directory'),
+                    $name
+                );
+                $user->setProfilepic($name); // ✅ FIXED
+            }
+
             $em->flush();
 
-            $this->addFlash('success', 'User updated successfully ✏️');
-
-            return $this->redirectToRoute('app_user_show');
+            $this->addFlash('success', 'Utilisateur modifié ✏️');
+            return $this->redirectToRoute('app_user_index');
         }
 
         return $this->render('user/edit.html.twig', [
             'form' => $form->createView(),
-            'user' => $user,
         ]);
     }
- #[Route('/delete/{id}/confirm', name: 'app_user_delete_confirm', methods: ['GET'])]
-    public function deleteConfirm(User $user): Response
-    {
-        return $this->render('user/delete.html.twig', [
-            'user' => $user,
-        ]);
-    }
+
     // ✅ DELETE
     #[Route('/delete/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(
@@ -100,17 +139,8 @@ final class UserController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
             $em->remove($user);
             $em->flush();
-
-            $this->addFlash('success', 'User deleted 🗑️');
         }
 
-        return $this->redirectToRoute('app_user_show');
-    }
-
-    // ✅ PROFILE
-    #[Route('/profile', name: 'app_user_profile')]
-    public function profile(): Response
-    {
-        return $this->render('user/profile.html.twig');
+        return $this->redirectToRoute('app_user_index');
     }
 }

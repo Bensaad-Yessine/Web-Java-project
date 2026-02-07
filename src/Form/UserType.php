@@ -6,108 +6,78 @@ use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Choice;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-use App\Entity\Classe;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\{
+    TextType, EmailType, DateType, ChoiceType,
+    PasswordType, RepeatedType, SubmitType, FileType
+};
 
 class UserType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $isEdit = $options['is_edit'];
+
         $builder
-            ->add('nom',TextType::class, [
-                'label' => 'Nom de famille',
-            ])
-            ->add('prenom',TextType::class, [
-                'label' => 'Prénom',
-            ])
-            ->add('email',EmailType::class, [
-                'label' => 'Adresse e-mail',
-            ])
-            ->add('password',PasswordType::class, [
-                'label' => 'Mot de passe',
-            ])
-            ->add('DateDeNaissance',DateType::class, [
+            ->add('nom', TextType::class)
+            ->add('prenom', TextType::class)
+            ->add('email', EmailType::class)
+            ->add('DateDeNaissance', DateType::class, [
                 'widget' => 'single_text',
-                'label' => 'Date de naissance',
+                'required' => false,
             ])
-            ->add('classe',ChoiceType::class, [
+            ->add('classe', ChoiceType::class, [
+                'required' => false,
                 'choices' => [
-                    '3A' => '"3A"',
-                    '2A' => '2A',
-                    '1A' => '1A',
-                    '3B' => '3B',
-                    '2P' => '2P',
-                ],
-                'label' => 'Classe actuelle',
-                
+                    '1A' => '1A', '2A' => '2A', '3A' => '3A'
+                ]
             ])
-            ->add('specialiteFuture',ChoiceType::class, [
+            ->add('specialiteFuture', ChoiceType::class, [
+                'required' => false,
                 'choices' => [
                     'ARCTIC' => 'ARCTIC',
                     'NIDS' => 'NIDS',
-                    'DS' => 'DS',
-                    'DATA' => 'DATA',
-                    'BI' => 'BI',
-                ],
-                'label' => 'Spécialité future envisagée',
-                'constraints' => [
-                    new Choice([
-                        'choices' => ['ARCTIC', 'NIDS', 'DS', 'DATA', 'BI'],
-                        'message' => 'Veuillez choisir une spécialité valide.',
-                    ]),
-                ],
+                    'DS' => 'DS'
+                ]
             ])
-            ->add('sexe',ChoiceType::class, [
+            ->add('sexe', ChoiceType::class, [
                 'choices' => [
                     'Masculin' => 'Masculin',
-                    'Féminin' => 'Féminin',
-                ],
-                'label' => 'Sexe',
-                'constraints' => [
-                    new Choice([
-                        'choices' => ['Masculin', 'Féminin'],
-                        'message' => 'Veuillez choisir un sexe valide.',
-                    ]),
-                ],
+                    'Féminin' => 'Féminin'
+                ]
             ])
-            ->add('role',ChoiceType::class, [
+            ->add('role', ChoiceType::class, [
                 'choices' => [
-                    'Étudiant' => 'Étudiant',
-                    
-                    'Administrateur' => 'Administrateur',
-                ],
-                'label' => 'Rôle',
-                'constraints' => [
-                    new Choice([
-                        'choices' => ['Étudiant', 'Administrateur'],
-                        'message' => 'Veuillez choisir un rôle valide.',
-                    ]),
-                ],
+                    'Étudiant' => 'student',
+                    'Administrateur' => 'admin',
+                ]
             ])
-             ->add('profilePic', FileType::class, [
-                'label' => 'Photo de profil',
-                'required' => false,
-                'mapped' => false, // Important: not mapped directly to entity
-            ])
-            ->add('Submit',SubmitType::class, [
-                'label' => 'Enregistrer',
-            ])
-            
-        ;
+            ->add('profilePic', FileType::class, [
+                'mapped' => false,
+                'required' => false
+            ]);
+
+        // PASSWORD
+        $builder->add('plainPassword', RepeatedType::class, [
+            'type' => PasswordType::class,
+            'mapped' => false,
+            'required' => !$isEdit,
+            'first_options' => ['label' => 'Mot de passe'],
+            'second_options' => ['label' => 'Confirmer mot de passe'],
+        ]);
+
+        $builder->add('submit', SubmitType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'is_edit' => false,
+            'validation_groups' => function ($form) {
+                return $form->getConfig()->getOption('is_edit')
+                    ? ['Default']
+                    : ['create'];
+            },
         ]);
     }
 }
