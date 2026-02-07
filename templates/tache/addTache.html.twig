@@ -1,0 +1,10 @@
+<div style="max-width:500px; margin:30px auto;">
+    <h1>Ajouter une tâche</h1>
+
+    {% include 'tache/_form.html.twig' with {
+        form: form,
+        button_label: 'Ajouter'
+    } %}
+
+    <a href="{{ path('showTache') }}">⬅ Retour à la liste</a>
+</div>
