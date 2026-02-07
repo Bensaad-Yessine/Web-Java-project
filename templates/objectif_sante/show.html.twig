@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ObjectifSante{% endblock %}
+
+{% block body %}
+    <h1>ObjectifSante</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ objectif_sante.id }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ objectif_sante.type }}</td>
+            </tr>
+            <tr>
+                <th>ValeurCible</th>
+                <td>{{ objectif_sante.valeurCible }}</td>
+            </tr>
+            <tr>
+                <th>DateDebut</th>
+                <td>{{ objectif_sante.dateDebut ? objectif_sante.dateDebut|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>DateFin</th>
+                <td>{{ objectif_sante.dateFin ? objectif_sante.dateFin|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Statut</th>
+                <td>{{ objectif_sante.statut }}</td>
+            </tr>
+            <tr>
+                <th>Priorite</th>
+                <td>{{ objectif_sante.priorite }}</td>
+            </tr>
+            <tr>
+                <th>Progression</th>
+                <td>{{ objectif_sante.progression }}</td>
+            </tr>
+            <tr>
+                <th>Titre</th>
+                <td>{{ objectif_sante.titre }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_objectif_sante_index') }}">back to list</a>
+
+    <a href="{{ path('app_objectif_sante_edit', {'id': objectif_sante.id}) }}">edit</a>
+
+    {{ include('objectif_sante/_delete_form.html.twig') }}
+{% endblock %}
