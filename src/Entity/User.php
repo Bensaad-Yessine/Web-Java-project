@@ -85,9 +85,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Tache::class, mappedBy: 'idUser')]
     private Collection $taches;
 
+    /**
+     * @var Collection<int, ObjectifSante>
+     */
+    #[ORM\OneToMany(targetEntity: ObjectifSante::class, mappedBy: 'user')]
+    private Collection $objectifSantes;
+
     public function __construct()
     {
         $this->taches = new ArrayCollection();
+        $this->objectifSantes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -265,6 +272,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($tach->getIdUser() === $this) {
                 $tach->setIdUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ObjectifSante>
+     */
+    public function getObjectifSantes(): Collection
+    {
+        return $this->objectifSantes;
+    }
+
+    public function addObjectifSante(ObjectifSante $objectifSante): static
+    {
+        if (!$this->objectifSantes->contains($objectifSante)) {
+            $this->objectifSantes->add($objectifSante);
+            $objectifSante->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeObjectifSante(ObjectifSante $objectifSante): static
+    {
+        if ($this->objectifSantes->removeElement($objectifSante)) {
+            // set the owning side to null (unless already changed)
+            if ($objectifSante->getUser() === $this) {
+                $objectifSante->setUser(null);
             }
         }
 
