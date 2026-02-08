@@ -1,13 +1,945 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit MatiereClasse{% endblock %}
+{% block title %}Modifier Matière - Matière #{{ matiere_classe.id }}{% endblock %}
 
 {% block body %}
-    <h1>Edit MatiereClasse</h1>
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ESPRIT - Modifier Matière</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+    <style>
+      .stat-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+        margin: 0 auto;
+      }
+      .card-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+      
+      /* Profile styles */
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      
+      .user-avatar-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      
+      .profile-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 20px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      
+      .profile-avatar-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #fff;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      }
+      
+      .badge-etudiant {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border: none;
+      }
+      
+      .badge-admin {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+      }
+      
+      .user-role-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 10px;
+        margin-top: 5px;
+        display: inline-block;
+      }
+      
+      .profile-pic {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+      }
+      
+      .count-indicator {
+        position: relative;
+        margin-right: 15px;
+      }
+      
+      .profile-name {
+        flex-grow: 1;
+      }
+      
+      .navbar-profile {
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+      }
+      
+      .avatar-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      
+      .alert {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+      }
+      
+      .form-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      }
+      
+      .form-header {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 20px;
+      }
+      
+      .form-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 15px;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        margin: 0 auto 15px;
+      }
+      
+      .required-field::after {
+        content: " *";
+        color: #dc3545;
+      }
+      
+      .complexity-slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 8px;
+        border-radius: 4px;
+        background: #e9ecef;
+        outline: none;
+        margin: 15px 0;
+      }
+      
+      .complexity-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        cursor: pointer;
+        border: 3px solid white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      }
+      
+      .complexity-slider::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        cursor: pointer;
+        border: 3px solid white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      }
+      
+      .complexity-value {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #667eea;
+      }
+      
+      .complexity-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 5px;
+        font-size: 0.8rem;
+        color: #6c757d;
+      }
+      
+      /* Matiere specific styles */
+      .matiere-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+      
+      .badge-coefficient {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+      }
+      
+      .badge-charge {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+      }
+      
+      .badge-complexite {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+      }
+      
+      .class-info-badge {
+        padding: 8px 15px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-scroller">
+      <!-- Sidebar -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+          <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </a>
+          <a class="sidebar-brand brand-logo-mini" href="{{ path('app_user_index') }}">
+            <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+          </a>
+        </div>
+        <ul class="nav">
+          <li class="nav-item profile">
+            <div class="profile-desc">
+              <div class="profile-pic">
+                <div class="count-indicator">
+                  {% if app.user %}
+                    {% if app.user.profilePic %}
+                      <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                           alt="{{ app.user.prenom }}" 
+                           class="profile-avatar-img">
+                    {% else %}
+                      <div class="profile-avatar">
+                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                      </div>
+                    {% endif %}
+                  {% else %}
+                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  {% endif %}
+                  <span class="count bg-success"></span>
+                </div>
+                <div class="profile-name">
+                  {% if app.user %}
+                    <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                    <span class="text-muted">{{ app.user.email }}</span>
+                    <div class="mt-1">
+                      {% if 'ROLE_ADMIN' in app.user.roles %}
+                        <span class="user-role-badge badge-admin">Administrateur</span>
+                      {% else %}
+                        <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                    <span>Veuillez vous connecter</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Navigation</span>
+          </li>
+          
+          <!-- Dashboard -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-speedometer"></i>
+              </span>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          
+          <!-- Utilisateurs -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_user_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-group"></i>
+              </span>
+              <span class="menu-title">Utilisateurs</span>
+            </a>
+          </li>
+          
+          <!-- Matières -->
+          <li class="nav-item menu-items active">
+            <a class="nav-link" href="{{ path('app_matiere_classe_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-book-open-page-variant"></i>
+              </span>
+              <span class="menu-title">Matières</span>
+            </a>
+          </li>
+          
+          <!-- Classes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_classe_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-school"></i>
+              </span>
+              <span class="menu-title">Classes</span>
+            </a>
+          </li>
+          
+          <!-- Salles -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_salle_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-office-building"></i>
+              </span>
+              <span class="menu-title">Salles</span>
+            </a>
+          </li>
+          
+          <!-- Séances -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-calendar-clock"></i>
+              </span>
+              <span class="menu-title">Séances</span>
+            </a>
+          </li>
+          
+          <!-- Groupes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-multiple"></i>
+              </span>
+              <span class="menu-title">Groupes</span>
+            </a>
+          </li>
+          
+          <!-- Tâches -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_tache_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+              </span>
+              <span class="menu-title">Tâches</span>
+            </a>
+          </li>
+          
+          <!-- Alertes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-alert-circle-outline"></i>
+              </span>
+              <span class="menu-title">Alertes</span>
+            </a>
+          </li>
+          
+          <!-- Exercices de santé -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-heart-pulse"></i>
+              </span>
+              <span class="menu-title">Exercices de santé</span>
+            </a>
+          </li>
+          
+          <!-- Logout -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_logout') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-logout text-danger"></i>
+              </span>
+              <span class="menu-title text-danger">Déconnexion</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
 
-    {{ include('matiere_classe/_form.html.twig', {'button_label': 'Update'}) }}
+      <!-- Main Content -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+          <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </div>
+          <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+              <span class="mdi mdi-menu"></span>
+            </button>
+            <ul class="navbar-nav w-100">
+              <li class="nav-item w-100">
+                <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                  <input type="text" class="form-control" placeholder="Rechercher...">
+                </form>
+              </li>
+            </ul>
+            <ul class="navbar-nav navbar-nav-right">
+              <li class="nav-item dropdown border-left">
+                <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                  <i class="mdi mdi-bell"></i>
+                  <span class="count bg-danger">1</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                  <h6 class="p-3 mb-0">Notifications</h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-warning rounded-circle">
+                        <i class="mdi mdi-book-open-page-variant"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Modification matière</p>
+                      <p class="text-muted ellipsis mb-0">Modification en cours</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+              
+              <li class="nav-item dropdown">
+                <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                  <div class="navbar-profile">
+                    {% if app.user %}
+                      <div class="avatar-container">
+                        {% if app.user.profilePic %}
+                          <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                               alt="{{ app.user.prenom }}" 
+                               class="user-avatar-img">
+                        {% else %}
+                          <div class="user-avatar">
+                            {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                          </div>
+                        {% endif %}
+                        <div class="text-start ms-2">
+                          <p class="mb-0 d-none d-sm-block navbar-profile-name">
+                            {{ app.user.prenom }} {{ app.user.nom }}
+                          </p>
+                          <small class="text-muted d-none d-sm-block">
+                            {% if 'ROLE_ADMIN' in app.user.roles %}
+                              <span class="badge badge-admin">Admin</span>
+                            {% else %}
+                              <span class="badge badge-etudiant">Utilisateur</span>
+                            {% endif %}
+                          </small>
+                        </div>
+                      </div>
+                    {% else %}
+                      <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                      <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                    {% endif %}
+                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                  </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                  <div class="dropdown-header p-3">
+                    {% if app.user %}
+                      <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                      <p class="text-muted mb-0">{{ app.user.email }}</p>
+                      <small class="text-muted">
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin">Administrateur</span>
+                        {% else %}
+                          <span class="badge badge-etudiant">Utilisateur</span>
+                        {% endif %}
+                      </small>
+                    {% else %}
+                      <h6 class="mb-0">Non connecté</h6>
+                      <p class="text-muted mb-0">Veuillez vous connecter</p>
+                    {% endif %}
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  {% if app.user %}
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-primary rounded-circle">
+                          <i class="mdi mdi-account"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Mon profil</p>
+                      </div>
+                    </a>
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-warning rounded-circle">
+                          <i class="mdi mdi-account-edit"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Modifier mon profil</p>
+                      </div>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                  {% endif %}
+                  <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-logout text-danger"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Déconnexion</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
 
-    <a href="{{ path('app_matiere_classe_index') }}">back to list</a>
+        <!-- Content -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            {# Flash Messages #}
+            {% for label, messages in app.flashes %}
+              {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                  <i class="mdi mdi-{{ label == 'success' ? 'check-circle' : 'alert-circle' }} me-2"></i>
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            {% endfor %}
 
-    {{ include('matiere_classe/_delete_form.html.twig') }}
+            <!-- Header -->
+            <div class="row">
+              <div class="col-12">
+                <div class="page-header">
+                  <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                      <i class="mdi mdi-book-open-page-variant"></i>
+                    </span> 
+                    Modification de la Matière
+                  </h3>
+                  <nav aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                      <li class="breadcrumb-item">
+                        <a href="{{ path('app_matiere_classe_index') }}" class="text-decoration-none">
+                          <i class="mdi mdi-arrow-left me-1"></i>Retour à la liste
+                        </a>
+                      </li>
+                      <li class="breadcrumb-item">
+                        <a href="{{ path('app_matiere_classe_show', {'id': matiere_classe.id}) }}" class="text-decoration-none">
+                          <i class="mdi mdi-eye me-1"></i>Voir la matière
+                        </a>
+                      </li>
+                      <li class="breadcrumb-item active" aria-current="page">
+                        <span></span>Modifier
+                      </li>
+                    </ul>
+                  </nav>
+                  
+                  <!-- Matiere Info -->
+                  <div class="mt-3">
+                    <div class="d-flex align-items-center">
+                      <div class="matiere-avatar me-3" style="width: 50px; height: 50px; font-size: 20px;">
+                        <i class="mdi mdi-book-open-page-variant"></i>
+                      </div>
+                      <div>
+                        <h4 class="mb-1">Matière #{{ matiere_classe.id }}</h4>
+                        <div class="d-flex gap-2">
+                          <span class="matiere-badge badge-coefficient">
+                            <i class="mdi mdi-weight me-1"></i>Coefficient: {{ matiere_classe.coefficient }}
+                          </span>
+                          <span class="matiere-badge badge-charge">
+                            <i class="mdi mdi-clock-outline me-1"></i>Charge: {{ matiere_classe.chargehoraire }}h
+                          </span>
+                          <span class="matiere-badge badge-complexite">
+                            <i class="mdi mdi-chart-line me-1"></i>Complexité: {{ matiere_classe.scorecomplexite }}/10
+                          </span>
+                          <span class="badge bg-light text-dark">
+                            <i class="mdi mdi-identifier me-1"></i>ID: {{ matiere_classe.id }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Form -->
+            <div class="row">
+              <div class="col-md-8 offset-md-2">
+                <div class="card form-card">
+                  <div class="form-header" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <div class="form-icon">
+                      <i class="mdi mdi-pencil"></i>
+                    </div>
+                    <h4 class="text-center mb-0">✏️ Modifier les informations de la matière</h4>
+                    <p class="text-center mb-0 opacity-75">
+                      Mettez à jour les informations de Matière #{{ matiere_classe.id }}
+                    </p>
+                  </div>
+                  <div class="card-body">
+                    {{ form_start(form, {'attr': {'class': 'form-sample', 'novalidate': 'novalidate'}}) }}
+                    
+                    <!-- Coefficient -->
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="required-field">Coefficient</label>
+                          {{ form_widget(form.coefficient, {'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'Ex: 2.5',
+                            'step': '0.1',
+                            'min': '0.1'
+                          }}) }}
+                          <small class="form-text text-muted">
+                            <i class="mdi mdi-information me-1"></i>
+                            Poids de la matière dans le calcul de la moyenne
+                          </small>
+                          {% if form_errors(form.coefficient) %}
+                            <div class="text-danger mt-1">
+                              {{ form_errors(form.coefficient) }}
+                            </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                      
+                      <!-- Charge Horaire -->
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="required-field">Charge horaire (heures)</label>
+                          {{ form_widget(form.chargehoraire, {'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'Ex: 30',
+                            'min': '1'
+                          }}) }}
+                          <small class="form-text text-muted">
+                            <i class="mdi mdi-clock-outline me-1"></i>
+                            Nombre total d'heures pour cette matière
+                          </small>
+                          {% if form_errors(form.chargehoraire) %}
+                            <div class="text-danger mt-1">
+                              {{ form_errors(form.chargehoraire) }}
+                            </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Score de Complexité -->
+                    <div class="row mb-3">
+                      <div class="col-md-12">
+                        <div class="form-group">
+                          <label class="required-field">Score de complexité</label>
+                          {{ form_widget(form.scorecomplexite, {'attr': {
+                            'class': 'form-control complexity-slider',
+                            'type': 'range',
+                            'min': '1',
+                            'max': '10'
+                          }}) }}
+                          <div class="d-flex justify-content-between align-items-center mt-2">
+                            <span class="complexity-value" id="complexityValue">{{ matiere_classe.scorecomplexite }}</span>
+                            <div class="complexity-labels">
+                              <span>Faible</span>
+                              <span>Moyen</span>
+                              <span>Élevé</span>
+                            </div>
+                          </div>
+                          <small class="form-text text-muted">
+                            <i class="mdi mdi-chart-line me-1"></i>
+                            Niveau de difficulté de la matière (1-10)
+                          </small>
+                          {% if form_errors(form.scorecomplexite) %}
+                            <div class="text-danger mt-1">
+                              {{ form_errors(form.scorecomplexite) }}
+                            </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Classes associées -->
+                    <div class="row mt-4">
+                      <div class="col-md-12">
+                        <div class="card">
+                          <div class="card-header bg-light">
+                            <h5 class="mb-0 text-dark">
+                              <i class="mdi mdi-school me-2 text-dark"></i>
+                              Classes associées
+                              <span class="badge bg-primary ms-2">{{ matiere_classe.classe|length }}</span>
+                            </h5>
+                          </div>
+                          <div class="card-body">
+                            <div class="form-group">
+                              {{ form_widget(form.Classe, {'attr': {
+                                'class': 'form-control',
+                                'size': '5'
+                              }}) }}
+                              <small class="form-text text-muted">
+                                <i class="mdi mdi-information me-1"></i>
+                                Sélectionnez les classes qui suivront cette matière (Maintenez Ctrl/Cmd pour sélection multiple)
+                              </small>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="row mt-4">
+                      <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                          <a href="{{ path('app_matiere_classe_show', {'id': matiere_classe.id}) }}" class="btn btn-light">
+                            <i class="mdi mdi-close me-1"></i>Annuler
+                          </a>
+                          <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-gradient-primary">
+                              <i class="mdi mdi-content-save me-1"></i>Enregistrer
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {{ form_end(form) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Danger Zone -->
+            <div class="row mt-4">
+              <div class="col-md-8 offset-md-2">
+                <div class="card border-danger">
+                  <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                      <i class="mdi mdi-alert-circle me-2"></i>
+                      Zone de danger
+                    </h5>
+                  </div>
+                  <div class="card-body">
+                    <h6 class="text-danger">Supprimer cette matière</h6>
+                    <p class="text-muted mb-3">
+                      Cette action est irréversible. Toutes les associations avec les classes seront supprimées.
+                    </p>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                      <i class="mdi mdi-delete me-1"></i>Supprimer la matière
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+            <!-- Footer -->
+            <footer class="footer mt-4">
+              <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                  © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
+                </span>
+                <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                  Modification de matière: Matière #{{ matiere_classe.id }}
+                </span>
+              </div>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="deleteModalLabel">
+              <i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Êtes-vous sûr de vouloir supprimer la matière <strong>Matière #{{ matiere_classe.id }}</strong> ?</p>
+            <p class="text-danger mb-0">
+              <i class="mdi mdi-alert me-1"></i>
+              <small>Cette action est irréversible. Toutes les associations avec les classes seront supprimées.</small>
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <i class="mdi mdi-close me-1"></i>Annuler
+            </button>
+            <form method="post" action="{{ path('app_matiere_classe_delete', {'id': matiere_classe.id}) }}" style="display: inline;">
+              <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ matiere_classe.id) }}">
+              <button type="submit" class="btn btn-danger">
+                <i class="mdi mdi-delete me-1"></i>Supprimer
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('assets/js/misc.js') }}"></script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+          const alerts = document.querySelectorAll('.alert');
+          alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+          });
+        }, 5000);
+        
+        // Complexity slider update
+        const complexitySlider = document.getElementById('{{ form.scorecomplexite.vars.id }}');
+        const complexityValue = document.getElementById('complexityValue');
+        
+        if (complexitySlider && complexityValue) {
+          // Update value display
+          complexityValue.textContent = complexitySlider.value;
+          
+          // Update on slider change
+          complexitySlider.addEventListener('input', function() {
+            complexityValue.textContent = this.value;
+          });
+        }
+        
+        // Form validation
+        const form = document.querySelector('form');
+        if (form) {
+          form.addEventListener('submit', function(e) {
+            const coefficientInput = document.getElementById('{{ form.coefficient.vars.id }}');
+            const chargeInput = document.getElementById('{{ form.chargehoraire.vars.id }}');
+            const complexityInput = document.getElementById('{{ form.scorecomplexite.vars.id }}');
+            
+            let isValid = true;
+            
+            // Validate coefficient
+            if (!coefficientInput.value || parseFloat(coefficientInput.value) <= 0) {
+              isValid = false;
+              coefficientInput.classList.add('is-invalid');
+            } else {
+              coefficientInput.classList.remove('is-invalid');
+            }
+            
+            // Validate charge horaire
+            if (!chargeInput.value || parseInt(chargeInput.value) <= 0) {
+              isValid = false;
+              chargeInput.classList.add('is-invalid');
+            } else {
+              chargeInput.classList.remove('is-invalid');
+            }
+            
+            // Validate complexity
+            if (!complexityInput.value || parseInt(complexityInput.value) < 1 || parseInt(complexityInput.value) > 10) {
+              isValid = false;
+              complexityInput.classList.add('is-invalid');
+            } else {
+              complexityInput.classList.remove('is-invalid');
+            }
+            
+            if (!isValid) {
+              e.preventDefault();
+              
+              // Show error message
+              const errorDiv = document.createElement('div');
+              errorDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+              errorDiv.innerHTML = `
+                <i class="mdi mdi-alert-circle me-2"></i>
+                Veuillez corriger les erreurs dans le formulaire.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              `;
+              
+              const formBody = document.querySelector('.card-body');
+              formBody.insertBefore(errorDiv, formBody.firstChild);
+              
+              // Scroll to error
+              errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          });
+        }
+        
+        // Add visual feedback for selected classes
+        const classesSelect = document.getElementById('{{ form.Classe.vars.id }}');
+        if (classesSelect) {
+          // Update border when selection changes
+          classesSelect.addEventListener('change', function() {
+            const selectedCount = Array.from(this.selectedOptions).length;
+            if (selectedCount > 0) {
+              this.style.borderColor = '#4facfe';
+              this.style.boxShadow = '0 0 0 0.2rem rgba(79, 172, 254, 0.25)';
+            } else {
+              this.style.borderColor = '';
+              this.style.boxShadow = '';
+            }
+          });
+          
+          // Initialize border based on current selection
+          const initialSelectedCount = Array.from(classesSelect.selectedOptions).length;
+          if (initialSelectedCount > 0) {
+            classesSelect.style.borderColor = '#4facfe';
+            classesSelect.style.boxShadow = '0 0 0 0.2rem rgba(79, 172, 254, 0.25)';
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
 {% endblock %}

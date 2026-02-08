@@ -27,6 +27,11 @@ class Classe
     #[ORM\ManyToMany(targetEntity: MatiereClasse::class, mappedBy: 'Classe')]
     private Collection $matiereClasses;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'classes')]
+#[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+private ?User $user = null;
+
+
     #[ORM\Column(length: 255)]
 private ?string $anneeuniversitaire = "2025/2026";
 
@@ -102,4 +107,14 @@ private ?string $anneeuniversitaire = "2025/2026";
 
         return $this;
     }
+    public function getUser(): ?User
+{
+    return $this->user;
+}
+
+public function setUser(?User $user): static
+{
+    $this->user = $user;
+    return $this;
+}
 }
