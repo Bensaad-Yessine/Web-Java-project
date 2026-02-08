@@ -1,79 +1,900 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ESPRIT - Profil Utilisateur</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+    <style>
+      .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+      }
+      
+      .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: white;
+        color: #667eea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        font-weight: bold;
+        margin: 0 auto 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      }
+      
+      .info-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      
+      .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 25px rgba(0,0,0,0.12);
+      }
+      
+      .info-card-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #667eea;
+        display: flex;
+        align-items: center;
+      }
+      
+      .info-card-title i {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-right: 10px;
+        font-size: 1.5rem;
+      }
+      
+      .info-row {
+        display: flex;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      
+      .info-row:last-child {
+        border-bottom: none;
+      }
+      
+      .info-label {
+        font-weight: 600;
+        color: #6c757d;
+        width: 180px;
+        display: flex;
+        align-items: center;
+      }
+      
+      .info-label i {
+        margin-right: 10px;
+        color: #667eea;
+        font-size: 18px;
+      }
+      
+      .info-value {
+        color: #2c3e50;
+        font-weight: 500;
+        flex: 1;
+      }
+      
+      .badge-custom {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
+      
+      .badge-verified {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+      }
+      
+      .badge-not-verified {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+      }
+      
+      .badge-admin {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      
+      .badge-user {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+      }
+      
+      .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+      }
+      
+      .btn-gradient-warning {
+        background: linear-gradient(135deg, #ffa726 0%, #ff7043 100%);
+        color: white;
+        border: none;
+      }
+      
+      .btn-gradient-warning:hover {
+        background: linear-gradient(135deg, #ff7043 0%, #ffa726 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 167, 38, 0.3);
+      }
+      
+      .btn-gradient-danger {
+        background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+        color: white;
+        border: none;
+      }
+      
+      .btn-gradient-danger:hover {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(245, 87, 108, 0.3);
+      }
+      
+      .btn-gradient-secondary {
+        background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        color: white;
+        border: none;
+      }
+      
+      .btn-gradient-secondary:hover {
+        background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(149, 165, 166, 0.3);
+      }
+      
+      .alert {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+      
+      .empty-value {
+        color: #95a5a6;
+        font-style: italic;
+      }
+      
+      /* Profile avatar styles */
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      
+      .sidebar-profile-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 20px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      
+      .user-avatar-img, .sidebar-profile-avatar-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      
+      .sidebar-profile-avatar-img {
+        width: 50px;
+        height: 50px;
+        border: 3px solid #fff;
+      }
+      
+      .user-role-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 10px;
+        margin-top: 5px;
+        display: inline-block;
+      }
+      
+      .badge-admin {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+      }
+      
+      .badge-etudiant {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border: none;
+      }
+      
+      /* Profile section alignment */
+      .profile-pic {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+      }
+      
+      .count-indicator {
+        position: relative;
+        margin-right: 15px;
+      }
+      
+      .profile-name {
+        flex-grow: 1;
+      }
+      
+      .navbar-profile {
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+      }
+      
+      .avatar-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-scroller">
+      <!-- Sidebar -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+          <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </a>
+          <a class="sidebar-brand brand-logo-mini" href="{{ path('app_user_index') }}">
+            <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+          </a>
+        </div>
+        <ul class="nav">
+          <li class="nav-item profile">
+            <div class="profile-desc">
+              <div class="profile-pic">
+                <div class="count-indicator">
+                  {% if app.user %}
+                    {% if app.user.profilePic %}
+                      <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                           alt="{{ app.user.prenom }}" 
+                           class="sidebar-profile-avatar-img">
+                    {% else %}
+                      <div class="sidebar-profile-avatar">
+                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                      </div>
+                    {% endif %}
+                  {% else %}
+                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  {% endif %}
+                  <span class="count bg-success"></span>
+                </div>
+                <div class="profile-name">
+                  {% if app.user %}
+                    <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                    <span class="text-muted">{{ app.user.email }}</span>
+                    <div class="mt-1">
+                      {% if 'ROLE_ADMIN' in app.user.roles %}
+                        <span class="user-role-badge badge-admin">Administrateur</span>
+                      {% else %}
+                        <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                    <span>Veuillez vous connecter</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Navigation</span>
+          </li>
+          
+          <!-- Dashboard -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-speedometer"></i>
+              </span>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          
+          <!-- Utilisateurs -->
+          <li class="nav-item menu-items active">
+            <a class="nav-link" href="{{ path('app_user_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-group"></i>
+              </span>
+              <span class="menu-title">Utilisateurs</span>
+            </a>
+          </li>
+          
+          <!-- Matières -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-book-open-page-variant"></i>
+              </span>
+              <span class="menu-title">Matieres</span>
+            </a>
+          </li>
+          
+          <!-- Classes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-school"></i>
+              </span>
+              <span class="menu-title">Classes</span>
+            </a>
+          </li>
+          
+          <!-- Salles -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-office-building"></i>
+              </span>
+              <span class="menu-title">Salles</span>
+            </a>
+          </li>
+          
+          <!-- Séances -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-calendar-clock"></i>
+              </span>
+              <span class="menu-title">Séances</span>
+            </a>
+          </li>
+          
+          <!-- Groupes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-multiple"></i>
+              </span>
+              <span class="menu-title">Groupes</span>
+            </a>
+          </li>
+          
+          <!-- Tâches -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+              </span>
+              <span class="menu-title">Tâches</span>
+            </a>
+          </li>
+          
+          <!-- Alertes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-alert-circle-outline"></i>
+              </span>
+              <span class="menu-title">Alertes</span>
+            </a>
+          </li>
+          
+          <!-- Exercices de santé -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-heart-pulse"></i>
+              </span>
+              <span class="menu-title">Exercices de santé</span>
+            </a>
+          </li>
+          
+          <!-- Logout -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_logout') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-logout text-danger"></i>
+              </span>
+              <span class="menu-title text-danger">Déconnexion</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
 
-{% block title %}Liste des utilisateurs{% endblock %}
+      <!-- Main Content -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+          <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </div>
+          <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+              <span class="mdi mdi-menu"></span>
+            </button>
+            <ul class="navbar-nav w-100">
+              <li class="nav-item w-100">
+                <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                  <input type="text" class="form-control" placeholder="Rechercher...">
+                </form>
+              </li>
+            </ul>
+            <ul class="navbar-nav navbar-nav-right">
+              <li class="nav-item dropdown border-left">
+                <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                  <i class="mdi mdi-bell"></i>
+                  <span class="count bg-danger">1</span>
+                </a>
+              </li>
+              
+              <li class="nav-item dropdown">
+                <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                  <div class="navbar-profile">
+                    {% if app.user %}
+                      <div class="avatar-container">
+                        {% if app.user.profilePic %}
+                          <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                               alt="{{ app.user.prenom }}" 
+                               class="user-avatar-img">
+                        {% else %}
+                          <div class="user-avatar">
+                            {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                          </div>
+                        {% endif %}
+                        <div class="text-start ms-2">
+                          <p class="mb-0 d-none d-sm-block navbar-profile-name">
+                            {{ app.user.prenom }} {{ app.user.nom }}
+                          </p>
+                          <small class="text-muted d-none d-sm-block">
+                            {% if 'ROLE_ADMIN' in app.user.roles %}
+                              <span class="badge badge-admin">Admin</span>
+                            {% else %}
+                              <span class="badge badge-etudiant">Utilisateur</span>
+                            {% endif %}
+                          </small>
+                        </div>
+                      </div>
+                    {% else %}
+                      <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                      <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                    {% endif %}
+                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                  </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                  <div class="dropdown-header p-3">
+                    {% if app.user %}
+                      <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                      <p class="text-muted mb-0">{{ app.user.email }}</p>
+                      <small class="text-muted">
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin">Administrateur</span>
+                        {% else %}
+                          <span class="badge badge-etudiant">Utilisateur</span>
+                        {% endif %}
+                      </small>
+                    {% else %}
+                      <h6 class="mb-0">Non connecté</h6>
+                      <p class="text-muted mb-0">Veuillez vous connecter</p>
+                    {% endif %}
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  {% if app.user %}
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-primary rounded-circle">
+                          <i class="mdi mdi-account"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Mon profil</p>
+                      </div>
+                    </a>
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-warning rounded-circle">
+                          <i class="mdi mdi-account-edit"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Modifier mon profil</p>
+                      </div>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                  {% endif %}
+                  <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-logout text-danger"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Déconnexion</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
 
-{% block body %}
-<div class="container mt-5">
+        <!-- Content -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            {# Flash Messages #}
+            {% for label, messages in app.flashes %}
+              {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                  <i class="mdi mdi-{{ label == 'success' ? 'check-circle' : 'alert-circle' }} me-2"></i>
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+              {% endfor %}
+            {% endfor %}
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>👥 Liste des utilisateurs</h2>
-        <a href="{{ path('app_user_add') }}" class="btn btn-success">
-            ➕ Ajouter
-        </a>
+            <!-- Header -->
+            <div class="row">
+              <div class="col-12">
+                <div class="page-header">
+                  <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                      <i class="mdi mdi-account"></i>
+                    </span> 
+                    Profil Utilisateur
+                  </h3>
+                  <nav aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                      <li class="breadcrumb-item"><a href="{{ path('app_user_index') }}">Utilisateurs</a></li>
+                      <li class="breadcrumb-item active" aria-current="page">{{ user.prenom }} {{ user.nom }}</li>
+                    </ul>
+                  </nav>
+                  {% if app.user %}
+                    <div class="mt-2">
+                      <small class="text-muted">
+                        <i class="mdi mdi-account me-1"></i>
+                        Connecté en tant que: <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong>
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin ms-2">Administrateur</span>
+                        {% endif %}
+                      </small>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Profile Header -->
+            <div class="row">
+              <div class="col-12">
+                <div class="profile-header">
+                  <div class="row align-items-center">
+                    <div class="col-md-3 text-center">
+                      {% if user.profilePic %}
+                        <img src="{{ asset('uploads/profile_pics/' ~ user.profilePic) }}" 
+                             alt="{{ user.prenom }}" 
+                             class="profile-avatar"
+                             style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; box-shadow: 0 5px 20px rgba(0,0,0,0.2);">
+                      {% else %}
+                        <div class="profile-avatar">
+                          {{ user.prenom|first|upper }}{{ user.nom|first|upper }}
+                        </div>
+                      {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                      <h2 class="mb-2">{{ user.prenom }} {{ user.nom }}</h2>
+                      <p class="mb-3 opacity-75">
+                        <i class="mdi mdi-email me-2"></i>{{ user.email }}
+                      </p>
+                      <div class="d-flex flex-wrap gap-2">
+                        {% if user.isVerified %}
+                          <span class="badge badge-custom badge-verified">
+                            <i class="mdi mdi-check-circle me-1"></i>Compte Vérifié
+                          </span>
+                        {% else %}
+                          <span class="badge badge-custom badge-not-verified">
+                            <i class="mdi mdi-alert-circle me-1"></i>Non Vérifié
+                          </span>
+                        {% endif %}
+                        
+                        {% if 'ROLE_ADMIN' in user.roles %}
+                          <span class="badge badge-custom badge-admin">
+                            <i class="mdi mdi-shield-account me-1"></i>Administrateur
+                          </span>
+                        {% else %}
+                          <span class="badge badge-custom badge-user">
+                            <i class="mdi mdi-account me-1"></i>Utilisateur
+                          </span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- Personal Information -->
+              <div class="col-md-6">
+                <div class="info-card">
+                  <h4 class="info-card-title">
+                    <i class="mdi mdi-account-circle"></i>
+                    Informations Personnelles
+                  </h4>
+                  
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i class="mdi mdi-account"></i>
+                      Nom complet
+                    </div>
+                    <div class="info-value">{{ user.prenom }} {{ user.nom }}</div>
+                  </div>
+                  
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i class="mdi mdi-calendar"></i>
+                      Date de naissance
+                    </div>
+                    <div class="info-value">
+                      {% if user.dateDeNaissance %}
+                        {{ user.dateDeNaissance|date('d/m/Y') }}
+                        <small class="text-muted ms-2">({{ 'now'|date('Y') - user.dateDeNaissance|date('Y') }} ans)</small>
+                      {% else %}
+                        <span class="empty-value">Non renseignée</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i class="mdi mdi-gender-male-female"></i>
+                      Sexe
+                    </div>
+                    <div class="info-value">
+                      {% if user.sexe %}
+                        {% if user.sexe == 'Homme' %}
+                          <span class="badge badge-primary">{{ user.sexe }}</span>
+                        {% else %}
+                          <span class="badge badge-pink">{{ user.sexe }}</span>
+                        {% endif %}
+                      {% else %}
+                        <span class="empty-value">Non renseigné</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i class="mdi mdi-email"></i>
+                      Email
+                    </div>
+                    <div class="info-value">{{ user.email }}</div>
+                  </div>
+                  
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i class="mdi mdi-phone"></i>
+                      Téléphone
+                    </div>
+                    <div class="info-value">
+                      {% if user.numTel %}
+                        <span class="badge badge-info">{{ user.numTel }}</span>
+                      {% else %}
+                        <span class="empty-value">Non renseigné</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Academic Information -->
+              <div class="col-md-6">
+                <div class="info-card">
+                  <h4 class="info-card-title">
+                    <i class="mdi mdi-school"></i>
+                    Informations Académiques
+                  </h4>
+                  
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i class="mdi mdi-book-open-page-variant"></i>
+                      Classe
+                    </div>
+                    <div class="info-value">
+                      {% if user.classe %}
+                        <span class="badge badge-success">{{ user.classe.nom }}</span>
+                      {% else %}
+                        <span class="empty-value">Aucune classe assignée</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i class="mdi mdi-shield-account"></i>
+                      Rôles
+                    </div>
+                    <div class="info-value">
+                      <div class="d-flex flex-wrap gap-2">
+                        {% for role in user.roles %}
+                          {% if role == 'ROLE_ADMIN' %}
+                            <span class="badge badge-admin">Administrateur</span>
+                          {% elseif role == 'ROLE_USER' %}
+                            <span class="badge badge-user">Utilisateur</span>
+                          {% else %}
+                            <span class="badge badge-secondary">{{ role }}</span>
+                          {% endif %}
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i class="mdi mdi-check-circle"></i>
+                      Statut du compte
+                    </div>
+                    <div class="info-value">
+                      {% if user.isVerified %}
+                        <span class="badge badge-success">
+                          <i class="mdi mdi-check me-1"></i>Vérifié
+                        </span>
+                      {% else %}
+                        <span class="badge badge-warning">
+                          <i class="mdi mdi-alert me-1"></i>Non vérifié
+                        </span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  
+                  <div class="info-row">
+                    <div class="info-label">
+                      <i class="mdi mdi-identifier"></i>
+                      ID Utilisateur
+                    </div>
+                    <div class="info-value">
+                      <code>#{{ user.id }}</code>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="row">
+              <div class="col-12">
+                <div class="info-card">
+                  <div class="action-buttons">
+                    <a href="{{ path('app_user_index') }}" class="btn btn-gradient-secondary">
+                      <i class="mdi mdi-arrow-left me-2"></i>Retour à la liste
+                    </a>
+                    <a href="{{ path('app_user_edit', { id: user.id }) }}" class="btn btn-gradient-warning">
+                      <i class="mdi mdi-pencil me-2"></i>Modifier
+                    </a>
+                    <button type="button" 
+                            class="btn btn-gradient-danger" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#deleteModal">
+                      <i class="mdi mdi-delete me-2"></i>Supprimer
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="footer">
+              <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                  © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
+                </span>
+                <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                  Profil de {{ user.prenom }} {{ user.nom }}
+                </span>
+              </div>
+            </footer>
+          </div>
+        </div>
+      </div>
     </div>
 
-    {% if users is empty %}
-        <div class="alert alert-warning text-center">
-            Aucun utilisateur trouvé.
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="deleteModalLabel">
+              <i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Êtes-vous sûr de vouloir supprimer l'utilisateur <strong>{{ user.prenom }} {{ user.nom }}</strong> ?</p>
+            <p class="text-danger mb-0">
+              <i class="mdi mdi-alert me-1"></i>
+              <small>Cette action est irréversible.</small>
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <i class="mdi mdi-close me-1"></i>Annuler
+            </button>
+            <form method="POST" action="{{ path('app_user_delete', { id: user.id }) }}" style="display: inline;">
+              <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+              <button type="submit" class="btn btn-danger">
+                <i class="mdi mdi-delete me-1"></i>Supprimer
+              </button>
+            </form>
+          </div>
         </div>
-    {% else %}
-        <table class="table table-striped table-bordered text-center align-middle">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Nom</th>
-                    <th>Prénom</th>
-                    <th>Email</th>
-                    <th>Date de naissance</th>
-                    <th>Classe</th>
-                    <th>Spécialité future</th>
-                    <th>Sexe</th>
-                    <th>Rôle</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                    <tr>
-                        <td>{{ user.id }}</td>
-                        <td>{{ user.nom }}</td>
-                        <td>{{ user.prenom }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.dateDeNaissance ? user.dateDeNaissance|date('d/m/Y') : '—' }}</td>
-                        <td>{{ user.classe }}</td>
-                        <td>{{ user.specialiteFuture ?: '—' }}</td>
-                        <td>{{ user.sexe }}</td>
-                        <td>
-                            {% if user.role == 'Étudiant' %}
-                                <span class="badge bg-primary">{{ user.role }}</span>
-                            {% elseif user.role == 'Administrateur' %}
-                                <span class="badge bg-danger">{{ user.role }}</span>
-                            {% else %}
-                                <span class="badge bg-secondary">{{ user.role }}</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="{{ path('app_user_show', { id: user.id }) }}"
-                               class="btn btn-info btn-sm">
-                                👁
-                            </a>
+      </div>
+    </div>
 
-                            <a href="{{ path('app_user_edit', { id: user.id }) }}"
-                               class="btn btn-warning btn-sm">
-                                ✏
-                            </a>
-
-                            <a href="{{ path('app_user_delete', { id: user.id }) }}"
-                               class="btn btn-danger btn-sm"
-                               onclick="return confirm('Supprimer cet utilisateur ?');">
-                                🗑
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
-
-</div>
-{% endblock %}
+    <!-- Scripts -->
+    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('assets/js/misc.js') }}"></script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+          const alerts = document.querySelectorAll('.alert');
+          alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+          });
+        }, 5000);
+        
+        // Add current year to footer
+        const currentYear = new Date().getFullYear();
+        const footerText = document.querySelector('.footer span:first-child');
+        if (footerText) {
+          footerText.innerHTML = footerText.innerHTML.replace('2024', currentYear);
+        }
+      });
+    </script>
+  </body>
+</html>
