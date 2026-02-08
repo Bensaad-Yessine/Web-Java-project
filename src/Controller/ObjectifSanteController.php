@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Route('/objectif')]
 final class ObjectifSanteController extends AbstractController
@@ -145,4 +146,23 @@ final class ObjectifSanteController extends AbstractController
 
         return $this->redirectToRoute('app_objectif_show');
     }
+    #[Route('/filter', name: 'app_objectif_filter', methods: ['GET'])]
+public function filter(Request $request, EntityManagerInterface $em): JsonResponse
+{
+    $type = $request->query->get('type');
+
+    $repo = $em->getRepository(ObjectifSante::class);
+
+    if ($type && $type !== 'ALL') {
+        $objectifs = $repo->findBy(['type' => $type], ['dateDebut' => 'DESC']);
+    } else {
+        $objectifs = $repo->findAll();
+    }
+
+    $html = $this->renderView('objectif/_rows.html.twig', [
+        'objectifs' => $objectifs
+    ]);
+
+    return new JsonResponse(['html' => $html]);
+}
 }

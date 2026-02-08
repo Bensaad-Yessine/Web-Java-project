@@ -1,0 +1,36 @@
+{# templates/suivi_bien_etre/_rows.html.twig #}
+{% for s in suivis %}
+  <tr>
+    <td>{{ s.id }}</td>
+    <td>{{ s.dateSaisie ? s.dateSaisie|date('d/m/Y') : '—' }}</td>
+    <td>{{ s.humeur }}</td>
+    <td>{{ s.qualiteSommeil }}/10</td>
+    <td>{{ s.niveauEnergie }}/10</td>
+    <td>{{ s.niveauStress }}/10</td>
+    <td>{{ s.qualiteAlimentation }}/10</td>
+
+    <td>
+      <label class="badge badge-gradient-success">
+        {{ s.score ?? 0 }}%
+      </label>
+    </td>
+
+    <td>
+      <div class="btn-group" role="group">
+        <a href="{{ path('app_suivi_edit', { id: s.id }) }}" class="btn btn-warning btn-sm btn-icon">
+          <i class="mdi mdi-pencil"></i>
+        </a>
+
+        <form method="POST"
+              action="{{ path('app_suivi_delete', { id: s.id }) }}"
+              style="display:inline;"
+              onsubmit="return confirm('Supprimer ce suivi ?');">
+          <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ s.id) }}">
+          <button type="submit" class="btn btn-danger btn-sm btn-icon">
+            <i class="mdi mdi-delete"></i>
+          </button>
+        </form>
+      </div>
+    </td>
+  </tr>
+{% endfor %}

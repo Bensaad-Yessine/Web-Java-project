@@ -1,0 +1,114 @@
+{# templates/objectif/_rows.html.twig #}
+{% for objectif in objectifs %}
+  <tr>
+    <td>{{ objectif.id }}</td>
+    <td>{{ objectif.titre }}</td>
+    <td>{{ objectif.type }}</td>
+    <td>{{ objectif.valeurCible }}</td>
+    <td>{{ objectif.dateDebut ? objectif.dateDebut|date('d/m/Y') : '—' }}</td>
+    <td>{{ objectif.dateFin ? objectif.dateFin|date('d/m/Y') : '—' }}</td>
+    <td>{{ objectif.priorite ?: '—' }}</td>
+    <td>
+      {% if objectif.statut == 'EN_COURS' %}
+        <label class="badge badge-gradient-primary">EN COURS</label>
+      {% elseif objectif.statut == 'ATTEINT' %}
+        <label class="badge badge-gradient-success">ATTEINT</label>
+      {% else %}
+        <label class="badge badge-gradient-danger">ABANDONNÉ</label>
+      {% endif %}
+    </td>
+    <td>{{ objectif.progression ?: 0 }}%</td>
+
+    <td>
+      <div class="btn-group" role="group">
+        <a href="{{ path('app_objectif_edit', { id: objectif.id }) }}" class="btn btn-warning btn-sm btn-icon">
+          <i class="mdi mdi-pencil"></i>
+        </a>
+
+        <form method="POST" action="{{ path('app_objectif_delete', { id: objectif.id }) }}"
+              style="display:inline;" onsubmit="return confirm('Supprimer cet objectif ?');">
+          <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ objectif.id) }}">
+          <button class="btn btn-danger btn-sm btn-icon" type="submit">
+            <i class="mdi mdi-delete"></i>
+          </button>
+        </form>
+      </div>
+    </td>
+  </tr>
+
+  {# ✅ Suivis sous chaque objectif #}
+  <tr>
+    <td colspan="10">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="mb-0">❤️ Suivis associés</h5>
+
+        <div class="d-flex align-items-center gap-2">
+          <label class="mb-0 fw-bold">Trier par date :</label>
+          <select class="form-select suivi-sort"
+                  data-objectif="{{ objectif.id }}"
+                  style="max-width: 260px;">
+            <option value="DESC">Plus récent → plus ancien</option>
+            <option value="ASC">Plus ancien → plus récent</option>
+          </select>
+
+          <a class="btn btn-sm btn-success"
+             href="{{ path('app_suivi_add', { idObjectif: objectif.id }) }}">
+            <i class="mdi mdi-plus"></i> Ajouter suivi
+          </a>
+        </div>
+      </div>
+
+      {% if objectif.suivis is empty %}
+        <div class="alert alert-warning mb-0">Aucun suivi pour cet objectif.</div>
+      {% else %}
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Date saisie</th>
+                <th>Humeur</th>
+                <th>Sommeil</th>
+                <th>Energie</th>
+                <th>Stress</th>
+                <th>Alimentation</th>
+                <th>Score</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody id="suiviTbody-{{ objectif.id }}">
+              {# affichage initial (ordre par défaut) #}
+              {% for suivi in objectif.suivis %}
+                <tr>
+                  <td>{{ suivi.id }}</td>
+                  <td>{{ suivi.dateSaisie ? suivi.dateSaisie|date('d/m/Y') : '—' }}</td>
+                  <td>{{ suivi.humeur }}</td>
+                  <td>{{ suivi.qualiteSommeil }}</td>
+                  <td>{{ suivi.niveauEnergie }}</td>
+                  <td>{{ suivi.niveauStress }}</td>
+                  <td>{{ suivi.qualiteAlimentation }}</td>
+                  <td>{{ suivi.score ?: 0 }}</td>
+                  <td>
+                    <div class="btn-group" role="group">
+                      <a href="{{ path('app_suivi_edit', { id: suivi.id }) }}" class="btn btn-warning btn-sm btn-icon">
+                        <i class="mdi mdi-pencil"></i>
+                      </a>
+                      <form method="POST" action="{{ path('app_suivi_delete', { id: suivi.id }) }}"
+                            style="display:inline;" onsubmit="return confirm('Supprimer ce suivi ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ suivi.id) }}">
+                        <button class="btn btn-danger btn-sm btn-icon" type="submit">
+                          <i class="mdi mdi-delete"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </td>
+  </tr>
+{% endfor %}
