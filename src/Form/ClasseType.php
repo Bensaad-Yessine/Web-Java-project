@@ -14,6 +14,8 @@ class ClasseType extends AbstractType
         $builder
             ->add('nom')
             ->add('niveau')
+            ->add('anneeuniversitaire')
+            ->add('matiereClasses')
         ;
     }
 

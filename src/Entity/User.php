@@ -11,6 +11,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\Tache;
+use App\Entity\ObjectifSante;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -260,7 +262,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->taches->contains($tach)) {
             $this->taches->add($tach);
-            $tach->setIdUser($this);
+            $tach->setUser($this);
         }
 
         return $this;
@@ -270,8 +272,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->taches->removeElement($tach)) {
             // set the owning side to null (unless already changed)
-            if ($tach->getIdUser() === $this) {
-                $tach->setIdUser(null);
+            if ($tach->getUser() === $this) {
+                $tach->setUser(null);
             }
         }
 
