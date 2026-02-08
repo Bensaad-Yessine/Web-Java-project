@@ -169,4 +169,9 @@ public function index(UserRepository $userRepository): Response
         return $this->render('user/FrontOffice.html.twig');
         ;
     }
+    #[Route('/dashboard/profile', name: 'app_profile', methods: ['GET'])]
+    public function profile(): Response
+    {
+        return $this->render('user/profile.html.twig');
+    }
 }
