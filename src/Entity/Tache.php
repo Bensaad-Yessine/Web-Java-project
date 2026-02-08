@@ -6,6 +6,7 @@ use App\Repository\TacheRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\User;
 
 #[ORM\Entity(repositoryClass: TacheRepository::class)]
 class Tache
@@ -78,6 +79,9 @@ class Tache
         message: "L'origine doit être une valeur valide."
     )]
     private ?string $origine = "MANUEL";
+
+    #[ORM\ManyToOne(inversedBy: 'taches')]
+    private ?User $user = null;
 
 
     // ========================
@@ -176,4 +180,16 @@ class Tache
         $this->origine = $origine;
         return $this;
     }
+
+    public function getUser(): ?User
+{
+    return $this->user;
+}
+
+public function setUser(?User $user): self
+{
+    $this->user = $user;
+    return $this;
+}
+
 }
