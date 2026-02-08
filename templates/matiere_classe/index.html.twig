@@ -1,5 +1,6 @@
 {% extends 'base.html.twig' %}
 
+<<<<<<< HEAD
 {% block title %}Gestion Matières-Classes - ESPRIT{% endblock %}
 
 {% block stylesheets %}
@@ -880,3 +881,42 @@
     });
 </script>
 {% endblock %}
+=======
+{% block title %}MatiereClasse index{% endblock %}
+
+{% block body %}
+    <h1>MatiereClasse index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Coefficient</th>
+                <th>Chargehoraire</th>
+                <th>Scorecomplexite</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for matiere_classe in matiere_classes %}
+            <tr>
+                <td>{{ matiere_classe.id }}</td>
+                <td>{{ matiere_classe.coefficient }}</td>
+                <td>{{ matiere_classe.chargehoraire }}</td>
+                <td>{{ matiere_classe.scorecomplexite }}</td>
+                <td>
+                    <a href="{{ path('app_matiere_classe_show', {'id': matiere_classe.id}) }}">show</a>
+                    <a href="{{ path('app_matiere_classe_edit', {'id': matiere_classe.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_matiere_classe_new') }}">Create new</a>
+{% endblock %}
+>>>>>>> origin/master

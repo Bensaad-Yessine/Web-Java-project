@@ -1,0 +1,471 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <style>
+        .login-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: cover;
+            background-position: center;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 10px 40px 0 rgba(0,0,0,0.1);
+            border: none;
+        }
+        /* FIXED: Input fields with better visibility */
+        .form-control {
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 12px 15px;
+            height: 48px;
+            background-color: #ffffff;
+            color: #333;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .form-control:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 0 0.3rem rgba(102, 126, 234, 0.3);
+            background-color: #fff;
+        }
+        /* FIXED: Date input styling */
+        input[type="date"] {
+            color: #333;
+            font-weight: 500;
+            background-color: #fff;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            background-color: #667eea;
+            padding: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+        }
+        /* FIXED: Select dropdown */
+        .form-select {
+            background-color: #fff;
+            color: #333;
+            border: 2px solid #667eea;
+        }
+        .form-check-input:checked {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        .form-check-label {
+            cursor: pointer;
+        }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 5px;
+        }
+        .radio-item {
+            display: flex;
+            align-items: center;
+        }
+        .radio-item input[type="radio"] {
+            margin-right: 8px;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -5px;
+            margin-left: -5px;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .col-md-6 {
+            flex: 0 0 50%;
+            max-width: 50%;
+            padding-right: 5px;
+            padding-left: 5px;
+        }
+        @media (max-width: 768px) {
+            .col-md-6 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+        .btn-primary {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        .btn-primary:hover {
+            background-color: #5a6fd8;
+            border-color: #5a6fd8;
+        }
+        .alert {
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .terms {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .terms a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .invalid-feedback {
+            display: block;
+            width: 100%;
+            margin-top: 0.25rem;
+            font-size: 0.875em;
+            color: #dc3545;
+        }
+        .is-invalid {
+            border-color: #dc3545;
+        }
+        /* Make placeholder visible */
+        .form-control::placeholder {
+            color: #777;
+            opacity: 1;
+        }
+        /* Password strength indicator */
+        .password-strength {
+            margin-top: 10px;
+        }
+        .password-strength .progress {
+            height: 6px;
+            border-radius: 3px;
+            margin-bottom: 5px;
+            background-color: #e9ecef;
+        }
+        .strength-text {
+            font-weight: 600;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="container-scroller">
+        <div class="container-fluid page-body-wrapper full-page-wrapper">
+            <div class="row w-100">
+                <div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg">
+                    <div class="card col-lg-5 mx-auto">
+                        <div class="card-body px-5 py-5">
+                            <h3 class="card-title text-start mb-3">Create Account</h3>
+                            
+                            {{ form_start(registrationForm) }}
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        {{ form_label(registrationForm.nom) }}
+                                        {{ form_widget(registrationForm.nom, {
+                                            'attr': {
+                                                'class': 'form-control p_input',
+                                                'placeholder': 'Enter your last name'
+                                            }
+                                        }) }}
+                                        <div class="invalid-feedback">
+                                            {{ form_errors(registrationForm.nom) }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        {{ form_label(registrationForm.prenom) }}
+                                        {{ form_widget(registrationForm.prenom, {
+                                            'attr': {
+                                                'class': 'form-control p_input',
+                                                'placeholder': 'Enter your first name'
+                                            }
+                                        }) }}
+                                        <div class="invalid-feedback">
+                                            {{ form_errors(registrationForm.prenom) }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_label(registrationForm.email) }}
+                                    {{ form_widget(registrationForm.email, {
+                                        'attr': {
+                                            'class': 'form-control p_input',
+                                            'placeholder': 'Enter your email'
+                                        }
+                                    }) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(registrationForm.email) }}
+                                    </div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        {{ form_label(registrationForm.numTel) }}
+                                        {{ form_widget(registrationForm.numTel, {
+                                            'attr': {
+                                                'class': 'form-control p_input',
+                                                'placeholder': 'Phone number'
+                                            }
+                                        }) }}
+                                        <div class="invalid-feedback">
+                                            {{ form_errors(registrationForm.numTel) }}
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        {{ form_label(registrationForm.DateDeNaissance) }}
+                                        {{ form_widget(registrationForm.DateDeNaissance, {
+                                            'attr': {
+                                                'class': 'form-control p_input'
+                                            }
+                                        }) }}
+                                        <div class="invalid-feedback">
+                                            {{ form_errors(registrationForm.DateDeNaissance) }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_label(registrationForm.sexe) }}
+                                    <div class="radio-group">
+                                        {{ form_widget(registrationForm.sexe) }}
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(registrationForm.sexe) }}
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_label(registrationForm.classe) }}
+                                    {{ form_widget(registrationForm.classe, {
+                                        'attr': {
+                                            'class': 'form-control p_input'
+                                        }
+                                    }) }}
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(registrationForm.classe) }}
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    {{ form_label(registrationForm.plainPassword) }}
+                                    {{ form_widget(registrationForm.plainPassword, {
+                                        'attr': {
+                                            'class': 'form-control p_input',
+                                            'placeholder': 'Enter your password',
+                                            'id': 'passwordInput'
+                                        }
+                                    }) }}
+                                    <div class="password-strength">
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                        <small class="text-muted d-block mt-1">Password strength: <span class="strength-text">None</span></small>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        {{ form_errors(registrationForm.plainPassword) }}
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        Password must be at least 6 characters long.
+                                    </small>
+                                </div>
+
+                                <div class="form-group d-flex align-items-center justify-content-between">
+                                    <div class="form-check">
+                                        {{ form_widget(registrationForm.agreeTerms, {
+                                            'attr': {
+                                                'class': 'form-check-input'
+                                            }
+                                        }) }}
+                                        {{ form_label(registrationForm.agreeTerms) }}
+                                    </div>
+                                </div>
+
+                                <div class="text-center d-grid gap-2 mt-4">
+                                    <button type="submit" class="btn btn-primary btn-block enter-btn" id="submitBtn">
+                                        <i class="mdi mdi-account-plus mr-2"></i>Register
+                                    </button>
+                                </div>
+
+                                <p class="sign-up text-center mt-4">
+                                    Already have an Account? <a href="{{ path('app_login') }}">Sign In</a>
+                                </p>
+                                
+                                <p class="terms">
+                                    By creating an account you are accepting our
+                                    <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms & Conditions</a>
+                                </p>
+                            {{ form_end(registrationForm) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms & Conditions Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">Terms & Conditions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>1. Acceptance of Terms</h6>
+                    <p>By registering for an account, you agree to be bound by these Terms and Conditions.</p>
+                    
+                    <h6>2. User Account</h6>
+                    <p>You are responsible for maintaining the confidentiality of your account and password.</p>
+                    
+                    <h6>3. Privacy Policy</h6>
+                    <p>Your personal information will be protected in accordance with our Privacy Policy.</p>
+                    
+                    <h6>4. User Conduct</h6>
+                    <p>You agree to use the service only for lawful purposes and in a way that does not infringe the rights of others.</p>
+                    
+                    <h6>5. Termination</h6>
+                    <p>We reserve the right to terminate or suspend your account at our sole discretion.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('assets/js/misc.js') }}"></script>
+    <script src="{{ asset('assets/js/settings.js') }}"></script>
+    <script src="{{ asset('assets/js/todolist.js') }}"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add Bootstrap classes to radio buttons
+            const radioButtons = document.querySelectorAll('input[type="radio"]');
+            radioButtons.forEach(radio => {
+                radio.classList.add('form-check-input');
+                const label = radio.closest('.form-check');
+                if (label) {
+                    label.classList.add('form-check-inline', 'radio-item');
+                }
+            });
+
+            // Password strength indicator
+            const passwordInput = document.getElementById('passwordInput');
+            if (passwordInput) {
+                const strengthIndicator = document.createElement('div');
+                strengthIndicator.className = 'password-strength mt-2';
+                strengthIndicator.innerHTML = `
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted d-block mt-1">Password strength: <span class="strength-text">None</span></small>
+                `;
+                passwordInput.parentNode.insertBefore(strengthIndicator, passwordInput.nextSibling.nextSibling);
+
+                passwordInput.addEventListener('input', function() {
+                    const password = this.value;
+                    let strength = 0;
+                    const progressBar = document.querySelector('.progress-bar');
+                    const strengthText = document.querySelector('.strength-text');
+                    
+                    // Check password length
+                    if (password.length >= 6) strength += 25;
+                    if (password.length >= 8) strength += 25;
+                    
+                    // Check for mixed case
+                    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
+                    
+                    // Check for numbers and special characters
+                    if (/\d/.test(password)) strength += 15;
+                    if (/[^A-Za-z0-9]/.test(password)) strength += 10;
+                    
+                    // Update progress bar
+                    progressBar.style.width = strength + '%';
+                    
+                    // Update text and color
+                    let text = 'Weak';
+                    let color = 'bg-danger';
+                    
+                    if (strength >= 50) {
+                        text = 'Fair';
+                        color = 'bg-warning';
+                    }
+                    if (strength >= 75) {
+                        text = 'Good';
+                        color = 'bg-info';
+                    }
+                    if (strength >= 90) {
+                        text = 'Strong';
+                        color = 'bg-success';
+                    }
+                    
+                    progressBar.className = 'progress-bar ' + color;
+                    strengthText.textContent = text;
+                });
+            }
+
+            // Date picker enhancement - make sure it's visible
+            const dateInput = document.querySelector('input[type="date"]');
+            if (dateInput) {
+                // Ensure date input has proper styling
+                dateInput.style.backgroundColor = '#fff';
+                dateInput.style.color = '#333';
+                dateInput.style.fontWeight = '500';
+                
+                // Set max date to today (no future birth dates)
+                const today = new Date();
+                const maxDate = today.toISOString().split('T')[0];
+                dateInput.setAttribute('max', maxDate);
+            }
+
+            // Form submission validation
+            const registrationForm = document.querySelector('form');
+            if (registrationForm) {
+                const submitBtn = document.getElementById('submitBtn');
+                
+                registrationForm.addEventListener('submit', function(e) {
+                    // Check if terms are accepted
+                    const termsCheckbox = document.getElementById('{{ registrationForm.agreeTerms.vars.id }}');
+                    if (!termsCheckbox.checked) {
+                        e.preventDefault();
+                        alert('Please accept the Terms & Conditions to continue.');
+                        termsCheckbox.focus();
+                        return false;
+                    }
+                    
+                    // Show loading state
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin mr-2"></i>Creating Account...';
+                    submitBtn.disabled = true;
+                    
+                    // Restore button after 10 seconds in case of error
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    }, 10000);
+                });
+            }
+
+            // Ensure all inputs have visible styling
+            const allInputs = document.querySelectorAll('.form-control');
+            allInputs.forEach(input => {
+                input.style.backgroundColor = '#fff';
+                input.style.color = '#333';
+                input.style.border = '2px solid #667eea';
+            });
+            
+            // Ensure select elements are visible
+            const selectElements = document.querySelectorAll('select');
+            selectElements.forEach(select => {
+                select.style.backgroundColor = '#fff';
+                select.style.color = '#333';
+                select.style.border = '2px solid #667eea';
+            });
+        });
+    </script>
+{% endblock %}

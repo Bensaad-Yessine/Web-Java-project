@@ -1,5 +1,6 @@
 {% extends 'base.html.twig' %}
 
+<<<<<<< HEAD
 {% block title %}Nouvelle Proposition de Réunion{% endblock %}
 
 {% block body %}
@@ -21,4 +22,14 @@
     {{ form_end(form) }}
 
     <a href="{{ path('proposition_reunion_list') }}">Retour à la liste</a>
+=======
+{% block title %}New PropositionReunion{% endblock %}
+
+{% block body %}
+    <h1>Create new PropositionReunion</h1>
+
+    {{ include('proposition_reunion/_form.html.twig') }}
+
+    <a href="{{ path('app_proposition_reunion_index') }}">back to list</a>
+>>>>>>> origin/master
 {% endblock %}

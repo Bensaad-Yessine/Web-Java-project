@@ -1,0 +1,1100 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Objectifs de Santé{% endblock %}
+
+{% block body %}
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ESPRIT - Gestion des Objectifs de Santé</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+    <style>
+      :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        --danger-gradient: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+        --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --health-gradient: linear-gradient(135deg, #fa8bff 0%, #2bd2ff 90%, #2bff88 100%);
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        --card-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+      }
+
+      .stat-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 15px;
+        overflow: hidden;
+        border: none;
+        box-shadow: var(--card-shadow);
+      }
+      
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--card-shadow-hover);
+      }
+      
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        color: white;
+        margin: 0 auto;
+      }
+      
+      .stat-count {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .stat-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+      }
+      
+      .card-1 { background: var(--primary-gradient); }
+      .card-2 { background: var(--danger-gradient); }
+      .card-3 { background: var(--info-gradient); }
+      .card-4 { background: var(--success-gradient); }
+      .card-5 { background: var(--health-gradient); }
+      
+      /* Type badges */
+      .type-badge {
+        font-size: 0.75rem;
+        padding: 5px 12px;
+        border-radius: 12px;
+        display: inline-block;
+        color: white;
+        border: none;
+        font-weight: 600;
+      }
+      
+      .type-poids { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+      .type-cardio { background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%); }
+      .type-sommeil { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+      .type-nutrition { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+      .type-hydratation { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+      .type-musculation { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+      .type-autre { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #495057; }
+      
+      /* Priority badges */
+      .priority-badge {
+        font-size: 0.75rem;
+        padding: 5px 12px;
+        border-radius: 12px;
+        display: inline-block;
+        color: white;
+        border: none;
+        font-weight: 600;
+      }
+      
+      .priority-haute { background: var(--danger-gradient); }
+      .priority-moyenne { background: var(--warning-gradient); }
+      .priority-faible { background: var(--success-gradient); }
+      
+      /* Status badges */
+      .status-badge {
+        font-size: 0.75rem;
+        padding: 5px 12px;
+        border-radius: 12px;
+        display: inline-block;
+        color: white;
+        border: none;
+        font-weight: 600;
+      }
+      
+      .status-en-cours { background: var(--info-gradient); }
+      .status-termine { background: var(--success-gradient); }
+      .status-abandonne { background: linear-gradient(135deg, #838383 0%, #666666 100%); }
+      .status-en-pause { background: var(--warning-gradient); }
+      
+      /* Enhanced Card */
+      .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: var(--card-shadow);
+        transition: all 0.3s ease;
+      }
+
+      .card:hover {
+        box-shadow: var(--card-shadow-hover);
+      }
+
+      /* Page Header */
+      .page-header {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 2rem;
+      }
+
+      .page-title-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Avatar Styles */
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      
+      .user-avatar-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      
+      .profile-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--primary-gradient);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 20px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      
+      .profile-avatar-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #fff;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      }
+
+      .badge-etudiant {
+        background: var(--info-gradient);
+        color: white;
+        border: none;
+      }
+      
+      .badge-admin {
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+      }
+      
+      /* Action Buttons */
+      .action-buttons {
+        display: flex;
+        gap: 5px;
+      }
+      
+      .action-buttons .btn {
+        padding: 6px 12px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+      }
+
+      .action-buttons .btn:hover {
+        transform: translateY(-2px);
+      }
+      
+      /* Search Box */
+      .search-box {
+        max-width: 300px;
+      }
+
+      .search-box input {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        transition: all 0.3s ease;
+      }
+
+      .search-box input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+      }
+      
+      /* Table Styles */
+      .table-hover tbody tr {
+        transition: all 0.3s ease;
+      }
+
+      .table-hover tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+        transform: scale(1.01);
+      }
+
+      .table thead th {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        color: #495057;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        border: none;
+        padding: 1rem;
+      }
+
+      .table td {
+        vertical-align: middle;
+        padding: 1rem;
+        border-bottom: 1px solid #f1f3f5;
+      }
+      
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+      }
+      
+      .empty-state i {
+        font-size: 80px;
+        background: var(--health-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 20px;
+      }
+
+      /* Flash Messages */
+      .alert {
+        border-radius: 12px;
+        border: none;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 20px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .alert i {
+        font-size: 1.5rem;
+      }
+      
+      /* Progress Bar */
+      .progress {
+        height: 10px;
+        border-radius: 10px;
+        background-color: #e9ecef;
+        overflow: hidden;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      
+      .progress-bar {
+        border-radius: 10px;
+        transition: width 0.6s ease;
+      }
+
+      .progress-bar.bg-health {
+        background: var(--health-gradient);
+      }
+      
+      /* Date Styles */
+      .date-cell {
+        font-size: 0.85rem;
+      }
+      
+      .date-label {
+        font-weight: 600;
+        color: #495057;
+        display: block;
+        margin-bottom: 2px;
+      }
+      
+      .date-value {
+        color: #6c757d;
+        display: block;
+      }
+
+      /* User Info Styles */
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .user-info-text {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .user-name {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.9rem;
+      }
+
+      .user-email {
+        color: #6c757d;
+        font-size: 0.75rem;
+      }
+
+      /* Sidebar & Layout */
+      .profile-pic {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+      }
+      
+      .count-indicator {
+        position: relative;
+        margin-right: 15px;
+      }
+      
+      .profile-name {
+        flex-grow: 1;
+      }
+      
+      .navbar-profile {
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+      }
+      
+      .avatar-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      
+      .user-role-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 10px;
+        margin-top: 5px;
+        display: inline-block;
+      }
+
+      /* Target Value Badge */
+      .target-value {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 12px;
+        background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+        border-radius: 10px;
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.85rem;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .stat-card {
+          margin-bottom: 1rem;
+        }
+
+        .action-buttons {
+          flex-direction: column;
+        }
+
+        .search-box {
+          max-width: 100%;
+          margin-bottom: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-scroller">
+      <!-- Sidebar -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+          <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </a>
+          <a class="sidebar-brand brand-logo-mini" href="{{ path('app_user_index') }}">
+            <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+          </a>
+        </div>
+        <ul class="nav">
+          <li class="nav-item profile">
+            <div class="profile-desc">
+              <div class="profile-pic">
+                <div class="count-indicator">
+                  {% if app.user %}
+                    {% if app.user.profilePic %}
+                      <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                           alt="{{ app.user.prenom }}" 
+                           class="profile-avatar-img">
+                    {% else %}
+                      <div class="profile-avatar">
+                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                      </div>
+                    {% endif %}
+                  {% else %}
+                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  {% endif %}
+                  <span class="count bg-success"></span>
+                </div>
+                <div class="profile-name">
+                  {% if app.user %}
+                    <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                    <span class="text-muted">{{ app.user.email }}</span>
+                    <div class="mt-1">
+                      {% if 'ROLE_ADMIN' in app.user.roles %}
+                        <span class="user-role-badge badge-admin">Administrateur</span>
+                      {% else %}
+                        <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                    <span>Veuillez vous connecter</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Navigation</span>
+          </li>
+          
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon"><i class="mdi mdi-speedometer"></i></span>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_user_index') }}">
+              <span class="menu-icon"><i class="mdi mdi-account-group"></i></span>
+              <span class="menu-title">Utilisateurs</span>
+            </a>
+          </li>
+          
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon"><i class="mdi mdi-book-open-page-variant"></i></span>
+              <span class="menu-title">Matieres</span>
+            </a>
+          </li>
+          
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon"><i class="mdi mdi-school"></i></span>
+              <span class="menu-title">Classes</span>
+            </a>
+          </li>
+          
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon"><i class="mdi mdi-office-building"></i></span>
+              <span class="menu-title">Salles</span>
+            </a>
+          </li>
+          
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon"><i class="mdi mdi-calendar-clock"></i></span>
+              <span class="menu-title">Séances</span>
+            </a>
+          </li>
+          
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon"><i class="mdi mdi-account-multiple"></i></span>
+              <span class="menu-title">Groupes</span>
+            </a>
+          </li>
+          
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_tache_index') }}">
+              <span class="menu-icon"><i class="mdi mdi-checkbox-marked-circle-outline"></i></span>
+              <span class="menu-title">Tâches</span>
+            </a>
+          </li>
+          
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon"><i class="mdi mdi-alert-circle-outline"></i></span>
+              <span class="menu-title">Alertes</span>
+            </a>
+          </li>
+          
+          <li class="nav-item menu-items active">
+            <a class="nav-link" href="#">
+              <span class="menu-icon"><i class="mdi mdi-heart-pulse"></i></span>
+              <span class="menu-title">Objectifs de santé</span>
+            </a>
+          </li>
+          
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_logout') }}">
+              <span class="menu-icon"><i class="mdi mdi-logout text-danger"></i></span>
+              <span class="menu-title text-danger">Déconnexion</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Main Content -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+          <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </div>
+          <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+              <span class="mdi mdi-menu"></span>
+            </button>
+            <ul class="navbar-nav w-100">
+              <li class="nav-item w-100">
+                <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                  <input type="text" class="form-control" placeholder="Rechercher un objectif..." id="searchInput">
+                </form>
+              </li>
+            </ul>
+            <ul class="navbar-nav navbar-nav-right">
+              <li class="nav-item dropdown border-left">
+                <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                  <i class="mdi mdi-bell"></i>
+                  <span class="count bg-danger">3</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                  <h6 class="p-3 mb-0">Notifications</h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-success rounded-circle">
+                        <i class="mdi mdi-heart-pulse"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Objectif atteint!</p>
+                      <p class="text-muted ellipsis mb-0">Félicitations pour votre objectif cardio</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+              
+              <li class="nav-item dropdown">
+                <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                  <div class="navbar-profile">
+                    {% if app.user %}
+                      <div class="avatar-container">
+                        {% if app.user.profilePic %}
+                          <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                               alt="{{ app.user.prenom }}" 
+                               class="user-avatar-img">
+                        {% else %}
+                          <div class="user-avatar">
+                            {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                          </div>
+                        {% endif %}
+                        <div class="text-start ms-2">
+                          <p class="mb-0 d-none d-sm-block navbar-profile-name">
+                            {{ app.user.prenom }} {{ app.user.nom }}
+                          </p>
+                          <small class="text-muted d-none d-sm-block">
+                            {% if 'ROLE_ADMIN' in app.user.roles %}
+                              <span class="badge badge-admin">Admin</span>
+                            {% else %}
+                              <span class="badge badge-etudiant">Utilisateur</span>
+                            {% endif %}
+                          </small>
+                        </div>
+                      </div>
+                    {% else %}
+                      <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                      <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                    {% endif %}
+                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                  </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                  <div class="dropdown-header p-3">
+                    {% if app.user %}
+                      <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                      <p class="text-muted mb-0">{{ app.user.email }}</p>
+                      <small class="text-muted">
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin">Administrateur</span>
+                        {% else %}
+                          <span class="badge badge-etudiant">Utilisateur</span>
+                        {% endif %}
+                      </small>
+                    {% else %}
+                      <h6 class="mb-0">Non connecté</h6>
+                      <p class="text-muted mb-0">Veuillez vous connecter</p>
+                    {% endif %}
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  {% if app.user %}
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-primary rounded-circle">
+                          <i class="mdi mdi-account"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Mon profil</p>
+                      </div>
+                    </a>
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-warning rounded-circle">
+                          <i class="mdi mdi-account-edit"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Modifier mon profil</p>
+                      </div>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                  {% endif %}
+                  <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-logout text-danger"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Déconnexion</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            {# Flash Messages #}
+            {% for label, messages in app.flashes %}
+              {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                  <i class="mdi mdi-{{ label == 'success' ? 'check-circle' : 'alert-circle' }}"></i>
+                  <div>{{ message }}</div>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            {% endfor %}
+
+            <!-- Header -->
+            <div class="page-header">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h3 class="page-title mb-0 text-dark">
+                    <span class="page-title-icon bg-gradient-primary text-dark  me-2">
+                      <i class="mdi mdi-heart-pulse"></i>
+                    </span> 
+                    Gestion des Objectifs de Santé
+                  </h3>
+                  <nav aria-label="breadcrumb" class="mt-2">
+                    <ol class="breadcrumb mb-0">
+                      <li class="breadcrumb-item active" aria-current="page">
+                        <i class="mdi mdi-home me-1"></i>
+                        Liste complète des objectifs de santé
+                      </li>
+                    </ol>
+                  </nav>
+                  {% if app.user %}
+                    <div class="mt-2">
+                      <small class="text-muted">
+                        <i class="mdi mdi-account me-1"></i>
+                        Connecté: <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong>
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin ms-2">Administrateur</span>
+                        {% endif %}
+                      </small>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            <!-- Statistics -->
+            <div class="row">
+              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          <h3 class="mb-0 stat-count">{{ objectif_santes|length }}</h3>
+                          <p class="text-success ms-2 mb-0 font-weight-medium">+12%</p>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-icon card-5">
+                          <i class="mdi mdi-heart-pulse"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="stat-label mt-3">Total Objectifs</h6>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          {% set en_cours = objectif_santes|filter(o => o.statut == 'En cours')|length %}
+                          <h3 class="mb-0 stat-count">{{ en_cours }}</h3>
+                          <p class="text-info ms-2 mb-0 font-weight-medium">Actifs</p>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-icon card-3">
+                          <i class="mdi mdi-clock-outline"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="stat-label mt-3">En cours</h6>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          {% set haute_priorite = objectif_santes|filter(o => o.priorite == 'Haute')|length %}
+                          <h3 class="mb-0 stat-count">{{ haute_priorite }}</h3>
+                          <p class="text-danger ms-2 mb-0 font-weight-medium">Urgent</p>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-icon card-2">
+                          <i class="mdi mdi-flag"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="stat-label mt-3">Priorité Haute</h6>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          {% set termines = objectif_santes|filter(o => o.statut == 'Terminé')|length %}
+                          <h3 class="mb-0 stat-count">{{ termines }}</h3>
+                          <p class="text-success ms-2 mb-0 font-weight-medium">+8%</p>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-icon card-4">
+                          <i class="mdi mdi-check-circle"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="stat-label mt-3">Terminés</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Objectifs Table -->
+            <div class="row">
+              <div class="col-12 grid-margin">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                      <h4 class="card-title mb-0">
+                        <i class="mdi mdi-format-list-bulleted me-2"></i>
+                        Liste des Objectifs de Santé
+                      </h4>
+                      <div class="d-flex gap-2">
+                        <div class="search-box">
+                          <input type="text" class="form-control" placeholder="Rechercher..." id="tableSearchInput">
+                        </div>
+                        <a href="{{ path('app_objectif_sante_new') }}" class="btn btn-gradient-primary btn-icon-text">
+                          <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
+                          Nouvel objectif
+                        </a>
+                      </div>
+                    </div>
+
+                    {% if objectif_santes is empty %}
+                      <div class="empty-state">
+                        <i class="mdi mdi-heart-pulse"></i>
+                        <h4 class="text-muted mt-3">Aucun objectif de santé trouvé</h4>
+                        <p class="text-muted mb-4">Commencez votre parcours santé en créant votre premier objectif</p>
+                        <a href="{{ path('app_objectif_sante_new') }}" class="btn btn-gradient-primary btn-lg">
+                          <i class="mdi mdi-plus-circle me-2"></i>
+                          Créer mon premier objectif
+                        </a>
+                      </div>
+                    {% else %}
+                      <div class="table-responsive">
+                        <table class="table table-hover" id="objectifsTable">
+                          <thead>
+                            <tr>
+                              <th>ID</th>
+                              <th>Titre</th>
+                              <th>Type</th>
+                              <th>Valeur Cible</th>
+                              <th>Période</th>
+                              <th>Progression</th>
+                              <th>Priorité</th>
+                              <th>Statut</th>
+                              <th>Utilisateur</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for objectif_sante in objectif_santes %}
+                              <tr>
+                                <td><strong>#{{ objectif_sante.id }}</strong></td>
+                                <td>
+                                  <div>
+                                    <h6 class="mb-0">{{ objectif_sante.titre }}</h6>
+                                    <small class="text-muted">Objectif #{{ objectif_sante.id }}</small>
+                                  </div>
+                                </td>
+                                <td>
+                                  <span class="type-badge type-{{ objectif_sante.type|lower|replace({' ': '-'}) }}">
+                                    <i class="mdi mdi-{{ 
+                                      objectif_sante.type == 'Poids' ? 'weight' : 
+                                      objectif_sante.type == 'Cardio' ? 'heart-pulse' : 
+                                      objectif_sante.type == 'Sommeil' ? 'sleep' : 
+                                      objectif_sante.type == 'Nutrition' ? 'food-apple' : 
+                                      objectif_sante.type == 'Hydratation' ? 'water' : 
+                                      objectif_sante.type == 'Musculation' ? 'arm-flex' : 
+                                      'star' }} me-1"></i>
+                                    {{ objectif_sante.type }}
+                                  </span>
+                                </td>
+                                <td>
+                                  {% if objectif_sante.valeurCible %}
+                                    <span class="target-value">
+                                      <i class="mdi mdi-target"></i>
+                                      {{ objectif_sante.valeurCible }}
+                                    </span>
+                                  {% else %}
+                                    <span class="text-muted">—</span>
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  <div class="date-cell">
+                                    <span class="date-label">Début</span>
+                                    <span class="date-value">{{ objectif_sante.dateDebut ? objectif_sante.dateDebut|date('d/m/Y') : '—' }}</span>
+                                    <span class="date-label mt-1">Fin</span>
+                                    <span class="date-value">{{ objectif_sante.dateFin ? objectif_sante.dateFin|date('d/m/Y') : '—' }}</span>
+                                  </div>
+                                </td>
+                                <td>
+                                  {% if objectif_sante.progression is not null %}
+                                    <div class="d-flex align-items-center">
+                                      <div class="progress me-2" style="width: 100px;">
+                                        {% set prog = objectif_sante.progression %}
+                                        <div class="progress-bar bg-health" role="progressbar" 
+                                             style="width: {{ prog > 100 ? 100 : prog }}%" 
+                                             aria-valuenow="{{ prog }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100"></div>
+                                      </div>
+                                      <small class="fw-bold">{{ objectif_sante.progression }}%</small>
+                                    </div>
+                                  {% else %}
+                                    <span class="text-muted">—</span>
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  {% if objectif_sante.priorite %}
+                                    <span class="priority-badge priority-{{ objectif_sante.priorite|lower }}">
+                                      <i class="mdi mdi-flag me-1"></i>
+                                      {{ objectif_sante.priorite }}
+                                    </span>
+                                  {% else %}
+                                    <span class="text-muted">—</span>
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  {% if objectif_sante.statut %}
+                                    <span class="status-badge status-{{ objectif_sante.statut|lower|replace({' ': '-'}) }}">
+                                      <i class="mdi mdi-{{ 
+                                        objectif_sante.statut == 'En cours' ? 'progress-clock' : 
+                                        objectif_sante.statut == 'Terminé' ? 'check-circle' : 
+                                        objectif_sante.statut == 'Abandonné' ? 'close-circle' : 
+                                        'pause-circle' }} me-1"></i>
+                                      {{ objectif_sante.statut }}
+                                    </span>
+                                  {% else %}
+                                    <span class="text-muted">—</span>
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  {% if objectif_sante.user %}
+                                    <div class="user-info">
+                                      {% if objectif_sante.user.profilePic %}
+                                        <img src="{{ asset('uploads/profile_pics/' ~ objectif_sante.user.profilePic) }}" 
+                                             alt="{{ objectif_sante.user.nom }}" 
+                                             class="user-avatar-img">
+                                      {% else %}
+                                        <div class="user-avatar">
+                                          {{ objectif_sante.user.nom|first|upper }}
+                                        </div>
+                                      {% endif %}
+                                      <div class="user-info-text">
+                                        <span class="user-name">{{ objectif_sante.user.nom }}</span>
+                                        <span class="user-email">{{ objectif_sante.user.email }}</span>
+                                      </div>
+                                    </div>
+                                  {% else %}
+                                    <span class="text-muted">Non assigné</span>
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  <div class="action-buttons">
+                                    <a href="{{ path('app_objectif_sante_show', { id: objectif_sante.id }) }}" 
+                                       class="btn btn-info btn-sm"
+                                       title="Voir les détails">
+                                      <i class="mdi mdi-eye"></i>
+                                    </a>
+                                    <a href="{{ path('app_objectif_sante_edit', { id: objectif_sante.id }) }}" 
+                                       class="btn btn-warning btn-sm"
+                                       title="Modifier">
+                                      <i class="mdi mdi-pencil"></i>
+                                    </a>
+                                    <form action="{{ path('app_objectif_sante_delete', { id: objectif_sante.id }) }}" 
+                                          method="POST" 
+                                          style="display: inline;"
+                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet objectif ?');">
+                                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ objectif_sante.id) }}">
+                                      <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                                        <i class="mdi mdi-delete"></i>
+                                      </button>
+                                    </form>
+                                  </div>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+            <!-- Footer -->
+            <footer class="footer">
+              <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                  © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
+                </span>
+                <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                  <i class="mdi mdi-heart-pulse text-danger"></i>
+                  Objectifs de Santé - {{ objectif_santes|length }} objectif{{ objectif_santes|length > 1 ? 's' : '' }}
+                  {% set en_cours = objectif_santes|filter(o => o.statut == 'En cours')|length %}
+                  | {{ en_cours }} en cours
+                </span>
+              </div>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </div>
+
+   <!-- Scripts -->
+    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('assets/js/misc.js') }}"></script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality for navbar
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+          searchInput.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#objectifsTable tbody tr');
+            
+            rows.forEach(row => {
+              const text = row.textContent.toLowerCase();
+              row.style.display = text.includes(filter) ? '' : 'none';
+            });
+          });
+        }
+        
+        // Search functionality for table
+        const tableSearchInput = document.getElementById('tableSearchInput');
+        if (tableSearchInput) {
+          tableSearchInput.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#objectifsTable tbody tr');
+            
+            rows.forEach(row => {
+              const text = row.textContent.toLowerCase();
+              row.style.display = text.includes(filter) ? '' : 'none';
+            });
+          });
+        }
+        
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+          const alerts = document.querySelectorAll('.alert');
+          alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+          });
+        }, 5000);
+        
+        // Highlight high priority objectives
+        const highPriorityRows = document.querySelectorAll('.priority-haute');
+        highPriorityRows.forEach(badge => {
+          const row = badge.closest('tr');
+          if (row) {
+            row.style.borderLeft = '4px solid #f5576c';
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
+{% endblock %}

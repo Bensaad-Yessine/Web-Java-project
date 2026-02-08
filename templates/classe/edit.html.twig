@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier Classe - ESPRIT{% endblock %}
+{% block title %}Modifier Classe - {{ classe.nom }}{% endblock %}
 
 {% block body %}
 <!DOCTYPE html>
@@ -18,215 +18,162 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
     <style>
-      .form-card {
-        border-radius: 12px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-        border: none;
-        margin-bottom: 30px;
+      .stat-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 10px;
+        overflow: hidden;
       }
-      
-      .form-icon {
+      .stat-icon {
         width: 60px;
         height: 60px;
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 26px;
+        font-size: 24px;
         color: white;
+        margin: 0 auto;
+      }
+      .card-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+      
+      /* Profile styles */
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        margin-bottom: 20px;
-      }
-      
-      .form-section-title {
-        color: #2c3e50;
-        font-weight: 600;
-        padding-bottom: 10px;
-        margin-bottom: 25px;
-        border-bottom: 2px solid #f0f0f0;
-      }
-      
-      .form-group-custom {
-        margin-bottom: 25px;
-      }
-      
-      .form-label-custom {
-        font-weight: 600;
-        color: #34495e;
-        margin-bottom: 8px;
-        font-size: 0.95rem;
-      }
-      
-      .form-control-custom {
-        border: 2px solid #e8e8e8;
-        border-radius: 8px;
-        padding: 12px 16px;
-        font-size: 0.95rem;
-        transition: all 0.3s ease;
-      }
-      
-      .form-control-custom:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-      }
-      
-      .form-helper {
-        font-size: 0.85rem;
-        color: #7f8c8d;
-        margin-top: 5px;
-      }
-      
-      .btn-gradient {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
         color: white;
-        padding: 12px 30px;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-      }
-      
-      .btn-gradient:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        color: white;
-      }
-      
-      .current-data-card {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        border-radius: 12px;
-        color: white;
-        padding: 25px;
-        margin-bottom: 25px;
-      }
-      
-      .current-data-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 15px;
         display: flex;
         align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        flex-shrink: 0;
       }
       
-      .current-data-item {
-        margin-bottom: 10px;
-        padding-left: 25px;
-        position: relative;
+      .user-avatar-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       }
       
-      .current-data-label {
-        font-weight: 600;
-        color: rgba(255,255,255,0.9);
-        min-width: 180px;
+      .profile-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 20px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      
+      .profile-avatar-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #fff;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      }
+      
+      .badge-etudiant {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border: none;
+      }
+      
+      .badge-admin {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+      }
+      
+      .user-role-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 10px;
+        margin-top: 5px;
         display: inline-block;
       }
       
-      .current-data-value {
-        color: white;
-        font-weight: 500;
-      }
-      
-      .current-data-item:before {
-        content: "•";
-        position: absolute;
-        left: 10px;
-        color: white;
-        font-size: 1.2rem;
-      }
-      
-      .input-group-custom .input-group-text {
-        background: #f8f9fa;
-        border: 2px solid #e8e8e8;
-        border-right: none;
-        border-radius: 8px 0 0 8px;
-      }
-      
-      .input-group-custom .form-control {
-        border-left: none;
-        border-radius: 0 8px 8px 0;
-      }
-      
-      .validation-error {
-        color: #e74c3c;
-        font-size: 0.85rem;
-        margin-top: 5px;
-        display: block;
-      }
-      
-      .breadcrumb-custom {
-        background: transparent;
-        padding: 0;
-      }
-      
-      .breadcrumb-custom .breadcrumb-item a {
-        color: #667eea;
-        text-decoration: none;
-        font-weight: 500;
-      }
-      
-      .breadcrumb-custom .breadcrumb-item.active {
-        color: #7f8c8d;
-        font-weight: 500;
-      }
-      
-      .action-buttons .btn {
-        padding: 10px 20px;
-        font-weight: 500;
-      }
-      
-      .btn-outline-custom {
-        border: 2px solid #667eea;
-        color: #667eea;
-        background: transparent;
-      }
-      
-      .btn-outline-custom:hover {
-        background: #667eea;
-        color: white;
-      }
-      
-      .info-box {
-        background: #e3f2fd;
-        border-left: 4px solid #2196f3;
-        padding: 15px;
-        border-radius: 4px;
-        margin-bottom: 20px;
-      }
-      
-      .info-box i {
-        color: #2196f3;
-      }
-      
-      .warning-box {
-        background: #fff3e0;
-        border-left: 4px solid #ff9800;
-        padding: 15px;
-        border-radius: 4px;
-        margin-bottom: 20px;
-      }
-      
-      .warning-box i {
-        color: #ff9800;
-      }
-      
-      .class-badge {
-        display: inline-flex;
+      .profile-pic {
+        display: flex;
         align-items: center;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 500;
-        margin-right: 5px;
+        padding: 10px 0;
       }
       
-      .badge-niveau {
+      .count-indicator {
+        position: relative;
+        margin-right: 15px;
+      }
+      
+      .profile-name {
+        flex-grow: 1;
+      }
+      
+      .navbar-profile {
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+      }
+      
+      .avatar-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      
+      .alert {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+      }
+      
+      .form-card {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      }
+      
+      .form-header {
         background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         color: white;
+        padding: 20px;
       }
       
-      .badge-annee {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        color: white;
+      .form-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 15px;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        margin: 0 auto 15px;
+      }
+      
+      .required-field::after {
+        content: " *";
+        color: #dc3545;
+      }
+      
+      .class-info-badge {
+        padding: 8px 15px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
       }
     </style>
   </head>
@@ -235,10 +182,10 @@
       <!-- Sidebar -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a class="sidebar-brand brand-logo" href="{{ path('app_classe_index') }}">
+          <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
             <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
           </a>
-          <a class="sidebar-brand brand-logo-mini" href="{{ path('app_classe_index') }}">
+          <a class="sidebar-brand brand-logo-mini" href="{{ path('app_user_index') }}">
             <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
           </a>
         </div>
@@ -247,12 +194,36 @@
             <div class="profile-desc">
               <div class="profile-pic">
                 <div class="count-indicator">
-                  <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  {% if app.user %}
+                    {% if app.user.profilePic %}
+                      <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                           alt="{{ app.user.prenom }}" 
+                           class="profile-avatar-img">
+                    {% else %}
+                      <div class="profile-avatar">
+                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                      </div>
+                    {% endif %}
+                  {% else %}
+                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  {% endif %}
                   <span class="count bg-success"></span>
                 </div>
                 <div class="profile-name">
-                  <h5 class="mb-0 font-weight-normal">Administrateur</h5>
-                  <span>ESPRIT</span>
+                  {% if app.user %}
+                    <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                    <span class="text-muted">{{ app.user.email }}</span>
+                    <div class="mt-1">
+                      {% if 'ROLE_ADMIN' in app.user.roles %}
+                        <span class="user-role-badge badge-admin">Administrateur</span>
+                      {% else %}
+                        <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                    <span>Veuillez vous connecter</span>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -263,7 +234,7 @@
           
           <!-- Dashboard -->
           <li class="nav-item menu-items">
-            <a class="nav-link" href="{{ path('app_user_index') }}">
+            <a class="nav-link" href="#">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
@@ -303,7 +274,7 @@
           
           <!-- Salles -->
           <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ path('app_salle_index') }}">
               <span class="menu-icon">
                 <i class="mdi mdi-office-building"></i>
               </span>
@@ -333,7 +304,7 @@
           
           <!-- Tâches -->
           <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ path('app_tache_index') }}">
               <span class="menu-icon">
                 <i class="mdi mdi-checkbox-marked-circle-outline"></i>
               </span>
@@ -363,7 +334,7 @@
           
           <!-- Logout -->
           <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ path('app_logout') }}">
               <span class="menu-icon">
                 <i class="mdi mdi-logout text-danger"></i>
               </span>
@@ -387,7 +358,7 @@
             <ul class="navbar-nav w-100">
               <li class="nav-item w-100">
                 <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                  <input type="text" class="form-control" placeholder="Rechercher une classe...">
+                  <input type="text" class="form-control" placeholder="Rechercher...">
                 </form>
               </li>
             </ul>
@@ -395,7 +366,7 @@
               <li class="nav-item dropdown border-left">
                 <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
                   <i class="mdi mdi-bell"></i>
-                  <span class="count bg-danger">2</span>
+                  <span class="count bg-danger">1</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
                   <h6 class="p-3 mb-0">Notifications</h6>
@@ -407,8 +378,8 @@
                       </div>
                     </div>
                     <div class="preview-item-content">
-                      <p class="preview-subject mb-1">Modification en cours</p>
-                      <p class="text-muted ellipsis mb-0">Vous modifiez une classe</p>
+                      <p class="preview-subject mb-1">Modification classe</p>
+                      <p class="text-muted ellipsis mb-0">Modification en cours</p>
                     </div>
                   </a>
                 </div>
@@ -417,15 +388,79 @@
               <li class="nav-item dropdown">
                 <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
                   <div class="navbar-profile">
-                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
-                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Admin ESPRIT</p>
+                    {% if app.user %}
+                      <div class="avatar-container">
+                        {% if app.user.profilePic %}
+                          <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                               alt="{{ app.user.prenom }}" 
+                               class="user-avatar-img">
+                        {% else %}
+                          <div class="user-avatar">
+                            {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                          </div>
+                        {% endif %}
+                        <div class="text-start ms-2">
+                          <p class="mb-0 d-none d-sm-block navbar-profile-name">
+                            {{ app.user.prenom }} {{ app.user.nom }}
+                          </p>
+                          <small class="text-muted d-none d-sm-block">
+                            {% if 'ROLE_ADMIN' in app.user.roles %}
+                              <span class="badge badge-admin">Admin</span>
+                            {% else %}
+                              <span class="badge badge-etudiant">Utilisateur</span>
+                            {% endif %}
+                          </small>
+                        </div>
+                      </div>
+                    {% else %}
+                      <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                      <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                    {% endif %}
                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
                   </div>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
-                  <h6 class="p-3 mb-0">Profil Administrateur</h6>
+                  <div class="dropdown-header p-3">
+                    {% if app.user %}
+                      <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                      <p class="text-muted mb-0">{{ app.user.email }}</p>
+                      <small class="text-muted">
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin">Administrateur</span>
+                        {% else %}
+                          <span class="badge badge-etudiant">Utilisateur</span>
+                        {% endif %}
+                      </small>
+                    {% else %}
+                      <h6 class="mb-0">Non connecté</h6>
+                      <p class="text-muted mb-0">Veuillez vous connecter</p>
+                    {% endif %}
+                  </div>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item" href="#">
+                  {% if app.user %}
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-primary rounded-circle">
+                          <i class="mdi mdi-account"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Mon profil</p>
+                      </div>
+                    </a>
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-warning rounded-circle">
+                          <i class="mdi mdi-account-edit"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Modifier mon profil</p>
+                      </div>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                  {% endif %}
+                  <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-logout text-danger"></i>
@@ -444,195 +479,181 @@
         <!-- Content -->
         <div class="main-panel">
           <div class="content-wrapper">
+            {# Flash Messages #}
+            {% for label, messages in app.flashes %}
+              {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                  <i class="mdi mdi-{{ label == 'success' ? 'check-circle' : 'alert-circle' }} me-2"></i>
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            {% endfor %}
+
             <!-- Header -->
             <div class="row">
               <div class="col-12">
                 <div class="page-header">
                   <h3 class="page-title">
-                    <span class="page-title-icon bg-gradient-warning text-white me-2">
-                      <i class="mdi mdi-pencil-circle"></i>
+                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                      <i class="mdi mdi-school"></i>
                     </span> 
-                    Modifier la Classe
+                    Modification de la Classe
                   </h3>
                   <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb breadcrumb-custom">
-                      <li class="breadcrumb-item"><a href="{{ path('app_classe_index') }}">Classes</a></li>
-                      <li class="breadcrumb-item"><a href="{{ path('app_classe_show', {'id': classe.id}) }}">{{ classe.nom }}</a></li>
-                      <li class="breadcrumb-item active">Modifier</li>
-                    </ol>
+                    <ul class="breadcrumb">
+                      <li class="breadcrumb-item">
+                        <a href="{{ path('app_classe_index') }}" class="text-decoration-none">
+                          <i class="mdi mdi-arrow-left me-1"></i>Retour à la liste
+                        </a>
+                      </li>
+                      <li class="breadcrumb-item">
+                        <a href="{{ path('app_classe_show', {'id': classe.id}) }}" class="text-decoration-none">
+                          <i class="mdi mdi-eye me-1"></i>Voir la classe
+                        </a>
+                      </li>
+                      <li class="breadcrumb-item active" aria-current="page">
+                        <span></span>Modifier
+                      </li>
+                    </ul>
                   </nav>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Current Data Preview -->
-            <div class="row">
-              <div class="col-12">
-                <div class="current-data-card">
-                  <h5 class="current-data-title">
-                    <i class="mdi mdi-information-outline me-2"></i>
-                    Données actuelles de la classe
-                  </h5>
-                  <div class="current-data-item">
-                    <span class="current-data-label">ID Classe :</span>
-                    <span class="current-data-value">#{{ classe.id }}</span>
-                  </div>
-                  <div class="current-data-item">
-                    <span class="current-data-label">Nom :</span>
-                    <span class="current-data-value">{{ classe.nom }}</span>
-                  </div>
-                  <div class="current-data-item">
-                    <span class="current-data-label">Niveau :</span>
-                    <span class="current-data-value">
-                      {% if classe.niveau %}
-                        <span class="class-badge badge-niveau">
-                          <i class="mdi mdi-account-group me-1"></i>
-                          {{ classe.niveau }}
-                        </span>
-                      {% else %}
-                        Non défini
-                      {% endif %}
-                    </span>
-                  </div>
-                  <div class="current-data-item">
-                    <span class="current-data-label">Année Universitaire :</span>
-                    <span class="current-data-value">
-                      {% if classe.anneeuniversitaire %}
-                        <span class="class-badge badge-annee">
-                          <i class="mdi mdi-calendar me-1"></i>
-                          {{ classe.anneeuniversitaire }}
-                        </span>
-                      {% else %}
-                        Non définie
-                      {% endif %}
-                    </span>
+                  
+                  <!-- Class Info -->
+                  <div class="mt-3">
+                    <div class="d-flex align-items-center">
+                      <div class="class-avatar me-3" style="width: 50px; height: 50px; font-size: 20px;">
+                        {{ classe.nom|slice(0, 2)|upper }}
+                      </div>
+                      <div>
+                        <h4 class="mb-1">{{ classe.nom }}</h4>
+                        <div class="d-flex gap-2">
+                          <span class="class-info-badge" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                            <i class="mdi mdi-account-group me-1"></i>{{ classe.niveau }}
+                          </span>
+                          <span class="class-info-badge" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+                            <i class="mdi mdi-calendar me-1"></i>{{ classe.anneeuniversitaire }}
+                          </span>
+                          <span class="class-info-badge bg-light text-dark">
+                            <i class="mdi mdi-identifier me-1"></i>ID: {{ classe.id }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             
-            <!-- Form Content -->
+            <!-- Form -->
             <div class="row">
-              <div class="col-12">
+              <div class="col-md-8 offset-md-2">
                 <div class="card form-card">
-                  <div class="card-body">
+                  <div class="form-header">
                     <div class="form-icon">
-                      <i class="mdi mdi-pencil-circle"></i>
+                      <i class="mdi mdi-pencil"></i>
                     </div>
-                    
-                    <h4 class="form-section-title">Modifier les informations de la classe</h4>
-                    
-                    <!-- Info Box -->
-                    <div class="info-box">
-                      <i class="mdi mdi-information me-2"></i>
-                      <strong>Note :</strong> Modifiez uniquement les champs que vous souhaitez mettre à jour. Les autres informations resteront inchangées.
-                    </div>
-                    
+                    <h4 class="text-center mb-0">✏️ Modifier les informations de la classe</h4>
+                    <p class="text-center mb-0 opacity-75">
+                      Mettez à jour les informations de {{ classe.nom }}
+                    </p>
+                  </div>
+                  <div class="card-body">
                     {{ form_start(form, {'attr': {'class': 'form-sample', 'novalidate': 'novalidate'}}) }}
                     
                     <div class="row">
-                      <!-- Nom de la classe -->
-                      <div class="col-md-6">
-                        <div class="form-group-custom">
-                          <label class="form-label-custom">
-                            <i class="mdi mdi-tag-text-outline me-2"></i>
-                            Nom de la classe *
-                          </label>
-                          <div class="input-group input-group-custom">
-                            <span class="input-group-text">
-                              <i class="mdi mdi-school"></i>
-                            </span>
-                            {{ form_widget(form.nom, {'attr': {
-                              'class': 'form-control form-control-custom',
-                              'placeholder': 'Ex: GL2024, DS2024, INF2024',
-                              'autofocus': 'autofocus'
-                            }}) }}
-                          </div>
-                          <span class="form-helper">
-                            Choisissez un nom court et explicite pour la classe
-                          </span>
-                          {{ form_errors(form.nom, {'attr': {'class': 'validation-error'}}) }}
-                        </div>
-                      </div>
-                      
-                      <!-- Niveau -->
-                      <div class="col-md-6">
-                        <div class="form-group-custom">
-                          <label class="form-label-custom">
-                            <i class="mdi mdi-format-list-numbered me-2"></i>
-                            Niveau *
-                          </label>
-                          <div class="input-group input-group-custom">
-                            <span class="input-group-text">
-                              <i class="mdi mdi-stairs"></i>
-                            </span>
-                            {{ form_widget(form.niveau, {'attr': {
-                              'class': 'form-control form-control-custom',
-                              'placeholder': 'Ex: 1ère année, 2ème année, 3ème année'
-                            }}) }}
-                          </div>
-                          <span class="form-helper">
-                            Spécifiez le niveau académique de la classe
-                          </span>
-                          {{ form_errors(form.niveau, {'attr': {'class': 'validation-error'}}) }}
-                        </div>
-                      </div>
-                      
-                      <!-- Année Universitaire -->
                       <div class="col-md-12">
-                        <div class="form-group-custom">
-                          <label class="form-label-custom">
-                            <i class="mdi mdi-calendar-range me-2"></i>
-                            Année Universitaire *
-                          </label>
-                          <div class="input-group input-group-custom">
-                            <span class="input-group-text">
-                              <i class="mdi mdi-calendar"></i>
-                            </span>
-                            {{ form_widget(form.anneeuniversitaire, {'attr': {
-                              'class': 'form-control form-control-custom',
-                              'placeholder': 'Ex: 2024-2025'
-                            }}) }}
-                          </div>
-                          <span class="form-helper">
-                            Format recommandé : AAAA-AAAA (ex: 2024-2025)
-                          </span>
-                          {{ form_errors(form.anneeuniversitaire, {'attr': {'class': 'validation-error'}}) }}
+                        <div class="form-group">
+                          <label class="required-field">Nom de la classe</label>
+                          {{ form_widget(form.nom, {'attr': {
+                            'class': 'form-control form-control-lg',
+                            'placeholder': 'Ex: GL2025, DS203, etc.'
+                          }}) }}
+                          <small class="form-text text-muted">
+                            <i class="mdi mdi-information me-1"></i>
+                            Modifier le nom de la classe si nécessaire
+                          </small>
+                          {% if form_errors(form.nom) %}
+                            <div class="text-danger mt-1">
+                              {{ form_errors(form.nom) }}
+                            </div>
+                          {% endif %}
                         </div>
                       </div>
                     </div>
                     
-                    <!-- Warning Box -->
-                    <div class="warning-box">
-                      <i class="mdi mdi-alert-circle-outline me-2"></i>
-                      <strong>Attention :</strong> Les modifications seront appliquées immédiatement à tous les étudiants et séances liés à cette classe.
+                    <div class="row mt-3">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="required-field">Niveau</label>
+                          {{ form_widget(form.niveau, {'attr': {
+                            'class': 'form-control'
+                          }}) }}
+                          {% if form_errors(form.niveau) %}
+                            <div class="text-danger mt-1">
+                              {{ form_errors(form.niveau) }}
+                            </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="required-field">Année universitaire</label>
+                          {{ form_widget(form.anneeuniversitaire, {'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'Ex: 2025/2026'
+                          }}) }}
+                          <small class="form-text text-muted">
+                            <i class="mdi mdi-calendar me-1"></i>
+                            Mettre à jour l'année si nécessaire
+                          </small>
+                          {% if form_errors(form.anneeuniversitaire) %}
+                            <div class="text-danger mt-1">
+                              {{ form_errors(form.anneeuniversitaire) }}
+                            </div>
+                          {% endif %}
+                        </div>
+                      </div>
                     </div>
                     
-                    <!-- Action Buttons -->
+                    <!-- Matières associées -->
                     <div class="row mt-4">
-                      <div class="col-md-3">
-                        <a href="{{ path('app_classe_index') }}" class="btn btn-light btn-lg w-100">
-                          <i class="mdi mdi-arrow-left me-2"></i>
-                          Annuler
-                        </a>
+                      <div class="col-md-12">
+                        <div class="card">
+                          <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                              <i class="mdi mdi-book-open-page-variant me-2"></i>
+                              Matières associées
+                            </h5>
+                          </div>
+                          <div class="card-body">
+                            <div class="form-group">
+                              {{ form_widget(form.matiereClasses, {'attr': {
+                                'class': 'form-control',
+                                'rows': 3
+                              }}) }}
+                              <small class="form-text text-muted">
+                                <i class="mdi mdi-information me-1"></i>
+                                Sélectionnez les matières associées à cette classe
+                              </small>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div class="col-md-3">
-                        <a href="{{ path('app_classe_show', {'id': classe.id}) }}" class="btn btn-info btn-lg w-100">
-                          <i class="mdi mdi-eye me-2"></i>
-                          Voir détails
-                        </a>
-                      </div>
-                      <div class="col-md-3">
-                        <button type="reset" class="btn btn-warning btn-lg w-100">
-                          <i class="mdi mdi-refresh me-2"></i>
-                          Réinitialiser
-                        </button>
-                      </div>
-                      <div class="col-md-3">
-                        <button type="submit" class="btn btn-gradient btn-lg w-100">
-                          <i class="mdi mdi-content-save me-2"></i>
-                          Enregistrer
-                        </button>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="row mt-4">
+                      <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                          <a href="{{ path('app_classe_show', {'id': classe.id}) }}" class="btn btn-light">
+                            <i class="mdi mdi-close me-1"></i>Annuler
+                          </a>
+                          <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-gradient-primary">
+                              <i class="mdi mdi-content-save me-1"></i>Enregistrer
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     
@@ -642,105 +663,73 @@
               </div>
             </div>
             
-            <!-- Delete Section -->
-            <div class="row">
-              <div class="col-12">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title text-danger">
-                      <i class="mdi mdi-alert-circle-outline text-danger me-2"></i>
-                      Zone dangereuse
-                    </h5>
-                    <p class="card-text">
-                      <strong>Attention :</strong> La suppression d'une classe est une action irréversible. 
-                      Toutes les données associées (étudiants, séances, matières) seront également supprimées.
-                      Assurez-vous d'avoir sauvegardé toutes les informations importantes avant de procéder.
-                    </p>
-                    <div class="d-flex justify-content-end">
-                      <form method="post" action="{{ path('app_classe_delete', {'id': classe.id}) }}" 
-                            onsubmit="return confirm('Êtes-vous ABSOLUMENT sûr de vouloir supprimer cette classe ? Cette action est IRREVERSIBLE et supprimera TOUTES les données associées.');">
-                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ classe.id) }}">
-                        <button type="submit" class="btn btn-danger">
-                          <i class="mdi mdi-delete-forever me-2"></i>
-                          Supprimer définitivement cette classe
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Quick Stats -->
+            <!-- Danger Zone -->
             <div class="row mt-4">
-              <div class="col-12">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title mb-4">
-                      <i class="mdi mdi-chart-bar me-2"></i>
-                      Vue d'ensemble des classes ESPRIT
+              <div class="col-md-8 offset-md-2">
+                <div class="card border-danger">
+                  <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                      <i class="mdi mdi-alert-circle me-2"></i>
+                      Zone de danger
                     </h5>
-                    <div class="row text-center">
-                      <div class="col-md-3">
-                        <div class="stat-item">
-                          <h3 class="mb-0 text-primary">{{ classes_total is defined ? classes_total : '0' }}</h3>
-                          <small class="text-muted">Classes totales</small>
-                        </div>
-                      </div>
-                      <div class="col-md-3">
-                        <div class="stat-item">
-                          <h3 class="mb-0 text-info">
-                            {% if classes_niveau1 is defined %}
-                              {{ classes_niveau1 }}
-                            {% else %}
-                              {{ random(5, 15) }}
-                            {% endif %}
-                          </h3>
-                          <small class="text-muted">1ère année</small>
-                        </div>
-                      </div>
-                      <div class="col-md-3">
-                        <div class="stat-item">
-                          <h3 class="mb-0 text-success">
-                            {% if classes_niveau2 is defined %}
-                              {{ classes_niveau2 }}
-                            {% else %}
-                              {{ random(5, 15) }}
-                            {% endif %}
-                          </h3>
-                          <small class="text-muted">2ème année</small>
-                        </div>
-                      </div>
-                      <div class="col-md-3">
-                        <div class="stat-item">
-                          <h3 class="mb-0 text-warning">
-                            {% if classes_niveau3 is defined %}
-                              {{ classes_niveau3 }}
-                            {% else %}
-                              {{ random(5, 15) }}
-                            {% endif %}
-                          </h3>
-                          <small class="text-muted">3ème année</small>
-                        </div>
-                      </div>
-                    </div>
+                  </div>
+                  <div class="card-body">
+                    <h6 class="text-danger">Supprimer cette classe</h6>
+                    <p class="text-muted mb-3">
+                      Cette action est irréversible. Toutes les données associées à cette classe seront supprimées.
+                    </p>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                      <i class="mdi mdi-delete me-1"></i>Supprimer la classe
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
           
-          <!-- Footer -->
-          <footer class="footer">
-            <div class="d-sm-flex justify-content-center justify-content-sm-between">
-              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
-                © 2024 ESPRIT École d'Ingénieurs. Tous droits réservés.
-              </span>
-              <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
-                Modification de classe - ID: {{ classe.id }} | {{ "now"|date("d/m/Y H:i") }}
-              </span>
-            </div>
-          </footer>
+            <!-- Footer -->
+            <footer class="footer mt-4">
+              <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                  © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
+                </span>
+                <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                  Modification de classe: {{ classe.nom }}
+                </span>
+              </div>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="deleteModalLabel">
+              <i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Êtes-vous sûr de vouloir supprimer la classe <strong>{{ classe.nom }}</strong> ?</p>
+            <p class="text-danger mb-0">
+              <i class="mdi mdi-alert me-1"></i>
+              <small>Cette action est irréversible. Toutes les données associées seront perdues.</small>
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <i class="mdi mdi-close me-1"></i>Annuler
+            </button>
+            <form method="post" action="{{ path('app_classe_delete', {'id': classe.id}) }}" style="display: inline;">
+              <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ classe.id) }}">
+              <button type="submit" class="btn btn-danger">
+                <i class="mdi mdi-delete me-1"></i>Supprimer
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -752,91 +741,65 @@
     
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Auto-focus on first input
-        const firstInput = document.querySelector('input[autofocus]');
-        if (firstInput) {
-          firstInput.focus();
-        }
-        
-        // Real-time validation
-        const formInputs = document.querySelectorAll('.form-control-custom');
-        formInputs.forEach(input => {
-          input.addEventListener('blur', function() {
-            validateField(this);
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+          const alerts = document.querySelectorAll('.alert');
+          alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
           });
-          
-          input.addEventListener('input', function() {
-            if (this.classList.contains('is-invalid')) {
-              validateField(this);
-            }
-          });
-        });
+        }, 5000);
         
-        function validateField(field) {
-          field.classList.remove('is-valid', 'is-invalid');
-          if (field.value.trim() === '') {
-            field.classList.add('is-invalid');
-          } else {
-            field.classList.add('is-valid');
-          }
-        }
-        
-        // Form submission feedback
+        // Form validation
         const form = document.querySelector('form');
         if (form) {
-          form.addEventListener('submit', function() {
-            const submitBtn = this.querySelector('button[type="submit"]');
-            if (submitBtn) {
-              submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin me-2"></i> Enregistrement...';
-              submitBtn.disabled = true;
-            }
-          });
-        }
-        
-        // Reset button confirmation
-        const resetBtn = document.querySelector('button[type="reset"]');
-        if (resetBtn) {
-          resetBtn.addEventListener('click', function(e) {
-            if (!confirm('Voulez-vous vraiment réinitialiser tous les champs du formulaire ?')) {
-              e.preventDefault();
-            }
-          });
-        }
-        
-        // Cancel button confirmation if there are changes
-        const cancelBtn = document.querySelector('a[href*="app_classe_index"]');
-        if (cancelBtn) {
-          cancelBtn.addEventListener('click', function(e) {
-            const inputs = document.querySelectorAll('.form-control-custom');
-            let hasChanges = false;
+          form.addEventListener('submit', function(e) {
+            const nomInput = document.getElementById('{{ form.nom.vars.id }}');
+            const niveauSelect = document.getElementById('{{ form.niveau.vars.id }}');
+            const anneeInput = document.getElementById('{{ form.anneeuniversitaire.vars.id }}');
             
-            inputs.forEach(input => {
-              const originalValue = input.defaultValue;
-              const currentValue = input.value;
-              if (originalValue !== currentValue) {
-                hasChanges = true;
-              }
-            });
+            let isValid = true;
             
-            if (hasChanges && !confirm('Vous avez des modifications non sauvegardées. Quitter sans enregistrer ?')) {
-              e.preventDefault();
+            if (!nomInput.value.trim()) {
+              isValid = false;
+              nomInput.classList.add('is-invalid');
+            } else {
+              nomInput.classList.remove('is-invalid');
             }
-          });
-        }
-        
-        // Delete button extra confirmation
-        const deleteForm = document.querySelector('form[action*="delete"]');
-        if (deleteForm) {
-          const deleteBtn = deleteForm.querySelector('button[type="submit"]');
-          if (deleteBtn) {
-            deleteBtn.addEventListener('click', function(e) {
-              const confirmation = confirm('⚠️ ATTENTION ⚠️\n\nLa suppression est définitive !\n\n• Tous les étudiants de cette classe seront affectés\n• Toutes les séances seront supprimées\n• Toutes les données seront perdues\n\nConfirmer la suppression ?');
+            
+            if (!niveauSelect.value) {
+              isValid = false;
+              niveauSelect.classList.add('is-invalid');
+            } else {
+              niveauSelect.classList.remove('is-invalid');
+            }
+            
+            if (!anneeInput.value.trim()) {
+              isValid = false;
+              anneeInput.classList.add('is-invalid');
+            } else {
+              anneeInput.classList.remove('is-invalid');
+            }
+            
+            if (!isValid) {
+              e.preventDefault();
               
-              if (!confirmation) {
-                e.preventDefault();
-              }
-            });
-          }
+              // Show error message
+              const errorDiv = document.createElement('div');
+              errorDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
+              errorDiv.innerHTML = `
+                <i class="mdi mdi-alert-circle me-2"></i>
+                Veuillez remplir tous les champs obligatoires.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              `;
+              
+              const formBody = document.querySelector('.card-body');
+              formBody.insertBefore(errorDiv, formBody.firstChild);
+              
+              // Scroll to error
+              errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          });
         }
       });
     </script>

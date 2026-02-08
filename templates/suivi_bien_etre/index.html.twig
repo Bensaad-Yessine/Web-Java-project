@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}SuiviBienEtre index{% endblock %}
+
+{% block body %}
+    <h1>SuiviBienEtre index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>DateSaisie</th>
+                <th>Humeur</th>
+                <th>QualiteSommeil</th>
+                <th>NiveauEnergie</th>
+                <th>NiveauStress</th>
+                <th>QualiteAlimentation</th>
+                <th>NotesLibres</th>
+                <th>Score</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for suivi_bien_etre in suivi_bien_etres %}
+            <tr>
+                <td>{{ suivi_bien_etre.id }}</td>
+                <td>{{ suivi_bien_etre.dateSaisie ? suivi_bien_etre.dateSaisie|date('Y-m-d') : '' }}</td>
+                <td>{{ suivi_bien_etre.humeur }}</td>
+                <td>{{ suivi_bien_etre.qualiteSommeil }}</td>
+                <td>{{ suivi_bien_etre.niveauEnergie }}</td>
+                <td>{{ suivi_bien_etre.niveauStress }}</td>
+                <td>{{ suivi_bien_etre.qualiteAlimentation }}</td>
+                <td>{{ suivi_bien_etre.notesLibres }}</td>
+                <td>{{ suivi_bien_etre.score }}</td>
+                <td>
+                    <a href="{{ path('app_suivi_bien_etre_show', {'id': suivi_bien_etre.id}) }}">show</a>
+                    <a href="{{ path('app_suivi_bien_etre_edit', {'id': suivi_bien_etre.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="10">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_suivi_bien_etre_new') }}">Create new</a>
+{% endblock %}
