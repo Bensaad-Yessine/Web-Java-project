@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Route('/suivi')]
 final class SuiviBienEtreController extends AbstractController
@@ -86,4 +87,40 @@ final class SuiviBienEtreController extends AbstractController
 
         return $this->redirectToRoute('app_suivi_bien_etre_index');
     }
+    #[Route('/list', name: 'app_suivi_list_ajax', methods: ['GET'])]
+public function listAjax(Request $request, EntityManagerInterface $em): JsonResponse
+{
+    $sort = strtoupper($request->query->get('sort', 'DESC'));
+    if (!in_array($sort, ['ASC', 'DESC'], true)) {
+        $sort = 'DESC';
+    }
+
+    $suivis = $em->getRepository(SuiviBienEtre::class)->findBy([], ['dateSaisie' => $sort]);
+
+    $html = $this->renderView('suivi_bien_etre/_rows.html.twig', [
+        'suivis' => $suivis
+    ]);
+
+    return new JsonResponse(['html' => $html]);
+}
+#[Route('/objectif/{idObjectif}/rows', name: 'app_suivi_rows_by_objectif', methods: ['GET'])]
+public function rowsByObjectif(int $idObjectif, Request $request, EntityManagerInterface $em): JsonResponse
+{
+    $sort = strtoupper($request->query->get('sort', 'DESC'));
+    if (!in_array($sort, ['ASC', 'DESC'], true)) {
+        $sort = 'DESC';
+    }
+
+    $suivis = $em->getRepository(SuiviBienEtre::class)->findBy(
+        ['objectif' => $idObjectif],
+        ['dateSaisie' => $sort]
+    );
+
+    $html = $this->renderView('suivi_bien_etre/_rows_by_objectif.html.twig', [
+        'suivis' => $suivis
+    ]);
+
+    return new JsonResponse(['html' => $html]);
+}
+
 }

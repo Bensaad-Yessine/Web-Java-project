@@ -63,6 +63,19 @@
         font-size: 16px;
       }
       
+      .profile-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 20px;
+      }
+      
       .badge-etudiant {
         background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         color: white;
@@ -101,6 +114,20 @@
         color: #dee2e6;
         margin-bottom: 20px;
       }
+
+      .alert {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+      }
+      
+      .user-role-badge {
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 10px;
+        margin-top: 3px;
+      }
     </style>
   </head>
   <body>
@@ -120,12 +147,37 @@
             <div class="profile-desc">
               <div class="profile-pic">
                 <div class="count-indicator">
-                  <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  {% if app.user %}
+                    <div class="profile-avatar">
+                      
+                      <div class="user-avatar me-3">
+    {% if app.user.profilePic %}
+        <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+             alt="{{ app.user.prenom }}" 
+             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+    {% else %}
+        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+    {% endif %}
+</div>
+                    </div>
+                  {% else %}
+                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  {% endif %}
                   <span class="count bg-success"></span>
                 </div>
                 <div class="profile-name">
-                  <h5 class="mb-0 font-weight-normal">Administrateur</h5>
-                  <span>ESPRIT</span>
+                  {% if app.user %}
+                    <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                    <span>{{ app.user.email }}</span>
+                    {% if 'ROLE_ADMIN' in app.user.roles %}
+                      <div class="user-role-badge badge-admin mt-1">Administrateur</div>
+                    {% else %}
+                      <div class="user-role-badge badge-etudiant mt-1">Utilisateur</div>
+                    {% endif %}
+                  {% else %}
+                    <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                    <span>Veuillez vous connecter</span>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -226,17 +278,17 @@
           
           <!-- Exercices de santé -->
           <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ path('app_suivi_bien_etre_index') }}">
               <span class="menu-icon">
                 <i class="mdi mdi-heart-pulse"></i>
               </span>
-              <span class="menu-title">Exercices de santé</span>
+              <span class="menu-title">Santé ET Bien Etre</span>
             </a>
           </li>
           
           <!-- Logout -->
           <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ path('app_logout') }}">
               <span class="menu-icon">
                 <i class="mdi mdi-logout text-danger"></i>
               </span>
@@ -260,7 +312,7 @@
             <ul class="navbar-nav w-100">
               <li class="nav-item w-100">
                 <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                  <input type="text" class="form-control" placeholder="Rechercher un utilisateur...">
+                  <input type="text" class="form-control" placeholder="Rechercher un utilisateur..." id="searchInput">
                 </form>
               </li>
             </ul>
@@ -290,15 +342,80 @@
               <li class="nav-item dropdown">
                 <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
                   <div class="navbar-profile">
-                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
-                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Admin ESPRIT</p>
+                    {% if app.user %}
+                      <div class="user-avatar me-2">
+                        
+                        <div class="user-avatar me-3">
+    {% if app.user.profilePic %}
+        <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+             alt="{{ app.user.prenom }}" 
+             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+    {% else %}
+        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+    {% endif %}
+</div>
+                      </div>
+                      <div class="text-start">
+                        <p class="mb-0 d-none d-sm-block navbar-profile-name">
+                          {{ app.user.prenom }} {{ app.user.nom }}
+                        </p>
+                        <small class="text-muted d-none d-sm-block">
+                          {% if 'ROLE_ADMIN' in app.user.roles %}
+                            <span class="badge badge-admin">Admin</span>
+                          {% else %}
+                            <span class="badge badge-etudiant">Utilisateur</span>
+                          {% endif %}
+                        </small>
+                      </div>
+                    {% else %}
+                      <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                      <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                    {% endif %}
                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
                   </div>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
-                  <h6 class="p-3 mb-0">Profil Administrateur</h6>
+                  <div class="dropdown-header p-3">
+                    {% if app.user %}
+                      <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                      <p class="text-muted mb-0">{{ app.user.email }}</p>
+                      <small class="text-muted">
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin">Administrateur</span>
+                        {% else %}
+                          <span class="badge badge-etudiant">Utilisateur</span>
+                        {% endif %}
+                      </small>
+                    {% else %}
+                      <h6 class="mb-0">Non connecté</h6>
+                      <p class="text-muted mb-0">Veuillez vous connecter</p>
+                    {% endif %}
+                  </div>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item" href="#">
+                  {% if app.user %}
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-primary rounded-circle">
+                          <i class="mdi mdi-account"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Mon profil</p>
+                      </div>
+                    </a>
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-warning rounded-circle">
+                          <i class="mdi mdi-account-edit"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Modifier mon profil</p>
+                      </div>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                  {% endif %}
+                  <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-dark rounded-circle">
                         <i class="mdi mdi-logout text-danger"></i>
@@ -317,6 +434,17 @@
         <!-- Content -->
         <div class="main-panel">
           <div class="content-wrapper">
+            {# Flash Messages #}
+            {% for label, messages in app.flashes %}
+              {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                  <i class="mdi mdi-{{ label == 'success' ? 'check-circle' : 'alert-circle' }} me-2"></i>
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            {% endfor %}
+
             <!-- Header -->
             <div class="row">
               <div class="col-12">
@@ -334,6 +462,18 @@
                       </li>
                     </ul>
                   </nav>
+                  {% if app.user %}
+                    <div class="mt-2">
+                      <small class="text-muted">
+                        <i class="mdi mdi-account me-1"></i>
+                        Connecté en tant que: <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong>
+                        ({{ app.user.email }})
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin ms-2">Administrateur</span>
+                        {% endif %}
+                      </small>
+                    </div>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -347,7 +487,7 @@
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
                           <h3 class="mb-0 stat-count">{{ users|length }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(5, 15) }}%</p>
+                          <p class="text-success ms-2 mb-0 font-weight-medium">+12%</p>
                         </div>
                       </div>
                       <div class="col-3">
@@ -366,9 +506,9 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set etudiants = users|filter(u => u.role == 'Étudiant')|length %}
-                          <h3 class="mb-0 stat-count">{{ etudiants }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(2, 8) }}%</p>
+                          {% set userRole = users|filter(u => 'ROLE_USER' in u.roles and 'ROLE_ADMIN' not in u.roles)|length %}
+                          <h3 class="mb-0 stat-count">{{ userRole }}</h3>
+                          <p class="text-success ms-2 mb-0 font-weight-medium">+5%</p>
                         </div>
                       </div>
                       <div class="col-3">
@@ -387,7 +527,7 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set admins = users|filter(u => u.role == 'Administrateur')|length %}
+                          {% set admins = users|filter(u => 'ROLE_ADMIN' in u.roles)|length %}
                           <h3 class="mb-0 stat-count">{{ admins }}</h3>
                           <p class="text-success ms-2 mb-0 font-weight-medium">+0%</p>
                         </div>
@@ -408,18 +548,18 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set profs = users|filter(u => u.role == 'Professeur')|length %}
-                          <h3 class="mb-0 stat-count">{{ profs }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(1, 5) }}%</p>
+                          {% set verified = users|filter(u => u.isVerified)|length %}
+                          <h3 class="mb-0 stat-count">{{ verified }}</h3>
+                          <p class="text-success ms-2 mb-0 font-weight-medium">+3%</p>
                         </div>
                       </div>
                       <div class="col-3">
                         <div class="stat-icon card-4">
-                          <i class="mdi mdi-teach"></i>
+                          <i class="mdi mdi-check-circle"></i>
                         </div>
                       </div>
                     </div>
-                    <h6 class="stat-label">Professeurs</h6>
+                    <h6 class="stat-label">Vérifiés</h6>
                   </div>
                 </div>
               </div>
@@ -434,9 +574,9 @@
                       <h4 class="card-title">👥 Liste des Utilisateurs</h4>
                       <div class="d-flex">
                         <div class="search-box me-3">
-                          <input type="text" class="form-control" placeholder="Rechercher..." id="searchInput">
+                          <input type="text" class="form-control" placeholder="Rechercher..." id="tableSearchInput">
                         </div>
-                        <a href="{{ path('app_user_add') }}" class="btn btn-gradient-primary btn-icon-text">
+                        <a href="{{ path('app_user_new') }}" class="btn btn-gradient-primary btn-icon-text">
                           <i class="mdi mdi-account-plus btn-icon-prepend"></i>
                           Ajouter un utilisateur
                         </a>
@@ -444,16 +584,23 @@
                     </div>
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 <div class="example-wrapper">
     <h1>Hello UserController ✅</h1>
 
 =======
+=======
+>>>>>>> origin/master
                     {% if users is empty %}
                       <div class="empty-state">
                         <i class="mdi mdi-account-off"></i>
                         <h4 class="text-muted">Aucun utilisateur trouvé</h4>
                         <p class="text-muted mb-4">Commencez par ajouter un nouvel utilisateur</p>
+<<<<<<< HEAD
                         <a href="{{ path('app_user_add') }}" class="btn btn-gradient-primary">
+=======
+                        <a href="{{ path('app_user_new') }}" class="btn btn-gradient-primary">
+>>>>>>> origin/master
                           <i class="mdi mdi-account-plus"></i>
                           Ajouter le premier utilisateur
                         </a>
@@ -468,9 +615,16 @@
                               <th>Email</th>
                               <th>Date de naissance</th>
                               <th>Classe</th>
+<<<<<<< HEAD
                               <th>Spécialité</th>
                               <th>Sexe</th>
                               <th>Rôle</th>
+=======
+                              <th>Téléphone</th>
+                              <th>Sexe</th>
+                              <th>Rôle</th>
+                              <th>Status</th>
+>>>>>>> origin/master
                               <th>Actions</th>
                             </tr>
                           </thead>
@@ -481,11 +635,31 @@
                                 <td>
                                   <div class="d-flex align-items-center">
                                     <div class="user-avatar me-3">
+<<<<<<< HEAD
                                       {{ user.prenom|first|upper }}{{ user.nom|first|upper }}
                                     </div>
                                     <div>
                                       <h6 class="mb-0">{{ user.prenom }} {{ user.nom }}</h6>
                                       <small class="text-muted">Membre depuis {{ user.dateDeNaissance ? user.dateDeNaissance|date('d/m/Y') }}</small>
+=======
+<div class="user-avatar me-3">
+    {% if user.profilePic %}
+        <img src="{{ asset('uploads/profile_pics/' ~ user.profilePic) }}" 
+             alt="{{ user.prenom }}" 
+             style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+    {% else %}
+        {{ user.prenom|first|upper }}{{ user.nom|first|upper }}
+    {% endif %}
+</div>                                    </div>
+                                    <div>
+                                      <h6 class="mb-0">{{ user.prenom }} {{ user.nom }}</h6>
+                                      <small class="text-muted">{{ user.email }}</small>
+                                      {% if user.id == app.user.id %}
+                                        <small class="text-primary">
+                                          <i class="mdi mdi-account-circle me-1"></i>C'est vous
+                                        </small>
+                                      {% endif %}
+>>>>>>> origin/master
                                     </div>
                                   </div>
                                 </td>
@@ -493,26 +667,40 @@
                                 <td>{{ user.dateDeNaissance ? user.dateDeNaissance|date('d/m/Y') : '—' }}</td>
                                 <td>
                                   {% if user.classe %}
+<<<<<<< HEAD
                                     <span class="badge badge-light">{{ user.classe }}</span>
+=======
+                                    <span class="badge badge-light">{{ user.classe.nom }}</span>
+>>>>>>> origin/master
                                   {% else %}
                                     <span class="text-muted">—</span>
                                   {% endif %}
                                 </td>
                                 <td>
+<<<<<<< HEAD
                                   {% if user.specialiteFuture %}
                                     <span class="badge badge-info">{{ user.specialiteFuture }}</span>
+=======
+                                  {% if user.numTel %}
+                                    <span class="badge badge-info">{{ user.numTel }}</span>
+>>>>>>> origin/master
                                   {% else %}
                                     <span class="text-muted">—</span>
                                   {% endif %}
                                 </td>
                                 <td>
+<<<<<<< HEAD
                                   {% if user.sexe == 'Masculin' %}
+=======
+                                  {% if user.sexe == 'Homme' %}
+>>>>>>> origin/master
                                     <span class="badge badge-primary">{{ user.sexe }}</span>
                                   {% else %}
                                     <span class="badge badge-pink">{{ user.sexe }}</span>
                                   {% endif %}
                                 </td>
                                 <td>
+<<<<<<< HEAD
                                   {% if user.role == 'Étudiant' %}
                                     <span class="badge badge-etudiant">{{ user.role }}</span>
                                   {% elseif user.role == 'Administrateur' %}
@@ -521,6 +709,19 @@
                                     <span class="badge badge-prof">{{ user.role }}</span>
                                   {% else %}
                                     <span class="badge badge-secondary">{{ user.role }}</span>
+=======
+                                  {% if 'ROLE_ADMIN' in user.roles %}
+                                    <span class="badge badge-admin">Administrateur</span>
+                                  {% else %}
+                                    <span class="badge badge-etudiant">Utilisateur</span>
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  {% if user.isVerified %}
+                                    <span class="badge badge-success">Vérifié</span>
+                                  {% else %}
+                                    <span class="badge badge-warning">Non vérifié</span>
+>>>>>>> origin/master
                                   {% endif %}
                                 </td>
                                 <td>
@@ -535,6 +736,7 @@
                                        title="Modifier">
                                       <i class="mdi mdi-pencil"></i>
                                     </a>
+<<<<<<< HEAD
                                     <button type="button" 
                                             class="btn btn-danger btn-sm btn-icon delete-btn"
                                             data-user-id="{{ user.id }}"
@@ -542,6 +744,20 @@
                                             title="Supprimer">
                                       <i class="mdi mdi-delete"></i>
                                     </button>
+=======
+                                    {% if user.id != app.user.id %}
+                                      <button type="button" 
+                                              class="btn btn-danger btn-sm btn-icon delete-btn"
+                                              data-user-id="{{ user.id }}"
+                                              data-user-name="{{ user.prenom }} {{ user.nom }}"
+                                              data-csrf-token="{{ csrf_token('delete' ~ user.id) }}"
+                                              title="Supprimer">
+                                        <i class="mdi mdi-delete"></i>
+                                      </button>
+                                    {% else %}
+                                      <span class="badge badge-secondary">Vous</span>
+                                    {% endif %}
+>>>>>>> origin/master
                                   </div>
                                 </td>
                               </tr>
@@ -549,6 +765,7 @@
                           </tbody>
                         </table>
                       </div>
+<<<<<<< HEAD
                       
                       <!-- Delete Confirmation Modal -->
                       <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog">
@@ -574,11 +791,14 @@
                           </div>
                         </div>
                       </div>
+=======
+>>>>>>> origin/master
                     {% endif %}
                   </div>
                 </div>
               </div>
             </div>
+<<<<<<< HEAD
           </div>
           
           <!-- Footer -->
@@ -598,11 +818,67 @@
 >>>>>>> origin/user
 
     <!-- Scripts -->
+=======
+          
+            <!-- Footer -->
+            <footer class="footer">
+              <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                  © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
+                </span>
+                <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                  Gestion des Utilisateurs - {{ users|length }} utilisateur{{ users|length > 1 ? 's' : '' }}
+                  {% if app.user %}
+                    | Connecté: {{ app.user.prenom|slice(0, 10) }}...
+                  {% endif %}
+                </span>
+              </div>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="deleteModalLabel">
+              <i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Êtes-vous sûr de vouloir supprimer l'utilisateur <strong id="userNameDisplay"></strong> ?</p>
+            <p class="text-danger mb-0">
+              <i class="mdi mdi-alert me-1"></i>
+              <small>Cette action est irréversible.</small>
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <i class="mdi mdi-close me-1"></i>Annuler
+            </button>
+            <form id="deleteForm" method="POST" style="display: inline;">
+              <input type="hidden" name="_token" id="csrfToken" value="">
+              <button type="submit" class="btn btn-danger">
+                <i class="mdi mdi-delete me-1"></i>Supprimer
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+   <!-- Scripts -->
+>>>>>>> origin/master
     <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
     <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
     <script src="{{ asset('assets/js/misc.js') }}"></script>
     
     <script>
+<<<<<<< HEAD
       // Search functionality
       document.getElementById('searchInput').addEventListener('keyup', function() {
         const filter = this.value.toLowerCase();
@@ -643,6 +919,70 @@
           if (closeBtn) closeBtn.click();
         });
       }, 5000);
+=======
+      document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality for navbar
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+          searchInput.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#usersTable tbody tr');
+            
+            rows.forEach(row => {
+              const text = row.textContent.toLowerCase();
+              row.style.display = text.includes(filter) ? '' : 'none';
+            });
+          });
+        }
+        
+        // Search functionality for table
+        const tableSearchInput = document.getElementById('tableSearchInput');
+        if (tableSearchInput) {
+          tableSearchInput.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#usersTable tbody tr');
+            
+            rows.forEach(row => {
+              const text = row.textContent.toLowerCase();
+              row.style.display = text.includes(filter) ? '' : 'none';
+            });
+          });
+        }
+        
+        // Delete confirmation modal
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        deleteButtons.forEach(button => {
+          button.addEventListener('click', function() {
+            const userId = this.getAttribute('data-user-id');
+            const userName = this.getAttribute('data-user-name');
+            const csrfToken = this.getAttribute('data-csrf-token');
+            
+            // Update modal content
+            document.getElementById('userNameDisplay').textContent = userName;
+            
+            // Set the form action - Build the URL dynamically
+            const deleteForm = document.getElementById('deleteForm');
+            deleteForm.action = '/user/' + userId + '/delete';
+            
+            // Set CSRF token
+            document.getElementById('csrfToken').value = csrfToken;
+            
+            // Show modal using Bootstrap 5
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            modal.show();
+          });
+        });
+        
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+          const alerts = document.querySelectorAll('.alert');
+          alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+          });
+        }, 5000);
+      });
+>>>>>>> origin/master
     </script>
   </body>
 </html>
