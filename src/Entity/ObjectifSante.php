@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\User;
+use App\Repository\UserRepository;
 use App\Repository\ObjectifSanteRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -62,6 +64,9 @@ class ObjectifSante
     #[ORM\OneToMany(mappedBy: 'objectif', targetEntity: SuiviBienEtre::class, orphanRemoval: true, cascade: ['persist','remove'])]
     private Collection $suivis;
 
+    #[ORM\ManyToOne(inversedBy: 'objectifSantes')]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->suivis = new ArrayCollection();
@@ -115,6 +120,18 @@ class ObjectifSante
                 $suivi->setObjectif(null);
             }
         }
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
         return $this;
     }
 }
