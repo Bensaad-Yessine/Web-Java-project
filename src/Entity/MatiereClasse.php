@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\MatiereClasseRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -36,10 +38,18 @@ class MatiereClasse
     )]
     private ?int $scorecomplexite = null;
 
-    #[ORM\ManyToOne(inversedBy: 'matiereClasses')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: "Vous devez sélectionner une classe.")]
-    private ?Classe $classe = null;
+    /**
+     * @var Collection<int, Classe>
+     */
+    #[ORM\ManyToMany(targetEntity: Classe::class, inversedBy: 'matiereClasses')]
+    private Collection $Classe;
+
+    public function __construct()
+    {
+        $this->Classe = new ArrayCollection();
+    }
+
+   
 
     public function getId(): ?int
     {
@@ -79,14 +89,29 @@ class MatiereClasse
         return $this;
     }
 
-    public function getClasse(): ?Classe
+    /**
+     * @return Collection<int, Classe>
+     */
+    public function getClasse(): Collection
     {
-        return $this->classe;
+        return $this->Classe;
     }
 
-    public function setClasse(?Classe $classe): static
+    public function addClasse(Classe $classe): static
     {
-        $this->classe = $classe;
+        if (!$this->Classe->contains($classe)) {
+            $this->Classe->add($classe);
+        }
+
         return $this;
     }
+
+    public function removeClasse(Classe $classe): static
+    {
+        $this->Classe->removeElement($classe);
+
+        return $this;
+    }
+
+    
 }
