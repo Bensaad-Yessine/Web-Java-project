@@ -6,7 +6,7 @@ use App\Repository\GroupeProjetRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-
+use Doctrine\DBAL\Types\Types;
 #[ORM\Entity(repositoryClass: GroupeProjetRepository::class)]
 class GroupeProjet
 {
@@ -32,7 +32,7 @@ class GroupeProjet
     /**
      * @var Collection<int, PropositionReunion>
      */
-    #[ORM\OneToMany(targetEntity: PropositionReunion::class, mappedBy: 'idGroupe')]
+    #[ORM\OneToMany(targetEntity: PropositionReunion::class, mappedBy: 'idGroupe', cascade: ['persist','remove'], orphanRemoval: true)]
     private Collection $idReunion;
 
     #[ORM\Column(nullable: true)]
@@ -43,6 +43,9 @@ class GroupeProjet
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $CreatedAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $statut = null;
@@ -170,6 +173,18 @@ class GroupeProjet
     public function setCreatedAt(?\DateTimeImmutable $CreatedAt): static
     {
         $this->CreatedAt = $CreatedAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

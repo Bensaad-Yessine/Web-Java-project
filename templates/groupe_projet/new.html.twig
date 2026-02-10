@@ -836,7 +836,7 @@
                         <i class="mdi mdi-arrow-left me-1"></i>
                         Retour à la liste
                       </a>
-                      <button type="submit" class="btn btn-create">
+                      <button type="submit" class="btn btn-create" id="submitBtn">
                         <i class="mdi mdi-check-circle me-1"></i>
                         Créer le groupe
                       </button>
@@ -937,6 +937,73 @@
             bsAlert.close();
           });
         }, 5000);
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+          const alertDiv = document.createElement('div');
+          alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+          alertDiv.role = 'alert';
+          alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          `;
+          
+          const mainContent = document.querySelector('.main-panel') || document.body;
+          mainContent.insertBefore(alertDiv, mainContent.firstChild);
+          
+          // Auto hide after 3 seconds
+          setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(alertDiv);
+            bsAlert.close();
+          }, 3000);
+        }
+        
+        // Handle form submission with AJAX
+        const form = document.querySelector('form.form-sample');
+        if (form) {
+          form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin me-1"></i>Création...';
+            
+            const formData = new FormData(form);
+            
+            fetch(form.action || window.location.href, {
+              method: 'POST',
+              body: formData,
+              headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+              }
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                showToast(data.message, 'success');
+                setTimeout(() => {
+                  window.location.href = data.redirect;
+                }, 1500);
+              } else {
+                showToast(data.message || 'Une erreur est survenue', 'danger');
+                if (data.errors) {
+                  data.errors.forEach(error => {
+                    showToast(error, 'warning');
+                  });
+                }
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              showToast('Erreur réseau: ' + error.message, 'danger');
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = originalBtnText;
+            });
+          });
+        }
         
         // Set default date for CreatedAt field
         const createdAtField = document.getElementById('{{ form.CreatedAt.vars.id }}');
