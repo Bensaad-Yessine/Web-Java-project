@@ -867,7 +867,13 @@
                                         Informations Générales
                                     </h5>
                                 </div>
-
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                          <label>Utilisateur</label>
+                                          {{ form_widget(form.user, {'attr': {'class': 'form-select'}}) }}
+                                          {{ form_errors(form.user) }}
+                                      </div>
+                                  </div>
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
@@ -927,26 +933,6 @@
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="form-group">
-                                            <label class="form-label-custom">
-                                                <i class="mdi mdi-source-branch label-icon"></i>
-                                                Origine
-                                            </label>
-                                            {{ form_widget(form.origine, {'attr': {
-                                                'class': 'form-control',
-                                                'placeholder': 'Ex: Client, Interne, Bug Report, Feature Request...'
-                                            }}) }}
-                                            <div class="form-help-text">
-                                                <i class="mdi mdi-information-outline"></i>
-                                                <span>Indiquez la source ou la provenance de cette tâche</span>
-                                            </div>
-                                            {{ form_errors(form.origine) }}
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <!-- Section 2: Planning & Dates -->
                                 <div class="form-section-header">
                                     <h5>
@@ -1002,50 +988,16 @@
                                         État & Avancement
                                     </h5>
                                 </div>
-
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label class="form-label-custom">
-                                                <i class="mdi mdi-progress-check label-icon"></i>
-                                                Durée estimée / Progression
-                                            </label>
-                                            <div class="input-group">
-                                                {{ form_widget(form.dureeEstimee, {'attr': {
-                                                    'class': 'form-control',
-                                                    'min': '0',
-                                                    'max': '100',
-                                                    'value': '0'
-                                                }}) }}
-                                                <span class="input-group-text">%</span>
-                                            </div>
-                                            <div class="form-help-text">
-                                                <i class="mdi mdi-information-outline"></i>
-                                                <span>Pourcentage d'avancement estimé (0-100%)</span>
-                                            </div>
-                                            <div id="progress-preview" class="mt-3"></div>
-                                            {{ form_errors(form.dureeEstimee) }}
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label-custom">
-                                                <i class="mdi mdi-progress-clock label-icon"></i>
-                                                Statut
-                                                <span class="required-star">*</span>
-                                            </label>
-                                            {{ form_widget(form.statut, {'attr': {
-                                                'class': 'form-select'
-                                            }}) }}
-                                            <div class="form-help-text">
-                                                <i class="mdi mdi-information-outline"></i>
-                                                <span>État actuel de la tâche dans son cycle de vie</span>
-                                            </div>
+                                            <label>Statut</label>
+                                            {{ form_widget(form.statut, {'attr': {'class': 'form-select'}}) }}
                                             {{ form_errors(form.statut) }}
                                         </div>
                                     </div>
                                 </div>
+
                                 
                                 <!-- Form Actions -->
                                 <div class="form-actions">

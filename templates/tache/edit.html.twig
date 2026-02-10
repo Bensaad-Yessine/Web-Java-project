@@ -1008,10 +1008,6 @@
                                 <span class="info-label">Type:</span>
                                 <span class="info-value">{{ tache.type }}</span>
                             </div>
-                            <div class="info-row">
-                                <span class="info-label">Progression:</span>
-                                <span class="info-value">{{ tache.dureeEstimee }}%</span>
-                            </div>
                         </div>
                         <div class="col-md-6">
                             <div class="info-row">
@@ -1035,8 +1031,8 @@
                             <div class="info-row">
                                 <span class="info-label">Utilisateur assigné:</span>
                                 <span class="info-value">
-                                    {% if tache.User %}
-                                        {{ tache.User.email }}
+                                    {% if tache.user %}
+                                        {{ tache.user.email }}
                                     {% else %}
                                         <em class="text-muted">Non assigné</em>
                                     {% endif %}
@@ -1116,24 +1112,6 @@
                                                 <span>Sélectionnez le type qui correspond le mieux à votre tâche</span>
                                             </div>
                                             {{ form_errors(form.type) }}
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label class="form-label-custom">
-                                                <i class="mdi mdi-source-branch label-icon"></i>
-                                                Origine
-                                                <span class="required-star">*</span>
-                                            </label>
-                                            {{ form_widget(form.origine, {'attr': {
-                                                'class': 'form-select'
-                                            }}) }}
-                                            <div class="form-help-text">
-                                                <i class="mdi mdi-information-outline"></i>
-                                                <span>Indiquez la source ou la provenance de cette tâche</span>
-                                            </div>
-                                            {{ form_errors(form.origine) }}
                                         </div>
                                     </div>
                                 </div>
@@ -1224,42 +1202,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Section 3: État & Avancement -->
-                                <div class="form-section-header">
-                                    <h5>
-                                        <span class="section-icon">
-                                            <i class="mdi mdi-chart-line"></i>
-                                        </span>
-                                        État & Avancement
-                                    </h5>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label class="form-label-custom">
-                                                <i class="mdi mdi-progress-check label-icon"></i>
-                                                Durée estimée / Progression
-                                                <span class="required-star">*</span>
-                                            </label>
-                                            <div class="input-group">
-                                                {{ form_widget(form.dureeEstimee, {'attr': {
-                                                    'class': 'form-control',
-                                                    'min': '0',
-                                                    'placeholder': 'Ex: 120 pour 2 heures'
-                                                }}) }}
-                                                <span class="input-group-text">minutes</span>
-                                            </div>
-                                            <div class="form-help-text">
-                                                <i class="mdi mdi-information-outline"></i>
-                                                <span>Temps estimé pour accomplir la tâche (en minutes)</span>
-                                            </div>
-                                            <div id="duration-info" class="mt-2"></div>
-                                            {{ form_errors(form.dureeEstimee) }}
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <!-- Section 4: Attribution -->
                                 <div class="form-section-header">
                                     <h5>
@@ -1277,14 +1219,14 @@
                                                 <i class="mdi mdi-account-circle label-icon"></i>
                                                 Utilisateur assigné
                                             </label>
-                                            {{ form_widget(form.User, {'attr': {
+                                            {{ form_widget(form.user, {'attr': {
                                                 'class': 'form-select'
                                             }}) }}
                                             <div class="form-help-text">
                                                 <i class="mdi mdi-information-outline"></i>
                                                 <span>Assignez cette tâche à un utilisateur spécifique (optionnel)</span>
                                             </div>
-                                            {{ form_errors(form.User) }}
+                                            {{ form_errors(form.user) }}
                                         </div>
                                     </div>
                                 </div>

@@ -1,54 +1,1380 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ESPRIT - Détails de la Tâche</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+    <style>
+      .stat-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      }
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+        margin: 0 auto;
+      }
+      .stat-count {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+      .stat-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .card-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+      .card-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+      .card-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+      .card-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+      .card-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+      
+      .priority-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 10px;
+        display: inline-block;
+        color: white;
+        border: none;
+      }
+      
+      .priority-high { background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%); }
+      .priority-medium { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+      .priority-low { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+      
+      .status-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 10px;
+        display: inline-block;
+        color: white;
+        border: none;
+      }
+      
+      .status-completed { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+      .status-inprogress { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+      .status-pending { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+      
+      .type-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 10px;
+        display: inline-block;
+        color: white;
+        border: none;
+      }
+      
+      .type-bug { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
+      .type-feature { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+      .type-improvement { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+      .type-maintenance { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+      .type-urgent { background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%); }
+      .type-other { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+      
+      .task-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      
+      .user-avatar-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      
+      .profile-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 20px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      
+      .profile-avatar-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #fff;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      }
+      
+      .badge-etudiant {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border: none;
+      }
+      
+      .badge-admin {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+      }
+      
+      .badge-prof {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+        border: none;
+      }
+      
+      .action-buttons {
+        display: flex;
+        gap: 5px;
+      }
+      
+      .action-buttons .btn {
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+      
+      .search-box {
+        max-width: 300px;
+      }
+      
+      .table-hover tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+      }
+      
+      .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+      }
+      
+      .empty-state i {
+        font-size: 60px;
+        color: #dee2e6;
+        margin-bottom: 20px;
+      }
 
-{% block title %}PreferenceAlerte{% endblock %}
+      .alert {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+      }
+      
+      .user-role-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 10px;
+        margin-top: 5px;
+        display: inline-block;
+      }
+      
+      /* Fix for profile section alignment */
+      .profile-pic {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+      }
+      
+      .count-indicator {
+        position: relative;
+        margin-right: 15px;
+      }
+      
+      .profile-name {
+        flex-grow: 1;
+      }
+      
+      /* Fix for navbar profile alignment */
+      .navbar-profile {
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+      }
+      
+      /* Ensure table cells align properly */
+      .table td {
+        vertical-align: middle;
+      }
+      
+      /* Fix for duplicate avatar display */
+      .avatar-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      
+      /* Task details styles */
+      .task-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+      }
+      
+      .task-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: white;
+        color: #667eea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        font-weight: bold;
+        margin: 0 auto 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      }
+      
+      .detail-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      
+      .detail-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 25px rgba(0,0,0,0.12);
+      }
+      
+      .detail-card-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 3px solid #667eea;
+        display: flex;
+        align-items: center;
+      }
+      
+      .detail-card-title i {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-right: 10px;
+        font-size: 1.5rem;
+      }
+      
+      .detail-row {
+        display: flex;
+        padding: 15px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      
+      .detail-row:last-child {
+        border-bottom: none;
+      }
+      
+      .detail-label {
+        font-weight: 600;
+        color: #6c757d;
+        width: 180px;
+        display: flex;
+        align-items: center;
+      }
+      
+      .detail-label i {
+        margin-right: 10px;
+        color: #667eea;
+        font-size: 18px;
+      }
+      
+      .detail-value {
+        color: #2c3e50;
+        font-weight: 500;
+        flex: 1;
+      }
+      
+      .progress {
+        background-color: #f0f0f0;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      
+      .progress-bar {
+        border-radius: 10px;
+      }
+      
+      .empty-value {
+        color: #95a5a6;
+        font-style: italic;
+      }
+      
+      code {
+        background: #f8f9fa;
+        padding: 4px 8px;
+        border-radius: 4px;
+        color: #667eea;
+        font-family: 'Courier New', monospace;
+      }
+      
+      .btn-gradient-warning {
+        background: linear-gradient(135deg, #ffa726 0%, #ff7043 100%);
+        color: white;
+        border: none;
+      }
+      
+      .btn-gradient-warning:hover {
+        background: linear-gradient(135deg, #ff7043 0%, #ffa726 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 167, 38, 0.3);
+      }
+      
+      .btn-gradient-danger {
+        background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+        color: white;
+        border: none;
+      }
+      
+      .btn-gradient-danger:hover {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(245, 87, 108, 0.3);
+      }
+      
+      .btn-gradient-secondary {
+        background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        color: white;
+        border: none;
+      }
+      
+      .btn-gradient-secondary:hover {
+        background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(149, 165, 166, 0.3);
+      }
+      
+      .btn-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+      }
+      
+      .btn-gradient-primary:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-scroller">
+      <!-- Sidebar -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+          <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </a>
+          <a class="sidebar-brand brand-logo-mini" href="{{ path('app_user_index') }}">
+            <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+          </a>
+        </div>
+        <ul class="nav">
+          <li class="nav-item profile">
+            <div class="profile-desc">
+              <div class="profile-pic">
+                <div class="count-indicator">
+                  {% if app.user %}
+                    {% if app.user.profilePic %}
+                      <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                           alt="{{ app.user.prenom }}" 
+                           class="profile-avatar-img">
+                    {% else %}
+                      <div class="profile-avatar">
+                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                      </div>
+                    {% endif %}
+                  {% else %}
+                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  {% endif %}
+                  <span class="count bg-success"></span>
+                </div>
+                <div class="profile-name">
+                  {% if app.user %}
+                    <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                    <span class="text-muted">{{ app.user.email }}</span>
+                    <div class="mt-1">
+                      {% if 'ROLE_ADMIN' in app.user.roles %}
+                        <span class="user-role-badge badge-admin">Administrateur</span>
+                      {% else %}
+                        <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                    <span>Veuillez vous connecter</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Navigation</span>
+          </li>
+          
+          <!-- Dashboard -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-speedometer"></i>
+              </span>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          
+          <!-- Utilisateurs -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_user_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-group"></i>
+              </span>
+              <span class="menu-title">Utilisateurs</span>
+            </a>
+          </li>
+          
+          <!-- Matières -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-book-open-page-variant"></i>
+              </span>
+              <span class="menu-title">Matieres</span>
+            </a>
+          </li>
+          
+          <!-- Classes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-school"></i>
+              </span>
+              <span class="menu-title">Classes</span>
+            </a>
+          </li>
+          
+          <!-- Salles -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-office-building"></i>
+              </span>
+              <span class="menu-title">Salles</span>
+            </a>
+          </li>
+          
+          <!-- Séances -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-calendar-clock"></i>
+              </span>
+              <span class="menu-title">Séances</span>
+            </a>
+          </li>
+          
+          <!-- Groupes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-multiple"></i>
+              </span>
+              <span class="menu-title">Groupes</span>
+            </a>
+          </li>
+          
+          <!-- Tâches -->
+          <li class="nav-item menu-items active">
+            <a class="nav-link" href="{{ path('app_tache_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+              </span>
+              <span class="menu-title">Tâches</span>
+            </a>
+          </li>
+          
+          <!-- Alertes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_preference_alerte_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-alert-circle-outline"></i>
+              </span>
+              <span class="menu-title">Alertes</span>
+            </a>
+          </li>
+          
+          <!-- Exercices de santé -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_objectif_sante_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-heart-pulse"></i>
+              </span>
+              <span class="menu-title">Exercices de santé</span>
+            </a>
+          </li>
+          
+          <!-- Logout -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_logout') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-logout text-danger"></i>
+              </span>
+              <span class="menu-title text-danger">Déconnexion</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
 
-{% block body %}
-    <h1>PreferenceAlerte</h1>
+      <!-- Main Content -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+          <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+            <a class="navbar-brand brand-logo" href="{{ path('app_tache_index') }}">
+              <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+            </a>
+            <a class="navbar-brand brand-logo-mini" href="{{ path('app_tache_index') }}">
+              <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+            </a>
+          </div>
+          <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+              <span class="mdi mdi-menu"></span>
+            </button>
+            <ul class="navbar-nav w-100">
+              <li class="nav-item w-100">
+                <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                  <input type="text" class="form-control" placeholder="Rechercher une tâche..." id="searchInput">
+                </form>
+              </li>
+            </ul>
+            <ul class="navbar-nav navbar-nav-right">
+              <li class="nav-item dropdown border-left">
+                <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                  <i class="mdi mdi-bell"></i>
+                  <span class="count bg-danger">3</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                  <h6 class="p-3 mb-0">Notifications</h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-warning rounded-circle">
+                        <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Nouvelle tâche</p>
+                      <p class="text-muted ellipsis mb-0"> Tâche "Correction bug" ajoutée</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+              
+              <li class="nav-item dropdown">
+                <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                  <div class="navbar-profile">
+                    {% if app.user %}
+                      <div class="avatar-container">
+                        {% if app.user.profilePic %}
+                          <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                               alt="{{ app.user.prenom }}" 
+                               class="user-avatar-img">
+                        {% else %}
+                          <div class="user-avatar">
+                            {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                          </div>
+                        {% endif %}
+                        <div class="text-start ms-2">
+                          <p class="mb-0 d-none d-sm-block navbar-profile-name">
+                            {{ app.user.prenom }} {{ app.user.nom }}
+                          </p>
+                          <small class="text-muted d-none d-sm-block">
+                            {% if 'ROLE_ADMIN' in app.user.roles %}
+                              <span class="badge badge-admin">Admin</span>
+                            {% else %}
+                              <span class="badge badge-etudiant">Utilisateur</span>
+                            {% endif %}
+                          </small>
+                        </div>
+                      </div>
+                    {% else %}
+                      <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                      <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                    {% endif %}
+                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                  </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                  <div class="dropdown-header p-3">
+                    {% if app.user %}
+                      <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                      <p class="text-muted mb-0">{{ app.user.email }}</p>
+                      <small class="text-muted">
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin">Administrateur</span>
+                        {% else %}
+                          <span class="badge badge-etudiant">Utilisateur</span>
+                        {% endif %}
+                      </small>
+                    {% else %}
+                      <h6 class="mb-0">Non connecté</h6>
+                      <p class="text-muted mb-0">Veuillez vous connecter</p>
+                    {% endif %}
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  {% if app.user %}
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-primary rounded-circle">
+                          <i class="mdi mdi-account"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Mon profil</p>
+                      </div>
+                    </a>
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-warning rounded-circle">
+                          <i class="mdi mdi-account-edit"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Modifier mon profil</p>
+                      </div>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                  {% endif %}
+                  <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-logout text-danger"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Déconnexion</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ preference_alerte.id }}</td>
-            </tr>
-            <tr>
-                <th>EmailActif</th>
-                <td>{{ preference_alerte.emailActif ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>PushActif</th>
-                <td>{{ preference_alerte.pushActif ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>SiteNotifActive</th>
-                <td>{{ preference_alerte.siteNotifActive ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>DelaiRappelMin</th>
-                <td>{{ preference_alerte.delaiRappelMin }}</td>
-            </tr>
-            <tr>
-                <th>DelaiUrgentHeures</th>
-                <td>{{ preference_alerte.delaiUrgentHeures }}</td>
-            </tr>
-            <tr>
-                <th>FreaquenceMaxParJour</th>
-                <td>{{ preference_alerte.freaquenceMaxParJour }}</td>
-            </tr>
-            <tr>
-                <th>HeureSilenceDebut</th>
-                <td>{{ preference_alerte.heureSilenceDebut ? preference_alerte.heureSilenceDebut|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>HeureSilenceFin</th>
-                <td>{{ preference_alerte.heureSilenceFin ? preference_alerte.heureSilenceFin|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <!-- Content -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            <!-- Flash Messages -->
+            {% for label, messages in app.flashes %}
+              {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                  <i class="mdi mdi-{{ label == 'success' ? 'check-circle' : 'alert-circle' }} me-2"></i>
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            {% endfor %}
 
-    <a href="{{ path('app_preference_alerte_index') }}">back to list</a>
+            <!-- Content -->
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <!-- Flash Messages -->
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                                <i class="mdi mdi-{{ label == 'success' ? 'check-circle' : 'alert-circle' }} me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
 
-    <a href="{{ path('app_preference_alerte_edit', {'id': preference_alerte.id}) }}">edit</a>
+                    <!-- Header -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-header">
+                                <h3 class="page-title">
+                                    <span class="page-title-icon bg-gradient-info text-white me-2">
+                                        <i class="mdi mdi-eye"></i>
+                                    </span> 
+                                    Détails de la Préférence d'Alerte
+                                </h3>
+                                <nav aria-label="breadcrumb">
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item">
+                                            <a href="{{ path('app_preference_alerte_index') }}" class="text-decoration-none">
+                                                <i class="mdi mdi-bell-ring-outline me-1"></i>
+                                                Liste des Préférences
+                                            </a>
+                                        </li>
+                                        <li class="breadcrumb-item active" aria-current="page">
+                                            <span></span>Détails: {{ preference_alerte.nom|slice(0, 30) }}{{ preference_alerte.nom|length > 30 ? '...' : '' }}
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
 
-    {{ include('preference_alerte/_delete_form.html.twig') }}
-{% endblock %}
+                    <!-- Preference Header -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="task-header">
+                                <div class="row align-items-center">
+                                    <div class="col-md-2 text-center">
+                                        <div class="task-avatar">
+                                            <i class="mdi mdi-bell-cog"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <h2 class="mb-2">{{ preference_alerte.nom ?: 'Préférence sans nom' }}</h2>
+                                        <p class="mb-3 opacity-75">
+                                            <i class="mdi mdi-account-outline me-2"></i>
+                                            {% if preference_alerte.etudiant %}
+                                                {{ preference_alerte.etudiant.prenom }} {{ preference_alerte.etudiant.nom }}
+                                            {% else %}
+                                                Préférence globale
+                                            {% endif %}
+                                        </p>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <!-- Status Badge -->
+                                            <span class="status-badge {{ preference_alerte.isActive ? 'status-completed' : 'status-pending' }}">
+                                                <i class="mdi mdi-{{ preference_alerte.isActive ? 'check-circle' : 'close-circle' }} me-1"></i>
+                                                {{ preference_alerte.isActive ? 'Active' : 'Inactive' }}
+                                            </span>
+                                            
+                                            <!-- Email Badge -->
+                                            <span class="type-badge {{ preference_alerte.emailActif ? 'type-feature' : 'type-other' }}">
+                                                <i class="mdi mdi-email me-1"></i>
+                                                Email {{ preference_alerte.emailActif ? 'Actif' : 'Inactif' }}
+                                            </span>
+                                            
+                                            <!-- Push Badge -->
+                                            <span class="type-badge {{ preference_alerte.pushActif ? 'type-bug' : 'type-other' }}">
+                                                <i class="mdi mdi-cellphone me-1"></i>
+                                                Push {{ preference_alerte.pushActif ? 'Actif' : 'Inactif' }}
+                                            </span>
+                                            
+                                            <!-- Site Notification Badge -->
+                                            <span class="type-badge {{ preference_alerte.siteNotifActive ? 'type-improvement' : 'type-other' }}">
+                                                <i class="mdi mdi-web me-1"></i>
+                                                Site {{ preference_alerte.siteNotifActive ? 'Actif' : 'Inactif' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Action Buttons -->
+                                    <div class="col-md-3">
+                                        <div class="btn-group-vertical w-100" role="group" aria-label="Actions de la préférence">
+                                            <a href="{{ path('app_preference_alerte_edit', {'id': preference_alerte.id}) }}" class="btn btn-warning mb-2">
+                                                <i class="mdi mdi-pencil-circle-outline me-2"></i>
+                                                Modifier
+                                            </a>
+                                            
+                                            <form action="{{ path('app_preference_alerte_delete', {'id': preference_alerte.id}) }}" 
+                                                method="POST" 
+                                                onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette préférence ?');"
+                                                class="w-100">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ preference_alerte.id) }}">
+                                                <button type="submit" class="btn btn-danger w-100">
+                                                    <i class="mdi mdi-delete-circle-outline me-2"></i>
+                                                    Supprimer
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Preference Details -->
+                    <div class="row">
+                        <!-- General Information -->
+                        <div class="col-md-6 grid-margin stretch-card">
+                            <div class="card detail-card">
+                                <div class="card-body">
+                                    <h4 class="detail-card-title">
+                                        <i class="mdi mdi-information-outline"></i>
+                                        Informations Générales
+                                    </h4>
+                                    
+                                    <div class="detail-row">
+                                        <div class="detail-label">
+                                            <i class="mdi mdi-identifier"></i>
+                                            ID
+                                        </div>
+                                        <div class="detail-value">
+                                            <code>#{{ preference_alerte.id }}</code>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-row">
+                                        <div class="detail-label">
+                                            <i class="mdi mdi-tag-text"></i>
+                                            Nom
+                                        </div>
+                                        <div class="detail-value">
+                                            {{ preference_alerte.nom ?: '<span class="empty-value">Non défini</span>' }}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-row">
+                                        <div class="detail-label">
+                                            <i class="mdi mdi-calendar"></i>
+                                            Date de création
+                                        </div>
+                                        <div class="detail-value">
+                                            {% if preference_alerte.dateCreation %}
+                                                <i class="mdi mdi-calendar me-1"></i>
+                                                {{ preference_alerte.dateCreation|date('d/m/Y H:i') }}
+                                            {% else %}
+                                                <span class="empty-value">Non définie</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-row">
+                                        <div class="detail-label">
+                                            <i class="mdi mdi-calendar-edit"></i>
+                                            Dernière mise à jour
+                                        </div>
+                                        <div class="detail-value">
+                                            {% if preference_alerte.dateMiseAJour %}
+                                                <i class="mdi mdi-calendar me-1"></i>
+                                                {{ preference_alerte.dateMiseAJour|date('d/m/Y H:i') }}
+                                            {% else %}
+                                                <span class="empty-value">Non définie</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status Information -->
+                        <div class="col-md-6 grid-margin stretch-card">
+                            <div class="card detail-card">
+                                <div class="card-body">
+                                    <h4 class="detail-card-title">
+                                        <i class="mdi mdi-toggle-switch"></i>
+                                        Statut & Activation
+                                    </h4>
+                                    
+                                    <div class="detail-row">
+                                        <div class="detail-label">
+                                            <i class="mdi mdi-power"></i>
+                                            Statut
+                                        </div>
+                                        <div class="detail-value">
+                                            <span class="status-badge {{ preference_alerte.isActive ? 'status-completed' : 'status-pending' }}">
+                                                {{ preference_alerte.isActive ? 'Active' : 'Inactive' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-row">
+                                        <div class="detail-label">
+                                            <i class="mdi mdi-star"></i>
+                                            Par défaut
+                                        </div>
+                                        <div class="detail-value">
+                                            <span class="type-badge {{ preference_alerte.isDefault ? 'type-feature' : 'type-other' }}">
+                                                {{ preference_alerte.isDefault ? 'Oui' : 'Non' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification Channels -->
+                    <div class="row">
+                        <div class="col-md-12 grid-margin stretch-card">
+                            <div class="card detail-card">
+                                <div class="card-body">
+                                    <h4 class="detail-card-title">
+                                        <i class="mdi mdi-bell-ring"></i>
+                                        Canaux de Notification
+                                    </h4>
+                                    
+                                    <div class="row">
+                                        <!-- Email -->
+                                        <div class="col-md-4">
+                                            <div class="notification-channel">
+                                                <div class="channel-icon {{ preference_alerte.emailActif ? 'active' : 'inactive' }}">
+                                                    <i class="mdi mdi-email-outline"></i>
+                                                </div>
+                                                <div class="channel-info">
+                                                    <h6 class="text-dark">Email</h6>
+                                                    <p class="channel-status {{ preference_alerte.emailActif ? 'text-success' : 'text-muted' }}">
+                                                        <i class="mdi mdi-{{ preference_alerte.emailActif ? 'check' : 'close' }} me-1"></i>
+                                                        {{ preference_alerte.emailActif ? 'Activé' : 'Désactivé' }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Push -->
+                                        <div class="col-md-4">
+                                            <div class="notification-channel">
+                                                <div class="channel-icon {{ preference_alerte.pushActif ? 'active' : 'inactive' }}">
+                                                    <i class="mdi mdi-cellphone-message"></i>
+                                                </div>
+                                                <div class="channel-info">
+                                                    <h6 class="text-dark">Push</h6>
+                                                    <p class="channel-status {{ preference_alerte.pushActif ? 'text-success' : 'text-muted' }}">
+                                                        <i class="mdi mdi-{{ preference_alerte.pushActif ? 'check' : 'close' }} me-1"></i>
+                                                        {{ preference_alerte.pushActif ? 'Activé' : 'Désactivé' }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Site -->
+                                        <div class="col-md-4">
+                                            <div class="notification-channel">
+                                                <div class="channel-icon {{ preference_alerte.siteNotifActive ? 'active' : 'inactive' }}">
+                                                    <i class="mdi mdi-web"></i>
+                                                </div>
+                                                <div class="channel-info">
+                                                    <h6 class="text-dark">Site Web</h6>
+                                                    <p class="channel-status {{ preference_alerte.siteNotifActive ? 'text-success' : 'text-muted' }}">
+                                                        <i class="mdi mdi-{{ preference_alerte.siteNotifActive ? 'check' : 'close' }} me-1"></i>
+                                                        {{ preference_alerte.siteNotifActive ? 'Activé' : 'Désactivé' }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Timing Settings -->
+                    <div class="row">
+                        <div class="col-md-6 grid-margin stretch-card">
+                            <div class="card detail-card">
+                                <div class="card-body">
+                                    <h4 class="detail-card-title">
+                                        <i class="mdi mdi-timer"></i>
+                                        Paramètres de Temporisation
+                                    </h4>
+                                    
+                                    <div class="detail-row">
+                                        <div class="detail-label">
+                                            <i class="mdi mdi-clock-alert"></i>
+                                            Délai de rappel
+                                        </div>
+                                        <div class="detail-value">
+                                            {% if preference_alerte.delaiRappelMin %}
+                                                <i class="mdi mdi-timer-sand me-1"></i>
+                                                {{ preference_alerte.delaiRappelMin }} minutes
+                                            {% else %}
+                                                <span class="empty-value">Non défini</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Silence Period -->
+                        <div class="col-md-6 grid-margin stretch-card">
+                            <div class="card detail-card">
+                                <div class="card-body">
+                                    <h4 class="detail-card-title">
+                                        <i class="mdi mdi-volume-off"></i>
+                                        Période de Silence
+                                    </h4>
+                                    
+                                    <div class="detail-row">
+                                        <div class="detail-label">
+                                            <i class="mdi mdi-clock-start"></i>
+                                            Début silence
+                                        </div>
+                                        <div class="detail-value">
+                                            {% if preference_alerte.heureSilenceDebut %}
+                                                <i class="mdi mdi-clock-outline me-1"></i>
+                                                {{ preference_alerte.heureSilenceDebut|date('H:i') }}
+                                            {% else %}
+                                                <span class="empty-value">Non définie</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-row">
+                                        <div class="detail-label">
+                                            <i class="mdi mdi-clock-end"></i>
+                                            Fin silence
+                                        </div>
+                                        <div class="detail-value">
+                                            {% if preference_alerte.heureSilenceFin %}
+                                                <i class="mdi mdi-clock-outline me-1"></i>
+                                                {{ preference_alerte.heureSilenceFin|date('H:i') }}
+                                            {% else %}
+                                                <span class="empty-value">Non définie</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Information -->
+                    <div class="row">
+                        <div class="col-md-6 grid-margin stretch-card">
+                            <div class="card detail-card">
+                                <div class="card-body">
+                                    <h4 class="detail-card-title">
+                                        <i class="mdi mdi-account-circle-outline"></i>
+                                        Étudiant Associé
+                                    </h4>
+                                    
+                                    {% if preference_alerte.etudiant %}
+                                        <div class="detail-row">
+                                            <div class="detail-label">
+                                                <i class="mdi mdi-account"></i>
+                                                Nom complet
+                                            </div>
+                                            <div class="detail-value">
+                                                {{ preference_alerte.etudiant.nom }} {{ preference_alerte.etudiant.prenom }}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="detail-row">
+                                            <div class="detail-label">
+                                                <i class="mdi mdi-email-outline"></i>
+                                                Email
+                                            </div>
+                                            <div class="detail-value">
+                                                <a href="mailto:{{ preference_alerte.etudiant.email }}">{{ preference_alerte.etudiant.email }}</a>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="detail-row">
+                                            <div class="detail-label">
+                                                <i class="mdi mdi-phone-outline"></i>
+                                                Téléphone
+                                            </div>
+                                            <div class="detail-value">
+                                                {% if preference_alerte.etudiant.numTel %}
+                                                    {{ preference_alerte.etudiant.numTel }}
+                                                {% else %}
+                                                    <span class="empty-value">Non renseigné</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="detail-row">
+                                            <div class="detail-label">
+                                                <i class="mdi mdi-calendar-account"></i>
+                                                Date d'inscription
+                                            </div>
+                                            <div class="detail-value">
+                                                {% if preference_alerte.etudiant.createdAt %}
+                                                    {{ preference_alerte.etudiant.createdAt|date('d/m/Y') }}
+                                                {% else %}
+                                                    <span class="empty-value">Non disponible</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="empty-state-small">
+                                            <i class="mdi mdi-account-off text-muted mb-2"></i>
+                                            <p class="text-muted mb-0">Aucun étudiant associé à cette préférence</p>
+                                            <small class="text-muted">
+                                                Cette préférence est globale ou non assignée
+                                            </small>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Information -->
+                        <div class="col-md-6 grid-margin stretch-card">
+                            <div class="card detail-card">
+                                <div class="card-body">
+                                    <h4 class="detail-card-title">
+                                        <i class="mdi mdi-information-outline"></i>
+                                        Informations Additionnelles
+                                    </h4>
+                                    
+                                    <div class="detail-row">
+                                        <div class="detail-label">
+                                            <i class="mdi mdi-star"></i>
+                                            Par défaut
+                                        </div>
+                                        <div class="detail-value">
+                                            <span class="type-badge {{ preference_alerte.isDefault ? 'type-feature' : 'type-other' }}">
+                                                {{ preference_alerte.isDefault ? 'Oui' : 'Non' }}
+                                            </span>
+                                            {% if preference_alerte.isDefault %}
+                                                <small class="text-muted d-block mt-1">
+                                                    Cette préférence sera utilisée par défaut pour les nouveaux étudiants
+                                                </small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-row">
+                                        <div class="detail-label">
+                                            <i class="mdi mdi-format-list-checks"></i>
+                                            Type de notification
+                                        </div>
+                                        <div class="detail-value">
+                                            {% set notificationType = preference_alerte.getType() %}
+                                            <span class="badge 
+                                                {% if notificationType == 'both' %}bg-success
+                                                {% elseif notificationType == 'email' %}bg-primary
+                                                {% elseif notificationType == 'inapp' %}bg-warning
+                                                {% else %}bg-secondary{% endif %}">
+                                                <i class="mdi mdi-{{ notificationType == 'email' ? 'email' : 'bell' }} me-1"></i>
+                                                {{ notificationType|upper }}
+                                            </span>
+                                            <small class="text-muted d-block mt-1">
+                                                {% if notificationType == 'both' %}Email + Push
+                                                {% elseif notificationType == 'email' %}Email uniquement
+                                                {% elseif notificationType == 'inapp' %}Push uniquement
+                                                {% else %}Aucune notification{% endif %}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="detail-row">
+                                        <div class="detail-label">
+                                            <i class="mdi mdi-timer-sand"></i>
+                                            Durée de silence
+                                        </div>
+                                        <div class="detail-value">
+                                            {% if preference_alerte.heureSilenceDebut and preference_alerte.heureSilenceFin %}
+                                                {{ preference_alerte.heureSilenceDebut|date('H:i') }} - {{ preference_alerte.heureSilenceFin|date('H:i') }}
+                                            {% else %}
+                                                <span class="empty-value">Non définie</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card detail-card">
+                                <div class="card-body">
+                                    <div class="action-buttons">
+                                        <a href="{{ path('app_preference_alerte_index') }}" class="btn btn-gradient-secondary">
+                                            <i class="mdi mdi-arrow-left me-2"></i>Retour à la liste
+                                        </a>
+                                        <a href="{{ path('app_preference_alerte_edit', { id: preference_alerte.id }) }}" class="btn btn-gradient-warning">
+                                            <i class="mdi mdi-pencil me-2"></i>Modifier
+                                        </a>
+                                        <a href="{{ path('app_preference_alerte_new') }}" class="btn btn-gradient-primary">
+                                            <i class="mdi mdi-plus-circle me-2"></i>Nouvelle préférence
+                                        </a>
+                                        <button type="button" 
+                                                class="btn btn-gradient-danger" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#deleteModal">
+                                            <i class="mdi mdi-delete me-2"></i>Supprimer
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Delete Modal -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteModalLabel">Confirmer la suppression</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Êtes-vous sûr de vouloir supprimer cette préférence d'alerte ? Cette action est irréversible.
+                            {% if preference_alerte.etudiant %}
+                                <div class="alert alert-warning mt-2">
+                                    <i class="mdi mdi-alert-circle me-2"></i>
+                                    Cette préférence est associée à l'étudiant: <strong>{{ preference_alerte.etudiant.prenom }} {{ preference_alerte.etudiant.nom }}</strong>
+                                </div>
+                            {% endif %}
+                            {% if preference_alerte.isDefault %}
+                                <div class="alert alert-info mt-2">
+                                    <i class="mdi mdi-information me-2"></i>
+                                    <strong>Attention:</strong> Cette préférence est marquée comme préférence par défaut.
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                            <form method="post" action="{{ path('app_preference_alerte_delete', { id: preference_alerte.id }) }}" style="display: inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ preference_alerte.id) }}">
+                                <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                    <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                        © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
+                    </span>
+                    <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                        🔔 {{ preference_alerte.nom|slice(0, 25) }}{{ preference_alerte.nom|length > 25 ? '...' : '' }}
+                        {% if not preference_alerte.isActive %}| <span class="text-warning">Inactive</span>{% endif %}
+                    </span>
+                </div>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalLabel">
+                        <i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir supprimer la préférence <strong>"{{ preference_alerte.nom }}"</strong> ?</p>
+                    
+                    {% if preference_alerte.etudiant %}
+                        <div class="alert alert-warning mt-2">
+                            <i class="mdi mdi-account-alert me-2"></i>
+                            <strong>Association étudiante:</strong> Cette préférence est associée à {{ preference_alerte.etudiant.prenom }} {{ preference_alerte.etudiant.nom }}
+                        </div>
+                    {% endif %}
+                    
+                    {% if preference_alerte.isDefault %}
+                        <div class="alert alert-info mt-2">
+                            <i class="mdi mdi-star-alert me-2"></i>
+                            <strong>Préférence par défaut:</strong> Cette préférence est marquée comme configuration par défaut.
+                        </div>
+                    {% endif %}
+                    
+                    <div class="mt-3">
+                        <p class="text-danger mb-0">
+                            <i class="mdi mdi-alert me-1"></i>
+                            <small>Cette action est irréversible. Toutes les configurations seront perdues.</small>
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="mdi mdi-close me-1"></i>Annuler
+                    </button>
+                    <form method="POST" action="{{ path('app_preference_alerte_delete', { id: preference_alerte.id }) }}" style="display: inline;">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ preference_alerte.id) }}">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="mdi mdi-delete me-1"></i>Supprimer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('assets/js/misc.js') }}"></script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+          const alerts = document.querySelectorAll('.alert.alert-dismissible');
+          alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+          });
+        }, 5000);
+        
+        // Search functionality for navbar
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+          searchInput.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            // This would typically filter a table, but we don't have a table on show page
+            console.log('Searching for:', filter);
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
