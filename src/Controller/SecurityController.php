@@ -12,20 +12,22 @@ class SecurityController extends AbstractController
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // Redirect already logged in users
+        // Si l'utilisateur est déjà connecté
         if ($this->getUser()) {
             $roles = $this->getUser()->getRoles();
 
+            // Admin
             if (in_array('ROLE_ADMIN', $roles)) {
-                return $this->redirectToRoute('app_user_index'); // back-office
+                return $this->redirectToRoute('app_user_index');
             }
 
+            // User normal (route EXISTANTE)
             if (in_array('ROLE_USER', $roles)) {
-                return $this->redirectToRoute('app_dashboard'); // user dashboard
+                return $this->redirectToRoute('app_login');
             }
         }
 
-        // get login error if there is one
+        // Erreur de connexion
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
@@ -38,6 +40,6 @@ class SecurityController extends AbstractController
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
     {
-        throw new \LogicException('This method will be intercepted by the logout key on your firewall.');
+        throw new \LogicException('This method is intercepted by Symfony.');
     }
 }
