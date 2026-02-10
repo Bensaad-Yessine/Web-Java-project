@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit PreferenceAlerte{% endblock %}
+
+{% block body %}
+    <h1>Edit PreferenceAlerte</h1>
+
+    {{ include('preference_alerte/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_preference_alerte_index') }}">back to list</a>
+
+    {{ include('preference_alerte/_delete_form.html.twig') }}
+{% endblock %}

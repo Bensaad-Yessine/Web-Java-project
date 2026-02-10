@@ -290,6 +290,12 @@
             "./config/packages/messenger.yaml"
         ]
     },
+<<<<<<< HEAD
+=======
+    "symfonycasts/verify-email-bundle": {
+        "version": "v1.18.0"
+    },
+>>>>>>> master
     "twig/extra-bundle": {
         "version": "v3.23.0"
     }
