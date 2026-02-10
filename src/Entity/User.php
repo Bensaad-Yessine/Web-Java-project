@@ -3,89 +3,37 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $nom = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $prenom = null;
-
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'string', length: 180, unique: true)]
     private ?string $email = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $DateDeNaissance = null;
+    // Colonne EXISTANTE en base
+    #[ORM\Column(type: 'string', length: 50)]
+    private ?string $role = 'ROLE_USER';
 
-    #[ORM\Column(length: 255)]
-    private ?string $classe = null;
+    #[ORM\Column(type: 'string')]
+    private ?string $password = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $specialiteFuture = null;
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $prenom = null;
 
-    #[ORM\Column(length: 10)]
-    private ?string $sexe = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $role = null;
-
-    /**
-     * @var Collection<int, GroupeProjet>
-     */
-    #[ORM\ManyToMany(targetEntity: GroupeProjet::class, mappedBy: 'idUser')]
-    private Collection $idGroupe;
-
-    public function __construct()
-    {
-        $this->idGroupe = new ArrayCollection();
-    }
+    // ================= GETTERS & SETTERS =================
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(string $nom): static
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getPrenom(): ?string
-    {
-        return $this->prenom;
-    }
-
-    public function setPrenom(string $prenom): static
-    {
-        $this->prenom = $prenom;
-
-        return $this;
     }
 
     public function getEmail(): ?string
@@ -93,98 +41,58 @@ class User
         return $this->email;
     }
 
-    public function setEmail(string $email): static
+    public function setEmail(string $email): self
     {
         $this->email = $email;
-
-        return $this;
-    }
-
-    public function getDateDeNaissance(): ?\DateTime
-    {
-        return $this->DateDeNaissance;
-    }
-
-    public function setDateDeNaissance(\DateTime $DateDeNaissance): static
-    {
-        $this->DateDeNaissance = $DateDeNaissance;
-
-        return $this;
-    }
-
-    public function getClasse(): ?string
-    {
-        return $this->classe;
-    }
-
-    public function setClasse(string $classe): static
-    {
-        $this->classe = $classe;
-
-        return $this;
-    }
-
-    public function getSpecialiteFuture(): ?string
-    {
-        return $this->specialiteFuture;
-    }
-
-    public function setSpecialiteFuture(?string $specialiteFuture): static
-    {
-        $this->specialiteFuture = $specialiteFuture;
-
-        return $this;
-    }
-
-    public function getSexe(): ?string
-    {
-        return $this->sexe;
-    }
-
-    public function setSexe(string $sexe): static
-    {
-        $this->sexe = $sexe;
-
-        return $this;
-    }
-
-    public function getRole(): ?string
-    {
-        return $this->role;
-    }
-
-    public function setRole(string $role): static
-    {
-        $this->role = $role;
-
         return $this;
     }
 
     /**
-     * @return Collection<int, GroupeProjet>
+     * Identifiant unique (Symfony Security)
      */
-    public function getIdGroupe(): Collection
+    public function getUserIdentifier(): string
     {
-        return $this->idGroupe;
+        return (string) $this->email;
     }
 
-    public function addIdGroupe(GroupeProjet $idGroupe): static
+    /**
+     * Symfony exige un tableau de rôles
+     */
+    public function getRoles(): array
     {
-        if (!$this->idGroupe->contains($idGroupe)) {
-            $this->idGroupe->add($idGroupe);
-            $idGroupe->addIdUser($this);
-        }
+        return [$this->role ?? 'ROLE_USER'];
+    }
 
+    public function setRole(string $role): self
+    {
+        $this->role = $role;
         return $this;
     }
 
-    public function removeIdGroupe(GroupeProjet $idGroupe): static
+    public function getPassword(): string
     {
-        if ($this->idGroupe->removeElement($idGroupe)) {
-            $idGroupe->removeIdUser($this);
-        }
+        return (string) $this->password;
+    }
 
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
         return $this;
     }
-    
+
+    public function eraseCredentials(): void
+    {
+        // Rien à nettoyer
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(?string $prenom): self
+    {
+        $this->prenom = $prenom;
+        return $this;
+    }
 }
