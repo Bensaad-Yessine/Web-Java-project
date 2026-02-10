@@ -15,18 +15,21 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Constraints\Json;   
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 
 #[Route('/user')]
 class UserController extends AbstractController
 {
-  #[Route('/', name: 'app_user_index', methods: ['GET'])]
-public function index(UserRepository $userRepository): Response
-{
-    return $this->render('user/index.html.twig', [
-        'users' => $userRepository->findAll(),
-        'current_user' => $this->getUser(), // Add this line
-    ]);
-}
+    #[Route('/', name: 'app_user_index', methods: ['GET'])]
+    public function index(UserRepository $userRepository): Response
+    {
+        return $this->render('user/index.html.twig', [
+            'users' => $userRepository->findAll(),
+            'current_user' => $this->getUser(),
+        ]);
+    }
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher, SluggerInterface $slugger): Response
@@ -145,7 +148,7 @@ public function index(UserRepository $userRepository): Response
     public function delete(Request $request, User $user, EntityManagerInterface $em): Response
     {
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
-            $userName = $user->getFullName();
+            $userName = $user->getNom() . ' ' . $user->getPrenom();
             
             // Delete profile picture if exists
             if ($user->getProfilePic()) {
@@ -165,95 +168,123 @@ public function index(UserRepository $userRepository): Response
 
         return $this->redirectToRoute('app_user_index');
     }
-   #[Route('/dashboard', name: 'app_dashboard', methods: ['GET'])]
-public function dashboard(TacheRepository $tacheRepository): Response
-{
-     $user = $this->getUser();
 
-    if (!$user) {
-        throw $this->createAccessDeniedException();
-    }
+    #[Route('/dashboard', name: 'app_dashboard', methods: ['GET'])]
+    public function dashboard(TacheRepository $tacheRepository): Response
+    {
+        $user = $this->getUser();
 
-    return $this->render('user/FrontOffice.html.twig', [
-        'tasks' => $tacheRepository->findTaskByUser($this->getUser()),
-    ]);
-}
-
-#[Route('/dashboard/profile', name: 'app_profile', methods: ['GET'])]
-public function profile(TacheRepository $tacheRepository): Response
-{
-    $user = $this->getUser();
-    
-    if (!$user) {
-        throw $this->createAccessDeniedException();
-    }
-   
-    return $this->render('user/FrontOffice.html.twig', [
-        'tasks' => $tacheRepository->findTaskByUser($user),
-    ]);
-}
-
-#[Route('/profile/update', name: 'app_profile_update', methods: ['POST'])]
-public function updateProfile(Request $request, EntityManagerInterface $em): Response
-{
-    $user = $this->getUser();
-    
-    if (!$user) {
-        return $this->json(['success' => false, 'message' => 'User not authenticated'], 401);
-    }
-
-    try {
-        // Get data from request
-        $content = $request->getContent();
-        $data = json_decode($content, true);
-        
-        if (!$data) {
-            return $this->json(['success' => false, 'message' => 'Invalid JSON data'], 400);
-        }
-        
-        // Update email if provided
-        if (isset($data['email']) && !empty($data['email'])) {
-            $user->setEmail(trim($data['email']));
+        if (!$user) {
+            throw $this->createAccessDeniedException();
         }
 
-        // Update phone if provided
-        if (isset($data['phone']) && !empty($data['phone'])) {
-            $user->setNumTel(trim($data['phone']));
-        }
-
-        // Update name if provided
-        if (isset($data['fullName']) && !empty($data['fullName'])) {
-            $fullName = trim($data['fullName']);
-            $names = explode(' ', $fullName, 2);
-            
-            if (count($names) >= 1) {
-                $user->setNom($names[0]);
-                if (isset($names[1])) {
-                    $user->setPrenom($names[1]);
-                } else {
-                    $user->setPrenom('');
-                }
-            }
-        }
-
-        // Flush changes to database
-        $em->flush();
-        
-        return $this->json([
-            'success' => true, 
-            'message' => 'Profile updated successfully!',
-            'user' => [
-                'fullName' => $user->getNom() . ' ' . $user->getPrenom(),
-                'email' => $user->getEmail(),
-                'phone' => $user->getNumTel() ?? '',
-            ]
+        return $this->render('user/FrontOffice.html.twig', [
+            'tasks' => $tacheRepository->findTaskByUser($user),
         ]);
-    } catch (\Exception $e) {
-        return $this->json([
-            'success' => false, 
-            'message' => 'Error updating profile: ' . $e->getMessage()
-        ], 400);
     }
-}
 
+    #[Route('/dashboard/my-tasks', name: 'app_my_tasks', methods: ['GET'])]
+    public function myTasks(TacheRepository $tacheRepository): Response
+    {
+        $user = $this->getUser();
+        
+        if (!$user) {
+            throw $this->createAccessDeniedException();
+        }
+    
+        return $this->render('user/my_tasks.html.twig', [
+            'tasks' => $tacheRepository->findTaskByUser($user),
+        ]);
+    }
+
+    #[Route('/dashboard/profile', name: 'app_profile', methods: ['GET'])]
+    public function profile(): Response
+    {
+        $user = $this->getUser();
+        
+        if (!$user) {
+            throw $this->createAccessDeniedException();
+        }
+    
+        return $this->render('user/profile.html.twig');
+    }
+
+    #[Route('/dashboard/profile/update', name: 'app_profile_update', methods: ['POST'])]
+    public function updateProfile(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $this->getUser();
+        
+        if (!$user) {
+            return $this->json(['success' => false, 'message' => 'User not authenticated'], 401);
+        }
+
+        try {
+            // Get data from request
+            $content = $request->getContent();
+            $data = json_decode($content, true);
+            
+            if (!$data) {
+                return $this->json(['success' => false, 'message' => 'Invalid JSON data'], 400);
+            }
+            
+            // Update email if provided
+            if (isset($data['email']) && !empty($data['email'])) {
+                $email = trim($data['email']);
+                
+                // Validate email format
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    return $this->json(['success' => false, 'message' => 'Invalid email format'], 400);
+                }
+                
+                $user->setEmail($email);
+            }
+
+            // Update phone if provided
+            if (isset($data['phone'])) {
+                $phone = trim($data['phone']);
+                $user->setNumTel($phone ?: null);
+            }
+
+            // Update nom (last name) if provided
+            if (isset($data['nom']) && !empty($data['nom'])) {
+                $nom = trim($data['nom']);
+                
+                if (strlen($nom) < 2) {
+                    return $this->json(['success' => false, 'message' => 'Last name must be at least 2 characters'], 400);
+                }
+                
+                $user->setNom($nom);
+            }
+
+            // Update prenom (first name) if provided
+            if (isset($data['prenom']) && !empty($data['prenom'])) {
+                $prenom = trim($data['prenom']);
+                
+                if (strlen($prenom) < 2) {
+                    return $this->json(['success' => false, 'message' => 'First name must be at least 2 characters'], 400);
+                }
+                
+                $user->setPrenom($prenom);
+            }
+
+            // Flush changes to database
+            $em->flush();
+            
+            return $this->json([
+                'success' => true, 
+                'message' => 'Profile updated successfully!',
+                'user' => [
+                    'nom' => $user->getNom(),
+                    'prenom' => $user->getPrenom(),
+                    'email' => $user->getEmail(),
+                    'phone' => $user->getNumTel(),
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false, 
+                'message' => 'Error updating profile: ' . $e->getMessage()
+            ], 400);
+        }
+    }
 }

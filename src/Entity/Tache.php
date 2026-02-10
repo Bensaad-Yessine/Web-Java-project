@@ -86,6 +86,9 @@ class Tache
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $dateEcheance = null;
+
 
     // ========================
     // Getters & Setters
@@ -203,6 +206,18 @@ public function getCreatedAt(): ?\DateTimeImmutable
 public function setCreatedAt(?\DateTimeImmutable $createdAt): static
 {
     $this->createdAt = $createdAt;
+
+    return $this;
+}
+
+public function getDateEcheance(): ?\DateTime
+{
+    return $this->dateEcheance;
+}
+
+public function setDateEcheance(?\DateTime $dateEcheance): static
+{
+    $this->dateEcheance = $dateEcheance;
 
     return $this;
 }
