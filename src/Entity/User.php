@@ -74,9 +74,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(message: 'Le sexe est obligatoire')]
     #[Assert\Choice(choices: ['Homme', 'Femme'], message: 'Choisissez un sexe valide')]
     private ?string $sexe = null;
-
-    #[ORM\ManyToOne]
-    private ?Classe $classe = null;
+  #[ORM\ManyToOne(targetEntity: Classe::class, inversedBy: 'users')]
+#[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+private ?Classe $classe = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $profilePic = null;
