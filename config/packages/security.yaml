@@ -45,12 +45,10 @@ security:
         - { path: ^/verify, roles: PUBLIC_ACCESS }
         - { path: ^/user/dashboard, roles: ROLE_USER }
         - { path: ^/user/profile, roles: ROLE_USER }
-        - { path: ^/user/$, roles: ROLE_ADMIN }
-        - { path: ^/user/add, roles: ROLE_ADMIN }
-        - { path: ^/user/edit, roles: ROLE_ADMIN }
-        - { path: ^/user/delete, roles: ROLE_ADMIN }
-        - { path: ^/user/show, roles: ROLE_ADMIN }
-
+        - { path: ^/user/(add|edit|delete|show|$), roles: ROLE_ADMIN }
+        - { path: ^/classe, roles: ROLE_USER }
+        - { path: ^/matiereclasse, roles: ROLE_USER }
+    
 when@test:
     security:
         password_hashers:

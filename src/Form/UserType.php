@@ -75,14 +75,13 @@ class UserType extends AbstractType
             ])
             ->add('role',ChoiceType::class, [
                 'choices' => [
-                    'Étudiant' => 'Étudiant',
-                    
-                    'Administrateur' => 'Administrateur',
+                    'Utilisateur' => 'ROLE_USER',
+                    'Administrateur' => 'ROLE_ADMIN',
                 ],
                 'label' => 'Rôle',
                 'constraints' => [
                     new Choice([
-                        'choices' => ['Étudiant', 'Administrateur'],
+                        'choices' => ['ROLE_USER', 'ROLE_ADMIN'],
                         'message' => 'Veuillez choisir un rôle valide.',
                     ]),
                 ],

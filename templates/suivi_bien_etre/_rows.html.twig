@@ -1,0 +1,138 @@
+{% for suivi in suivis %}
+<tr>
+  <td>
+    <strong>{{ suivi.dateSaisie ? suivi.dateSaisie|date('d/m/Y') : '—' }}</strong><br>
+    <small class="text-muted">{{ suivi.dateSaisie ? suivi.dateSaisie|date('H:i') : '' }}</small>
+  </td>
+
+  <td>
+    {% if suivi.humeur %}
+      <span class="mood-badge mood-{{ suivi.humeur }}">
+        <i class="mdi mdi-{{
+          suivi.humeur == 1 ? 'emoticon-sad' :
+          suivi.humeur == 2 ? 'emoticon-neutral' :
+          suivi.humeur == 3 ? 'emoticon' :
+          suivi.humeur == 4 ? 'emoticon-happy' :
+          'emoticon-excited'
+        }}"></i>
+        {{
+          suivi.humeur == 1 ? 'Très mauvaise' :
+          suivi.humeur == 2 ? 'Mauvaise' :
+          suivi.humeur == 3 ? 'Neutre' :
+          suivi.humeur == 4 ? 'Bonne' :
+          'Excellente'
+        }}
+      </span>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% if suivi.qualiteSommeil is not null %}
+      <span class="rating-badge rating-{{
+        suivi.qualiteSommeil <= 3 ? '0-3' :
+        suivi.qualiteSommeil <= 6 ? '4-6' :
+        suivi.qualiteSommeil <= 8 ? '7-8' :
+        '9-10'
+      }}">
+        {{ suivi.qualiteSommeil }}
+      </span>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% if suivi.niveauEnergie is not null %}
+      <span class="rating-badge rating-{{
+        suivi.niveauEnergie <= 3 ? '0-3' :
+        suivi.niveauEnergie <= 6 ? '4-6' :
+        suivi.niveauEnergie <= 8 ? '7-8' :
+        '9-10'
+      }}">{{ suivi.niveauEnergie }}</span>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% if suivi.niveauStress is not null %}
+      <span class="rating-badge rating-{{
+        suivi.niveauStress >= 7 ? '0-3' :
+        suivi.niveauStress >= 4 ? '4-6' :
+        suivi.niveauStress >= 2 ? '7-8' :
+        '9-10'
+      }}">{{ suivi.niveauStress }}</span>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% if suivi.qualiteAlimentation is not null %}
+      <span class="rating-badge rating-{{
+        suivi.qualiteAlimentation <= 3 ? '0-3' :
+        suivi.qualiteAlimentation <= 6 ? '4-6' :
+        suivi.qualiteAlimentation <= 8 ? '7-8' :
+        '9-10'
+      }}">{{ suivi.qualiteAlimentation }}</span>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td style="max-width:200px;">
+    {% if suivi.notesLibres %}
+      <small class="text-muted" title="{{ suivi.notesLibres }}">
+        {{ suivi.notesLibres|slice(0, 50) }}{{ suivi.notesLibres|length > 50 ? '...' : '' }}
+      </small>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% if suivi.score is not null %}
+      {% set scoreClass =
+        suivi.score >= 80 ? 'badge-score-excellent' :
+        suivi.score >= 60 ? 'badge-score-good' :
+        suivi.score >= 40 ? 'badge-score-medium' :
+        'badge-score-poor'
+      %}
+      <span class="badge-pill {{ scoreClass }}">
+        <i class="mdi mdi-star"></i> {{ suivi.score }}%
+      </span>
+      <div class="progress-small mt-1">
+        <div class="progress-bar" style="width: {{ suivi.score }}%"></div>
+      </div>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    <div class="action-buttons">
+      <a href="{{ path('app_objectif_suivi_edit', {id: objectif.id, suiviId: suivi.id}) }}"
+         class="btn btn-warning btn-sm" title="Modifier">
+        <i class="mdi mdi-pencil"></i>
+      </a>
+
+      <form action="{{ path('app_objectif_suivi_delete', {id: objectif.id, suiviId: suivi.id}) }}"
+            method="POST" style="display:inline;"
+            onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce suivi ?');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete_suivi' ~ suivi.id) }}">
+        <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+          <i class="mdi mdi-delete"></i>
+        </button>
+      </form>
+    </div>
+  </td>
+</tr>
+{% else %}
+<tr>
+  <td colspan="9" class="text-center text-muted py-4">
+    Aucun résultat.
+  </td>
+</tr>
+{% endfor %}

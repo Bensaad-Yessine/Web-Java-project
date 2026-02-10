@@ -1207,21 +1207,22 @@
                     </svg>
                     My Tasks
                 </a>
-                <a href="#" class="active">
+                <a href="#">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                         <circle cx="12" cy="7" r="4"/>
                     </svg>
                     Profile
                 </a>
-                <a href="{{ userClasse ? path('app_classe_show', {id: userClasse.id}) : '#' }}" {% if not userClasse %}style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
+
+                <a href="{{ userClasse ? path('app_classe_front_show', {id: userClasse.id}) : '#' }}" {% if not userClasse %}style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M22 10v6m0 0l-8.5-5-8.5 5V6a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/><path d="M2 10l10-6 10 6"/>
                     </svg>
                     My Class
                 </a>
-                <!-- CORRECTION ICI : Remplacement de la route inexistante par '#' temporairement -->
-                <a href="#">
+                <!-- CORRECTION : Route vers la page front des matières (app_matiere_classe_front_index) -->
+                <a href="{{  userClasse ? path('app_matiere_classe_front_index' , {id: userClasse.id}) : '#'}}" class="active">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6.5a2.5 2.5 0 0 0-2 2.5"/><line x1="4" y1="9" x2="20" y2="9"/>
                     </svg>
@@ -1246,8 +1247,8 @@
         <main class="main">
             <header class="header">
                 <div>
-                    <h1 class="h1">My Profile</h1>
-                    <p class="muted">Manage your account and view your tasks</p>
+                    <h1 class="h1">Class Subjects</h1>
+                    <p class="muted">View and manage your course subjects</p>
                 </div>
                 <div class="session-display">
                     <div>Current session</div>
@@ -1256,258 +1257,68 @@
             </header>
 
             <div class="profile-container">
-                <div class="profile-grid">
-                    <!-- Left column: Profile info -->
+                <div class="profile-grid" style="grid-template-columns: 1fr;"> 
+                    <!-- Single column layout for subjects -->
                     <div>
-                        <!-- Personal Information Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Personal Information</h2>
-                            </div>
-                            <div class="card-content">
-                                <form id="profileForm">
-                                    <div class="form-group">
-                                        <label for="fullName">Full Name</label>
-                                        <input type="text" id="fullName" class="form-control" 
-                                               value="{{ app.user ? app.user.nom ~ ' ' ~ app.user.prenom : 'John Doe' }}">
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="email">Email Address</label>
-                                        <input type="email" id="email" class="form-control" 
-                                               value="{{ app.user ? app.user.email : 'student@esprit.tn' }}">
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="class">Class / Group</label>
-                                        <input type="text" id="class" class="form-control" 
-                                               value="{{ app.user ? app.user.classe.nom|default('4SE-G1') : '4SE-G1' }}">
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="phone">Phone Number</label>
-                                        <input type="tel" id="phone" class="form-control" 
-                                               value="{{ app.user.numTel ?: '' }}"
-                                               placeholder="+216 XX XXX XXX">
-                                    </div>
-                                    
-                                    <button type="submit" class="btn btn-profile">✏️ Update Profile</button>
-                                </form>
-                            </div>
-                        </div>
-
-                        <!-- Recent Tasks Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">My Recent Tasks</h2>
-                            </div>
-                            <div class="card-content">
-                                <div class="task-list">
-                                    {% if tasks is defined and tasks is not empty %}
-                                        {% for task in tasks|slice(0, 5) %}
-                                            {% set taskType = task.type|default('personal') %}
-                                            {% set taskPriority = task.priority|default('medium') %}
-                                            {% set isCompleted = task.status|default('pending') == 'completed' %}
-                                            
-                                            <div class="task-item {{ isCompleted ? 'completed' : '' }}">
-                                                <div class="task-checkbox {{ isCompleted ? 'checked' : '' }}" 
-                                                     onclick="toggleTask({{ task.id }})"></div>
-                                                <div class="task-content">
-                                                    <div class="task-title {{ isCompleted ? 'completed' : '' }}">
-                                                        {{ task.title|default('Untitled Task') }}
-                                                    </div>
-                                                    <div class="task-meta">
-                                                        <span class="task-type type-{{ taskType }}">
-                                                            {{ taskType|capitalize }}
-                                                        </span>
-                                                        <span class="task-priority priority-{{ taskPriority }}">
-                                                            {{ taskPriority|capitalize }}
-                                                        </span>
-                                                        <span>{{ task.dueDate|default(task.createdAt|date('M d')) }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        {% endfor %}
-                                        
-                                        {% if tasks|length > 5 %}
-                                            <div style="text-align: center; margin-top: 16px;">
-                                                <a href="#" class="btn btn-outline">View All Tasks ({{ tasks|length }})</a>
-                                            </div>
-                                        {% endif %}
-                                    {% else %}
-                                        <div style="text-align: center; padding: 24px; color: var(--gray-500);">
-                                            <p>No tasks found. Create your first task!</p>
-                                            <a href="#" class="btn btn-blue">Create Task</a>
-                                        </div>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- My Class Card -->
                         <div class="card">
                             <div class="card-header">
                                 <h2 class="card-title">My Class</h2>
-                                {% if is_granted('ROLE_ADMIN') %}
-                                    <a href="{{ path('app_classe_add') }}" class="btn btn-sm btn-green">+ New Class</a>
-                                {% endif %}
                             </div>
                             <div class="card-content">
                                 {% if userClasse %}
                                     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 16px;">
-                                        <h3 style="margin-bottom: 8px; font-size: 18px; font-weight: 600;">{{ userClasse.nomClasse }}</h3>
+                                        <h3 style="margin-bottom: 8px; font-size: 18px; font-weight: 600;">{{ userClasse.nom }}</h3>
                                         <p style="margin: 4px 0; font-size: 14px; opacity: 0.9;">Année: {{ userClasse.anneeuniversitaire }}</p>
-                                        <p style="margin: 4px 0; font-size: 14px; opacity: 0.9;">Coordonnateur: {{ userClasse.coordonnateur|default('—') }}</p>
-                                    </div>
-                                    <div style="display: flex; gap: 8px;">
-                                        {% if is_granted('ROLE_ADMIN') %}
-                                            <a href="{{ path('app_classe_edit', {id: userClasse.id}) }}" class="btn btn-outline" style="flex: 1;">Edit</a>
-                                            <a href="{{ path('app_classe_show', {id: userClasse.id}) }}" class="btn btn-outline" style="flex: 1;">View</a>
-                                        {% endif %}
+                                        <!-- Coordonnateur removed as property does not exist -->
                                     </div>
                                 {% else %}
                                     <div style="text-align: center; padding: 24px; color: var(--gray-500);">
                                         <p>No class assigned yet</p>
-                                        {% if is_granted('ROLE_ADMIN') %}
-                                            <a href="{{ path('app_classe_add') }}" class="btn btn-blue">Create Class</a>
-                                        {% endif %}
                                     </div>
                                 {% endif %}
                             </div>
                         </div>
 
-                        <!-- My Subjects Card (SANS TITRE POUR ÉVITER LA DUPLICATION) -->
+                        <!-- My Subjects Card -->
                         <div class="card">
                             <div class="card-header">
-                                {# Titre supprimé pour éviter la duplication avec le menu #}
-                                {% if is_granted('ROLE_ADMIN') and userClasse %}
-                                    <a href="{{ path('app_matiere_classe_new', {classeId: userClasse.id}) }}" class="btn btn-sm btn-green">+ Add Subject</a>
-                                {% endif %}
+                                <h2 class="card-title">All Subjects</h2>
                             </div>
                             <div class="card-content">
                                 {% if matieres is not empty %}
-                                    <div style="display: grid; gap: 12px;">
+                                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
                                         {% for matiere in matieres %}
-                                            <div style="background: var(--gray-50); padding: 16px; border-radius: 8px; border-left: 4px solid #667eea;">
-                                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                                                    <h4 style="font-weight: 600; color: var(--gray-900);">{{ matiere.nomMatiere }}</h4>
-                                                    {% if is_granted('ROLE_ADMIN') %}
-                                                        <div style="display: flex; gap: 4px;">
-                                                            <a href="{{ path('app_matiere_classe_edit', {id: matiere.id}) }}" style="font-size: 12px; color: #667eea; text-decoration: none; cursor: pointer;">Edit</a>
-                                                            <span style="color: var(--gray-300);">|</span>
-                                                            <form method="POST" action="{{ path('app_matiere_classe_delete', {id: matiere.id}) }}" style="display: inline;" onsubmit="return confirm('Delete this subject?');">
-                                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ matiere.id) }}">
-                                                                <button type="submit" style="font-size: 12px; color: #ef4444; background: none; border: none; cursor: pointer; text-decoration: none; padding: 0;">Delete</button>
-                                                            </form>
-                                                        </div>
-                                                    {% endif %}
+                                            <div style="background: var(--gray-50); padding: 20px; border-radius: 12px; border-left: 4px solid #667eea; transition: transform 0.2s; box-shadow: var(--shadow-sm);">
+                                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                                                    <h4 style="font-weight: 700; color: var(--gray-900); font-size: 1.1rem;">Matière #{{ matiere.id }}</h4>
                                                 </div>
-                                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 12px; color: var(--gray-600);">
-                                                    <div>📊 Coefficient: <strong>{{ matiere.coefficient|default('—') }}</strong></div>
-                                                    <div>⏱️ Hours: <strong>{{ matiere.chargehoraire|default('—') }}</strong></div>
-                                                    <div>📈 Complexity: <strong>{{ matiere.scorecomplexite|default('—') }}/10</strong></div>
+                                                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px; color: var(--gray-600);">
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <span style="width: 20px; text-align: center;">📊</span> 
+                                                        <span>Coefficient: <strong>{{ matiere.coefficient|default('—') }}</strong></span>
+                                                    </div>
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <span style="width: 20px; text-align: center;">⏱️</span> 
+                                                        <span>Volume Horaire: <strong>{{ matiere.chargehoraire|default('—') }}h</strong></span>
+                                                    </div>
+                                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                                        <span style="width: 20px; text-align: center;">📈</span> 
+                                                        <span>Complexité: </span>
+                                                        <div style="flex: 1; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden;">
+                                                            <div style="width: {{ (matiere.scorecomplexite|default(0)) * 10 }}%; height: 100%; background: linear-gradient(90deg, #4ade80, #ef4444);"></div>
+                                                        </div>
+                                                        <strong>{{ matiere.scorecomplexite|default(0) }}/10</strong>
+                                                    </div>
                                                 </div>
                                             </div>
                                         {% endfor %}
                                     </div>
                                 {% else %}
-                                    <div style="text-align: center; padding: 24px; color: var(--gray-500);">
-                                        <p>No subjects in your class yet</p>
-                                        {% if is_granted('ROLE_ADMIN') and userClasse %}
-                                            <a href="{{ path('app_matiere_classe_new', {classeId: userClasse.id}) }}" class="btn btn-blue">Add Subject</a>
-                                        {% endif %}
+                                    <div style="text-align: center; padding: 40px; color: var(--gray-500);">
+                                        <p style="font-size: 1.1rem;">No subjects found for your class.</p>
                                     </div>
                                 {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right column: Stats & Quick Actions -->
-                    <div>
-                        <!-- User Stats Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Your Stats</h2>
-                            </div>
-                            <div class="card-content">
-                                <div class="user-stats">
-                                    {% set totalTasks = tasks|length %}
-                                    {% set completedTasks = tasks|filter(t => t.status|default('pending') == 'completed')|length %}
-                                    {% set pendingTasks = totalTasks - completedTasks %}
-                                    {% set highPriorityTasks = tasks|filter(t => t.priority|default('medium') == 'high')|length %}
-                                    
-                                    <div class="stat-box">
-                                        <div class="stat-value">{{ totalTasks }}</div>
-                                        <div class="stat-label">Total Tasks</div>
-                                    </div>
-                                    <div class="stat-box">
-                                        <div class="stat-value">{{ completedTasks }}</div>
-                                        <div class="stat-label">Completed</div>
-                                    </div>
-                                    <div class="stat-box">
-                                        <div class="stat-value">{{ pendingTasks }}</div>
-                                        <div class="stat-label">Pending</div>
-                                    </div>
-                                    <div class="stat-box">
-                                        <div class="stat-value">{{ highPriorityTasks }}</div>
-                                        <div class="stat-label">High Priority</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Quick Actions Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Quick Actions</h2>
-                            </div>
-                            <div class="card-content">
-                                <div class="quick-actions">
-                                    <button type="submit" class="btn btn-green" id="createTaskBtn">
-                                        <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M12 5v14"/><path d="M5 12h14"/>
-                                        </svg>
-                                        Create New Task
-                                    </button>
-                                    <a href="#" class="btn btn-outline" id="calendarBtn">
-                                        <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <rect x="3" y="4" width="18" height="18" rx="2"/>
-                                            <path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>
-                                        </svg>
-                                        View Calendar
-                                    </a>
-                                    <a href="#" class="btn btn-outline" id="joinGroupsBtn">
-                                        <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                            <circle cx="9" cy="7" r="4"/>
-                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                                        </svg>
-                                        Join Groups
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Account Settings Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Account Settings</h2>
-                            </div>
-                            <div class="card-content">
-                                <div class="account-settings">
-                                    <a href="#" class="btn btn-outline">
-                                        Change Password
-                                    </a>
-                                    <a href="#" class="btn btn-outline">
-                                        Notification Settings
-                                    </a>
-                                    <a href="#" class="btn btn-outline">
-                                        Privacy Settings
-                                    </a>
-                                    <button onclick="exportData()" class="btn btn-outline">
-                                        Export My Data
-                                    </button>
-                                </div>
                             </div>
                         </div>
                     </div>

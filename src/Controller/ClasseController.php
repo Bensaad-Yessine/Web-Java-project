@@ -108,4 +108,18 @@ class ClasseController extends AbstractController
 
         return $this->redirectToRoute('app_classe_index');
     }
+    // =========================
+    // FRONT OFFICE SHOW
+    // =========================
+    #[Route('/front/{id}', name: 'app_classe_front_show', methods: ['GET'])]
+    public function frontShow(Classe $classe): Response
+    {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        
+        return $this->render('user/classe/front_show.html.twig', [
+            'classe' => $classe,
+            'userClasse' => $user ? $user->getClasse() : null
+        ]);
+    }
 }

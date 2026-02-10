@@ -1,5 +1,4 @@
 {% extends 'base.html.twig' %}
-
 {% block title %}Gestion Matières-Classes - ESPRIT{% endblock %}
 
 {% block stylesheets %}
@@ -624,21 +623,11 @@
                                                         <td>
                                                             <div class="d-flex align-items-center">
                                                                 <div class="entity-avatar me-3">
-                                                                    <i class="mdi mdi-school"></i>
+                                                                    <i class="mdi mdi-book-open-page-variant"></i>
                                                                 </div>
                                                                 <div>
-                                                                    <h6 class="mb-0 font-weight-bold">
-                                                                        {% if matiere_classe.classe %}
-                                                                            Classe #{{ matiere_classe.classe.id }}
-                                                                        {% else %}
-                                                                            <span class="text-muted">Non assigné</span>
-                                                                        {% endif %}
-                                                                    </h6>
-                                                                    <small class="text-muted">
-                                                                        {% if matiere_classe.classe and matiere_classe.classe.nom %}
-                                                                            {{ matiere_classe.classe.nom }}
-                                                                        {% endif %}
-                                                                    </small>
+                                                                    <h6 class="mb-0">Matière #{{ matiere_classe.id }}</h6>
+                                                                    <small class="text-muted">ID: {{ matiere_classe.id }}</small>
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -655,12 +644,9 @@
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <div>
-                                                                <span>{{ matiere_classe.scorecomplexite }}/10</span>
-                                                                <div class="complexity-bar">
-                                                                    <div class="complexity-fill {{ complexityClass }}" 
-                                                                         style="width: {{ complexityWidth }}%"></div>
-                                                                </div>
+                                                            <div class="complexity-bar">
+                                                                <div class="complexity-fill {{ complexityClass }}" 
+                                                                     style="width: {{ complexityWidth }}%"></div>
                                                             </div>
                                                         </td>
                                                         <td>
@@ -786,108 +772,69 @@
 
 <script>
     // Search functionality
-    document.getElementById('searchInput').addEventListener('keyup', function() {
-        const filter = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#matiereClassesTable tbody tr');
-        
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(filter) ? '' : 'none';
-        });
-    });
-    
-    // Filter functionality
-    document.querySelectorAll('.filter-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            // Remove active class from all buttons
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Add active class to clicked button
-            this.classList.add('active');
-            
-            const filter = this.getAttribute('data-filter');
-            const rows = document.querySelectorAll('.matiere-class-row');
-            
-            rows.forEach(row => {
-                const complexity = parseInt(row.getAttribute('data-complexity'));
-                const charge = parseInt(row.getAttribute('data-charge'));
-                
-                let show = false;
-                
-                switch(filter) {
-                    case 'all':
-                        show = true;
-                        break;
-                    case 'complexity-low':
-                        show = complexity <= 3;
-                        break;
-                    case 'complexity-medium':
-                        show = complexity > 3 && complexity <= 6;
-                        break;
-                    case 'complexity-high':
-                        show = complexity > 6;
-                        break;
-                    default:
-                        show = true;
-                }
-                
-                row.style.display = show ? '' : 'none';
-            });
-        });
-    });
-    
-    // Auto-hide alerts after 5 seconds
-    setTimeout(() => {
-        const alerts = document.querySelectorAll('.alert');
-        alerts.forEach(alert => {
-            const closeBtn = alert.querySelector('.close');
-            if (closeBtn) closeBtn.click();
-        });
-    }, 5000);
-    
-    // Sort table by column
-    document.querySelectorAll('#matiereClassesTable th').forEach((th, index) => {
-        th.addEventListener('click', () => {
-            const table = th.closest('table');
-            const tbody = table.querySelector('tbody');
-            const rows = Array.from(tbody.querySelectorAll('tr'));
-            
-            rows.sort((a, b) => {
-                const aText = a.children[index].textContent.trim();
-                const bText = b.children[index].textContent.trim();
-                
-                if (index === 0 || index === 5) { // ID or Actions column
-                    return aText.localeCompare(bText, undefined, { numeric: true });
-                }
-                
-                // For numeric columns
-                if (index === 2 || index === 3 || index === 4) { // Coefficient, Charge, Complexity
-                    const aNum = parseFloat(aText) || 0;
-                    const bNum = parseFloat(bText) || 0;
-                    return aNum - bNum;
-                }
-                
-                return aText.localeCompare(bText);
-            });
-            
-            // Clear and re-add sorted rows
-            tbody.innerHTML = '';
-            rows.forEach(row => tbody.appendChild(row));
-        });
-    });
-    
-    // Animate complexity bars on page load
     document.addEventListener('DOMContentLoaded', function() {
-        const complexityBars = document.querySelectorAll('.complexity-fill');
-        complexityBars.forEach(bar => {
-            const width = bar.style.width;
-            bar.style.width = '0';
-            setTimeout(() => {
-                bar.style.width = width;
-            }, 100);
+        const searchInput = document.querySelector('input[name="search"]');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const filter = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#matiereClassesTable tbody tr');
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(filter) ? '' : 'none';
+                });
+            });
+        }
+        
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                const filter = this.getAttribute('data-filter');
+                const rows = document.querySelectorAll('.matiere-class-row');
+                
+                rows.forEach(row => {
+                    const complexity = parseInt(row.getAttribute('data-complexity'));
+                    
+                    let show = false;
+                    
+                    switch(filter) {
+                        case 'all':
+                            show = true;
+                            break;
+                        case 'complexity-low':
+                            show = complexity <= 3;
+                            break;
+                        case 'complexity-medium':
+                            show = complexity > 3 && complexity <= 6;
+                            break;
+                        case 'complexity-high':
+                            show = complexity > 6;
+                            break;
+                        default:
+                            show = true;
+                    }
+                    
+                    row.style.display = show ? '' : 'none';
+                });
+            });
         });
+        
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const closeBtn = alert.querySelector('.btn-close');
+                if (closeBtn) closeBtn.click();
+            });
+        }, 5000);
     });
 </script>
 {% endblock %}

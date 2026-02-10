@@ -38,6 +38,40 @@ final class MatiereClasseController extends AbstractController
         ]);
     }
 
+    #[Route('/front/{id}', name: 'app_matiere_classe_front_index', methods: ['GET'], defaults: ['id' => null])]
+    public function frontIndex(MatiereClasseRepository $matiereClasseRepository, \App\Repository\TacheRepository $tacheRepository, ?\App\Entity\Classe $classe = null): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $matieres = [];
+        
+        if ($classe) {
+            // If ID passed, show subjects for that class
+            $matieres = $matiereClasseRepository->findBy(['classe' => $classe]);
+        } else {
+            // Default to user's class if no ID passed
+             $classe = $user->getClasse();
+             if ($classe) {
+                 $matieres = $matiereClasseRepository->findBy(['classe' => $classe]);
+             } else {
+                 $matieres = []; // or findAll() if you prefer a fallback, but user requested filtering.
+             }
+        }
+        
+        $tasks = $tacheRepository->findTaskByUser($user);
+
+        return $this->render('user/matiere_classe/front_index.html.twig', [
+            'userClasse' => $classe ?? $user->getClasse(), // Pass user's class for context if needed, or null
+            'matieres' => $matieres,
+            'tasks' => $tasks,
+        ]);
+    }
+
+
+
     #[Route('/new', name: 'app_matiere_classe_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -94,5 +128,4 @@ final class MatiereClasseController extends AbstractController
 
         return $this->redirectToRoute('app_matiere_classe_index', [], Response::HTTP_SEE_OTHER);
     }
-    
 }
