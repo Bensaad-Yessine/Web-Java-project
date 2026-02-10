@@ -79,8 +79,20 @@ class Tache
     #[ORM\OneToMany(mappedBy: 'tache', targetEntity: SuiviTache::class, cascade: ['persist', 'remove'])]
     private Collection $suivis;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTime $dateEcheance = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?int $dureeEstimee = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
 
 
 
@@ -197,6 +209,54 @@ class Tache
     public function setCreatedAt(?\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getDateEcheance(): ?\DateTime
+    {
+        return $this->dateEcheance;
+    }
+
+    public function setDateEcheance(?\DateTime $dateEcheance): static
+    {
+        $this->dateEcheance = $dateEcheance;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getDureeEstimee(): ?int
+    {
+        return $this->dureeEstimee;
+    }
+
+    public function setDureeEstimee(?int $dureeEstimee): static
+    {
+        $this->dureeEstimee = $dureeEstimee;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

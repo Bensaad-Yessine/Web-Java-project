@@ -20,6 +20,7 @@ use Symfony\Component\Validator\Constraints\Json;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 
+
 #[Route('/user')]
 class UserController extends AbstractController
 {
@@ -180,8 +181,10 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/FrontOffice.html.twig', [
-            'tasks' => $tacheRepository->findTaskByUser($user),
-        ]);
+ 'tasks' => $tacheRepository->findBy(
+                ['user' => $this->getUser()],
+                ['id' => 'DESC']
+            ),        ]);
     }
 
     #[Route('/dashboard/my-tasks', name: 'app_my_tasks', methods: ['GET'])]
@@ -194,7 +197,10 @@ class UserController extends AbstractController
         }
     
         return $this->render('user/FrontOffice.html.twig', [
-            'tasks' => $tacheRepository->findTaskByUser($user),
+            'tasks' => $tacheRepository->findBy(
+                ['user' => $this->getUser()],
+                ['id' => 'DESC']
+            ),
         ]);
     }
 
@@ -349,11 +355,9 @@ public function addTask(Request $request, EntityManagerInterface $em): Response
         if (!$tache->getDureeEstimee()) {
             $tache->setDureeEstimee(60);
         }
-        if (!$tache->getOrigine()) {
-            $tache->setOrigine('MANUEL');
-        }
+        
         if (!$tache->getCreatedAt()) {
-            $tache->setCreatedAt(new \DateTime());
+            $tache->setCreatedAt(new \DateTimeImmutable());
         }
 
         $em->persist($tache);
@@ -372,78 +376,29 @@ public function addTask(Request $request, EntityManagerInterface $em): Response
 #[Route('/dashboard/task/{id}/edit', name: 'app_task_edit', methods: ['GET', 'POST'])]
 public function editTask(Request $request, Tache $tache, EntityManagerInterface $em): Response
 {
+    // If legacy GET route, forward to dashboard edit logic
+    if ($request->getMethod() === 'GET' && $request->get('_route') === 'legacy_task_edit') {
+        return $this->redirectToRoute('app_task_edit', ['id' => $tache->getId()]);
+    }
     $user = $this->getUser();
     
     if (!$user || $tache->getUser() !== $user) {
         throw $this->createAccessDeniedException();
     }
 
-    // Store original values for mapping
-    $originalType = $tache->getType();
-    $originalPriority = $tache->getPriorite();
-    $originalStatus = $tache->getStatut();
-
-    // Map entity values to form values for display
-    $typeReverseMap = [
-        'MANUEL' => 'course',
-        'REVISION' => 'exam',
-        'REUNION' => 'meeting',
-    ];
-
-    $priorityReverseMap = [
-        'FAIBLE' => 'low',
-        'MOYEN' => 'medium',
-        'ELEVEE' => 'high',
-    ];
-
-    $statusReverseMap = [
-        'A_FAIRE' => 'pending',
-        'EN_COURS' => 'in_progress',
-        'TERMINEE' => 'completed',
-    ];
-
-    // Set form-friendly values
-    $tache->setType($typeReverseMap[$originalType] ?? 'course');
-    $tache->setPriorite($priorityReverseMap[$originalPriority] ?? 'medium');
-    $tache->setStatut($statusReverseMap[$originalStatus] ?? 'pending');
-
     $form = $this->createForm(FrontOfficeTacheType::class, $tache);
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
-        // Map form values back to entity values
-        $typeMap = [
-            'course' => 'MANUEL',
-            'exam' => 'REVISION',
-            'meeting' => 'REUNION',
-            'personal' => 'MANUEL',
-            'project' => 'MANUEL',
-            'assignment' => 'MANUEL'
-        ];
-
-        $priorityMap = [
-            'low' => 'FAIBLE',
-            'medium' => 'MOYEN',
-            'high' => 'ELEVEE'
-        ];
-
-        $statusMap = [
-            'pending' => 'A_FAIRE',
-            'in_progress' => 'EN_COURS',
-            'completed' => 'TERMINEE'
-        ];
-
-        $tache->setType($typeMap[$tache->getType()] ?? 'MANUEL');
-        $tache->setPriorite($priorityMap[$tache->getPriorite()] ?? 'MOYEN');
-        $tache->setStatut($statusMap[$tache->getStatut()] ?? 'A_FAIRE');
-
+        // The form uses the entity's choice values (e.g. 'MANUEL','MOYEN','A_FAIRE'),
+        // so no remapping is required here.
         $em->flush();
 
         $this->addFlash('success', 'Task updated successfully!');
         return $this->redirectToRoute('app_my_tasks');
     }
 
-    return $this->render('user/add_task.html.twig', [
+    return $this->render('user/edit_task.html.twig', [
         'form' => $form->createView(),
         'task' => $tache,
         'is_edit' => true,
@@ -468,4 +423,28 @@ public function deleteTask(Request $request, Tache $tache, EntityManagerInterfac
 
     return $this->redirectToRoute('app_my_tasks');
 }
+
+    #[Route('/tasks/{id}/toggle', name: 'app_task_toggle', methods: ['POST'])]
+    public function toggleTask(Request $request, Tache $tache, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user || $tache->getUser() !== $user) {
+            return $this->json(['success' => false, 'message' => 'Access denied'], 403);
+        }
+
+        $current = $tache->getStatut();
+        if ($current === 'TERMINEE') {
+            $tache->setStatut('A_FAIRE');
+        } else {
+            $tache->setStatut('TERMINEE');
+        }
+
+        $tache->setUpdatedAt(new \DateTimeImmutable());
+        $em->flush();
+
+        return $this->json([
+            'success' => true,
+            'statut' => $tache->getStatut(),
+        ]);
+    }
 }
