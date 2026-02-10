@@ -3,235 +3,860 @@
 {% block title %}Propositions de Réunion - {{ groupe_projet.nomProjet }}{% endblock %}
 
 {% block body %}
-<div class="container-fluid">
-    <!-- Header -->
-    <div class="row">
-        <div class="col-12">
-            <div class="page-header">
-                <h3 class="page-title">
-                    <span class="page-title-icon bg-gradient-primary text-white me-2">
-                        <i class="mdi mdi-calendar-multiple"></i>
-                    </span> 
-                    Propositions de Réunion
-                </h3>
-                <nav aria-label="breadcrumb">
-                    <ul class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="{{ path('app_groupe_projet_index') }}">Groupes</a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <a href="{{ path('app_groupe_projet_show', {'id': groupe_projet.id}) }}">{{ groupe_projet.nomProjet }}</a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">
-                            <span></span>Propositions
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ESPRIT - Propositions de Réunion</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+    
+    <style>
+        /* Profile Avatar Styles */
+        .img-xs {
+            width: 37px !important;
+            height: 37px !important;
+        }
+        
+        .profile-avatar-img {
+            width: 37px;
+            height: 37px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .profile-avatar {
+            width: 37px;
+            height: 37px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .navbar-avatar-img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .navbar-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        
+        /* Custom Styles */
+        .card-header-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 20px 30px;
+        }
+        
+        .btn-create {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            border: none;
+            padding: 10px 25px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s;
+            color: white;
+        }
+        
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 233, 123, 0.3);
+            color: white;
+        }
+        
+        .btn-back {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            color: #333;
+            padding: 10px 25px;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-back:hover {
+            background: #e9ecef;
+            border-color: #ccc;
+            color: #333;
+        }
+        
+        .btn-view {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border: none;
+            padding: 6px 15px;
+            font-weight: 500;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: white;
+        }
+        
+        .btn-edit {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            border: none;
+            padding: 6px 15px;
+            font-weight: 500;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: white;
+        }
+        
+        .btn-delete {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border: none;
+            padding: 6px 15px;
+            font-weight: 500;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: white;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-proposed { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .status-confirmed { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; }
+        .status-cancelled { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        .status-postponed { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+        .status-en-attente { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+        
+        .table-custom {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .table-custom thead th {
+            background: #f8f9fa;
+            border-bottom: 2px solid #667eea;
+            font-weight: 600;
+            color: #333;
+            padding: 15px;
+        }
+        
+        .table-custom tbody td {
+            padding: 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .table-custom tbody tr:hover {
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-state-icon {
+            font-size: 60px;
+            color: #dee2e6;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .stat-count {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .gradient-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .gradient-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .gradient-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .gradient-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .gradient-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        
+        .alert {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .search-box {
+            max-width: 300px;
+        }
+        
+        .modal-header-danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .table-responsive {
+                font-size: 0.9rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .btn-view, .btn-edit, .btn-delete {
+                padding: 5px 10px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-scroller">
+        <!-- Sidebar -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+            <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+                <a class="sidebar-brand brand-logo" href="{{ path('app_groupe_projet_index') }}">
+                    <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+                </a>
+                <a class="sidebar-brand brand-logo-mini" href="{{ path('app_groupe_projet_index') }}">
+                    <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+                </a>
+            </div>
+            <ul class="nav">
+                <li class="nav-item profile">
+                    <div class="profile-desc">
+                        <div class="profile-pic">
+                            <div class="count-indicator">
+                                {% if app.user %}
+                                    {% if app.user.profilePic %}
+                                        <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                                             alt="{{ app.user.prenom }}" 
+                                             class="img-xs rounded-circle">
+                                    {% else %}
+                                        <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                                    {% endif %}
+                                {% else %}
+                                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                                {% endif %}
+                                <span class="count bg-success"></span>
+                            </div>
+                            <div class="profile-name">
+                                {% if app.user %}
+                                    <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                                    <span class="text-muted">{{ app.user.email }}</span>
+                                    <div class="mt-1">
+                                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                                            <span class="badge badge-danger badge-sm">Admin</span>
+                                        {% else %}
+                                            <span class="badge badge-primary badge-sm">Utilisateur</span>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                                    <span>Veuillez vous connecter</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item nav-category">
+                    <span class="nav-link">Navigation</span>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon"><i class="mdi mdi-speedometer"></i></span>
+                        <span class="menu-title">Dashboard</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="{{ path('app_user_index') }}">
+                        <span class="menu-icon"><i class="mdi mdi-account-group"></i></span>
+                        <span class="menu-title">Utilisateurs</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="{{ path('app_matiere_classe_index') }}">
+                        <span class="menu-icon"><i class="mdi mdi-book-open-page-variant"></i></span>
+                        <span class="menu-title">Matieres</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="{{ path('app_classe_index') }}">
+                        <span class="menu-icon"><i class="mdi mdi-school"></i></span>
+                        <span class="menu-title">Classes</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="{{ path('app_salle_index') }}">
+                        <span class="menu-icon"><i class="mdi mdi-office-building"></i></span>
+                        <span class="menu-title">Salles</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="{{ path('app_seance_index') }}">
+                        <span class="menu-icon"><i class="mdi mdi-calendar-clock"></i></span>
+                        <span class="menu-title">Séances</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items active">
+                    <a class="nav-link" href="{{ path('app_groupe_projet_index') }}">
+                        <span class="menu-icon"><i class="mdi mdi-account-multiple"></i></span>
+                        <span class="menu-title">Groupes</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="{{ path('app_tache_index') }}">
+                        <span class="menu-icon"><i class="mdi mdi-checkbox-marked-circle-outline"></i></span>
+                        <span class="menu-title">Tâches</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon"><i class="mdi mdi-alert-circle-outline"></i></span>
+                        <span class="menu-title">Alertes</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="{{ path('app_objectif_sante_index') }}">
+                        <span class="menu-icon"><i class="mdi mdi-heart-pulse"></i></span>
+                        <span class="menu-title">Exercices de santé</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="{{ path('app_logout') }}">
+                        <span class="menu-icon"><i class="mdi mdi-logout text-danger"></i></span>
+                        <span class="menu-title text-danger">Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container-fluid page-body-wrapper">
+            <!-- Navbar -->
+            <nav class="navbar p-0 fixed-top d-flex flex-row">
+                <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+                    <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+                </div>
+                <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+                    <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                        <span class="mdi mdi-menu"></span>
+                    </button>
+                    <ul class="navbar-nav w-100">
+                        <li class="nav-item w-100">
+                            <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                                <input type="text" class="form-control" placeholder="Rechercher..." id="searchInput">
+                            </form>
                         </li>
                     </ul>
-                </nav>
-            </div>
-        </div>
-    </div>
-
-    <!-- Actions -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h4 class="mb-0">Groupe: {{ groupe_projet.nomProjet }}</h4>
-                    <p class="text-muted mb-0">{{ groupe_projet.matiere }}</p>
-                </div>
-                <div class="action-buttons">
-                    <a href="{{ path('app_groupe_projet_show', {'id': groupe_projet.id}) }}" class="btn btn-light">
-                        <i class="mdi mdi-arrow-left me-1"></i>
-                        Retour au groupe
-                    </a>
-                    <a href="{{ path('app_proposition_reunion_new', {'groupeId': groupe_projet.id}) }}" class="btn btn-primary">
-                        <i class="mdi mdi-plus-circle me-1"></i>
-                        Nouvelle proposition
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Statistics -->
-    {% set accepted = proposition_reunions|filter(p => p.status == 'Acceptée')|length %}
-    {% set pending = proposition_reunions|filter(p => p.status == 'En attente')|length %}
-    {% set rejected = proposition_reunions|filter(p => p.status == 'Refusée')|length %}
-    
-    <div class="row mb-4">
-        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-            <div class="card stat-card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-9">
-                            <div class="d-flex align-items-center align-self-start">
-                                <h3 class="mb-0 stat-count">{{ proposition_reunions|length }}</h3>
+                    <ul class="navbar-nav navbar-nav-right">
+                        <li class="nav-item dropdown border-left">
+                            <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                                <i class="mdi mdi-bell"></i>
+                                <span class="count bg-danger">3</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                                <h6 class="p-3 mb-0">Notifications</h6>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item" href="#">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-info rounded-circle">
+                                            <i class="mdi mdi-calendar"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Propositions de réunion</p>
+                                        <p class="text-muted ellipsis mb-0">Groupe: {{ groupe_projet.nomProjet }}</p>
+                                    </div>
+                                </a>
                             </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="stat-icon card-1">
-                                <i class="mdi mdi-calendar-multiple"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <h6 class="stat-label">Total Propositions</h6>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-            <div class="card stat-card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-9">
-                            <div class="d-flex align-items-center align-self-start">
-                                <h3 class="mb-0 stat-count">{{ accepted }}</h3>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="stat-icon card-2">
-                                <i class="mdi mdi-check-circle"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <h6 class="stat-label">Acceptées</h6>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-            <div class="card stat-card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-9">
-                            <div class="d-flex align-items-center align-self-start">
-                                <h3 class="mb-0 stat-count">{{ pending }}</h3>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="stat-icon card-3">
-                                <i class="mdi mdi-clock"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <h6 class="stat-label">En attente</h6>
-                </div>
-            </div>
-        </div>
-        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-            <div class="card stat-card">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-9">
-                            <div class="d-flex align-items-center align-self-start">
-                                <h3 class="mb-0 stat-count">{{ rejected }}</h3>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="stat-icon card-4">
-                                <i class="mdi mdi-close-circle"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <h6 class="stat-label">Refusées</h6>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Propositions Table -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Titre</th>
-                                    <th>Date & Heure</th>
-                                    <th>Lieu</th>
-                                    <th>Statut</th>
-                                    <th>Votes</th>
-                                    <th>Créée le</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for proposition_reunion in proposition_reunions %}
-                                    <tr>
-                                        <td>#{{ proposition_reunion.propositionId }}</td>
-                                        <td>
-                                            <strong>{{ proposition_reunion.titre }}</strong>
-                                            <br>
-                                            <small class="text-muted">{{ proposition_reunion.description|slice(0, 50) }}...</small>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex flex-column">
-                                                <span>{{ proposition_reunion.dateReunion ? proposition_reunion.dateReunion|date('d/m/Y') : '' }}</span>
-                                                <small class="text-muted">
-                                                    {{ proposition_reunion.heureDebut ? proposition_reunion.heureDebut|date('H:i') : '' }} - 
-                                                    {{ proposition_reunion.heureFin ? proposition_reunion.heureFin|date('H:i') : '' }}
-                                                </small>
-                                            </div>
-                                        </td>
-                                        <td>{{ proposition_reunion.lieu }}</td>
-                                        <td>
-                                            {% if proposition_reunion.status == 'Acceptée' %}
-                                                <span class="badge bg-success">{{ proposition_reunion.status }}</span>
-                                            {% elseif proposition_reunion.status == 'Refusée' %}
-                                                <span class="badge bg-danger">{{ proposition_reunion.status }}</span>
-                                            {% elseif proposition_reunion.status == 'En attente' %}
-                                                <span class="badge bg-warning">{{ proposition_reunion.status }}</span>
+                        </li>
+                        
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                                <div class="navbar-profile">
+                                    {% if app.user %}
+                                        {% if app.user.profilePic %}
+                                            <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                                                 alt="{{ app.user.prenom }}" 
+                                                 class="img-xs rounded-circle">
+                                        {% else %}
+                                            <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                                        {% endif %}
+                                        <p class="mb-0 d-none d-sm-block navbar-profile-name">{{ app.user.prenom }} {{ app.user.nom }}</p>
+                                    {% else %}
+                                        <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                                        <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                                    {% endif %}
+                                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                                </div>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                                <div class="dropdown-header p-3">
+                                    {% if app.user %}
+                                        <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                                        <p class="text-muted mb-0">{{ app.user.email }}</p>
+                                        <small class="text-muted">
+                                            {% if 'ROLE_ADMIN' in app.user.roles %}
+                                                <span class="badge badge-danger">Administrateur</span>
                                             {% else %}
-                                                <span class="badge bg-secondary">{{ proposition_reunion.status }}</span>
+                                                <span class="badge badge-primary">Utilisateur</span>
                                             {% endif %}
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-info">{{ proposition_reunion.nbrVoteAccept ?? 0 }}</span>
-                                        </td>
-                                        <td>{{ proposition_reunion.dateCreation ? proposition_reunion.dateCreation|date('d/m/Y H:i') : '' }}</td>
-                                        <td>
-                                            <div class="action-buttons">
-                                                <a href="{{ path('app_proposition_reunion_show', {'groupeId': groupe_projet.id, 'id': proposition_reunion.id}) }}" 
-                                                   class="btn btn-info btn-sm" title="Voir">
-                                                    <i class="mdi mdi-eye"></i>
-                                                </a>
-                                                <a href="{{ path('app_proposition_reunion_edit', {'groupeId': groupe_projet.id, 'id': proposition_reunion.id}) }}" 
-                                                   class="btn btn-warning btn-sm" title="Modifier">
-                                                    <i class="mdi mdi-pencil"></i>
-                                                </a>
-                                                <form method="post" action="{{ path('app_proposition_reunion_delete', {'groupeId': groupe_projet.id, 'id': proposition_reunion.id}) }}" 
-                                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette proposition ?');"
-                                                      class="d-inline">
-                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ proposition_reunion.id) }}">
-                                                    <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
-                                                        <i class="mdi mdi-delete"></i>
-                                                    </button>
-                                                </form>
+                                        </small>
+                                    {% else %}
+                                        <h6 class="mb-0">Non connecté</h6>
+                                        <p class="text-muted mb-0">Veuillez vous connecter</p>
+                                    {% endif %}
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                {% if app.user %}
+                                    <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                                        <div class="preview-thumbnail">
+                                            <div class="preview-icon bg-primary rounded-circle">
+                                                <i class="mdi mdi-account"></i>
                                             </div>
-                                        </td>
-                                    </tr>
-                                {% else %}
-                                    <tr>
-                                        <td colspan="8" class="text-center">
-                                            <div class="py-5">
-                                                <i class="mdi mdi-calendar-blank" style="font-size: 60px; color: #dee2e6;"></i>
-                                                <h5 class="text-muted mt-3">Aucune proposition de réunion</h5>
-                                                <p class="text-muted">Commencez par créer une proposition de réunion.</p>
-                                                <a href="{{ path('app_proposition_reunion_new', {'groupeId': groupe_projet.id}) }}" class="btn btn-primary">
-                                                    <i class="mdi mdi-plus-circle me-1"></i>
-                                                    Créer la première proposition
-                                                </a>
+                                        </div>
+                                        <div class="preview-item-content">
+                                            <p class="preview-subject mb-1">Mon profil</p>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                                        <div class="preview-thumbnail">
+                                            <div class="preview-icon bg-warning rounded-circle">
+                                                <i class="mdi mdi-account-edit"></i>
                                             </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                        </div>
+                                        <div class="preview-item-content">
+                                            <p class="preview-subject mb-1">Modifier profil</p>
+                                        </div>
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                {% endif %}
+                                <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-dark rounded-circle">
+                                            <i class="mdi mdi-logout text-danger"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Déconnexion</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Content -->
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <!-- Flash Messages -->
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                                <i class="mdi mdi-{{ label == 'success' ? 'check-circle' : 'alert-circle' }} me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <!-- Header -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="page-header">
+                                <h3 class="page-title">
+                                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                                        <i class="mdi mdi-calendar-multiple"></i>
+                                    </span> 
+                                    Propositions de Réunion
+                                </h3>
+                                <nav aria-label="breadcrumb">
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item">
+                                            <a href="{{ path('app_groupe_projet_index') }}">Groupes</a>
+                                        </li>
+                                        <li class="breadcrumb-item">
+                                            <a href="{{ path('app_groupe_projet_show', {'id': groupe_projet.id}) }}">{{ groupe_projet.nomProjet }}</a>
+                                        </li>
+                                        <li class="breadcrumb-item active" aria-current="page">
+                                            Propositions
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Overview -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon gradient-1">
+                                    <i class="mdi mdi-calendar"></i>
+                                </div>
+                                <div class="stat-count text-dark">{{ proposition_reunions|length }}</div>
+                                <div class="stat-label">Total Propositions</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon gradient-3">
+                                    <i class="mdi mdi-check-circle"></i>
+                                </div>
+                                <div class="stat-count text-dark">
+                                    {{ proposition_reunions|filter(p => p.status == 'confirmed' or p.status == 'Confirmée')|length }}
+                                </div>
+                                <div class="stat-label">Confirmées</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon gradient-5">
+                                    <i class="mdi mdi-clock"></i>
+                                </div>
+                                <div class="stat-count text-dark">
+                                    {{ proposition_reunions|filter(p => p.status == 'proposed' or p.status == 'En attente')|length }}
+                                </div>
+                                <div class="stat-label">En attente</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card">
+                                <div class="stat-icon gradient-2">
+                                    <i class="mdi mdi-cancel"></i>
+                                </div>
+                                <div class="stat-count text-dark">
+                                    {{ proposition_reunions|filter(p => p.status == 'cancelled' or p.status == 'Annulée')|length }}
+                                </div>
+                                <div class="stat-label">Annulées</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions Bar -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-0">Propositions pour: <strong>{{ groupe_projet.nomProjet }}</strong></h5>
+                                    <small class="text-muted">{{ groupe_projet.matiere }}</small>
+                                </div>
+                                <div class="d-flex gap-3">
+                                    <a href="{{ path('app_groupe_projet_show', {'id': groupe_projet.id}) }}" class="btn btn-back">
+                                        <i class="mdi mdi-arrow-left me-2"></i>
+                                        Retour au groupe
+                                    </a>
+                                    <a href="{{ path('app_proposition_reunion_new', {'groupeId': groupe_projet.id}) }}" class="btn btn-create">
+                                        <i class="mdi mdi-plus-circle me-2"></i>
+                                        Nouvelle Proposition
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header card-header-custom">
+                                    <h4 class="mb-0">Liste des Propositions</h4>
+                                </div>
+                                <div class="card-body">
+                                    {% if proposition_reunions is not empty %}
+                                        <div class="table-responsive">
+                                            <table class="table table-custom table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>#</th>
+                                                        <th>Titre</th>
+                                                        <th>Date Réunion</th>
+                                                        <th>Heure</th>
+                                                        <th>Lieu</th>
+                                                        <th>Statut</th>
+                                                        <th>Créée le</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for proposition in proposition_reunions %}
+                                                        <tr>
+                                                            <td>{{ proposition.propositionId }}</td>
+                                                            <td>
+                                                                <strong>{{ proposition.titre }}</strong>
+                                                                {% if proposition.description %}
+                                                                    <br><small class="text-muted">{{ proposition.description|slice(0, 50) }}...</small>
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>
+                                                                {% if proposition.dateReunion %}
+                                                                    {{ proposition.dateReunion|date('d/m/Y') }}
+                                                                {% else %}
+                                                                    <span class="text-muted">Non définie</span>
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>
+                                                                {% if proposition.heureDebut and proposition.heureFin %}
+                                                                    {{ proposition.heureDebut|date('H:i') }} - {{ proposition.heureFin|date('H:i') }}
+                                                                {% else %}
+                                                                    <span class="text-muted">Non définie</span>
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>{{ proposition.lieu }}</td>
+                                                            <td>
+                                                                {% set status_text = proposition.status %}
+                                                                {% set status_class = 'status-proposed' %}
+                                                                
+                                                                {% if status_text == 'confirmed' or status_text == 'Confirmée' %}
+                                                                    {% set status_class = 'status-confirmed' %}
+                                                                    {% set status_text = 'Confirmée' %}
+                                                                {% elseif status_text == 'cancelled' or status_text == 'Annulée' %}
+                                                                    {% set status_class = 'status-cancelled' %}
+                                                                    {% set status_text = 'Annulée' %}
+                                                                {% elseif status_text == 'postponed' or status_text == 'Reportée' %}
+                                                                    {% set status_class = 'status-postponed' %}
+                                                                    {% set status_text = 'Reportée' %}
+                                                                {% elseif status_text == 'En attente' %}
+                                                                    {% set status_class = 'status-en-attente' %}
+                                                                    {% set status_text = 'En attente' %}
+                                                                {% else %}
+                                                                    {% set status_class = 'status-proposed' %}
+                                                                    {% set status_text = 'Proposée' %}
+                                                                {% endif %}
+                                                                
+                                                                <span class="status-badge {{ status_class }}">{{ status_text }}</span>
+                                                            </td>
+                                                            <td>
+                                                                {% if proposition.dateCreation %}
+                                                                    {{ proposition.dateCreation|date('d/m/Y H:i') }}
+                                                                {% endif %}
+                                                            </td>
+                                                            <td>
+                                                                <div class="action-buttons">
+                                                                    <a href="{{ path('app_proposition_reunion_show', {'id': proposition.id, 'groupeId': groupe_projet.id}) }}" 
+                                                                   class="btn btn-view" title="Voir">
+                                                                        <i class="mdi mdi-eye"></i>
+                                                                    </a>
+                                                                    <a href="{{ path('app_proposition_reunion_edit', {'id': proposition.id, 'groupeId': groupe_projet.id}) }}" 
+                                                                   class="btn btn-edit" title="Modifier">
+                                                                        <i class="mdi mdi-pencil"></i>
+                                                                    </a>
+                                                                    <button type="button" class="btn btn-delete" 
+                                                                            data-bs-toggle="modal" 
+                                                                            data-bs-target="#deleteModal{{ proposition.id }}"
+                                                                            title="Supprimer">
+                                                                        <i class="mdi mdi-delete"></i>
+                                                                    </button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        
+                                                        <!-- Delete Modal for each proposition -->
+                                                        <div class="modal fade" id="deleteModal{{ proposition.id }}" tabindex="-1" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header modal-header-danger">
+                                                                        <h5 class="modal-title">
+                                                                            <i class="mdi mdi-alert-circle me-2"></i>
+                                                                            Confirmer la suppression
+                                                                        </h5>
+                                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <p>Êtes-vous sûr de vouloir supprimer cette proposition ?</p>
+                                                                        <div class="alert alert-warning">
+                                                                            <i class="mdi mdi-alert me-2"></i>
+                                                                            Cette action est irréversible.
+                                                                        </div>
+                                                                        <p><strong>Proposition :</strong> {{ proposition.titre }}</p>
+                                                                        <p><strong>Date :</strong> {{ proposition.dateReunion ? proposition.dateReunion|date('d/m/Y') : 'Non définie' }}</p>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                                                                        <form method="post" action="{{ path('app_proposition_reunion_delete', {'id': proposition.id, 'groupeId': groupe_projet.id}) }}" style="display: inline;">
+                                                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ proposition.id) }}">
+                                                                            <button type="submit" class="btn btn-delete">
+                                                                                <i class="mdi mdi-delete me-1"></i>
+                                                                                Supprimer
+                                                                            </button>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    {% else %}
+                                        <div class="empty-state">
+                                            <i class="mdi mdi-calendar-remove empty-state-icon"></i>
+                                            <h4 class="text-muted">Aucune proposition de réunion</h4>
+                                            <p class="text-muted mb-4">Ce groupe n'a pas encore de propositions de réunion.</p>
+                                            <a href="{{ path('app_proposition_reunion_new', {'groupeId': groupe_projet.id}) }}" class="btn btn-create">
+                                                <i class="mdi mdi-plus-circle me-2"></i>
+                                                Créer la première proposition
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info Card -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <i class="mdi mdi-information-outline text-primary me-2"></i>
+                                        Informations
+                                    </h5>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-start mb-3">
+                                                <div class="me-3">
+                                                    <i class="mdi mdi-account-group text-primary" style="font-size: 24px;"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1">Groupe</h6>
+                                                    <p class="text-muted mb-0">{{ groupe_projet.nomProjet }} - {{ groupe_projet.matiere }}</p>
+                                                    <p class="text-muted mb-0 small">{{ groupe_projet.idUser|length }} membre(s)</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="d-flex align-items-start mb-3">
+                                                <div class="me-3">
+                                                    <i class="mdi mdi-calendar-check text-success" style="font-size: 24px;"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1">Statistiques</h6>
+                                                    <p class="text-muted mb-0">{{ proposition_reunions|length }} proposition(s) au total</p>
+                                                    <p class="text-muted mb-0 small">
+                                                        {{ proposition_reunions|filter(p => p.status == 'confirmed' or p.status == 'Confirmée')|length }} confirmée(s)
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Scripts -->
+    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('assets/js/misc.js') }}"></script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('.table-custom tbody tr');
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        }
+        
+        // Auto-hide alerts
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                new bootstrap.Alert(alert).close();
+            });
+        }, 5000);
+        
+        // Confirm deletion
+        document.querySelectorAll('.btn-delete').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!confirm('Êtes-vous sûr de vouloir supprimer cette proposition ?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>
 {% endblock %}

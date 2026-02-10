@@ -1,0 +1,841 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Suivis - {{ objectif.titre }}{% endblock %}
+
+{% block body %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>ESPRIT - Suivis Bien-être</title>
+
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+  <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+  <!-- Layout styles -->
+  <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+  <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+
+  <style>
+    :root{
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      --danger-gradient: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+      --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --health-gradient: linear-gradient(135deg, #fa8bff 0%, #2bd2ff 90%, #2bff88 100%);
+      --card-shadow: 0 4px 20px rgba(0,0,0,.08);
+      --card-shadow-hover: 0 8px 30px rgba(0,0,0,.12);
+    }
+
+    .card{border:none;border-radius:15px;box-shadow:var(--card-shadow);transition:.3s;}
+    .card:hover{box-shadow:var(--card-shadow-hover);}
+
+    .page-header{
+      background:#fff;border-radius:15px;padding:2rem;box-shadow:var(--card-shadow);margin-bottom:2rem;
+    }
+    .page-title-icon{
+      width:50px;height:50px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+    }
+
+    .search-box{max-width:320px;}
+    .search-box input{border-radius:10px;border:2px solid #e9ecef;transition:.3s;}
+    .search-box input:focus{border-color:#667eea;box-shadow:0 0 0 .2rem rgba(102,126,234,.15);}
+
+    .table-hover tbody tr{transition:.3s;}
+    .table-hover tbody tr:hover{background-color:rgba(102,126,234,.05);transform:scale(1.01);}
+    .table thead th{
+      background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);
+      color:#495057;font-weight:600;text-transform:uppercase;font-size:.85rem;letter-spacing:.5px;border:none;padding:1rem;
+    }
+    .table td{vertical-align:middle;padding:1rem;border-bottom:1px solid #f1f3f5;}
+    .action-buttons{display:flex;gap:6px;flex-wrap:wrap;}
+    .action-buttons .btn{padding:6px 12px;border-radius:8px;transition:.3s;}
+    .action-buttons .btn:hover{transform:translateY(-2px);}
+
+    .badge-pill{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:6px 12px;border-radius:999px;font-weight:600;font-size:.8rem;border:none;color:#fff;
+    }
+    
+    .badge-score-excellent { background: var(--success-gradient); }
+    .badge-score-good { background: var(--info-gradient); }
+    .badge-score-medium { background: var(--warning-gradient); }
+    .badge-score-poor { background: var(--danger-gradient); }
+
+    .mood-badge {
+      display:inline-flex;align-items:center;gap:5px;
+      padding:5px 10px;border-radius:20px;font-size:.85rem;font-weight:600;
+    }
+    .mood-1 { background:#ffeaea; color:#dc3545; } /* Très mauvaise */
+    .mood-2 { background:#fff3cd; color:#856404; } /* Mauvaise */
+    .mood-3 { background:#e9ecef; color:#495057; } /* Neutre */
+    .mood-4 { background:#d4edda; color:#155724; } /* Bonne */
+    .mood-5 { background:#d1ecf1; color:#0c5460; } /* Excellente */
+
+    .rating-badge {
+      display:inline-flex;align-items:center;justify-content:center;
+      width:32px;height:32px;border-radius:50%;font-weight:bold;font-size:.85rem;
+      background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);color:#495057;
+    }
+    .rating-0-3 { background:#ffeaea; color:#dc3545; }
+    .rating-4-6 { background:#fff3cd; color:#856404; }
+    .rating-7-8 { background:#d1ecf1; color:#0c5460; }
+    .rating-9-10 { background:#d4edda; color:#155724; }
+
+    .mini-info{
+      display:flex;gap:10px;flex-wrap:wrap;margin-top:.75rem;
+    }
+    .mini-info .chip{
+      background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);
+      border-radius:12px;padding:8px 12px;font-weight:600;color:#495057;font-size:.85rem;
+    }
+
+    .progress-small {
+      height:6px;border-radius:3px;background:#e9ecef;overflow:hidden;
+      width:60px;display:inline-block;vertical-align:middle;margin-right:8px;
+    }
+    .progress-small .progress-bar {
+      border-radius:3px;background:var(--health-gradient);
+    }
+
+    /* Avatar / sidebar helpers (same as objectif) */
+    .user-avatar{width:40px;height:40px;border-radius:50%;background:var(--primary-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:16px;flex-shrink:0;}
+    .user-avatar-img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.1);}
+    .profile-avatar{width:50px;height:50px;border-radius:50%;background:var(--primary-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:20px;margin-right:15px;flex-shrink:0;}
+    .profile-avatar-img{width:50px;height:50px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.15);}
+    .badge-etudiant{background:var(--info-gradient);color:#fff;border:none;}
+    .badge-admin{background:var(--primary-gradient);color:#fff;border:none;}
+    .user-role-badge{font-size:.75rem;padding:3px 10px;border-radius:10px;margin-top:5px;display:inline-block;}
+    .avatar-container{display:flex;align-items:center;gap:12px;}
+    .navbar-profile{display:flex;align-items:center;padding:5px 0;}
+    .profile-pic{display:flex;align-items:center;padding:10px 0;}
+    .count-indicator{position:relative;margin-right:15px;}
+    .profile-name{flex-grow:1;}
+
+    .empty-state {
+      text-align:center;padding:60px 20px;
+      background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);
+      border-radius:15px;
+    }
+    .empty-state i {
+      font-size:80px;background:var(--health-gradient);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;margin-bottom:20px;
+    }
+
+    @media(max-width:768px){
+      .search-box{max-width:100%;margin-bottom:1rem;}
+      .action-buttons{flex-direction:column;}
+      .table-responsive{font-size:.9rem;}
+    }
+  </style>
+</head>
+
+<body>
+<div class="container-scroller">
+
+  <!-- Sidebar (EXACT same) -->
+  <nav class="sidebar sidebar-offcanvas" id="sidebar">
+    <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+      <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
+        <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+      </a>
+      <a class="sidebar-brand brand-logo-mini" href="{{ path('app_user_index') }}">
+        <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+      </a>
+    </div>
+
+    <ul class="nav">
+      <li class="nav-item profile">
+        <div class="profile-desc">
+          <div class="profile-pic">
+            <div class="count-indicator">
+              {% if app.user %}
+                {% if app.user.profilePic %}
+                  <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" alt="{{ app.user.prenom }}" class="profile-avatar-img">
+                {% else %}
+                  <div class="profile-avatar">
+                    {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                  </div>
+                {% endif %}
+              {% else %}
+                <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+              {% endif %}
+              <span class="count bg-success"></span>
+            </div>
+
+            <div class="profile-name">
+              {% if app.user %}
+                <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                <span class="text-muted">{{ app.user.email }}</span>
+                <div class="mt-1">
+                  {% if 'ROLE_ADMIN' in app.user.roles %}
+                    <span class="user-role-badge badge-admin">Administrateur</span>
+                  {% else %}
+                    <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                  {% endif %}
+                </div>
+              {% else %}
+                <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                <span>Veuillez vous connecter</span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <li class="nav-item nav-category"><span class="nav-link">Navigation</span></li>
+
+      <li class="nav-item menu-items">
+        <a class="nav-link" href="#">
+          <span class="menu-icon"><i class="mdi mdi-speedometer"></i></span>
+          <span class="menu-title">Dashboard</span>
+        </a>
+      </li>
+
+      <li class="nav-item menu-items">
+        <a class="nav-link" href="{{ path('app_user_index') }}">
+          <span class="menu-icon"><i class="mdi mdi-account-group"></i></span>
+          <span class="menu-title">Utilisateurs</span>
+        </a>
+      </li>
+
+      <li class="nav-item menu-items">
+        <a class="nav-link" href="#">
+          <span class="menu-icon"><i class="mdi mdi-book-open-page-variant"></i></span>
+          <span class="menu-title">Matieres</span>
+        </a>
+      </li>
+
+      <li class="nav-item menu-items">
+        <a class="nav-link" href="#">
+          <span class="menu-icon"><i class="mdi mdi-school"></i></span>
+          <span class="menu-title">Classes</span>
+        </a>
+      </li>
+
+      <li class="nav-item menu-items">
+        <a class="nav-link" href="#">
+          <span class="menu-icon"><i class="mdi mdi-office-building"></i></span>
+          <span class="menu-title">Salles</span>
+        </a>
+      </li>
+
+      <li class="nav-item menu-items">
+        <a class="nav-link" href="#">
+          <span class="menu-icon"><i class="mdi mdi-calendar-clock"></i></span>
+          <span class="menu-title">Séances</span>
+        </a>
+      </li>
+
+      <li class="nav-item menu-items">
+        <a class="nav-link" href="#">
+          <span class="menu-icon"><i class="mdi mdi-account-multiple"></i></span>
+          <span class="menu-title">Groupes</span>
+        </a>
+      </li>
+
+      <li class="nav-item menu-items">
+        <a class="nav-link" href="{{ path('app_tache_index') }}">
+          <span class="menu-icon"><i class="mdi mdi-checkbox-marked-circle-outline"></i></span>
+          <span class="menu-title">Tâches</span>
+        </a>
+      </li>
+
+      <li class="nav-item menu-items">
+        <a class="nav-link" href="#">
+          <span class="menu-icon"><i class="mdi mdi-alert-circle-outline"></i></span>
+          <span class="menu-title">Alertes</span>
+        </a>
+      </li>
+
+      <!-- Keep same active section -->
+      <li class="nav-item menu-items active">
+        <a class="nav-link" href="{{ path('app_objectif_sante_index') }}">
+          <span class="menu-icon"><i class="mdi mdi-heart-pulse"></i></span>
+          <span class="menu-title">Objectifs de santé</span>
+        </a>
+      </li>
+
+      <li class="nav-item menu-items">
+        <a class="nav-link" href="{{ path('app_logout') }}">
+          <span class="menu-icon"><i class="mdi mdi-logout text-danger"></i></span>
+          <span class="menu-title text-danger">Déconnexion</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main -->
+  <div class="container-fluid page-body-wrapper">
+
+    <!-- Navbar (EXACT same style) -->
+    <nav class="navbar p-0 fixed-top d-flex flex-row">
+      <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+        <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+      </div>
+
+      <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="mdi mdi-menu"></span>
+        </button>
+
+        <ul class="navbar-nav w-100">
+          <li class="nav-item w-100">
+            <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+              <input type="text" class="form-control" placeholder="Rechercher dans les suivis..." id="navSearchInput">
+            </form>
+          </li>
+        </ul>
+
+        <ul class="navbar-nav navbar-nav-right">
+          <li class="nav-item dropdown border-left">
+            <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+              <i class="mdi mdi-bell"></i>
+              <span class="count bg-danger">3</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+              <h6 class="p-3 mb-0">Notifications</h6>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item preview-item">
+                <div class="preview-thumbnail">
+                  <div class="preview-icon bg-success rounded-circle">
+                    <i class="mdi mdi-heart-pulse"></i>
+                  </div>
+                </div>
+                <div class="preview-item-content">
+                  <p class="preview-subject mb-1">Suivi ajouté</p>
+                  <p class="text-muted ellipsis mb-0">Vous avez ajouté un nouveau suivi</p>
+                </div>
+              </a>
+            </div>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+              <div class="navbar-profile">
+                {% if app.user %}
+                  <div class="avatar-container">
+                    {% if app.user.profilePic %}
+                      <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" alt="{{ app.user.prenom }}" class="user-avatar-img">
+                    {% else %}
+                      <div class="user-avatar">
+                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                      </div>
+                    {% endif %}
+                    <div class="text-start ms-2">
+                      <p class="mb-0 d-none d-sm-block navbar-profile-name">{{ app.user.prenom }} {{ app.user.nom }}</p>
+                      <small class="text-muted d-none d-sm-block">
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin">Admin</span>
+                        {% else %}
+                          <span class="badge badge-etudiant">Utilisateur</span>
+                        {% endif %}
+                      </small>
+                    </div>
+                  </div>
+                {% else %}
+                  <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                {% endif %}
+                <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+              </div>
+            </a>
+
+            <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+              <div class="dropdown-header p-3">
+                {% if app.user %}
+                  <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                  <p class="text-muted mb-0">{{ app.user.email }}</p>
+                  <small class="text-muted">
+                    {% if 'ROLE_ADMIN' in app.user.roles %}
+                      <span class="badge badge-admin">Administrateur</span>
+                    {% else %}
+                      <span class="badge badge-etudiant">Utilisateur</span>
+                    {% endif %}
+                  </small>
+                {% else %}
+                  <h6 class="mb-0">Non connecté</h6>
+                  <p class="text-muted mb-0">Veuillez vous connecter</p>
+                {% endif %}
+              </div>
+
+              <div class="dropdown-divider"></div>
+
+              {% if app.user %}
+                <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-primary rounded-circle"><i class="mdi mdi-account"></i></div>
+                  </div>
+                  <div class="preview-item-content"><p class="preview-subject mb-1">Mon profil</p></div>
+                </a>
+                <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-warning rounded-circle"><i class="mdi mdi-account-edit"></i></div>
+                  </div>
+                  <div class="preview-item-content"><p class="preview-subject mb-1">Modifier mon profil</p></div>
+                </a>
+                <div class="dropdown-divider"></div>
+              {% endif %}
+
+              <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
+                <div class="preview-thumbnail">
+                  <div class="preview-icon bg-dark rounded-circle"><i class="mdi mdi-logout text-danger"></i></div>
+                </div>
+                <div class="preview-item-content"><p class="preview-subject mb-1">Déconnexion</p></div>
+              </a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="main-panel">
+      <div class="content-wrapper">
+
+        {# Flash Messages #}
+        {% for label, messages in app.flashes %}
+          {% for message in messages %}
+            <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert" style="border-radius:12px;box-shadow:var(--card-shadow);border:none;">
+              <i class="mdi mdi-{{ label == 'success' ? 'check-circle' : 'alert-circle' }}"></i>
+              <span class="ms-2">{{ message }}</span>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endfor %}
+
+        <!-- Header -->
+        <div class="page-header">
+          <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+            <div>
+              <h3 class="page-title mb-0 text-dark">
+                <span class="page-title-icon bg-gradient-primary text-dark me-2">
+                  <i class="mdi mdi-chart-line"></i>
+                </span>
+                Suivis Bien-être
+              </h3>
+
+              <div class="mini-info">
+                <span class="chip">
+                  <i class="mdi mdi-target me-1"></i> 
+                  <strong>{{ objectif.titre }}</strong>
+                </span>
+                <span class="chip">
+                  <i class="mdi mdi-tag me-1"></i> 
+                  {{ objectif.type }}
+                </span>
+                {% if objectif.valeurCible %}
+                  <span class="chip">
+                    <i class="mdi mdi-bullseye-arrow me-1"></i> 
+                    Cible: {{ objectif.valeurCible }}
+                  </span>
+                {% endif %}
+                <span class="chip">
+                  <i class="mdi mdi-progress-check me-1"></i> 
+                  Progression: {{ objectif.progression ? objectif.progression ~ '%' : '0%' }}
+                </span>
+              </div>
+
+              <nav aria-label="breadcrumb" class="mt-2">
+                <ol class="breadcrumb mb-0">
+                  <li class="breadcrumb-item">
+                    <a href="{{ path('app_objectif_sante_index') }}">
+                      <i class="mdi mdi-heart-pulse me-1"></i> Objectifs
+                    </a>
+                  </li>
+                  <li class="breadcrumb-item">
+                    <a href="{{ path('app_objectif_sante_show', {id: objectif.id}) }}">
+                      {{ objectif.titre|slice(0, 20) }}{{ objectif.titre|length > 20 ? '...' : '' }}
+                    </a>
+                  </li>
+                  <li class="breadcrumb-item active" aria-current="page">
+                    <i class="mdi mdi-chart-line me-1"></i> Suivis
+                  </li>
+                </ol>
+              </nav>
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+  <div class="search-box">
+    <input type="text" class="form-control" id="tableSearchInput" placeholder="Rechercher dans les suivis...">
+  </div>
+
+  {# ✅ ICI: filtres AJAX #}
+  <select id="humeurFilter" class="form-control" style="max-width:200px;border-radius:10px;">
+    <option value="">Toutes les humeurs</option>
+    <option value="1">Très mauvaise</option>
+    <option value="2">Mauvaise</option>
+    <option value="3">Neutre</option>
+    <option value="4">Bonne</option>
+    <option value="5">Excellente</option>
+  </select>
+
+  <select id="sortBy" class="form-control" style="max-width:170px;border-radius:10px;">
+    <option value="date">Trier par date</option>
+    <option value="score">Trier par score</option>
+  </select>
+
+  <select id="sortDir" class="form-control" style="max-width:170px;border-radius:10px;">
+    <option value="DESC">DESC</option>
+    <option value="ASC">ASC</option>
+  </select>
+
+  <a href="{{ path('app_objectif_suivi_new', {id: objectif.id}) }}"
+     class="btn btn-gradient-primary btn-icon-text btn-black"
+     style="color: black !important;">
+     <i class="mdi mdi-plus-circle btn-icon-prepend" style="color: black !important;"></i>
+     Nouveau suivi
+  </a>
+
+  <a href="{{ path('app_objectif_sante_index') }}"
+     class="btn btn-outline-light btn-black"
+     style="color: black !important; border-color: black !important;">
+     <i class="mdi mdi-arrow-left" style="color: black !important;"></i> Retour
+  </a>
+</div>
+
+          </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="row mb-4">
+          <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+            <div class="card" style="border-radius:12px;box-shadow:var(--card-shadow);border:none;">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h3 class="mb-0" style="font-size:1.8rem;color:#667eea;">{{ suivis|length }}</h3>
+                    <p class="mb-0 text-muted">Total suivis</p>
+                  </div>
+                  <div class="text-primary" style="font-size:2.5rem;">
+                    <i class="mdi mdi-chart-line"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+            <div class="card" style="border-radius:12px;box-shadow:var(--card-shadow);border:none;">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    {% set avgScore = suivis|length > 0 ? suivis|reduce((sum, s) => sum + s.score, 0) / suivis|length : 0 %}
+                    <h3 class="mb-0" style="font-size:1.8rem;color:#43e97b;">{{ avgScore|round(1) }}%</h3>
+                    <p class="mb-0 text-muted">Score moyen</p>
+                  </div>
+                  <div class="text-success" style="font-size:2.5rem;">
+                    <i class="mdi mdi-star"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+            <div class="card" style="border-radius:12px;box-shadow:var(--card-shadow);border:none;">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    {% set recentSuivi = suivis|first %}
+                    <h3 class="mb-0" style="font-size:1.8rem;color:#fa709a;">
+                      {{ recentSuivi and recentSuivi.dateSaisie ? recentSuivi.dateSaisie|date('d/m') : '—' }}
+                    </h3>
+                    <p class="mb-0 text-muted">Dernier suivi</p>
+                  </div>
+                  <div class="text-warning" style="font-size:2.5rem;">
+                    <i class="mdi mdi-calendar-check"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+            <div class="card" style="border-radius:12px;box-shadow:var(--card-shadow);border:none;">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    {% set goodMoods = suivis|filter(s => s.humeur >= 4)|length %}
+                    <h3 class="mb-0" style="font-size:1.8rem;color:#4facfe;">{{ goodMoods }}</h3>
+                    <p class="mb-0 text-muted">Humeurs positives</p>
+                  </div>
+                  <div class="text-info" style="font-size:2.5rem;">
+                    <i class="mdi mdi-emoticon-happy"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Table -->
+        <div class="row">
+          <div class="col-12 grid-margin">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title mb-3">
+                  <i class="mdi mdi-format-list-bulleted me-2"></i>
+                  Liste des suivis ({{ suivis|length }})
+                </h4>
+
+                {% if suivis is empty %}
+                  <div class="empty-state">
+                    <i class="mdi mdi-chart-line"></i>
+                    <h4 class="text-muted mt-3">Aucun suivi pour cet objectif</h4>
+                    <p class="text-muted mb-4">Ajoutez votre premier suivi pour commencer le suivi de votre bien-être.</p>
+                    <a href="{{ path('app_objectif_suivi_new', {id: objectif.id}) }}" class="btn btn-gradient-primary btn-lg">
+                      <i class="mdi mdi-plus-circle me-2"></i> Ajouter un suivi
+                    </a>
+                  </div>
+                {% else %}
+                  <div class="table-responsive">
+                    <table class="table table-hover" id="suivisTable">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Humeur</th>
+                          <th>Sommeil</th>
+                          <th>Énergie</th>
+                          <th>Stress</th>
+                          <th>Alimentation</th>
+                          <th>Notes</th>
+                          <th>Score</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for suivi in suivis %}
+                        <tr>
+                          <td>
+                            <strong>{{ suivi.dateSaisie ? suivi.dateSaisie|date('d/m/Y') : '—' }}</strong>
+                            <br>
+                            <small class="text-muted">{{ suivi.dateSaisie ? suivi.dateSaisie|date('H:i') : '' }}</small>
+                          </td>
+                          <td>
+                            {% if suivi.humeur %}
+                              <span class="mood-badge mood-{{ suivi.humeur }}">
+                                <i class="mdi mdi-{{
+                                  suivi.humeur == 1 ? 'emoticon-sad' :
+                                  suivi.humeur == 2 ? 'emoticon-neutral' :
+                                  suivi.humeur == 3 ? 'emoticon' :
+                                  suivi.humeur == 4 ? 'emoticon-happy' :
+                                  'emoticon-excited'
+                                }}"></i>
+                                {{
+                                  suivi.humeur == 1 ? 'Très mauvaise' :
+                                  suivi.humeur == 2 ? 'Mauvaise' :
+                                  suivi.humeur == 3 ? 'Neutre' :
+                                  suivi.humeur == 4 ? 'Bonne' :
+                                  'Excellente'
+                                }}
+                              </span>
+                            {% else %}
+                              <span class="text-muted">—</span>
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if suivi.qualiteSommeil is not null %}
+                              <span class="rating-badge rating-{{ 
+                                suivi.qualiteSommeil <= 3 ? '0-3' :
+                                suivi.qualiteSommeil <= 6 ? '4-6' :
+                                suivi.qualiteSommeil <= 8 ? '7-8' :
+                                '9-10'
+                              }}">
+                                {{ suivi.qualiteSommeil }}
+                              </span>
+                            {% else %}
+                              <span class="text-muted">—</span>
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if suivi.niveauEnergie is not null %}
+                              <span class="rating-badge rating-{{
+                                suivi.niveauEnergie <= 3 ? '0-3' :
+                                suivi.niveauEnergie <= 6 ? '4-6' :
+                                suivi.niveauEnergie <= 8 ? '7-8' :
+                                '9-10'
+                              }}">
+                                {{ suivi.niveauEnergie }}
+                              </span>
+                            {% else %}
+                              <span class="text-muted">—</span>
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if suivi.niveauStress is not null %}
+                              <span class="rating-badge rating-{{
+                                suivi.niveauStress >= 7 ? '0-3' :
+                                suivi.niveauStress >= 4 ? '4-6' :
+                                suivi.niveauStress >= 2 ? '7-8' :
+                                '9-10'
+                              }}">
+                                {{ suivi.niveauStress }}
+                              </span>
+                            {% else %}
+                              <span class="text-muted">—</span>
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if suivi.qualiteAlimentation is not null %}
+                              <span class="rating-badge rating-{{
+                                suivi.qualiteAlimentation <= 3 ? '0-3' :
+                                suivi.qualiteAlimentation <= 6 ? '4-6' :
+                                suivi.qualiteAlimentation <= 8 ? '7-8' :
+                                '9-10'
+                              }}">
+                                {{ suivi.qualiteAlimentation }}
+                              </span>
+                            {% else %}
+                              <span class="text-muted">—</span>
+                            {% endif %}
+                          </td>
+                          <td style="max-width:200px;">
+                            {% if suivi.notesLibres %}
+                              <small class="text-muted" title="{{ suivi.notesLibres }}">
+                                {{ suivi.notesLibres|slice(0, 50) }}{{ suivi.notesLibres|length > 50 ? '...' : '' }}
+                              </small>
+                            {% else %}
+                              <span class="text-muted">—</span>
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if suivi.score is not null %}
+                              {% set scoreClass = 
+                                suivi.score >= 80 ? 'badge-score-excellent' :
+                                suivi.score >= 60 ? 'badge-score-good' :
+                                suivi.score >= 40 ? 'badge-score-medium' :
+                                'badge-score-poor'
+                              %}
+                              <span class="badge-pill {{ scoreClass }}">
+                                <i class="mdi mdi-star"></i> {{ suivi.score }}%
+                              </span>
+                              <div class="progress-small mt-1">
+                                <div class="progress-bar" style="width: {{ suivi.score }}%"></div>
+                              </div>
+                            {% else %}
+                              <span class="text-muted">—</span>
+                            {% endif %}
+                          </td>
+                          <td>
+                            <div class="action-buttons">
+                              <a href="{{ path('app_objectif_suivi_edit', {id: objectif.id, suiviId: suivi.id}) }}"
+                                 class="btn btn-warning btn-sm" title="Modifier">
+                                <i class="mdi mdi-pencil"></i>
+                              </a>
+
+                              <form action="{{ path('app_objectif_suivi_delete', {id: objectif.id, suiviId: suivi.id}) }}"
+                                    method="POST"
+                                    style="display:inline;"
+                                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce suivi ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete_suivi' ~ suivi.id) }}">
+                                <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                                  <i class="mdi mdi-delete"></i>
+                                </button>
+                              </form>
+                            </div>
+                          </td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+          <div class="d-sm-flex justify-content-center justify-content-sm-between">
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+              © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
+            </span>
+            <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+              <i class="mdi mdi-chart-line text-info"></i>
+              Objectif: {{ objectif.titre|slice(0, 30) }}{{ objectif.titre|length > 30 ? '...' : '' }} |
+              Suivis: {{ suivis|length }}
+            </span>
+          </div>
+        </footer>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+<script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+<script src="{{ asset('assets/js/misc.js') }}"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    function filterRows(inputId) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+
+      input.addEventListener('keyup', function () {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#suivisTable tbody tr');
+        let visibleCount = 0;
+        
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          const isVisible = text.includes(filter);
+          row.style.display = isVisible ? '' : 'none';
+          if (isVisible) visibleCount++;
+        });
+
+        // Update table header count
+        const header = document.querySelector('.card-title');
+        if (header && inputId === 'tableSearchInput') {
+          const originalText = 'Liste des suivis ({{ suivis|length }})';
+          if (filter) {
+            header.textContent = `Liste des suivis (${visibleCount} sur {{ suivis|length }})`;
+          } else {
+            header.textContent = originalText;
+          }
+        }
+      });
+    }
+
+    filterRows('tableSearchInput');
+    filterRows('navSearchInput');
+    
+    // Auto-hide alerts after 5 seconds
+    setTimeout(() => {
+  const alerts = document.querySelectorAll('.alert');
+  alerts.forEach(alert => {
+    if (window.bootstrap && bootstrap.Alert) {
+      const bsAlert = new bootstrap.Alert(alert);
+      bsAlert.close();
+    } else {
+      alert.style.display = 'none';
+    }
+  });
+}, 5000);
+
+    
+    // Add hover effects
+    const tableRows = document.querySelectorAll('#suivisTable tbody tr');
+    tableRows.forEach(row => {
+      row.addEventListener('mouseenter', function() {
+        this.style.backgroundColor = 'rgba(102, 126, 234, 0.03)';
+      });
+      row.addEventListener('mouseleave', function() {
+        this.style.backgroundColor = '';
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
+{% endblock %}
