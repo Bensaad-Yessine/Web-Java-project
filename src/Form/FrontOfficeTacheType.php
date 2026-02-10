@@ -40,12 +40,11 @@ class FrontOfficeTacheType extends AbstractType
             ->add('type', ChoiceType::class, [
                 'label' => 'Task Type',
                 'choices' => [
-                    'Course' => 'course',
-                    'Exam' => 'exam',
-                    'Meeting' => 'meeting',
-                    'Personal' => 'personal',
-                    'Project' => 'project',
-                    'Assignment' => 'assignment',
+                    'Manual' => 'MANUEL',
+                    'Meeting' => 'REUNION',
+                    'Revision' => 'REVISION',
+                    'Health' => 'SANTE',
+                    'Schedule' => 'EMPLOI',
                 ],
                 'attr' => ['class' => 'form-control'],
                 'placeholder' => 'Select type...',
@@ -54,63 +53,48 @@ class FrontOfficeTacheType extends AbstractType
             ->add('priorite', ChoiceType::class, [
                 'label' => 'Priority',
                 'choices' => [
-                    'FAIBLE' => 'FAIBLE',
-            'MOYEN' => 'MOYEN',
-            'ELEVEE' => 'ELEVEE',
+                    'Low' => 'FAIBLE',
+                    'Medium' => 'MOYEN',
+                    'High' => 'ELEVEE',
                 ],
                 'attr' => ['class' => 'form-control'],
                 'placeholder' => 'Select priority...',
                 'required' => true,
-                'data' => 'medium',
+            ])
+            ->add('dateDebut', DateTimeType::class, [
+                'label' => 'Start Date',
+                'widget' => 'single_text',
+                'attr' => ['class' => 'form-control'],
+                'required' => true,
+            ])
+            ->add('dateFin', DateTimeType::class, [
+                'label' => 'End Date',
+                'widget' => 'single_text',
+                'attr' => ['class' => 'form-control'],
+                'required' => true,
             ])
             ->add('dateEcheance', DateType::class, [
                 'label' => 'Due Date',
                 'widget' => 'single_text',
                 'attr' => ['class' => 'form-control'],
-                'required' => true,
+                'required' => false,
             ])
             ->add('statut', ChoiceType::class, [
                 'label' => 'Status',
                 'choices' => [
-                    'Pending' => 'pending',
-                    'In Progress' => 'in_progress',
-                    'Completed' => 'completed',
+                    'To Do' => 'A_FAIRE',
+                    'In Progress' => 'EN_COURS',
+                    'Completed' => 'TERMINEE',
+                    'Overdue' => 'EN_RETARD',
+                    'Paused' => 'PAUSED',
                 ],
                 'attr' => ['class' => 'form-control'],
                 'required' => true,
-                'data' => 'pending',
-            ])
-            // Hidden fields with defaults
-            ->add('dateDebut', DateTimeType::class, [
-                'widget' => 'single_text',
-                'required' => false,
-                'attr' => ['class' => 'd-none'],
-                'data' => new \DateTime(),
-            ])
-            ->add('dateFin', DateTimeType::class, [
-                'widget' => 'single_text',
-                'required' => false,
-                'attr' => ['class' => 'd-none'],
-                'data' => (new \DateTime())->modify('+1 hour'),
             ])
             ->add('dureeEstimee', IntegerType::class, [
+                'label' => 'Estimated Duration (minutes)',
                 'required' => false,
-                'attr' => ['class' => 'd-none'],
-                'data' => 60,
-            ])
-            ->add('origine', ChoiceType::class, [
-                'choices' => [
-                    'Manual' => 'MANUEL',
-                ],
-                'required' => false,
-                'attr' => ['class' => 'd-none'],
-                'data' => 'MANUEL',
-            ])
-            ->add('createdAt', DateTimeType::class, [
-                'widget' => 'single_text',
-                'required' => false,
-                'attr' => ['class' => 'd-none'],
-                'data' => new \DateTime(),
+                'attr' => ['class' => 'form-control'],
             ]);
     }
 

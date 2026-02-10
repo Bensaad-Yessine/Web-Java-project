@@ -1,10 +1,9 @@
-{# templates/user/add_task.html.twig #}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESPRIT — {{ is_edit ? 'Edit' : 'Add' }} Task</title>
+    <title>ESPRIT — {{ is_edit ? 'Modifier' : 'Nouvelle' }} Tâche</title>
     <style>
         :root {
             --font-size: 16px;
@@ -463,7 +462,7 @@
                     <div class="brand-icon">ES</div>
                     <div>
                         <div class="brand-title">ESPRIT</div>
-                        <div class="brand-sub">Student Assistant</div>
+                        <div class="brand-sub">Assistant Étudiant</div>
                     </div>
                 </div>
             </div>
@@ -475,12 +474,12 @@
                     </div>
                     <div class="user-details">
                         <h3>{{ app.user.nom }} {{ app.user.prenom }}</h3>
-                        <p>📚 {{ app.user.classe is not null ? app.user.classe.nom : 'No Class' }}</p>
+                        <p>📚 {{ app.user.classe is not null ? app.user.classe.nom : 'Aucune classe' }}</p>
                     </div>
                 </div>
                 <div class="session-info">
                     <div><strong>Email:</strong> {{ app.user.email }}</div>
-                    <div><strong>Role:</strong> {{ app.user.roles[0]|replace({'ROLE_': ''})|capitalize }}</div>
+                    <div><strong>Rôle:</strong> {{ app.user.roles[0]|replace({'ROLE_': ''})|capitalize }}</div>
                 </div>
             </div>
 
@@ -489,26 +488,26 @@
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/>
                     </svg>
-                    Dashboard
+                    Tableau de bord
                 </a>
                 <a href="{{ path('app_my_tasks') }}" class="active">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
                     </svg>
-                    My Tasks
+                    Mes Tâches
                 </a>
                 <a href="{{ path('app_profile') }}">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                         <circle cx="12" cy="7" r="4"/>
                     </svg>
-                    Profile
+                    Profil
                 </a>
                 <a href="{{ path('app_logout') }}">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>
                     </svg>
-                    Logout
+                    Déconnexion
                 </a>
             </nav>
         </aside>
@@ -516,30 +515,30 @@
         <main class="main">
             <header class="header">
                 <div>
-                    <h1 class="h1">{{ is_edit ? 'Edit Task' : 'Add New Task' }}</h1>
-                    <p class="muted">{{ is_edit ? 'Update your task details' : 'Create a new task to keep track of your work' }}</p>
+                    <h1 class="h1">{{ is_edit ? 'Modifier la tâche' : 'Nouvelle tâche' }}</h1>
+                    <p class="muted">{{ is_edit ? 'Mettez à jour les informations de votre tâche' : 'Créez une nouvelle tâche pour mieux organiser votre travail' }}</p>
                 </div>
                 <a href="{{ path('app_my_tasks') }}" class="back-link">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
                     </svg>
-                    Back to Tasks
+                    Retour aux Tâches
                 </a>
             </header>
 
             <div class="form-container">
                 {{ form_start(form, {'attr': {'id': 'taskForm', 'novalidate': 'novalidate'}}) }}
                     <div class="form-grid">
-                        {# Task Title #}
+                        {# Titre de la tâche #}
                         <div class="form-group">
-                            {{ form_label(form.titre, 'Task Title *') }}
+                            {{ form_label(form.titre, 'Titre de la tâche *') }}
                             {{ form_widget(form.titre, {
                                 'attr': {
                                     'class': 'form-control',
-                                    'placeholder': 'e.g., Complete homework assignment'
+                                    'placeholder': 'Ex: Révision pour l\'examen de mathématiques'
                                 }
                             }) }}
-                            <small class="form-text">Give your task a clear, descriptive title</small>
+                            <small class="form-text">Donnez un titre clair et descriptif à votre tâche</small>
                             <div class="form-error">
                                 {{ form_errors(form.titre) }}
                             </div>
@@ -547,24 +546,24 @@
 
                         {# Description #}
                         <div class="form-group">
-                            {{ form_label(form.description) }}
+                            {{ form_label(form.description, 'Description') }}
                             {{ form_widget(form.description, {
                                 'attr': {
                                     'class': 'form-control',
-                                    'placeholder': 'Add more details about this task...',
+                                    'placeholder': 'Décrivez en détail ce que cette tâche implique...',
                                     'rows': 4
                                 }
                             }) }}
-                            <small class="form-text">Optional: Add any additional information</small>
+                            <small class="form-text">Optionnel : Ajoutez des détails ou des instructions supplémentaires</small>
                             <div class="form-error">
                                 {{ form_errors(form.description) }}
                             </div>
                         </div>
 
-                        {# Task Type and Priority #}
+                        {# Type et Priorité #}
                         <div class="form-row">
                             <div class="form-group">
-                                {{ form_label(form.type, 'Task Type *') }}
+                                {{ form_label(form.type, 'Type de tâche *') }}
                                 {{ form_widget(form.type, {
                                     'attr': {'class': 'form-control'}
                                 }) }}
@@ -574,7 +573,7 @@
                             </div>
 
                             <div class="form-group">
-                                {{ form_label(form.priorite, 'Priority *') }}
+                                {{ form_label(form.priorite, 'Priorité *') }}
                                 {{ form_widget(form.priorite, {
                                     'attr': {'class': 'form-control'}
                                 }) }}
@@ -584,46 +583,46 @@
                             </div>
                         </div>
 
-                        {# Start Date and End Date #}
+                        {# Date de début et de fin #}
                         <div class="form-row">
                             <div class="form-group">
-                                {{ form_label(form.dateDebut, 'Start Date *') }}
+                                {{ form_label(form.dateDebut, 'Date de début *') }}
                                 {{ form_widget(form.dateDebut, {
                                     'attr': {'class': 'form-control'}
                                 }) }}
-                                <small class="form-text">When will you start this task?</small>
+                                <small class="form-text">Quand commencerez-vous cette tâche ?</small>
                                 <div class="form-error">
                                     {{ form_errors(form.dateDebut) }}
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                {{ form_label(form.dateFin, 'End Date *') }}
+                                {{ form_label(form.dateFin, 'Date de fin *') }}
                                 {{ form_widget(form.dateFin, {
                                     'attr': {'class': 'form-control'}
                                 }) }}
-                                <small class="form-text">When will you finish this task?</small>
+                                <small class="form-text">Quand terminerez-vous cette tâche ?</small>
                                 <div class="form-error">
                                     {{ form_errors(form.dateFin) }}
                                 </div>
                             </div>
                         </div>
 
-                        {# Due Date and Status #}
+                        {# Date d'échéance et Statut #}
                         <div class="form-row">
                             <div class="form-group">
-                                {{ form_label(form.dateEcheance, 'Due Date') }}
+                                {{ form_label(form.dateEcheance, 'Date d\'échéance') }}
                                 {{ form_widget(form.dateEcheance, {
                                     'attr': {'class': 'form-control'}
                                 }) }}
-                                <small class="form-text">Optional: Official deadline date</small>
+                                <small class="form-text">Optionnel : Date limite officielle</small>
                                 <div class="form-error">
                                     {{ form_errors(form.dateEcheance) }}
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                {{ form_label(form.statut, 'Status *') }}
+                                {{ form_label(form.statut, 'Statut *') }}
                                 {{ form_widget(form.statut, {
                                     'attr': {'class': 'form-control'}
                                 }) }}
@@ -633,17 +632,17 @@
                             </div>
                         </div>
 
-                        {# Estimated Duration #}
+                        {# Durée estimée #}
                         <div class="form-group">
-                            {{ form_label(form.dureeEstimee, 'Estimated Duration (minutes)') }}
+                            {{ form_label(form.dureeEstimee, 'Durée estimée (minutes)') }}
                             {{ form_widget(form.dureeEstimee, {
                                 'attr': {
                                     'class': 'form-control',
-                                    'placeholder': 'e.g., 60',
+                                    'placeholder': 'Ex: 120',
                                     'type': 'number'
                                 }
                             }) }}
-                            <small class="form-text">How many minutes do you estimate this task will take?</small>
+                            <small class="form-text">Combien de minutes estimez-vous pour cette tâche ?</small>
                             <div class="form-error">
                                 {{ form_errors(form.dureeEstimee) }}
                             </div>
@@ -657,7 +656,7 @@
                                 <polyline points="17 21 17 13 7 13 7 21"/>
                                 <polyline points="7 3 7 8 15 8"/>
                             </svg>
-                            {{ is_edit ? 'Update Task' : 'Create Task' }}
+                            {{ is_edit ? 'Mettre à jour' : 'Créer la tâche' }}
                         </button>
                         
                         {% if is_edit %}
@@ -666,12 +665,12 @@
                                     <path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
                                     <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                                 </svg>
-                                Delete Task
+                                Supprimer
                             </button>
                         {% endif %}
                         
                         <a href="{{ path('app_my_tasks') }}" class="btn btn-secondary">
-                            Cancel
+                            Annuler
                         </a>
                     </div>
                 {{ form_end(form) }}
@@ -686,7 +685,7 @@
     </div>
 
     <script>
-        // Set minimum date to today for the dateDebut field
+        // Définir la date minimum à aujourd'hui pour le champ dateDebut
         document.addEventListener('DOMContentLoaded', function() {
             const dateDebutInput = document.getElementById('{{ form.dateDebut.vars.id }}');
             const dateFinInput = document.getElementById('{{ form.dateFin.vars.id }}');
@@ -697,7 +696,7 @@
                 const dateTimeString = now.toISOString().slice(0, 16);
                 dateDebutInput.setAttribute('min', dateTimeString);
                 
-                // Set default value to now if empty
+                // Définir la valeur par défaut maintenant si vide
                 if (!dateDebutInput.value) {
                     dateDebutInput.value = dateTimeString;
                 }
@@ -714,7 +713,7 @@
                 }
             }
 
-            // Add real-time form validation
+            // Ajouter une validation en temps réel du formulaire
             const formInputs = document.querySelectorAll('#taskForm input, #taskForm select, #taskForm textarea');
             formInputs.forEach(input => {
                 input.addEventListener('blur', function() {
@@ -726,14 +725,14 @@
                 });
             });
 
-            // Form submission feedback
+            // Feedback de soumission du formulaire
             const form = document.getElementById('taskForm');
             if (form) {
                 form.addEventListener('submit', function(e) {
                     const submitBtn = this.querySelector('button[type="submit"]');
                     const originalHTML = submitBtn.innerHTML;
                     
-                    // Validate required fields
+                    // Valider les champs obligatoires
                     const requiredFields = this.querySelectorAll('[required]');
                     let isValid = true;
                     
@@ -742,13 +741,13 @@
                             isValid = false;
                             field.style.borderColor = 'var(--red-500)';
                             
-                            // Create error message if not exists
+                            // Créer un message d'erreur s'il n'existe pas
                             const formGroup = field.closest('.form-group');
                             if (formGroup && !formGroup.querySelector('.field-error')) {
                                 const errorMsg = document.createElement('small');
                                 errorMsg.className = 'field-error';
                                 errorMsg.style.cssText = 'color: var(--red-500); font-size: 12px; margin-top: 4px; display: block;';
-                                errorMsg.textContent = '✗ This field is required';
+                                errorMsg.textContent = '✗ Ce champ est obligatoire';
                                 formGroup.appendChild(errorMsg);
                             }
                         }
@@ -756,13 +755,13 @@
                     
                     if (!isValid) {
                         e.preventDefault();
-                        showErrorMsg('Please fill in all required fields');
+                        showErrorMsg('Veuillez remplir tous les champs obligatoires');
                         return;
                     }
                     
-                    // Show loading state
+                    // Afficher l'état de chargement
                     submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> {{ is_edit ? 'Updating...' : 'Creating...' }}';
+                    submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> {{ is_edit ? 'Mise à jour...' : 'Création...' }}';
                 });
             }
         });
@@ -774,18 +773,18 @@
             clearFieldError(field);
             
             if (field.required && !value) {
-                showFieldError(field, 'This field is required');
+                showFieldError(field, 'Ce champ est obligatoire');
                 return false;
             }
             
             switch(fieldName) {
                 case '{{ form.titre.vars.id }}':
                     if (value.length < 3) {
-                        showFieldError(field, 'Title must be at least 3 characters');
+                        showFieldError(field, 'Le titre doit comporter au moins 3 caractères');
                         return false;
                     }
                     if (value.length > 100) {
-                        showFieldError(field, 'Title cannot exceed 100 characters');
+                        showFieldError(field, 'Le titre ne peut pas dépasser 100 caractères');
                         return false;
                     }
                     break;
@@ -794,7 +793,7 @@
                     const now = new Date();
                     
                     if (startDate < now) {
-                        showFieldError(field, 'Start date cannot be in the past');
+                        showFieldError(field, 'La date de début ne peut pas être dans le passé');
                         return false;
                     }
                     break;
@@ -804,22 +803,22 @@
                     if (startDateInput) {
                         const startDateValue = new Date(startDateInput.value);
                         if (endDate <= startDateValue) {
-                            showFieldError(field, 'End date must be after start date');
+                            showFieldError(field, 'La date de fin doit être après la date de début');
                             return false;
                         }
                         
-                        // Check max 10 hours
+                        // Vérifier maximum 10 heures
                         const diffMs = endDate - startDateValue;
                         const diffHours = diffMs / (1000 * 60 * 60);
                         if (diffHours > 10) {
-                            showFieldError(field, 'Task cannot last more than 10 hours');
+                            showFieldError(field, 'La tâche ne peut pas durer plus de 10 heures');
                             return false;
                         }
                     }
                     break;
                 case '{{ form.dureeEstimee.vars.id }}':
                     if (value && (parseInt(value) < 1 || parseInt(value) > 1440)) {
-                        showFieldError(field, 'Duration must be between 1 and 1440 minutes');
+                        showFieldError(field, 'La durée doit être comprise entre 1 et 1440 minutes');
                         return false;
                     }
                     break;
@@ -832,11 +831,11 @@
             const formGroup = field.closest('.form-group');
             if (!formGroup) return;
             
-            // Remove existing error
+            // Supprimer l'erreur existante
             const existingError = formGroup.querySelector('.field-error');
             if (existingError) existingError.remove();
             
-            // Add error message
+            // Ajouter le message d'erreur
             const errorMsg = document.createElement('small');
             errorMsg.className = 'field-error';
             errorMsg.style.cssText = 'color: var(--red-500); font-size: 12px; margin-top: 4px; display: block;';
@@ -882,15 +881,14 @@
             }, 4000);
         }
 
-
         function confirmDelete() {
-            if (confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cette tâche ? Cette action est irréversible.')) {
                 var form = document.getElementById('deleteForm');
                 if (form) form.submit();
             }
         }
 
-        // Add animations
+        // Ajouter des animations
         const style = document.createElement('style');
         style.textContent = `
             @keyframes spin {
