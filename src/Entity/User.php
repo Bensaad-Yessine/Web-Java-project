@@ -93,6 +93,9 @@ private ?Classe $classe = null;
     #[ORM\OneToMany(targetEntity: ObjectifSante::class, mappedBy: 'user')]
     private Collection $objectifSantes;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $createdAt = null;
+
     public function __construct()
     {
         $this->taches = new ArrayCollection();
@@ -306,6 +309,18 @@ private ?Classe $classe = null;
                 $objectifSante->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
 
         return $this;
     }
