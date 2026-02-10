@@ -419,10 +419,10 @@
       <!-- Sidebar -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-          <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
+          <a class="sidebar-brand brand-logo" href="{{ path(is_granted('ROLE_ADMIN') ? 'app_user_index' : 'app_user_profile') }}">
             <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
           </a>
-          <a class="sidebar-brand brand-logo-mini" href="{{ path('app_user_index') }}">
+          <a class="sidebar-brand brand-logo-mini" href="{{ path(is_granted('ROLE_ADMIN') ? 'app_user_index' : 'app_user_profile') }}">
             <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
           </a>
         </div>
@@ -480,6 +480,7 @@
           </li>
           
           <!-- Utilisateurs -->
+          {% if is_granted('ROLE_ADMIN') %}
           <li class="nav-item menu-items">
             <a class="nav-link" href="{{ path('app_user_index') }}">
               <span class="menu-icon">
@@ -488,6 +489,16 @@
               <span class="menu-title">Utilisateurs</span>
             </a>
           </li>
+          {% else %}
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_user_profile') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-circle"></i>
+              </span>
+              <span class="menu-title">Mon Profil</span>
+            </a>
+          </li>
+          {% endif %}
           
           <!-- Matières -->
           <li class="nav-item menu-items">

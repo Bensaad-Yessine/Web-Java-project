@@ -21,9 +21,9 @@ class SecurityController extends AbstractController
                 return $this->redirectToRoute('app_user_index');
             }
 
-            // User normal (route EXISTANTE)
+            // User normal - redirect to profile/dashboard
             if (in_array('ROLE_USER', $roles)) {
-                return $this->redirectToRoute('app_login');
+                return $this->redirectToRoute('app_user_profile');
             }
         }
 

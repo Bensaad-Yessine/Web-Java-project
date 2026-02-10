@@ -44,7 +44,12 @@ security:
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/verify, roles: PUBLIC_ACCESS }
         - { path: ^/user/dashboard, roles: ROLE_USER }
-        - { path: ^/user, roles: ROLE_ADMIN }
+        - { path: ^/user/profile, roles: ROLE_USER }
+        - { path: ^/user/$, roles: ROLE_ADMIN }
+        - { path: ^/user/add, roles: ROLE_ADMIN }
+        - { path: ^/user/edit, roles: ROLE_ADMIN }
+        - { path: ^/user/delete, roles: ROLE_ADMIN }
+        - { path: ^/user/show, roles: ROLE_ADMIN }
 
 when@test:
     security:

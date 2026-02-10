@@ -359,6 +359,7 @@
           </li>
           
           <!-- Utilisateurs -->
+          {% if is_granted('ROLE_ADMIN') %}
           <li class="nav-item menu-items">
             <a class="nav-link" href="{{ path('app_user_index') }}">
               <span class="menu-icon">
@@ -367,6 +368,16 @@
               <span class="menu-title">Utilisateurs</span>
             </a>
           </li>
+          {% else %}
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_user_profile') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-circle"></i>
+              </span>
+              <span class="menu-title">Mon Profil</span>
+            </a>
+          </li>
+          {% endif %}
           
           <!-- Matières -->
           <li class="nav-item menu-items">

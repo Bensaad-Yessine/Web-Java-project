@@ -1,6 +1,5 @@
 {% extends 'base.html.twig' %}
 
-<<<<<<< HEAD
 {% block title %}Gestion Matières-Classes - ESPRIT{% endblock %}
 
 {% block stylesheets %}
@@ -203,6 +202,7 @@
             </li>
             
             <!-- Utilisateurs -->
+            {% if is_granted('ROLE_ADMIN') %}
             <li class="nav-item menu-items">
                 <a class="nav-link" href="{{ path('app_user_index') }}">
                     <span class="menu-icon">
@@ -211,6 +211,16 @@
                     <span class="menu-title">Utilisateurs</span>
                 </a>
             </li>
+            {% else %}
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_user_profile') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-account-circle"></i>
+                    </span>
+                    <span class="menu-title">Mon Profil</span>
+                </a>
+            </li>
+            {% endif %}
             
             <!-- Matières -->
             <li class="nav-item menu-items">
@@ -881,42 +891,3 @@
     });
 </script>
 {% endblock %}
-=======
-{% block title %}MatiereClasse index{% endblock %}
-
-{% block body %}
-    <h1>MatiereClasse index</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Coefficient</th>
-                <th>Chargehoraire</th>
-                <th>Scorecomplexite</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for matiere_classe in matiere_classes %}
-            <tr>
-                <td>{{ matiere_classe.id }}</td>
-                <td>{{ matiere_classe.coefficient }}</td>
-                <td>{{ matiere_classe.chargehoraire }}</td>
-                <td>{{ matiere_classe.scorecomplexite }}</td>
-                <td>
-                    <a href="{{ path('app_matiere_classe_show', {'id': matiere_classe.id}) }}">show</a>
-                    <a href="{{ path('app_matiere_classe_edit', {'id': matiere_classe.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_matiere_classe_new') }}">Create new</a>
-{% endblock %}
->>>>>>> origin/master
