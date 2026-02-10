@@ -40,4 +40,36 @@ class PreferenceAlerteRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    // SEARCH
+    public function searchByTitle(string $title, User $user): array
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.etudiant = :user')
+            ->andWhere('p.titre LIKE :title')
+            ->setParameter('user', $user)
+            ->setParameter('title', '%' . $title . '%')
+            ->orderBy('p.dateCreation', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    // sort by dates
+    public function sortByDate(string $field, User $user): array
+    {
+        $allowedFields = ['dateCreation', 'dateMiseAJour'];
+
+        if (!in_array($field, $allowedFields)) {
+            $field = 'dateCreation'; // default safety
+        }
+
+        return $this->createQueryBuilder('p')
+            ->where('p.etudiant = :user')
+            ->setParameter('user', $user)
+            ->orderBy('p.' . $field, 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+
 }

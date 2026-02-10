@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
+use App\Form\FrontOfficeTacheType;
 use App\Repository\UserRepository;
 use App\Entity\Tache;
 use App\Repository\TacheRepository;
@@ -192,7 +193,7 @@ class UserController extends AbstractController
             throw $this->createAccessDeniedException();
         }
     
-        return $this->render('user/my_tasks.html.twig', [
+        return $this->render('user/FrontOffice.html.twig', [
             'tasks' => $tacheRepository->findTaskByUser($user),
         ]);
     }
@@ -287,4 +288,184 @@ class UserController extends AbstractController
             ], 400);
         }
     }
+#[Route('/dashboard/task/add', name: 'app_task_add', methods: ['GET', 'POST'])]
+public function addTask(Request $request, EntityManagerInterface $em): Response
+{
+    $user = $this->getUser();
+    
+    if (!$user) {
+        throw $this->createAccessDeniedException();
+    }
+
+    $tache = new Tache();
+    $tache->setUser($user); // Automatically set current user
+    
+    $form = $this->createForm(FrontOfficeTacheType::class, $tache);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Map frontend values to entity values
+        $typeMap = [
+            'course' => 'MANUEL',
+            'exam' => 'REVISION',
+            'meeting' => 'REUNION',
+            'personal' => 'MANUEL',
+            'project' => 'MANUEL',
+            'assignment' => 'MANUEL'
+        ];
+
+        $priorityMap = [
+            'low' => 'FAIBLE',
+            'medium' => 'MOYEN',
+            'high' => 'ELEVEE'
+        ];
+
+        $statusMap = [
+            'pending' => 'A_FAIRE',
+            'in_progress' => 'EN_COURS',
+            'completed' => 'TERMINEE'
+        ];
+
+        // Map the values
+        $formType = $tache->getType();
+        $entityType = $typeMap[$formType] ?? 'MANUEL';
+        $tache->setType($entityType);
+
+        $formPriority = $tache->getPriorite();
+        $entityPriority = $priorityMap[$formPriority] ?? 'MOYEN';
+        $tache->setPriorite($entityPriority);
+
+        $formStatus = $tache->getStatut();
+        $entityStatus = $statusMap[$formStatus] ?? 'A_FAIRE';
+        $tache->setStatut($entityStatus);
+
+        // Ensure required fields are set
+        if (!$tache->getDateDebut()) {
+            $tache->setDateDebut(new \DateTime());
+        }
+        if (!$tache->getDateFin()) {
+            $tache->setDateFin((new \DateTime())->modify('+1 hour'));
+        }
+        if (!$tache->getDureeEstimee()) {
+            $tache->setDureeEstimee(60);
+        }
+        if (!$tache->getOrigine()) {
+            $tache->setOrigine('MANUEL');
+        }
+        if (!$tache->getCreatedAt()) {
+            $tache->setCreatedAt(new \DateTime());
+        }
+
+        $em->persist($tache);
+        $em->flush();
+
+        $this->addFlash('success', 'Task created successfully!');
+        return $this->redirectToRoute('app_my_tasks');
+    }
+
+    return $this->render('user/add_task.html.twig', [
+        'form' => $form->createView(),
+        'is_edit' => false,
+    ]);
+}
+
+#[Route('/dashboard/task/{id}/edit', name: 'app_task_edit', methods: ['GET', 'POST'])]
+public function editTask(Request $request, Tache $tache, EntityManagerInterface $em): Response
+{
+    $user = $this->getUser();
+    
+    if (!$user || $tache->getUser() !== $user) {
+        throw $this->createAccessDeniedException();
+    }
+
+    // Store original values for mapping
+    $originalType = $tache->getType();
+    $originalPriority = $tache->getPriorite();
+    $originalStatus = $tache->getStatut();
+
+    // Map entity values to form values for display
+    $typeReverseMap = [
+        'MANUEL' => 'course',
+        'REVISION' => 'exam',
+        'REUNION' => 'meeting',
+    ];
+
+    $priorityReverseMap = [
+        'FAIBLE' => 'low',
+        'MOYEN' => 'medium',
+        'ELEVEE' => 'high',
+    ];
+
+    $statusReverseMap = [
+        'A_FAIRE' => 'pending',
+        'EN_COURS' => 'in_progress',
+        'TERMINEE' => 'completed',
+    ];
+
+    // Set form-friendly values
+    $tache->setType($typeReverseMap[$originalType] ?? 'course');
+    $tache->setPriorite($priorityReverseMap[$originalPriority] ?? 'medium');
+    $tache->setStatut($statusReverseMap[$originalStatus] ?? 'pending');
+
+    $form = $this->createForm(FrontOfficeTacheType::class, $tache);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Map form values back to entity values
+        $typeMap = [
+            'course' => 'MANUEL',
+            'exam' => 'REVISION',
+            'meeting' => 'REUNION',
+            'personal' => 'MANUEL',
+            'project' => 'MANUEL',
+            'assignment' => 'MANUEL'
+        ];
+
+        $priorityMap = [
+            'low' => 'FAIBLE',
+            'medium' => 'MOYEN',
+            'high' => 'ELEVEE'
+        ];
+
+        $statusMap = [
+            'pending' => 'A_FAIRE',
+            'in_progress' => 'EN_COURS',
+            'completed' => 'TERMINEE'
+        ];
+
+        $tache->setType($typeMap[$tache->getType()] ?? 'MANUEL');
+        $tache->setPriorite($priorityMap[$tache->getPriorite()] ?? 'MOYEN');
+        $tache->setStatut($statusMap[$tache->getStatut()] ?? 'A_FAIRE');
+
+        $em->flush();
+
+        $this->addFlash('success', 'Task updated successfully!');
+        return $this->redirectToRoute('app_my_tasks');
+    }
+
+    return $this->render('user/add_task.html.twig', [
+        'form' => $form->createView(),
+        'task' => $tache,
+        'is_edit' => true,
+    ]);
+}
+
+#[Route('/dashboard/task/{id}/delete', name: 'app_task_delete', methods: ['POST'])]
+public function deleteTask(Request $request, Tache $tache, EntityManagerInterface $em): Response
+{
+    $user = $this->getUser();
+    
+    if (!$user || $tache->getUser() !== $user) {
+        throw $this->createAccessDeniedException();
+    }
+
+    if ($this->isCsrfTokenValid('delete'.$tache->getId(), $request->request->get('_token'))) {
+        $em->remove($tache);
+        $em->flush();
+
+        $this->addFlash('success', 'Task deleted successfully!');
+    }
+
+    return $this->redirectToRoute('app_my_tasks');
+}
 }

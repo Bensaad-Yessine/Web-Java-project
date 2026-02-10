@@ -18,260 +18,706 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
     <style>
+    /* ========================
+   FIXED PROFILE PHOTO SIZES
+   ======================== */
+
+/* Sidebar Profile Picture */
+.nav-item.profile .profile-pic img.profile-avatar-img {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 3px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+.nav-item.profile .profile-pic .profile-avatar {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%) !important;
+    color: white !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 22px !important;
+    font-weight: 600 !important;
+    border: 3px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+.nav-item.profile .count-indicator {
+    position: relative !important;
+    width: 60px !important;
+    height: 60px !important;
+}
+
+.nav-item.profile .count-indicator img {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+}
+
+.nav-item.profile .count-indicator .count {
+    position: absolute !important;
+    top: 0 !important;
+    right: -5px !important;
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 10px !important;
+}
+
+/* Navbar Profile Picture */
+.navbar-profile .avatar-container {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+}
+
+.navbar-profile .user-avatar-img {
+    width: 45px !important;
+    height: 45px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.navbar-profile .user-avatar {
+    width: 45px !important;
+    height: 45px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%) !important;
+    color: white !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* User cell in table (if you have it) */
+.user-cell .user-avatar-small {
+    width: 35px !important;
+    height: 35px !important;
+    border-radius: 50% !important;
+}
+
+.user-cell .user-avatar-img-small {
+    width: 35px !important;
+    height: 35px !important;
+    border-radius: 50% !important;
+}
+
+/* ========================
+   FIXED SIDEBAR LAYOUT
+   ======================== */
+.nav-item.profile .profile-desc {
+    padding: 15px !important;
+}
+
+.nav-item.profile .profile-name {
+    margin-top: 15px !important;
+    text-align: center !important;
+}
+
+.nav-item.profile .profile-name h5 {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    margin-bottom: 5px !important;
+}
+
+.nav-item.profile .profile-name span {
+    font-size: 13px !important;
+    color: #6c757d !important;
+}
+
+.nav-item.profile .mt-1 {
+    margin-top: 10px !important;
+}
+
+.user-role-badge {
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+}
+
+.badge-admin {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%) !important;
+    color: white !important;
+}
+
+.badge-etudiant {
+    background: linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%) !important;
+    color: white !important;
+}
+
+/* ========================
+   FIXED NAVBAR LAYOUT
+   ======================== */
+.navbar-profile {
+    display: flex !important;
+    align-items: center !important;
+    padding: 8px 0 !important;
+}
+
+.navbar-profile-name {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    margin-bottom: 2px !important;
+}
+
+.navbar-profile small {
+    font-size: 11px !important;
+}
+
+/* Dropdown avatar in navbar */
+.dropdown-header .user-avatar-img {
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    margin: 0 auto 15px !important;
+    display: block !important;
+    border: 4px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+.dropdown-header .user-avatar {
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%) !important;
+    color: white !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 32px !important;
+    font-weight: 600 !important;
+    margin: 0 auto 15px !important;
+    border: 4px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ========================
+   RESPONSIVE ADJUSTMENTS
+   ======================== */
+@media (max-width: 991.98px) {
+    /* Mobile sidebar */
+    .sidebar .nav-item.profile .profile-pic {
+        flex-direction: column !important;
+        text-align: center !important;
+    }
+    
+    .sidebar .nav-item.profile .profile-pic img.profile-avatar-img,
+    .sidebar .nav-item.profile .profile-pic .profile-avatar {
+        width: 50px !important;
+        height: 50px !important;
+        margin: 0 auto !important;
+    }
+    
+    .sidebar .nav-item.profile .profile-name {
+        margin-top: 10px !important;
+    }
+    
+    /* Mobile navbar */
+    .navbar-profile .avatar-container {
+        gap: 8px !important;
+    }
+    
+    .navbar-profile .user-avatar-img,
+    .navbar-profile .user-avatar {
+        width: 35px !important;
+        height: 35px !important;
+        font-size: 14px !important;
+    }
+    
+    .navbar-profile-name {
+        display: none !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    /* Hide profile text completely on mobile */
+    .navbar-profile .text-start {
+        display: none !important;
+    }
+    
+    /* Make navbar profile circle smaller */
+    .navbar-profile .user-avatar-img,
+    .navbar-profile .user-avatar {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 12px !important;
+    }
+}
+
+/* ========================
+   ANIMATIONS FOR PROFILE PICTURES
+   ======================== */
+.nav-item.profile .profile-pic img.profile-avatar-img:hover,
+.nav-item.profile .profile-pic .profile-avatar:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+.navbar-profile .user-avatar-img:hover,
+.navbar-profile .user-avatar:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ========================
+   IMPROVE AVATAR BORDERS
+   ======================== */
+.nav-item.profile .profile-pic img.profile-avatar-img,
+.navbar-profile .user-avatar-img {
+    border: 3px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ========================
+   CONSISTENT SHADOWS
+   ======================== */
+.nav-item.profile .profile-pic img.profile-avatar-img,
+.nav-item.profile .profile-pic .profile-avatar {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.navbar-profile .user-avatar-img,
+.navbar-profile .user-avatar {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* ========================
+   PROFILE CONTAINER SPACING
+   ======================== */
+.nav-item.profile {
+    margin-bottom: 20px !important;
+    padding-bottom: 20px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+    /* Add this to your CSS section */
+      .search-box input {
+        color: #333 !important; /* Dark text color */
+      }
+
+      .search-box input::placeholder {
+        color: #6c757d !important; /* Light placeholder color */
+      }
+
+      .search-box input:focus {
+        color: #2c3e50 !important; /* Even darker text when focused */
+      }
+
+      /* Modern gradient backgrounds for cards */
       .stat-card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border-radius: 10px;
+        border-radius: 12px;
         overflow: hidden;
+        border: none;
+        margin-bottom: 0;
       }
       .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1) !important;
       }
       .stat-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
+        width: 70px;
+        height: 70px;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
+        font-size: 28px;
         color: white;
         margin: 0 auto;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       }
       .stat-count {
-        font-size: 1.8rem;
-        font-weight: 700;
+        font-size: 2.2rem;
+        font-weight: 800;
         margin-bottom: 5px;
+        color: #2c3e50;
       }
       .stat-label {
         font-size: 0.9rem;
         color: #6c757d;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
+        font-weight: 600;
       }
-      .card-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+      
+      /* Enhanced card gradients */
+      .card-1 { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); }
       .card-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-      .card-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-      .card-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-      .card-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+      .card-3 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+      .card-4 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+      .card-5 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
       
-      .priority-high { background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%); }
-      .priority-medium { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-      .priority-low { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-      
-      .status-pending { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-      .status-inprogress { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-      .status-completed { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-      
-      .task-type-badge {
-        font-size: 0.75rem;
-        padding: 3px 10px;
-        border-radius: 10px;
-        margin-top: 5px;
-        display: inline-block;
+      /* Enhanced priority badges */
+      .priority-high { 
+        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
         color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        box-shadow: 0 3px 8px rgba(255, 65, 108, 0.3);
+      }
+      .priority-medium { 
+        background: linear-gradient(135deg, #f9d423 0%, #ff4e50 100%);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        box-shadow: 0 3px 8px rgba(249, 212, 35, 0.3);
+      }
+      .priority-low { 
+        background: linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        box-shadow: 0 3px 8px rgba(91, 134, 229, 0.3);
+      }
+      
+      /* Enhanced status badges */
+      .status-pending { 
+        background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+        color: #333;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+      }
+      .status-inprogress { 
+        background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+        color: #333;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+      }
+      .status-completed { 
+        background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        color: #333;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+      }
+      
+      /* Enhanced table styling */
+      .table-card {
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.08);
         border: none;
       }
       
-      .badge-urgent { background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%); }
-      .bug { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); }
-      .feature { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-      .improvement { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-      .maintenance { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-      .other { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-      
-      .priority-badge {
-        font-size: 0.75rem;
-        padding: 3px 10px;
-        border-radius: 10px;
-        display: inline-block;
-        color: white;
-        border: none;
+      .table-card .card-body {
+        padding: 1.5rem;
       }
       
-      .status-badge {
-        font-size: 0.75rem;
-        padding: 3px 10px;
-        border-radius: 10px;
-        display: inline-block;
-        color: white;
-        border: none;
-      }
-      
-      .user-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 16px;
-        flex-shrink: 0;
-      }
-      
-      .user-avatar-img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #fff;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      }
-      
-      .profile-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 20px;
-        margin-right: 15px;
-        flex-shrink: 0;
-      }
-      
-      .profile-avatar-img {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid #fff;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-      }
-      
-      .badge-etudiant {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        color: white;
-        border: none;
-      }
-      
-      .badge-admin {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-      }
-      
-      .badge-prof {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        color: white;
-        border: none;
-      }
-      
-      .action-buttons {
-        display: flex;
-        gap: 5px;
-      }
-      
-      .action-buttons .btn {
-        padding: 5px 10px;
-        border-radius: 5px;
-      }
-      
-      .search-box {
-        max-width: 300px;
+      .table-hover tbody tr {
+        transition: all 0.25s ease;
+        border-bottom: 1px solid #f1f1f1;
       }
       
       .table-hover tbody tr:hover {
-        background-color: rgba(102, 126, 234, 0.05);
+        background: linear-gradient(135deg, rgba(106, 17, 203, 0.05) 0%, rgba(37, 117, 252, 0.05) 100%);
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
       }
       
-      .empty-state {
-        text-align: center;
-        padding: 50px 20px;
-      }
-      
-      .empty-state i {
-        font-size: 60px;
-        color: #dee2e6;
-        margin-bottom: 20px;
-      }
-
-      .alert {
-        border-radius: 10px;
-        border: none;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
-      }
-      
-      .user-role-badge {
-        font-size: 0.75rem;
-        padding: 3px 10px;
-        border-radius: 10px;
-        margin-top: 5px;
-        display: inline-block;
-      }
-      
-      /* Fix for profile section alignment */
-      .profile-pic {
-        display: flex;
-        align-items: center;
-        padding: 10px 0;
-      }
-      
-      .count-indicator {
-        position: relative;
-        margin-right: 15px;
-      }
-      
-      .profile-name {
-        flex-grow: 1;
-      }
-      
-      /* Fix for navbar profile alignment */
-      .navbar-profile {
-        display: flex;
-        align-items: center;
-        padding: 5px 0;
-      }
-      
-      /* Ensure table cells align properly */
-      .table td {
-        vertical-align: middle;
-      }
-      
-      /* Fix for duplicate avatar display */
-      .avatar-container {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      
-      /* Progress bar styles */
-      .progress {
-        height: 8px;
-        border-radius: 4px;
-        background-color: #e9ecef;
-      }
-      
-      .progress-bar {
-        border-radius: 4px;
-      }
-      
-      /* Date styles */
-      .date-cell {
+      .table thead th {
+        border-bottom: none;
+        font-weight: 600;
+        color: white;
+        padding: 1rem 1rem;
+        text-transform: uppercase;
         font-size: 0.85rem;
+        letter-spacing: 0.8px;
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        border: none;
+        position: relative;
+      }
+      .table tbody td {
+        padding: 1rem 1rem;
+        vertical-align: middle;
+        color: #4a5568;
+        font-weight: 500;
+      }
+      
+      /* Enhanced buttons */
+      .btn-gradient-primary {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
+      }
+      
+      .btn-gradient-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(106, 17, 203, 0.4);
+        color: white;
+      }
+      
+      .btn-gradient-info {
+        background: linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(91, 134, 229, 0.3);
+      }
+      
+      .btn-gradient-info:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(91, 134, 229, 0.4);
+        color: white;
+      }
+      
+      .btn-gradient-success {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: #333;
+        border: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(67, 233, 123, 0.3);
+      }
+      
+      .btn-gradient-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(67, 233, 123, 0.4);
+        color: #333;
+      }
+      
+      /* Enhanced action buttons */
+      .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        border: none;
+        margin: 0 3px;
+      }
+      
+      .btn-view {
+        background: linear-gradient(135deg, #36d1dc 0%, #5b86e5 100%);
+        color: white;
+        box-shadow: 0 3px 8px rgba(91, 134, 229, 0.3);
+      }
+      
+      .btn-edit {
+        background: linear-gradient(135deg, #f9d423 0%, #ff4e50 100%);
+        color: white;
+        box-shadow: 0 3px 8px rgba(249, 212, 35, 0.3);
+      }
+      
+      .btn-delete {
+        background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+        color: white;
+        box-shadow: 0 3px 8px rgba(255, 65, 108, 0.3);
+      }
+      
+      .action-btn:hover {
+        transform: translateY(-3px) scale(1.1);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      }
+      
+      /* Enhanced search boxes */
+      .search-box {
+        position: relative;
+      }
+      
+      .search-box input {
+        padding-left: 45px;
+        border-radius: 12px;
+        border: 2px solid #e0e0e0;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.9);
+      }
+      
+      .search-box input:focus {
+        border-color: #6a11cb;
+        box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+        background: white;
+      }
+      
+      .search-box .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6a11cb;
+        z-index: 10;
+      }
+      
+      /* Enhanced type badges */
+      .type-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        display: inline-block;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      }
+      
+      .type-bug { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); color: white; }
+      .type-feature { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+      .type-improvement { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: #333; }
+      .type-maintenance { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: #333; }
+      .type-other { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+      
+      /* Enhanced date styling */
+      .date-container {
+        background: rgba(240, 242, 245, 0.7);
+        padding: 8px 12px;
+        border-radius: 10px;
+        border-left: 4px solid #6a11cb;
       }
       
       .date-label {
-        font-weight: 500;
-        color: #495057;
+        font-size: 0.75rem;
+        color: #6c757d;
+        font-weight: 600;
+        text-transform: uppercase;
+        display: block;
       }
       
       .date-value {
-        color: #6c757d;
+        font-size: 0.9rem;
+        color: #2c3e50;
+        font-weight: 600;
+      }
+      
+      /* Enhanced user avatar in table */
+      .user-cell {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .user-avatar-small {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+        box-shadow: 0 3px 8px rgba(106, 17, 203, 0.3);
+      }
+      
+      .user-avatar-img-small {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid white;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      }
+      
+      /* Enhanced empty state */
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+      }
+      
+      .empty-state-icon {
+        font-size: 80px;
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 20px;
+      }
+      
+      /* Enhanced pagination */
+      .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+      }
+      
+      .pagination .page-link {
+        border-radius: 10px;
+        margin: 0 4px;
+        border: none;
+        color: #6a11cb;
+        font-weight: 600;
+      }
+      
+      .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        border-color: #6a11cb;
+        color: white;
+      }
+      
+      /* Custom scrollbar */
+      .table-responsive::-webkit-scrollbar {
+        height: 8px;
+      }
+      
+      .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+      
+      .table-responsive::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        border-radius: 10px;
+      }
+      
+      /* Enhanced alert messages */
+      .alert {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+        padding: 15px 20px;
+      }
+      
+      /* Progress indicator */
+      .progress-indicator {
+        height: 6px;
+        border-radius: 3px;
+        background: rgba(0,0,0,0.1);
+        overflow: hidden;
+        margin-top: 5px;
+      }
+      
+      .progress-bar {
+        border-radius: 3px;
+        height: 100%;
+        background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
       }
     </style>
   </head>
   <body>
     <div class="container-scroller">
-      <!-- Sidebar -->
+      <!-- Sidebar - UNCHANGED -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <!-- Keep all sidebar content exactly as is -->
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
           <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
             <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
@@ -405,7 +851,7 @@
           
           <!-- Alertes -->
           <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ path('app_preference_alerte_index') }}">
               <span class="menu-icon">
                 <i class="mdi mdi-alert-circle-outline"></i>
               </span>
@@ -437,8 +883,9 @@
 
       <!-- Main Content -->
       <div class="container-fluid page-body-wrapper">
-        <!-- Navbar -->
+        <!-- Navbar - UNCHANGED -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
+          <!-- Keep all navbar content exactly as is -->
           <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
             <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
           </div>
@@ -614,7 +1061,7 @@
               </div>
             </div>
             
-            <!-- Statistics -->
+            <!-- Enhanced Statistics Cards -->
             <div class="row">
               <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
                 <div class="card stat-card">
@@ -633,6 +1080,9 @@
                       </div>
                     </div>
                     <h6 class="stat-label">Total Tâches</h6>
+                    <div class="progress-indicator">
+                      <div class="progress-bar" style="width: 85%"></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -642,7 +1092,7 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set pending = taches|filter(t => t.statut == 'À faire')|length %}
+                          {% set pending = taches|filter(t => t.statut == 'À faire' or t.statut == 'A_FAIRE' or t.statut == 'EN_COURS')|length %}
                           <h3 class="mb-0 stat-count">{{ pending }}</h3>
                           <p class="text-warning ms-2 mb-0 font-weight-medium">+2%</p>
                         </div>
@@ -653,7 +1103,10 @@
                         </div>
                       </div>
                     </div>
-                    <h6 class="stat-label">En attente</h6>
+                    <h6 class="stat-label">En cours</h6>
+                    <div class="progress-indicator">
+                      <div class="progress-bar" style="width: 65%"></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -663,7 +1116,7 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set urgent = taches|filter(t => t.priorite == 'Haute')|length %}
+                          {% set urgent = taches|filter(t => t.priorite == 'Haute' or t.priorite == 'ELEVEE')|length %}
                           <h3 class="mb-0 stat-count">{{ urgent }}</h3>
                           <p class="text-danger ms-2 mb-0 font-weight-medium">+3%</p>
                         </div>
@@ -675,6 +1128,9 @@
                       </div>
                     </div>
                     <h6 class="stat-label">Urgentes</h6>
+                    <div class="progress-indicator">
+                      <div class="progress-bar" style="width: 45%"></div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -684,7 +1140,7 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set completed = taches|filter(t => t.statut == 'Terminé')|length %}
+                          {% set completed = taches|filter(t => t.statut == 'Terminé' or t.statut == 'TERMINEE')|length %}
                           <h3 class="mb-0 stat-count">{{ completed }}</h3>
                           <p class="text-success ms-2 mb-0 font-weight-medium">+5%</p>
                         </div>
@@ -696,32 +1152,85 @@
                       </div>
                     </div>
                     <h6 class="stat-label">Terminées</h6>
+                    <div class="progress-indicator">
+                      <div class="progress-bar" style="width: 90%"></div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             
-            <!-- Tâches Table -->
+            <!-- Enhanced Tâches Table -->
             <div class="row">
               <div class="col-12 grid-margin">
-                <div class="card">
+                <div class="card table-card">
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                       <h4 class="card-title">📋 Liste des Tâches</h4>
-                      <div class="d-flex">
-                        <div class="search-box me-3">
-                          <input type="text" class="form-control" placeholder="Rechercher..." id="tableSearchInput">
-                        </div>
-                        <a href="{{ path('app_tache_new') }}" class="btn btn-gradient-primary btn-icon-text">
+                      <div class="d-flex align-items-center">
+                      <div class="search-box me-3">
+                        <i class="mdi mdi-magnify search-icon"></i>
+                        <form class="d-inline">
+                          <input type="text"
+                                id="searchTitre"
+                                name="titre"
+                                class="form-control"
+                                placeholder="Rechercher par titre..."
+                                value="{{ titre|default('') }}"
+                                style="min-width: 250px;">
+                        </form>
+                      </div>
+
+                      <div class="search-box me-3">
+                        <i class="mdi mdi-email search-icon"></i>
+                        <form class="d-inline">
+                          <input type="text"
+                                id="searchEmail"
+                                name="email"
+                                class="form-control"
+                                placeholder="Rechercher par email..."
+                                value="{{ email|default('') }}"
+                                style="min-width: 250px;">
+                        </form>
+                      </div>
+
+                      <select id="sortDateDebut" class="form-select">
+                        <option value="desc">Date début (plus récent)</option>
+                        <option value="asc">Date début (plus ancien)</option>
+                      </select>
+
+                      <select id="filterType" class="form-select me-3" style="min-width: 200px;">
+                        <option value="">Tous les types</option>
+                        <option value="MANUEL">MANUEL</option>
+                        <option value="REUNION">REUNION</option>
+                        <option value="REVISION">REVISION</option>
+                        <option value="SANTE">SANTE</option>
+                        <option value="EMPLOI">EMPLOI</option>
+                      </select>
+
+                      <select id="filterStatut" class="form-select me-3" style="min-width: 200px;">
+                        <option value="">Tous les statuts</option>
+                        <option value="A_FAIRE">A_FAIRE</option>
+                        <option value="EN_COURS">EN_COURS</option>
+                        <option value="TERMINEE">TERMINEE</option>
+                        <option value="EN_RETARD">EN_RETARD</option>
+                        <option value="PAUSED">PAUSED</option>
+                      </select>
+
+
+
+                        <a href="{{ path('app_tache_new') }}" class="btn btn-gradient-primary">
                           <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
-                          Créer une tâche
+                          Nouvelle Tâche
                         </a>
                       </div>
                     </div>
 
                     {% if taches is empty %}
                       <div class="empty-state">
-                        <i class="mdi mdi-checkbox-blank-circle-outline"></i>
+                        <div class="empty-state-icon">
+                          <i class="mdi mdi-checkbox-blank-circle-outline"></i>
+                        </div>
                         <h4 class="text-muted">Aucune tâche trouvée</h4>
                         <p class="text-muted mb-4">Commencez par créer une nouvelle tâche</p>
                         <a href="{{ path('app_tache_new') }}" class="btn btn-gradient-primary">
@@ -738,113 +1247,37 @@
                               <th>Titre</th>
                               <th>Type</th>
                               <th>Dates</th>
-                              <th>Durée</th>
                               <th>Priorité</th>
                               <th>Statut</th>
-                              <th>Origine</th>
+                              <th>Utilisateur</th>
                               <th>Actions</th>
                             </tr>
                           </thead>
-                          <tbody>
-                            {% for tache in taches %}
-                              <tr>
-                                <td>{{ tache.id }}</td>
-                                <td>
-                                  <div>
-                                    <h6 class="mb-0">{{ tache.titre }}</h6>
-                                    <small class="text-muted">ID: {{ tache.id }}</small>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span class="task-type-badge 
-                                    {% if tache.type == 'Bug' %}bug
-                                    {% elseif tache.type == 'Feature' %}feature
-                                    {% elseif tache.type == 'Improvement' %}improvement
-                                    {% elseif tache.type == 'Maintenance' %}maintenance
-                                    {% elseif tache.type == 'Urgent' %}urgent
-                                    {% else %}other{% endif %}">
-                                    {{ tache.type }}
-                                  </span>
-                                </td>
-                                <td>
-                                  <div class="date-cell">
-                                    <div>
-                                      <span class="date-label">Début:</span>
-                                      <span class="date-value">{{ tache.dateDebut ? tache.dateDebut|date('d/m/Y') : '—' }}</span>
-                                    </div>
-                                    <div>
-                                      <span class="date-label">Fin:</span>
-                                      <span class="date-value">{{ tache.dateFin ? tache.dateFin|date('d/m/Y') : '—' }}</span>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td>
-                                  {% if tache.dureeEstimee %}
-                                    <div class="d-flex align-items-center">
-                                      <div class="progress me-2" style="width: 100px;">
-                                        {% set progress = tache.dureeEstimee %}
-                                        <div class="progress-bar bg-info" role="progressbar" 
-                                             style="width: {{ progress > 100 ? 100 : progress }}%" 
-                                             aria-valuenow="{{ progress }}" 
-                                             aria-valuemin="0" 
-                                             aria-valuemax="100"></div>
-                                      </div>
-                                      <small>{{ tache.dureeEstimee }}%</small>
-                                    </div>
-                                  {% else %}
-                                    <span class="text-muted">—</span>
-                                  {% endif %}
-                                </td>
-                                <td>
-                                  <span class="priority-badge 
-                                    {% if tache.priorite == 'Haute' %}priority-high
-                                    {% elseif tache.priorite == 'Moyenne' %}priority-medium
-                                    {% else %}priority-low{% endif %}">
-                                    {{ tache.priorite }}
-                                  </span>
-                                </td>
-                                <td>
-                                  <span class="status-badge 
-                                    {% if tache.statut == 'À faire' %}status-pending
-                                    {% elseif tache.statut == 'En cours' %}status-inprogress
-                                    {% else %}status-completed{% endif %}">
-                                    {{ tache.statut }}
-                                  </span>
-                                </td>
-                                <td>
-                                  {% if tache.origine %}
-                                    <span class="badge badge-light">{{ tache.origine }}</span>
-                                  {% else %}
-                                    <span class="text-muted">—</span>
-                                  {% endif %}
-                                </td>
-                                <td>
-                                  <div class="action-buttons">
-                                    <a href="{{ path('app_tache_show', { id: tache.id }) }}" 
-                                       class="btn btn-info btn-sm btn-icon"
-                                       title="Voir">
-                                      <i class="mdi mdi-eye"></i>
-                                    </a>
-                                    <a href="{{ path('app_tache_edit', { id: tache.id }) }}" 
-                                       class="btn btn-warning btn-sm btn-icon"
-                                       title="Modifier">
-                                      <i class="mdi mdi-pencil"></i>
-                                    </a>
-                                    <form action="{{ path('app_tache_delete', { id: tache.id }) }}" 
-                                          method="POST" 
-                                          style="display: inline;"
-                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?');">
-                                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tache.id) }}">
-                                      <button type="submit" class="btn btn-danger btn-sm btn-icon" title="Supprimer">
-                                        <i class="mdi mdi-delete"></i>
-                                      </button>
-                                    </form>
-                                  </div>
-                                </td>
-                              </tr>
-                            {% endfor %}
+                          <tbody id="tacheTableBody" data-url="{{ path('app_tache_index') }}">
+                            {{ include('tache/_rows.html.twig', { taches: taches }) }}
                           </tbody>
                         </table>
+                      </div>
+                      
+                      <!-- Enhanced Pagination -->
+                      <div class="pagination-container">
+                        <nav aria-label="Page navigation">
+                          <ul class="pagination">
+                            <li class="page-item disabled">
+                              <a class="page-link" href="#" tabindex="-1">
+                                <i class="mdi mdi-chevron-left"></i>
+                              </a>
+                            </li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item">
+                              <a class="page-link" href="#">
+                                <i class="mdi mdi-chevron-right"></i>
+                              </a>
+                            </li>
+                          </ul>
+                        </nav>
                       </div>
                     {% endif %}
                   </div>
@@ -860,8 +1293,8 @@
                 </span>
                 <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
                   Gestion des Tâches - {{ taches|length }} tâche{{ taches|length > 1 ? 's' : '' }}
-                  {% set pending = taches|filter(t => t.statut == 'À faire')|length %}
-                  | {{ pending }} en attente
+                  {% set pending = taches|filter(t => t.statut == 'À faire' or t.statut == 'A_FAIRE' or t.statut == 'EN_COURS')|length %}
+                  | {{ pending }} en cours
                   {% if app.user %}
                     | Connecté: {{ app.user.prenom|slice(0, 10) }}...
                   {% endif %}
@@ -873,116 +1306,207 @@
       </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
+    <!-- Enhanced Delete Confirmation Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-          <div class="modal-header bg-danger text-white">
+          <div class="modal-header" style="background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%); color: white; border-radius: 16px 16px 0 0;">
             <h5 class="modal-title" id="deleteModalLabel">
               <i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression
             </h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
-            <p>Êtes-vous sûr de vouloir supprimer cette tâche ?</p>
-            <p class="text-danger mb-0">
-              <i class="mdi mdi-alert me-1"></i>
-              <small>Cette action est irréversible.</small>
-            </p>
+          <div class="modal-body text-center py-4">
+            <div class="mb-3">
+              <i class="mdi mdi-alert-circle-outline" style="font-size: 60px; color: #ff416c;"></i>
+            </div>
+            <h5 class="mb-3">Êtes-vous sûr de vouloir supprimer cette tâche ?</h5>
+            <p class="text-muted">Cette action est irréversible et supprimera définitivement la tâche.</p>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              <i class="mdi mdi-close me-1"></i>Annuler
+          <div class="modal-footer justify-content-center border-0">
+            <button type="button" class="btn btn-secondary btn-lg px-4" data-bs-dismiss="modal" style="border-radius: 10px;">
+              <i class="mdi mdi-close me-2"></i>Annuler
             </button>
-            <button type="button" class="btn btn-danger" id="confirmDelete">
-              <i class="mdi mdi-delete me-1"></i>Supprimer
+            <button type="button" class="btn btn-danger btn-lg px-4" id="confirmDelete" style="
+              background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+              border: none;
+              border-radius: 10px;
+              box-shadow: 0 4px 15px rgba(255, 65, 108, 0.3);
+            ">
+              <i class="mdi mdi-delete me-2"></i>Supprimer
             </button>
           </div>
         </div>
       </div>
     </div>
-
-   <!-- Scripts -->
+        
+    <!-- Scripts -->
     <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
     <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
     <script src="{{ asset('assets/js/misc.js') }}"></script>
-    
+
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality for navbar
+
+        // =========================================================
+        // ✅ AJAX SEARCH + SORT (titre + email + dateDebut)
+        // Requires:
+        // - <tbody id="tacheTableBody" data-url="{{ path('app_tache_index') }}">
+        // - inputs: #searchTitre, #searchEmail
+        // - select: #sortDateDebut
+        // =========================================================
+        const titreInput = document.getElementById('searchTitre');
+        const emailInput = document.getElementById('searchEmail');
+        const sortSelect = document.getElementById('sortDateDebut');
+        const tbody = document.getElementById('tacheTableBody');
+        const typeSelect = document.getElementById('filterType');
+        const statutSelect = document.getElementById('filterStatut');
+
+
+        // prevent submit when pressing Enter (because you kept <form class="d-inline">)
+        document.querySelectorAll('form.d-inline').forEach(f => {
+          f.addEventListener('submit', (e) => e.preventDefault());
+        });
+
+        let ajaxTimer;
+        const debounce = (fn, delay = 350) => (...args) => {
+          clearTimeout(ajaxTimer);
+          ajaxTimer = setTimeout(() => fn(...args), delay);
+        };
+
+        async function reloadTachesAjax() {
+          if (!tbody) return;
+
+          const url = tbody.dataset.url;
+          if (!url) return;
+
+          const params = new URLSearchParams({
+            titre: titreInput ? titreInput.value.trim() : '',
+            email: emailInput ? emailInput.value.trim() : '',
+            type:  typeSelect ? typeSelect.value : '',
+            statut: statutSelect ? statutSelect.value : '',
+            sort:  sortSelect ? sortSelect.value : 'desc'
+          });
+
+          try {
+            const res = await fetch(url + '?' + params.toString(), {
+              headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const html = await res.text();
+            tbody.innerHTML = html;
+
+            // re-init tooltips + action btn hover after ajax update
+            initTooltips();
+            initActionButtons();
+            initRowHoverEffects();
+          } catch (e) {
+            console.error('AJAX reload failed', e);
+          }
+        }
+
+        const reloadDebounced = debounce(reloadTachesAjax, 350);
+
+        if (titreInput) titreInput.addEventListener('input', reloadDebounced);
+        if (emailInput) emailInput.addEventListener('input', reloadDebounced);
+        if (sortSelect) sortSelect.addEventListener('change', reloadTachesAjax);
+        if (typeSelect) typeSelect.addEventListener('change', reloadTachesAjax);
+        if (statutSelect) statutSelect.addEventListener('change', reloadTachesAjax);
+
+
+        // =========================================================
+        // 🔎 OLD "searchInput" (client-side filter) - optional
+        // If you still have an input with id="searchInput", keep it.
+        // Otherwise this block does nothing.
+        // =========================================================
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
           searchInput.addEventListener('keyup', function() {
             const filter = this.value.toLowerCase();
             const rows = document.querySelectorAll('#tachesTable tbody tr');
-            
+
             rows.forEach(row => {
               const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
+              if (text.includes(filter)) {
+                row.style.display = '';
+                row.classList.add('highlight');
+              } else {
+                row.style.display = 'none';
+                row.classList.remove('highlight');
+              }
             });
           });
         }
-        
-        // Search functionality for table
-        const tableSearchInput = document.getElementById('tableSearchInput');
-        if (tableSearchInput) {
-          tableSearchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#tachesTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
+
+
+        // =========================================================
+        // ✅ UI helpers (functions so we can re-run after AJAX)
+        // =========================================================
+        function initRowHoverEffects() {
+          const tableRows = document.querySelectorAll('#tachesTable tbody tr');
+          tableRows.forEach(row => {
+            row.addEventListener('mouseenter', function() {
+              this.style.transition = 'all 0.25s ease';
             });
           });
         }
-        
+
+        function initActionButtons() {
+          const actionButtons = document.querySelectorAll('.action-btn');
+          actionButtons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+              this.style.transform = 'translateY(-3px) scale(1.1)';
+            });
+            button.addEventListener('mouseleave', function() {
+              this.style.transform = 'translateY(0) scale(1)';
+            });
+          });
+        }
+
+        function initTooltips() {
+          const tooltips = document.querySelectorAll('[title]');
+          tooltips.forEach(el => {
+            // Avoid double-init issues
+            if (el._tooltipInitialized) return;
+            el._tooltipInitialized = true;
+
+            try {
+              new bootstrap.Tooltip(el);
+            } catch (e) {
+              // bootstrap might not be available in some pages
+            }
+          });
+        }
+
+
+        // =========================================================
+        // Existing behaviors (run once)
+        // =========================================================
+        initRowHoverEffects();
+        initActionButtons();
+        initTooltips();
+
         // Auto-hide alerts after 5 seconds
         setTimeout(() => {
           const alerts = document.querySelectorAll('.alert');
           alerts.forEach(alert => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
+            try {
+              const bsAlert = new bootstrap.Alert(alert);
+              bsAlert.close();
+            } catch (e) {}
           });
         }, 5000);
-        
-        // Filter tasks by status/priority
-        function filterTasks(filterType, value) {
-          const rows = document.querySelectorAll('#tachesTable tbody tr');
-          
-          rows.forEach(row => {
-            if (filterType === 'all') {
-              row.style.display = '';
-            } else if (filterType === 'status') {
-              const status = row.querySelector('.status-badge').textContent.trim();
-              row.style.display = status === value ? '' : 'none';
-            } else if (filterType === 'priority') {
-              const priority = row.querySelector('.priority-badge').textContent.trim();
-              row.style.display = priority === value ? '' : 'none';
-            } else if (filterType === 'type') {
-              const type = row.querySelector('.task-type-badge').textContent.trim();
-              row.style.display = type === value ? '' : 'none';
-            }
-          });
-        }
-        
-        // Add filter buttons functionality
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        filterButtons.forEach(button => {
-          button.addEventListener('click', function() {
-            const filterType = this.getAttribute('data-filter-type');
-            const filterValue = this.getAttribute('data-filter-value');
-            filterTasks(filterType, filterValue);
-          });
+
+        // Progress bar animation
+        const progressBars = document.querySelectorAll('.progress-bar');
+        progressBars.forEach(bar => {
+          const width = bar.style.width;
+          bar.style.width = '0';
+          setTimeout(() => {
+            bar.style.transition = 'width 1s ease-in-out';
+            bar.style.width = width;
+          }, 300);
         });
-        
-        // Reset filter
-        const resetFilterBtn = document.getElementById('resetFilter');
-        if (resetFilterBtn) {
-          resetFilterBtn.addEventListener('click', function() {
-            filterTasks('all');
-          });
-        }
+
       });
     </script>
   </body>

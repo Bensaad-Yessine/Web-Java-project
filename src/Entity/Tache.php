@@ -7,6 +7,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\User;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 
 #[ORM\Entity(repositoryClass: TacheRepository::class)]
 class Tache
@@ -16,10 +19,10 @@ class Tache
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 100)]
     #[Assert\NotBlank(message: "Le titre ne peut pas être vide.")]
     #[Assert\Length(
-        max: 255,
+        max: 100,
         maxMessage: "Le titre ne peut pas dépasser {{ limit }} caractères."
     )]
     private ?string $titre = null;
@@ -35,6 +38,7 @@ class Tache
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\NotBlank(message: "La date de début est obligatoire.")]
     #[Assert\Type(\DateTime::class)]
+    #[Assert\GreaterThan("now", message : "La date de début doit etre dans le futur")]
     private ?\DateTime $dateDebut = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -45,49 +49,39 @@ class Tache
         message: "La date de fin doit être après la date de début."
     )]
     #[Assert\Expression(
-        "(this.getDateFin().getTimestamp() - this.getDateDebut().getTimestamp()) <= 6*3600",
-        message: "La tâche ne peut pas durer plus de 6 heures."
+        "(this.getDateFin().getTimestamp() - this.getDateDebut().getTimestamp()) <= 10*3600",
+        message: "La tâche ne peut pas durer plus de 10 heures."
     )]
     private ?\DateTime $dateFin = null;
 
-
-    #[ORM\Column]
-    #[Assert\NotBlank(message: "La durée estimée est obligatoire.")]
-    #[Assert\Positive(message: "La durée estimée doit être un nombre positif.")]
-    private ?int $dureeEstimee = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "La priorité est obligatoire.")]
     #[Assert\Choice(
         choices: ["FAIBLE", "MOYEN", "ELEVEE"],
-        message: "La priorité doit être FAIBLE, MOYEN ou ELEVEE."
+        message: 'La priorité doit être une valeur valide parmi : "FAIBLE", "MOYEN", "ELEVEE" '
     )]
     private ?string $priorite = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Le statut est obligatoire.")]
     #[Assert\Choice(
-        choices: ["A_FAIRE", "EN_COURS", "TERMINEE", "EN_RETARD"],
-        message: "Le statut doit être une valeur valide."
+        choices: ["A_FAIRE", "EN_COURS", "TERMINEE", "EN_RETARD", "PAUSED"],
+        message: 'Le statut doit être une valeur valide parmi : "A_FAIRE", "EN_COURS", "TERMINEE", "EN_RETARD", "PAUSED"'
     )]
     private ?string $statut = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "L'origine est obligatoire.")]
-    #[Assert\Choice(
-        choices: ["MANUEL", "EMPLOI", "REUNION", "SANTE", "REVISION"],
-        message: "L'origine doit être une valeur valide."
-    )]
-    private ?string $origine = "MANUEL";
-
     #[ORM\ManyToOne(inversedBy: 'taches')]
-    private ?User $user = null;
+    #[ORM\JoinColumn(nullable: false)] // DB-level not null
+    #[Assert\NotNull(message: 'Le champ utilisateur est obligatoire.')] // Validator-level not null
+    private User $user;
+
+    #[ORM\OneToMany(mappedBy: 'tache', targetEntity: SuiviTache::class, cascade: ['persist', 'remove'])]
+    private Collection $suivis;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTime $dateEcheance = null;
 
 
     // ========================
@@ -143,17 +137,6 @@ class Tache
         return $this;
     }
 
-    public function getDureeEstimee(): ?int
-    {
-        return $this->dureeEstimee;
-    }
-
-    public function setDureeEstimee(int $dureeEstimee): static
-    {
-        $this->dureeEstimee = $dureeEstimee;
-        return $this;
-    }
-
     public function getPriorite(): ?string
     {
         return $this->priorite;
@@ -176,50 +159,46 @@ class Tache
         return $this;
     }
 
-    public function getOrigine(): ?string
+
+    public function getUser(): ?User
     {
-        return $this->origine;
+        return $this->user;
     }
 
-    public function setOrigine(string $origine): static
+    public function setUser(User $user): self
     {
-        $this->origine = $origine;
+        $this->user = $user;
+        return $this;
+    }
+    public function __construct()
+    {
+        $this->suivis = new ArrayCollection();
+    }
+
+    public function getSuivis(): Collection
+    {
+        return $this->suivis;
+    }
+
+    public function addSuivi(SuiviTache $suivi): self
+    {
+        if (!$this->suivis->contains($suivi)) {
+            $this->suivis[] = $suivi;
+            $suivi->setTache($this);
+        }
         return $this;
     }
 
-    public function getUser(): ?User
-{
-    return $this->user;
-}
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
 
-public function setUser(?User $user): self
-{
-    $this->user = $user;
-    return $this;
-}
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
 
-public function getCreatedAt(): ?\DateTimeImmutable
-{
-    return $this->createdAt;
-}
-
-public function setCreatedAt(?\DateTimeImmutable $createdAt): static
-{
-    $this->createdAt = $createdAt;
-
-    return $this;
-}
-
-public function getDateEcheance(): ?\DateTime
-{
-    return $this->dateEcheance;
-}
-
-public function setDateEcheance(?\DateTime $dateEcheance): static
-{
-    $this->dateEcheance = $dateEcheance;
-
-    return $this;
-}
+        return $this;
+    }
 
 }

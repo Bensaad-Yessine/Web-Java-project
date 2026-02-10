@@ -25,6 +25,34 @@ final class PreferenceAlerteController extends AbstractController
     #[Route('/new', name: 'app_preference_alerte_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $preferenceAlerte = new PreferenceAlerte();
+        $form = $this->createForm(PreferenceAlerteType::class, $preferenceAlerte);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            
+            // Force template logic
+            $preferenceAlerte->setEtudiant(null);
+            $preferenceAlerte->setIsDefault(true);
+            $preferenceAlerte->setIsActive(false);
+
+            $entityManager->persist($preferenceAlerte);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_preference_alerte_index');
+        }
+
+        return $this->render('preference_alerte/new.html.twig', [
+            'form' => $form,
+        ]);
+    }
+
+/*
+    #[Route('/new', name: 'app_preference_alerte_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
         $preferenceAlerte = new PreferenceAlerte();
         $form = $this->createForm(PreferenceAlerteType::class, $preferenceAlerte);
         $form->handleRequest($request);
@@ -41,7 +69,7 @@ final class PreferenceAlerteController extends AbstractController
             'form' => $form,
         ]);
     }
-
+*/
     #[Route('/{id}', name: 'app_preference_alerte_show', methods: ['GET'])]
     public function show(PreferenceAlerte $preferenceAlerte): Response
     {

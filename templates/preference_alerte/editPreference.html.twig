@@ -1,0 +1,12 @@
+<div style="max-width:500px; margin:30px auto;">
+    <h1>Modifier une préférence</h1>
+
+    {# Include the same form partial #}
+    {% include 'preference_alerte/_form.html.twig' with {
+        form: form,
+        button_label: 'Modifier'
+    } %}
+
+    {# Link back to the list of preferences, using the correct route #}
+    <a href="{{ path('preference_alerte_show') }}">⬅ Retour à la liste des préférences</a>
+</div>
