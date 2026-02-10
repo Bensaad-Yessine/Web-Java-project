@@ -15,6 +15,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class RegistrationController extends AbstractController
 {
@@ -26,7 +28,8 @@ class RegistrationController extends AbstractController
     public function register(
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        SluggerInterface $slugger
     ): Response {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
@@ -44,6 +47,26 @@ class RegistrationController extends AbstractController
                 $user->setRole('ROLE_USER');
             }
 
+            // Handle profile picture upload
+            /** @var UploadedFile $profilePicFile */
+            $profilePicFile = $form->get('profilePic')->getData();
+            if ($profilePicFile) {
+                $originalFilename = pathinfo($profilePicFile->getClientOriginalName(), PATHINFO_FILENAME);
+                // Sanitize the filename
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $profilePicFile->guessExtension();
+
+                try {
+                    $profilePicFile->move(
+                        $this->getParameter('profile_pics_directory'),
+                        $newFilename
+                    );
+                    $user->setProfilePic($newFilename);
+                } catch (\Exception $e) {
+                    $this->addFlash('error', 'Erreur lors du téléchargement de la photo: ' . $e->getMessage());
+                }
+            }
+
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -52,10 +75,11 @@ class RegistrationController extends AbstractController
                 (new TemplatedEmail())
                     ->from(new Address('yassinebensaad567@gmail.com', 'ESPRITFlow'))
                     ->to($user->getEmail())
-                    ->subject('Please Confirm your Email')
+                    ->subject('Confirmez votre adresse email')
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
 
+            $this->addFlash('success', 'Inscription réussie! Veuillez confirmer votre email.');
             return $this->redirectToRoute('app_login');
         }
 

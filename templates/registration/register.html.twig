@@ -163,7 +163,7 @@
                                         {{ form_label(registrationForm.nom) }}
                                         {{ form_widget(registrationForm.nom, {
                                             'attr': {
-                                                'class': 'form-control p_input',
+                                                'class': 'form-control p_input' ~ (registrationForm.nom.vars.errors|length > 0 ? ' is-invalid' : ''),
                                                 'placeholder': 'Enter your last name'
                                             }
                                         }) }}
@@ -175,7 +175,7 @@
                                         {{ form_label(registrationForm.prenom) }}
                                         {{ form_widget(registrationForm.prenom, {
                                             'attr': {
-                                                'class': 'form-control p_input',
+                                                'class': 'form-control p_input' ~ (registrationForm.prenom.vars.errors|length > 0 ? ' is-invalid' : ''),
                                                 'placeholder': 'Enter your first name'
                                             }
                                         }) }}
@@ -189,7 +189,7 @@
                                     {{ form_label(registrationForm.email) }}
                                     {{ form_widget(registrationForm.email, {
                                         'attr': {
-                                            'class': 'form-control p_input',
+                                            'class': 'form-control p_input' ~ (registrationForm.email.vars.errors|length > 0 ? ' is-invalid' : ''),
                                             'placeholder': 'Enter your email'
                                         }
                                     }) }}
@@ -203,7 +203,7 @@
                                         {{ form_label(registrationForm.numTel) }}
                                         {{ form_widget(registrationForm.numTel, {
                                             'attr': {
-                                                'class': 'form-control p_input',
+                                                'class': 'form-control p_input' ~ (registrationForm.numTel.vars.errors|length > 0 ? ' is-invalid' : ''),
                                                 'placeholder': 'Phone number'
                                             }
                                         }) }}
@@ -212,14 +212,14 @@
                                         </div>
                                     </div>
                                     <div class="form-group col-md-6">
-                                        {{ form_label(registrationForm.DateDeNaissance) }}
-                                        {{ form_widget(registrationForm.DateDeNaissance, {
+                                        {{ form_label(registrationForm.dateDeNaissance) }}
+                                        {{ form_widget(registrationForm.dateDeNaissance, {
                                             'attr': {
-                                                'class': 'form-control p_input'
+                                                'class': 'form-control p_input' ~ (registrationForm.dateDeNaissance.vars.errors|length > 0 ? ' is-invalid' : '')
                                             }
                                         }) }}
                                         <div class="invalid-feedback">
-                                            {{ form_errors(registrationForm.DateDeNaissance) }}
+                                            {{ form_errors(registrationForm.dateDeNaissance) }}
                                         </div>
                                     </div>
                                 </div>
@@ -238,7 +238,7 @@
                                     {{ form_label(registrationForm.classe) }}
                                     {{ form_widget(registrationForm.classe, {
                                         'attr': {
-                                            'class': 'form-control p_input'
+                                            'class': 'form-control p_input' ~ (registrationForm.classe.vars.errors|length > 0 ? ' is-invalid' : '')
                                         }
                                     }) }}
                                     <div class="invalid-feedback">
@@ -250,7 +250,7 @@
                                     {{ form_label(registrationForm.plainPassword) }}
                                     {{ form_widget(registrationForm.plainPassword, {
                                         'attr': {
-                                            'class': 'form-control p_input',
+                                            'class': 'form-control p_input' ~ (registrationForm.plainPassword.vars.errors|length > 0 ? ' is-invalid' : ''),
                                             'placeholder': 'Enter your password',
                                             'id': 'passwordInput'
                                         }
@@ -354,74 +354,244 @@
                 }
             });
 
-            // Password strength indicator
-            const passwordInput = document.getElementById('passwordInput');
-            if (passwordInput) {
-                const strengthIndicator = document.createElement('div');
-                strengthIndicator.className = 'password-strength mt-2';
-                strengthIndicator.innerHTML = `
-                    <div class="progress" style="height: 6px;">
-                        <div class="progress-bar" role="progressbar" style="width: 0%"></div>
-                    </div>
-                    <small class="text-muted d-block mt-1">Password strength: <span class="strength-text">None</span></small>
-                `;
-                passwordInput.parentNode.insertBefore(strengthIndicator, passwordInput.nextSibling.nextSibling);
+            // ============ SYSTÈME DE VALIDATION AVANCÉ ============
+            const validationRules = {
+                'registration_form_nom': {
+                    minLength: 2,
+                    maxLength: 255,
+                    pattern: /^[a-zA-ZÀ-ÿ\s-]*$/,
+                    help: 'Utilisez uniquement des lettres, espaces ou tirets',
+                    messages: {
+                        required: 'Veuillez entrer votre nom de famille',
+                        minLength: 'Minimum 2 caractères requis',
+                        maxLength: 'Maximum 255 caractères',
+                        pattern: 'Lettres, espaces et tirets uniquement'
+                    }
+                },
+                'registration_form_prenom': {
+                    minLength: 2,
+                    maxLength: 255,
+                    pattern: /^[a-zA-ZÀ-ÿ\s-]*$/,
+                    help: 'Utilisez uniquement des lettres, espaces ou tirets',
+                    messages: {
+                        required: 'Veuillez entrer votre prénom',
+                        minLength: 'Minimum 2 caractères requis',
+                        maxLength: 'Maximum 255 caractères',
+                        pattern: 'Lettres, espaces et tirets uniquement'
+                    }
+                },
+                'registration_form_email': {
+                    email: true,
+                    help: 'Utilisez un email valide (ex: prenom.nom@esprit.tn)',
+                    messages: {
+                        required: 'Veuillez entrer votre adresse email',
+                        email: 'Format email invalide'
+                    }
+                },
+                'registration_form_numTel': {
+                    numericOnly: true,
+                    help: 'Entrez uniquement des chiffres (ex: 21612345678)',
+                    messages: {
+                        numericOnly: 'Le numéro de téléphone ne doit contenir que des chiffres'
+                    }
+                },
+                'registration_form_plainPassword': {
+                    minLength: 8,
+                    uppercase: true,
+                    lowercase: true,
+                    number: true,
+                    help: 'Minimum 8 caractères avec majuscule, minuscule et chiffre',
+                    messages: {
+                        required: 'Veuillez entrer un mot de passe',
+                        minLength: 'Minimum 8 caractères requis',
+                        uppercase: 'Au moins une majuscule (A-Z)',
+                        lowercase: 'Au moins une minuscule (a-z)',
+                        number: 'Au moins un chiffre (0-9)'
+                    }
+                }
+            };
 
-                passwordInput.addEventListener('input', function() {
-                    const password = this.value;
-                    let strength = 0;
-                    const progressBar = document.querySelector('.progress-bar');
-                    const strengthText = document.querySelector('.strength-text');
-                    
-                    // Check password length
-                    if (password.length >= 6) strength += 25;
-                    if (password.length >= 8) strength += 25;
-                    
-                    // Check for mixed case
-                    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength += 25;
-                    
-                    // Check for numbers and special characters
-                    if (/\d/.test(password)) strength += 15;
-                    if (/[^A-Za-z0-9]/.test(password)) strength += 10;
-                    
-                    // Update progress bar
-                    progressBar.style.width = strength + '%';
-                    
-                    // Update text and color
-                    let text = 'Weak';
-                    let color = 'bg-danger';
-                    
-                    if (strength >= 50) {
-                        text = 'Fair';
-                        color = 'bg-warning';
-                    }
-                    if (strength >= 75) {
-                        text = 'Good';
-                        color = 'bg-info';
-                    }
-                    if (strength >= 90) {
-                        text = 'Strong';
-                        color = 'bg-success';
-                    }
-                    
-                    progressBar.className = 'progress-bar ' + color;
-                    strengthText.textContent = text;
-                });
-            }
+            // Ajouter les icônes de validation pour chaque champ
+            Object.keys(validationRules).forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (!field) return;
 
-            // Date picker enhancement - make sure it's visible
-            const dateInput = document.querySelector('input[type="date"]');
-            if (dateInput) {
-                // Ensure date input has proper styling
-                dateInput.style.backgroundColor = '#fff';
-                dateInput.style.color = '#333';
-                dateInput.style.fontWeight = '500';
+                const formGroup = field.closest('.form-group') || field.closest('.col-md-6') || field.closest('div');
                 
-                // Set max date to today (no future birth dates)
-                const today = new Date();
-                const maxDate = today.toISOString().split('T')[0];
-                dateInput.setAttribute('max', maxDate);
+                // Créer un conteneur pour les icônes et les messages
+                const validationContainer = document.createElement('div');
+                validationContainer.className = 'validation-feedback mt-2';
+                validationContainer.style.fontSize = '0.875rem';
+                
+                if (formGroup) {
+                    formGroup.appendChild(validationContainer);
+                }
+
+                // Ajouter les événements de validation
+                field.addEventListener('input', function() {
+                    validateField(this, validationContainer);
+                });
+                
+                field.addEventListener('blur', function() {
+                    validateField(this, validationContainer);
+                });
+            });
+
+            function validateField(field, container) {
+                const rules = validationRules[field.id];
+                if (!rules || !container) return;
+
+                const value = field.value.trim();
+                let errors = [];
+                let isValid = true;
+
+                // Check if required and empty
+                if (field.required && !value) {
+                    errors.push({type: 'required', message: rules.messages.required, critical: true});
+                    isValid = false;
+                } else if (value) {
+                    // Check numeric only (for phone number)
+                    if (rules.numericOnly && !/^[0-9]*$/.test(value)) {
+                        errors.push({type: 'numericOnly', message: rules.messages.numericOnly});
+                        isValid = false;
+                    }
+                    // Check pattern
+                    if (rules.pattern && !rules.pattern.test(value)) {
+                        errors.push({type: 'pattern', message: rules.messages.pattern});
+                        isValid = false;
+                    }
+                    // Check length
+                    if (rules.minLength && value.length < rules.minLength) {
+                        errors.push({type: 'minLength', message: rules.messages.minLength});
+                        isValid = false;
+                    }
+                    if (rules.maxLength && value.length > rules.maxLength) {
+                        errors.push({type: 'maxLength', message: rules.messages.maxLength});
+                        isValid = false;
+                    }
+                    // Check email
+                    if (rules.email && !isValidEmail(value)) {
+                        errors.push({type: 'email', message: rules.messages.email});
+                        isValid = false;
+                    }
+
+                    // Validation progressive du mot de passe
+                    if (field.id === 'registration_form_plainPassword') {
+                        isValid = true; // Les critères du mot de passe ne bloquent pas la soumission
+                        let criteria = [];
+
+                        const hasMinLength = value.length >= 8;
+                        const hasUppercase = /[A-Z]/.test(value);
+                        const hasLowercase = /[a-z]/.test(value);
+                        const hasNumber = /\d/.test(value);
+
+                        if (!hasMinLength) criteria.push('minLength');
+                        if (!hasUppercase) criteria.push('uppercase');
+                        if (!hasLowercase) criteria.push('lowercase');
+                        if (!hasNumber) criteria.push('number');
+
+                        // Créer l'affichage des critères
+                        container.innerHTML = '<div class="password-criteria"><strong>Critères du mot de passe:</strong></div>';
+                        
+                        [
+                            {key: 'minLength', label: '✓ Au moins 8 caractères', check: hasMinLength},
+                            {key: 'uppercase', label: '✓ Au moins une majuscule (A-Z)', check: hasUppercase},
+                            {key: 'lowercase', label: '✓ Au moins une minuscule (a-z)', check: hasLowercase},
+                            {key: 'number', label: '✓ Au moins un chiffre (0-9)', check: hasNumber}
+                        ].forEach(criteria => {
+                            const item = document.createElement('div');
+                            item.style.padding = '4px 0';
+                            item.style.color = criteria.check ? '#28a745' : '#dc3545';
+                            item.innerHTML = (criteria.check ? '✓ ' : '✗ ') + criteria.label;
+                            container.querySelector('.password-criteria').appendChild(item);
+                        });
+
+                        // Calculer et afficher la force du mot de passe
+                        let strength = 0;
+                        if (hasMinLength) strength += 25;
+                        if (hasUppercase && hasLowercase) strength += 25;
+                        if (hasNumber) strength += 25;
+                        if (/[^A-Za-z0-9]/.test(value)) strength += 25;
+
+                        const strengthDiv = document.createElement('div');
+                        strengthDiv.style.marginTop = '8px';
+                        strengthDiv.innerHTML = `
+                            <div class="progress" style="height: 6px; background: #e9ecef;">
+                                <div class="progress-bar" style="width: ${strength}%; background: ${
+                                    strength < 25 ? '#dc3545' : 
+                                    strength < 50 ? '#fd7e14' : 
+                                    strength < 75 ? '#ffc107' : '#28a745'
+                                };"></div>
+                            </div>
+                            <small style="color: ${
+                                strength < 25 ? '#dc3545' : 
+                                strength < 50 ? '#fd7e14' : 
+                                strength < 75 ? '#ffc107' : '#28a745'
+                            }; font-weight: bold;">
+                                Force: ${
+                                    strength < 25 ? 'Très faible' : 
+                                    strength < 50 ? 'Faible' : 
+                                    strength < 75 ? 'Moyen' : 'Fort'
+                                }
+                            </small>
+                        `;
+                        container.appendChild(strengthDiv);
+                    }
+                }
+
+                // Update visual feedback
+                const inputField = document.getElementById(field.id);
+                const invalidFeedback = field.closest('.form-group')?.querySelector('.invalid-feedback') ||
+                                       field.closest('.col-md-6')?.querySelector('.invalid-feedback');
+
+                if (isValid && value) {
+                    inputField.classList.remove('is-invalid');
+                    inputField.classList.add('is-valid');
+                    if (invalidFeedback) invalidFeedback.innerHTML = '';
+                } else if (!isValid) {
+                    inputField.classList.remove('is-valid');
+                    inputField.classList.add('is-invalid');
+                    if (invalidFeedback && errors.length > 0) {
+                        invalidFeedback.innerHTML = `<span style="color: #dc3545;">✗ ${errors[0].message}</span>`;
+                    }
+                } else {
+                    inputField.classList.remove('is-invalid', 'is-valid');
+                    if (invalidFeedback) invalidFeedback.innerHTML = '';
+                }
             }
+
+            function isValidEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+
+            // CSS pour les inputs valides/invalides
+            const style = document.createElement('style');
+            style.textContent = `
+                .form-control.is-valid {
+                    border-color: #28a745;
+                    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+                }
+                .form-control.is-valid:focus {
+                    border-color: #28a745;
+                    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+                }
+                .form-control.is-invalid {
+                    border-color: #dc3545;
+                    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+                }
+                .form-control.is-invalid:focus {
+                    border-color: #dc3545;
+                    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+                }
+                .password-criteria {
+                    background: #f8f9fa;
+                    padding: 8px 12px;
+                    border-radius: 4px;
+                    border-left: 3px solid #667eea;
+                }
+            `;
+            document.head.appendChild(style);
 
             // Form submission validation
             const registrationForm = document.querySelector('form');
@@ -433,14 +603,14 @@
                     const termsCheckbox = document.getElementById('{{ registrationForm.agreeTerms.vars.id }}');
                     if (!termsCheckbox.checked) {
                         e.preventDefault();
-                        alert('Please accept the Terms & Conditions to continue.');
+                        alert('Veuillez accepter les conditions d\'utilisation pour continuer.');
                         termsCheckbox.focus();
                         return false;
                     }
                     
                     // Show loading state
                     const originalText = submitBtn.innerHTML;
-                    submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin mr-2"></i>Creating Account...';
+                    submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin mr-2"></i>Création du compte...';
                     submitBtn.disabled = true;
                     
                     // Restore button after 10 seconds in case of error
