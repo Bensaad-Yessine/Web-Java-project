@@ -1,823 +1,771 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Mon Profil - ESPRIT Smart Assistant{% endblock %}
-
-{% block stylesheets %}
-    {{ parent() }}
+{# templates/user/profile.html.twig #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESPRIT — User Profile</title>
     <style>
-        /* Container Styles */
-        .profile-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 30px 20px;
+        :root {
+            --font-size: 16px;
+            --bg: #ffffff;
+            --fg: #111827;
+            
+            --red-50: #fef2f2;
+            --red-100: #fee2e2;
+            --red-200: #fecaca;
+            --red-300: #fca5a5;
+            --red-400: #f87171;
+            --red-500: #ef4444;
+            --red-600: #dc2626;
+            --red-700: #b91c1c;
+            --red-800: #991b1b;
+            --red-900: #7f1d1d;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --blue-50: #eff6ff;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            
+            --green-50: #f0fdf4;
+            --green-500: #22c55e;
+            --green-600: #16a34a;
+            
+            --orange-500: #f97316;
+            
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+            
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Header Styles */
-        .profile-header {
-            margin-bottom: 32px;
-        }
-
-        .profile-header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 8px;
-        }
-
-        .profile-header .subtitle {
-            color: #7f8c8d;
-            font-size: 16px;
-        }
-
-        /* Card Styles */
-        .card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-
-        .card-header {
-            padding: 20px 24px;
-            border-bottom: 1px solid #e8edff;
-            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #2c3e50;
+        * { 
+            box-sizing: border-box; 
             margin: 0;
+            padding: 0;
+        }
+        
+        html { 
+            font-size: var(--font-size); 
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, #ffffff 30%, var(--gray-50) 100%);
+            color: var(--fg);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-shell {
             display: flex;
-            align-items: center;
-            gap: 12px;
+            min-height: 100vh;
         }
 
-        .card-content {
-            padding: 24px;
-        }
-
-        /* Profile Header Card */
-        .profile-header-card .card-content {
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(165deg, rgba(255, 255, 255, 0.92) 0%, rgba(249, 250, 251, 0.88) 100%);
+            border-right: 1px solid rgba(229, 231, 235, 0.6);
+            padding: 28px 24px;
             display: flex;
-            align-items: center;
-            gap: 24px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
         }
 
-        .profile-avatar-container {
+        .brand {
+            margin-bottom: 36px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
             position: relative;
-            flex-shrink: 0;
         }
 
-        .profile-avatar-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid white;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        .brand::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--red-500), var(--red-300));
+            border-radius: 2px;
         }
 
-        .profile-avatar-placeholder {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--red-700) 100%);
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 36px;
-            font-weight: 700;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-weight: 800;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+            transition: all var(--transition);
         }
 
-        .profile-info {
-            flex: 1;
-            min-width: 300px;
+        .brand-icon:hover {
+            transform: rotate(-5deg) scale(1.05);
         }
 
-        .profile-name {
-            font-size: 28px;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 8px;
+        .brand-title {
+            font-weight: 800;
+            font-size: 20px;
+            line-height: 1;
+            color: var(--gray-900);
+            letter-spacing: -0.5px;
         }
 
-        .profile-email {
-            color: #7f8c8d;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .profile-badges {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 6px 12px;
-            border-radius: 20px;
+        .brand-sub {
             font-size: 13px;
-            font-weight: 600;
-            gap: 6px;
-        }
-
-        .badge-danger {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white;
-        }
-
-        .badge-info {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-        }
-
-        .badge-success {
-            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-            color: white;
-        }
-
-        .badge-warning {
-            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-            color: white;
-        }
-
-        .badge-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .badge-secondary {
-            background: #95a5a6;
-            color: white;
-        }
-
-        .profile-actions {
-            margin-left: auto;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: none;
-            font-size: 14px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-            color: white;
-        }
-
-        .btn-outline {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-
-        .btn-outline:hover {
-            background: #667eea;
-            color: white;
-        }
-
-        /* Grid Layout */
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
-        }
-
-        @media (max-width: 968px) {
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Info Row Styles */
-        .info-row {
-            display: flex;
-            padding: 16px 0;
-            border-bottom: 1px solid #ecf0f1;
-        }
-
-        .info-row:last-child {
-            border-bottom: none;
-        }
-
-        .info-label {
-            font-weight: 600;
-            color: #7f8c8d;
-            width: 180px;
-            flex-shrink: 0;
-        }
-
-        .info-value {
-            color: #2c3e50;
-            flex: 1;
+            color: var(--gray-500);
+            margin-top: 6px;
             font-weight: 500;
         }
 
-        .text-muted {
-            color: #95a5a6;
+        .user-session {
+            margin-top: 28px;
+            padding: 24px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.9) 100%);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition);
         }
 
-        /* Stat Card Styles */
-        .stat-card {
+        .user-session::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
+        }
+
+        .user-info {
             display: flex;
             align-items: center;
             gap: 16px;
-            padding: 16px;
-            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            margin-bottom: 12px;
+            margin-bottom: 20px;
         }
 
-        .stat-card:hover {
-            background: linear-gradient(135deg, #f0f2ff 0%, #e8edff 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
+            color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
+            font-weight: 800;
+            font-size: 20px;
+            border: 3px solid white;
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.2);
         }
 
-        .stat-content {
-            flex: 1;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: #7f8c8d;
-            margin-bottom: 4px;
-        }
-
-        .stat-value {
-            font-size: 24px;
+        .user-details h3 {
+            margin: 0;
+            font-size: 16px;
             font-weight: 700;
-            color: #2c3e50;
+            color: #1f2937;
         }
 
-        .bg-blue-100 { background: #ebf5ff; }
-        .bg-green-100 { background: #e8f8f0; }
-        .bg-red-100 { background: #ffe8e8; }
-        .bg-purple-100 { background: #f3ebff; }
-        .bg-orange-100 { background: #fff3e0; }
-
-        .text-blue-600 { color: #3498db; }
-        .text-green-600 { color: #27ae60; }
-        .text-red-600 { color: #e74c3c; }
-        .text-purple-600 { color: #9b59b6; }
-        .text-orange-600 { color: #e67e22; }
-
-        /* Activity Item Styles */
-        .activity-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px;
-            border-radius: 10px;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            margin-bottom: 8px;
-        }
-
-        .activity-item:hover {
-            background: #f8f9ff;
-        }
-
-        .activity-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .activity-content {
-            flex: 1;
-        }
-
-        .activity-text {
+        .user-details p {
+            margin: 6px 0 0;
             font-size: 14px;
-            color: #2c3e50;
-            margin-bottom: 4px;
+            color: #4b5563;
             font-weight: 500;
         }
 
-        .activity-time {
-            font-size: 12px;
-            color: #95a5a6;
+        .session-info {
+            font-size: 13px;
+            color: #4b5563;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-weight: 500;
         }
 
-        /* Icon Styles */
-        .icon {
+        .session-info div {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .session-info strong {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 32px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            border-radius: var(--radius-lg);
+            color: #374151;
+            text-decoration: none;
+            transition: all var(--transition);
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .nav a:hover {
+            background: linear-gradient(90deg, rgba(254, 242, 242, 0.7) 0%, rgba(254, 242, 242, 0.4) 100%);
+            color: var(--red-600);
+            transform: translateX(8px);
+        }
+
+        .nav a.active {
+            background: linear-gradient(90deg, rgba(254, 242, 242, 0.9) 0%, rgba(254, 242, 242, 0.6) 100%);
+            color: var(--red-600);
+            font-weight: 600;
+            border-left: 4px solid var(--red-500);
+        }
+
+        .nav a .icon {
             width: 20px;
             height: 20px;
-        }
-
-        svg {
             stroke-width: 2;
         }
 
-        /* Quick Actions */
-        .quick-action-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 8px;
-            text-decoration: none;
-            color: #2c3e50;
-            border: 2px solid #e8edff;
-            background: white;
-            transition: all 0.3s ease;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .quick-action-link:hover {
-            background: #f8f9ff;
-            border-color: #667eea;
-            color: #667eea;
-            transform: translateX(4px);
-        }
-
-        .w-full {
+        .main {
+            flex: 1;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
             width: 100%;
         }
 
-        /* Responsive adjustments */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
+        }
+
+        .h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin: 0;
+            color: #111827;
+            letter-spacing: -0.5px;
+        }
+
+        .muted {
+            color: #6b7280;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 36px;
+        }
+
+        .card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.9) 100%);
+            border: 1px solid rgba(229, 231, 235, 0.6);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 28px;
+            overflow: hidden;
+            transition: all var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .card-header {
+            padding: 28px 28px 0;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 6px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--red-500), var(--orange-500));
+            border-radius: 3px;
+        }
+
+        .card-content {
+            padding: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #374151;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #d1d5db;
+            border-radius: var(--radius-lg);
+            background: #ffffff;
+            color: #111827;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all var(--transition);
+            font-family: inherit;
+        }
+
+        .form-control:hover {
+            border-color: #9ca3af;
+        }
+
+        .form-control:focus {
+            border-color: var(--red-500);
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+            outline: none;
+        }
+        
+        .form-control:disabled,
+        .form-control[readonly] {
+            background: var(--gray-100);
+            border-color: var(--gray-200);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .form-text {
+            display: block;
+            margin-top: 6px;
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .btn {
+            appearance: none;
+            border: 2px solid transparent;
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: 16px 28px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all var(--transition);
+            font-size: 15px;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, var(--red-600) 0%, var(--orange-600) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #374151;
+            border-color: #d1d5db;
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .quick-actions .btn-outline {
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        @media (max-width: 1024px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+        }
+
         @media (max-width: 768px) {
-            .profile-header-card .card-content {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .profile-actions {
-                margin-left: 0;
-                width: 100%;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .info-row {
-                flex-direction: column;
-                gap: 4px;
-            }
-
-            .info-label {
-                width: 100%;
+            .main {
+                padding: 24px;
             }
         }
     </style>
-{% endblock %}
-
-{% block body %}
-<div class="profile-container">
-    <!-- Header -->
-    <div class="profile-header">
-        <h1>Mon Profil</h1>
-        <p class="subtitle">Consultez vos informations personnelles et statistiques</p>
-    </div>
-
-    <!-- Profile Header Card -->
-    <div class="card profile-header-card">
-        <div class="card-content">
-            <!-- Profile Avatar -->
-            <div class="profile-avatar-container">
-                {% if app.user.profilePic %}
-                    <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
-                         alt="{{ app.user.prenom }}" 
-                         class="profile-avatar-img">
-                {% else %}
-                    <div class="profile-avatar-placeholder">
-                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-row">
+                    <div class="brand-icon">ES</div>
+                    <div>
+                        <div class="brand-title">ESPRIT</div>
+                        <div class="brand-sub">Student Assistant</div>
                     </div>
-                {% endif %}
-            </div>
-
-            <!-- User Info -->
-            <div class="profile-info">
-                <h2 class="profile-name">{{ app.user.prenom }} {{ app.user.nom }}</h2>
-                <p class="profile-email">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                        <polyline points="22,6 12,13 2,6"/>
-                    </svg>
-                    {{ app.user.email }}
-                </p>
-                
-                <div class="profile-badges">
-                    {% if 'ROLE_ADMIN' in app.user.roles %}
-                        <span class="badge badge-danger">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                            </svg>
-                            Administrateur
-                        </span>
-                    {% else %}
-                        <span class="badge badge-info">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                <circle cx="12" cy="7" r="4"/>
-                            </svg>
-                            Étudiant
-                        </span>
-                    {% endif %}
-                    
-                    {% if app.user.isVerified %}
-                        <span class="badge badge-success">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                                <polyline points="22 4 12 14.01 9 11.01"/>
-                            </svg>
-                            Compte vérifié
-                        </span>
-                    {% else %}
-                        <span class="badge badge-warning">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <path d="M12 8v4"/>
-                                <path d="M12 16h.01"/>
-                            </svg>
-                            Non vérifié
-                        </span>
-                    {% endif %}
-                    
-                    <span class="badge badge-primary">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        </svg>
-                        ID: #{{ app.user.id }}
-                    </span>
                 </div>
             </div>
-            
-            <!-- Edit Button -->
-            <div class="profile-actions">
-                <a href="{{ path('app_user_edit', {'id': app.user.id}) }}" class="btn btn-primary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+
+            <div class="user-session">
+                <div class="user-info">
+                    <div class="avatar">
+                        {{ app.user.nom|first }}{{ app.user.prenom|first }}
+                    </div>
+                    <div class="user-details">
+                        <h3>{{ app.user.nom }} {{ app.user.prenom }}</h3>
+                        <p>📚 {{ app.user.classe is not null ? app.user.classe.nom : 'No Class' }}</p>
+                    </div>
+                </div>
+                <div class="session-info">
+                    <div><strong>Email:</strong> {{ app.user.email }}</div>
+                    <div><strong>Role:</strong> {{ app.user.roles[0]|replace({'ROLE_': ''})|capitalize }}</div>
+                </div>
+            </div>
+
+            <nav class="nav">
+                <a href="{{ path('app_dashboard') }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/>
                     </svg>
-                    Modifier Profil
+                    Dashboard
                 </a>
-            </div>
-        </div>
-    </div>
+                <a href="{{ path('app_dashboard') }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                    My Tasks
+                </a>
+                <a href="{{ path('app_profile') }}" class="active">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Profile
+                </a>
+                <a href="{{ path('app_logout') }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>
+                    </svg>
+                    Logout
+                </a>
+            </nav>
+        </aside>
 
-    <!-- Two Column Layout -->
-    <div class="grid-2">
-        <!-- Left Column: Personal Information -->
-        <div>
-            <!-- Personal Information -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                            <circle cx="12" cy="7" r="4"/>
-                        </svg>
-                        Informations Personnelles
-                    </h2>
+        <main class="main">
+            <header class="header">
+                <div>
+                    <h1 class="h1">My Profile</h1>
+                    <p class="muted">Manage your personal information and account settings</p>
                 </div>
-                <div class="card-content">
-                    <div class="info-row">
-                        <div class="info-label">Nom complet</div>
-                        <div class="info-value">{{ app.user.prenom }} {{ app.user.nom }}</div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">Email</div>
-                        <div class="info-value">{{ app.user.email }}</div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">Téléphone</div>
-                        <div class="info-value">
-                            {% if app.user.numTel %}
-                                {{ app.user.numTel }}
-                            {% else %}
-                                <span class="text-muted">Non renseigné</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">Date de naissance</div>
-                        <div class="info-value">
-                            {% if app.user.dateDeNaissance %}
-                                {{ app.user.dateDeNaissance|date('d/m/Y') }}
-                                <span class="text-muted" style="font-size: 13px;">
-                                    ({{ 'now'|date('Y') - app.user.dateDeNaissance|date('Y') }} ans)
-                                </span>
-                            {% else %}
-                                <span class="text-muted">Non renseignée</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">Sexe</div>
-                        <div class="info-value">
-                            {% if app.user.sexe %}
-                                {{ app.user.sexe }}
-                            {% else %}
-                                <span class="text-muted">Non renseigné</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">Classe</div>
-                        <div class="info-value">
-                            {% if app.user.classe %}
-                                <span class="badge badge-success">{{ app.user.classe.nom }}</span>
-                            {% else %}
-                                <span class="text-muted">Aucune classe assignée</span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </header>
 
-            <!-- Account Info -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                        </svg>
-                        Informations du Compte
-                    </h2>
-                </div>
-                <div class="card-content">
-                    <div class="info-row">
-                        <div class="info-label">Date de création</div>
-                        <div class="info-value">
-                            <span class="text-muted">Inconnue</span>
+            <div class="profile-container">
+                <div class="profile-grid">
+                    <!-- Left column: Profile info -->
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Personal Information</h2>
+                            </div>
+                            <div class="card-content">
+                                <form id="profileForm">
+                                    <div class="form-group">
+                                        <label for="nom">Last Name *</label>
+                                        <input type="text" id="nom" class="form-control" 
+                                               value="{{ app.user.nom }}"
+                                               placeholder="Doe"
+                                               required
+                                               minlength="2">
+                                        <small class="form-text">Your last name</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="prenom">First Name *</label>
+                                        <input type="text" id="prenom" class="form-control" 
+                                               value="{{ app.user.prenom }}"
+                                               placeholder="John"
+                                               required
+                                               minlength="2">
+                                        <small class="form-text">Your first name</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="email">Email Address *</label>
+                                        <input type="email" id="email" class="form-control" 
+                                               value="{{ app.user.email }}"
+                                               placeholder="your.email@esprit.tn"
+                                               required>
+                                        <small class="form-text">Your ESPRIT email address</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="class">Class / Group</label>
+                                        <input type="text" id="class" class="form-control" 
+                                               value="{{ app.user.classe is not null ? app.user.classe.nom : 'Not assigned' }}"
+                                               readonly
+                                               disabled>
+                                        <small class="form-text">Contact administration to change</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="phone">Phone Number</label>
+                                        <input type="tel" id="phone" class="form-control" 
+                                               value="{{ app.user.numTel ?? '' }}"
+                                               placeholder="+216 12 345 678"
+                                               pattern="[+]?[0-9\s]{8,20}">
+                                        <small class="form-text">Optional: Include country code</small>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn">✏️ Update Profile</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">Dernière connexion</div>
-                        <div class="info-value">
-                            <span class="text-muted">Jamais</span>
-                        </div>
-                    </div>
-                    
-                    <div class="info-row">
-                        <div class="info-label">Rôles</div>
-                        <div class="info-value">
-                            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                                {% for role in app.user.roles %}
-                                    {% if role == 'ROLE_ADMIN' %}
-                                        <span class="badge badge-danger">Administrateur</span>
-                                    {% elseif role == 'ROLE_USER' %}
-                                        <span class="badge badge-info">Utilisateur</span>
-                                    {% else %}
-                                        <span class="badge badge-secondary">{{ role }}</span>
-                                    {% endif %}
-                                {% endfor %}
+
+                    <!-- Right column: Quick Actions -->
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Quick Actions</h2>
+                            </div>
+                            <div class="card-content">
+                                <div class="quick-actions">
+                                    <a href="#" class="btn btn-outline">
+                                        🔒 Change Password
+                                    </a>
+                                    <a href="#" class="btn btn-outline">
+                                        🔔 Notification Settings
+                                    </a>
+                                    <a href="#" class="btn btn-outline">
+                                        🔐 Privacy Settings
+                                    </a>
+                                    <button onclick="exportData()" class="btn btn-outline">
+                                        📥 Export My Data
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Right Column: Statistics & Activities -->
-        <div>
-            <!-- Statistics -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 21H6.2c-1.1 0-1.6-.6-1.6-1.6V3"/>
-                            <path d="M16 8v8"/>
-                            <path d="M12 11v5"/>
-                            <path d="M8 14v2"/>
-                        </svg>
-                        Mes Statistiques
-                    </h2>
-                </div>
-                <div class="card-content">
-                    <div class="stat-card">
-                        <div class="stat-icon bg-blue-100">
-                            <svg width="20" height="20" class="text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M9 11l3 3 8-8"/>
-                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                            </svg>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-label">Tâches terminées</div>
-                            <div class="stat-value">42</div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon bg-green-100">
-                            <svg width="20" height="20" class="text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                <circle cx="9" cy="7" r="4"/>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                            </svg>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-label">Groupes actifs</div>
-                            <div class="stat-value">3</div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon bg-red-100">
-                            <svg width="20" height="20" class="text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/>
-                            </svg>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-label">Score santé</div>
-                            <div class="stat-value">85%</div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card">
-                        <div class="stat-icon bg-purple-100">
-                            <svg width="20" height="20" class="text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="4" width="18" height="18" rx="2"/>
-                                <path d="M16 2v4"/>
-                                <path d="M8 2v4"/>
-                                <path d="M3 10h18"/>
-                            </svg>
-                        </div>
-                        <div class="stat-content">
-                            <div class="stat-label">Réunions ce mois</div>
-                            <div class="stat-value">8</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Activity -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <polyline points="12 6 12 12 16 14"/>
-                        </svg>
-                        Activité Récente
-                    </h2>
-                </div>
-                <div class="card-content">
-                    <div class="activity-item">
-                        <div class="activity-icon bg-green-100">
-                            <svg width="16" height="16" class="text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 6L9 17l-5-5"/>
-                            </svg>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-text">Tâche "Préparation Examen" terminée</div>
-                            <div class="activity-time">Il y a 2 heures</div>
-                        </div>
-                    </div>
-                    
-                    <div class="activity-item">
-                        <div class="activity-icon bg-blue-100">
-                            <svg width="16" height="16" class="text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                <circle cx="9" cy="7" r="4"/>
-                            </svg>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-text">Rejoint le groupe "ML Project Team"</div>
-                            <div class="activity-time">Hier, 15:30</div>
-                        </div>
-                    </div>
-                    
-                    <div class="activity-item">
-                        <div class="activity-icon bg-red-100">
-                            <svg width="16" height="16" class="text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/>
-                            </svg>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-text">Formulaire santé complété</div>
-                            <div class="activity-time">23 Jan, 10:00</div>
-                        </div>
-                    </div>
-                    
-                    <div class="activity-item">
-                        <div class="activity-icon bg-orange-100">
-                            <svg width="16" height="16" class="text-orange-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="4" width="18" height="18" rx="2"/>
-                                <path d="M16 2v4"/>
-                                <path d="M8 2v4"/>
-                                <path d="M3 10h18"/>
-                            </svg>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-text">Participé à la réunion "Sprint Planning"</div>
-                            <div class="activity-time">22 Jan, 17:30</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Links -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <path d="M12 16v-4"/>
-                            <path d="M12 8h.01"/>
-                        </svg>
-                        Actions Rapides
-                    </h2>
-                </div>
-                <div class="card-content">
-                    <a href="#" class="quick-action-link">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 11l3 3 8-8"/>
-                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                        </svg>
-                        Voir mes tâches
-                    </a>
-                    
-                    <a href="#" class="quick-action-link">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                            <circle cx="9" cy="7" r="4"/>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                        </svg>
-                        Mes groupes
-                    </a>
-                    
-                    <a href="#" class="quick-action-link">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/>
-                        </svg>
-                        Santé & bien-être
-                    </a>
-                    
-                    <a href="#" class="quick-action-link">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="4" width="18" height="18" rx="2"/>
-                            <path d="M16 2v4"/>
-                            <path d="M8 2v4"/>
-                            <path d="M3 10h18"/>
-                        </svg>
-                        Mon calendrier
-                    </a>
-                    
-                    <a href="{{ path('app_logout') }}" class="btn btn-outline w-full" style="margin-top: 12px;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                            <path d="M16 17l5-5-5-5"/>
-                            <path d="M21 12H9"/>
-                        </svg>
-                        Déconnexion
-                    </a>
-                </div>
-            </div>
-        </div>
+        </main>
     </div>
-</div>
-{% endblock %}
+
+    <script>
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalHTML = submitBtn.innerHTML;
+            
+            const nom = document.getElementById('nom').value.trim();
+            const prenom = document.getElementById('prenom').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            
+            if (!nom || nom.length < 2) {
+                showErrorMsg('Please enter your last name (at least 2 characters)');
+                return;
+            }
+            
+            if (!prenom || prenom.length < 2) {
+                showErrorMsg('Please enter your first name (at least 2 characters)');
+                return;
+            }
+            
+            if (!email) {
+                showErrorMsg('Please enter an email address');
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showErrorMsg('Please enter a valid email address');
+                return;
+            }
+            
+            if (phone) {
+                const phoneClean = phone.replace(/\s/g, '');
+                const phoneRegex = /^[+]?[0-9]{8,20}$/;
+                if (!phoneRegex.test(phoneClean)) {
+                    showErrorMsg('Please enter a valid phone number');
+                    return;
+                }
+            }
+            
+            const formData = {
+                nom: nom,
+                prenom: prenom,
+                email: email,
+                phone: phone
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '⏳ Updating...';
+            
+            fetch('{{ path('app_profile_update') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(formData),
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+                
+                if (data.success) {
+                    showSuccessMsg(data.message || 'Profile updated successfully!');
+                    
+                    if (data.user) {
+                        document.getElementById('nom').value = data.user.nom || '';
+                        document.getElementById('prenom').value = data.user.prenom || '';
+                        document.getElementById('email').value = data.user.email || '';
+                        document.getElementById('phone').value = data.user.phone || '';
+                        
+                        // Update sidebar
+                        const sidebarName = document.querySelector('.user-details h3');
+                        if (sidebarName) {
+                            sidebarName.textContent = data.user.nom + ' ' + data.user.prenom;
+                        }
+                        
+                        const avatar = document.querySelector('.avatar');
+                        if (avatar) {
+                            avatar.textContent = data.user.nom.charAt(0) + data.user.prenom.charAt(0);
+                        }
+                    }
+                } else {
+                    showErrorMsg(data.message || 'Failed to update profile');
+                }
+            })
+            .catch(error => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+                showErrorMsg('Error: ' + error.message);
+            });
+        });
+
+        function showSuccessMsg(message) {
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 16px 24px; border-radius: 10px; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3); z-index: 9999; font-weight: 600;';
+            msg.innerHTML = '✓ ' + message;
+            document.body.appendChild(msg);
+            setTimeout(() => {
+                msg.style.opacity = '0';
+                msg.style.transition = 'opacity 0.3s';
+                setTimeout(() => msg.remove(), 300);
+            }, 4000);
+        }
+
+        function showErrorMsg(message) {
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 16px 24px; border-radius: 10px; box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3); z-index: 9999; font-weight: 600;';
+            msg.innerHTML = '✗ ' + message;
+            document.body.appendChild(msg);
+            setTimeout(() => {
+                msg.style.opacity = '0';
+                msg.style.transition = 'opacity 0.3s';
+                setTimeout(() => msg.remove(), 300);
+            }, 4000);
+        }
+
+        function exportData() {
+            if (confirm('This will export all your data as a JSON file. Continue?')) {
+                alert('Export feature coming soon!');
+            }
+        }
+    </script>
+</body>
+</html>

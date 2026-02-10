@@ -44,8 +44,9 @@ class PropositionReunion
     #[ORM\Column(nullable: true)]
     private ?int $nbrVoteAccept = null;
 
-    #[ORM\ManyToOne(inversedBy: 'idReunion')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: GroupeProjet::class,inversedBy: 'idReunion')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+
     private ?GroupeProjet $idGroupe = null;
 
     #[ORM\Column(nullable: true)]
