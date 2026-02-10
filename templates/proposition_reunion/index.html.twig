@@ -1,53 +1,237 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}PropositionReunion index{% endblock %}
+{% block title %}Propositions de Réunion - {{ groupe_projet.nomProjet }}{% endblock %}
 
 {% block body %}
-    <h1>PropositionReunion index</h1>
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header">
+                <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                        <i class="mdi mdi-calendar-multiple"></i>
+                    </span> 
+                    Propositions de Réunion
+                </h3>
+                <nav aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('app_groupe_projet_index') }}">Groupes</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="{{ path('app_groupe_projet_show', {'id': groupe_projet.id}) }}">{{ groupe_projet.nomProjet }}</a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <span></span>Propositions
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>PropositionId</th>
-                <th>Titre</th>
-                <th>DateReunion</th>
-                <th>HeureDebut</th>
-                <th>HeureFin</th>
-                <th>Lieu</th>
-                <th>Description</th>
-                <th>Status</th>
-                <th>DateCreation</th>
-                <th>NbrVoteAccept</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for proposition_reunion in proposition_reunions %}
-            <tr>
-                <td>{{ proposition_reunion.id }}</td>
-                <td>{{ proposition_reunion.propositionId }}</td>
-                <td>{{ proposition_reunion.titre }}</td>
-                <td>{{ proposition_reunion.dateReunion ? proposition_reunion.dateReunion|date('Y-m-d') : '' }}</td>
-                <td>{{ proposition_reunion.heureDebut ? proposition_reunion.heureDebut|date('H:i:s') : '' }}</td>
-                <td>{{ proposition_reunion.heureFin ? proposition_reunion.heureFin|date('H:i:s') : '' }}</td>
-                <td>{{ proposition_reunion.lieu }}</td>
-                <td>{{ proposition_reunion.description }}</td>
-                <td>{{ proposition_reunion.status }}</td>
-                <td>{{ proposition_reunion.dateCreation ? proposition_reunion.dateCreation|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ proposition_reunion.nbrVoteAccept }}</td>
-                <td>
-                    <a href="{{ path('app_proposition_reunion_show', {'id': proposition_reunion.id}) }}">show</a>
-                    <a href="{{ path('app_proposition_reunion_edit', {'id': proposition_reunion.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="12">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <!-- Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-0">Groupe: {{ groupe_projet.nomProjet }}</h4>
+                    <p class="text-muted mb-0">{{ groupe_projet.matiere }}</p>
+                </div>
+                <div class="action-buttons">
+                    <a href="{{ path('app_groupe_projet_show', {'id': groupe_projet.id}) }}" class="btn btn-light">
+                        <i class="mdi mdi-arrow-left me-1"></i>
+                        Retour au groupe
+                    </a>
+                    <a href="{{ path('app_proposition_reunion_new', {'groupeId': groupe_projet.id}) }}" class="btn btn-primary">
+                        <i class="mdi mdi-plus-circle me-1"></i>
+                        Nouvelle proposition
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <a href="{{ path('app_proposition_reunion_new') }}">Create new</a>
+    <!-- Statistics -->
+    {% set accepted = proposition_reunions|filter(p => p.status == 'Acceptée')|length %}
+    {% set pending = proposition_reunions|filter(p => p.status == 'En attente')|length %}
+    {% set rejected = proposition_reunions|filter(p => p.status == 'Refusée')|length %}
+    
+    <div class="row mb-4">
+        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0 stat-count">{{ proposition_reunions|length }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="stat-icon card-1">
+                                <i class="mdi mdi-calendar-multiple"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="stat-label">Total Propositions</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0 stat-count">{{ accepted }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="stat-icon card-2">
+                                <i class="mdi mdi-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="stat-label">Acceptées</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0 stat-count">{{ pending }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="stat-icon card-3">
+                                <i class="mdi mdi-clock"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="stat-label">En attente</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-9">
+                            <div class="d-flex align-items-center align-self-start">
+                                <h3 class="mb-0 stat-count">{{ rejected }}</h3>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="stat-icon card-4">
+                                <i class="mdi mdi-close-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <h6 class="stat-label">Refusées</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Propositions Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th>Date & Heure</th>
+                                    <th>Lieu</th>
+                                    <th>Statut</th>
+                                    <th>Votes</th>
+                                    <th>Créée le</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for proposition_reunion in proposition_reunions %}
+                                    <tr>
+                                        <td>#{{ proposition_reunion.propositionId }}</td>
+                                        <td>
+                                            <strong>{{ proposition_reunion.titre }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ proposition_reunion.description|slice(0, 50) }}...</small>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-column">
+                                                <span>{{ proposition_reunion.dateReunion ? proposition_reunion.dateReunion|date('d/m/Y') : '' }}</span>
+                                                <small class="text-muted">
+                                                    {{ proposition_reunion.heureDebut ? proposition_reunion.heureDebut|date('H:i') : '' }} - 
+                                                    {{ proposition_reunion.heureFin ? proposition_reunion.heureFin|date('H:i') : '' }}
+                                                </small>
+                                            </div>
+                                        </td>
+                                        <td>{{ proposition_reunion.lieu }}</td>
+                                        <td>
+                                            {% if proposition_reunion.status == 'Acceptée' %}
+                                                <span class="badge bg-success">{{ proposition_reunion.status }}</span>
+                                            {% elseif proposition_reunion.status == 'Refusée' %}
+                                                <span class="badge bg-danger">{{ proposition_reunion.status }}</span>
+                                            {% elseif proposition_reunion.status == 'En attente' %}
+                                                <span class="badge bg-warning">{{ proposition_reunion.status }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ proposition_reunion.status }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ proposition_reunion.nbrVoteAccept ?? 0 }}</span>
+                                        </td>
+                                        <td>{{ proposition_reunion.dateCreation ? proposition_reunion.dateCreation|date('d/m/Y H:i') : '' }}</td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <a href="{{ path('app_proposition_reunion_show', {'groupeId': groupe_projet.id, 'id': proposition_reunion.id}) }}" 
+                                                   class="btn btn-info btn-sm" title="Voir">
+                                                    <i class="mdi mdi-eye"></i>
+                                                </a>
+                                                <a href="{{ path('app_proposition_reunion_edit', {'groupeId': groupe_projet.id, 'id': proposition_reunion.id}) }}" 
+                                                   class="btn btn-warning btn-sm" title="Modifier">
+                                                    <i class="mdi mdi-pencil"></i>
+                                                </a>
+                                                <form method="post" action="{{ path('app_proposition_reunion_delete', {'groupeId': groupe_projet.id, 'id': proposition_reunion.id}) }}" 
+                                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette proposition ?');"
+                                                      class="d-inline">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ proposition_reunion.id) }}">
+                                                    <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+                                                        <i class="mdi mdi-delete"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="8" class="text-center">
+                                            <div class="py-5">
+                                                <i class="mdi mdi-calendar-blank" style="font-size: 60px; color: #dee2e6;"></i>
+                                                <h5 class="text-muted mt-3">Aucune proposition de réunion</h5>
+                                                <p class="text-muted">Commencez par créer une proposition de réunion.</p>
+                                                <a href="{{ path('app_proposition_reunion_new', {'groupeId': groupe_projet.id}) }}" class="btn btn-primary">
+                                                    <i class="mdi mdi-plus-circle me-1"></i>
+                                                    Créer la première proposition
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
