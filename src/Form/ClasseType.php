@@ -3,9 +3,11 @@
 namespace App\Form;
 
 use App\Entity\Classe;
+use App\Entity\MatiereClasse;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class ClasseType extends AbstractType
 {
@@ -15,6 +17,12 @@ class ClasseType extends AbstractType
             ->add('nom')
             ->add('niveau')
             ->add('anneeuniversitaire')
+            ->add('matiereClasses', EntityType::class, [
+                'class' => MatiereClasse::class,
+                'choice_label' => 'id',
+                'multiple' => true,
+                'expanded' => false,
+            ])
         ;
     }
 

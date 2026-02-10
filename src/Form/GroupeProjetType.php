@@ -14,9 +14,14 @@ class GroupeProjetType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('groupeId')
             ->add('nomProjet')
             ->add('matiere')
+            ->add('nbrMembre')
+            ->add('description')
+            ->add('CreatedAt', null, [
+                'widget' => 'single_text',
+            ])
+            ->add('statut')
             ->add('idUser', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'id',

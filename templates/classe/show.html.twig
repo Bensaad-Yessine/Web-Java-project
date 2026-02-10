@@ -664,7 +664,7 @@
                             <tr>
                               <th>ID</th>
                               <th>Matière</th>
-                              <th>Description</th>
+                              <!-- <th>Description</th> Removed: Property does not exist -->
                               <th>Actions</th>
                             </tr>
                           </thead>
@@ -673,15 +673,10 @@
                               <tr>
                                 <td>{{ matiereClasse.id }}</td>
                                 <td>
-                                  <strong>{{ matiereClasse.nom }}</strong>
-                                </td>
                                 <td>
-                                  {% if matiereClasse.description %}
-                                    {{ matiereClasse.description|slice(0, 50) }}...
-                                  {% else %}
-                                    <span class="text-muted">—</span>
-                                  {% endif %}
+                                  <strong>Matière #{{ matiereClasse.id }}</strong>
                                 </td>
+                                <!-- Description column removed -->
                                 <td>
                                   <a href="#" class="btn btn-info btn-sm">
                                     <i class="mdi mdi-eye"></i>

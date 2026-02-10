@@ -3,11 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Tache;
+use App\Entity\Classe;
+use App\Entity\MatiereClasse;
 use App\Form\UserType;
+use App\Repository\TacheRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
@@ -25,7 +30,6 @@ final class UserController extends AbstractController
             'users' => $users,
         ]);
     }
-
     // ✅ CREATE
     #[Route('/add', name: 'app_user_add')]
     public function add(Request $request, EntityManagerInterface $em): Response
@@ -48,6 +52,7 @@ final class UserController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+    
 
     // ✅ READ ONE
     #[Route('/show', name: 'app_user_show')]
@@ -103,8 +108,74 @@ final class UserController extends AbstractController
 
     // ✅ PROFILE
     #[Route('/profile', name: 'app_user_profile')]
-    public function profile(): Response
+    public function profile(TacheRepository $tacheRepo, EntityManagerInterface $em): Response
     {
-        return $this->render('user/showD.html.twig');
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $tasks = $tacheRepo->findTaskByUser($user);
+        
+        // Get user's classe and its matieres
+        $classe = $user->getClasse();
+        $matieres = [];
+        if ($classe) {
+            $matieres = $em->getRepository(MatiereClasse::class)->findBy(['classe' => $classe]);
+        }
+        
+        // Get all classes for admin/listing
+        $allClasses = $em->getRepository(Classe::class)->findAll();
+
+        return $this->render('user/FrontOffice.html.twig', [
+            'user' => $user,
+            'tasks' => $tasks,
+            'userClasse' => $classe,
+            'matieres' => $matieres,
+            'allClasses' => $allClasses,
+        ]);
+    }
+
+    #[Route('/profile/update', name: 'app_profile_update', methods: ['POST'])]
+    public function profileUpdate(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return new JsonResponse(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+
+        $data = json_decode($request->getContent(), true) ?? [];
+        $fullName = isset($data['fullName']) ? trim($data['fullName']) : null;
+        $email = $data['email'] ?? null;
+        $phone = $data['phone'] ?? null;
+
+        if ($fullName) {
+            $parts = preg_split('/\s+/', $fullName);
+            $prenom = array_shift($parts);
+            $nom = count($parts) ? implode(' ', $parts) : '';
+            $user->setPrenom($prenom);
+            $user->setNom($nom);
+        }
+
+        if ($email) {
+            $user->setEmail($email);
+        }
+
+        if ($phone) {
+            $user->setNumTel($phone);
+        }
+
+        $em->persist($user);
+        $em->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Profile updated successfully',
+            'user' => [
+                'fullName' => trim($user->getPrenom() . ' ' . $user->getNom()),
+                'email' => $user->getEmail(),
+                'phone' => $user->getNumTel(),
+            ],
+        ]);
     }
 }

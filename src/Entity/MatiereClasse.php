@@ -35,7 +35,6 @@ class MatiereClasse
         notInRangeMessage: "Le score de complexité doit être compris entre {{ min }} et {{ max }}."
     )]
     private ?int $scorecomplexite = null;
-
     #[ORM\ManyToOne(inversedBy: 'matiereClasses')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: "Vous devez sélectionner une classe.")]
@@ -89,4 +88,5 @@ class MatiereClasse
         $this->classe = $classe;
         return $this;
     }
+
 }

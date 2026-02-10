@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -78,18 +80,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private ?\DateTimeInterface $dateDeNaissance = null;
 
-    #[ORM\Column(type: 'string', length: 50, nullable: true)]
-    #[Assert\NotBlank(message: 'Le sexe est obligatoire')]
-    #[Assert\Choice(
-        choices: ['Homme', 'Femme'],
-        message: 'Le sexe sélectionné n\'est pas valide'
-    )]
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
     private ?string $sexe = null;
 
-    #[ORM\ManyToOne(targetEntity: Classe::class)]
-    #[ORM\JoinColumn(nullable: true)]
-    #[Assert\NotNull(message: 'Une classe doit être sélectionnée')]
+    #[ORM\ManyToOne]
     private ?Classe $classe = null;
+
+    /**
+     * @var Collection<int, GroupeProjet>
+     */
+    #[ORM\ManyToMany(targetEntity: GroupeProjet::class, mappedBy: 'idUser')]
+    private Collection $idGroupe;
+
+    /**
+     * @var Collection<int, ObjectifSante>
+     */
+    #[ORM\OneToMany(targetEntity: ObjectifSante::class, mappedBy: 'user')]
+    private Collection $objectifSantes;
+
+    /**
+     * @var Collection<int, Tache>
+     */
+    #[ORM\OneToMany(targetEntity: Tache::class, mappedBy: 'user')]
+    private Collection $taches;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isVerified = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    public function __construct()
+    {
+        $this->idGroupe = new ArrayCollection();
+        $this->objectifSantes = new ArrayCollection();
+        $this->taches = new ArrayCollection();
+    }
 
     // ================= GETTERS & SETTERS =================
 
@@ -228,5 +254,107 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->classe = $classe;
         return $this;
     }
-}
 
+    /**
+     * @return Collection<int, GroupeProjet>
+     */
+    public function getIdGroupe(): Collection
+    {
+        return $this->idGroupe;
+    }
+
+    public function addIdGroupe(GroupeProjet $idGroupe): self
+    {
+        if (!$this->idGroupe->contains($idGroupe)) {
+            $this->idGroupe->add($idGroupe);
+            $idGroupe->addIdUser($this);
+        }
+        return $this;
+    }
+
+    public function removeIdGroupe(GroupeProjet $idGroupe): self
+    {
+        if ($this->idGroupe->removeElement($idGroupe)) {
+            $idGroupe->removeIdUser($this);
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ObjectifSante>
+     */
+    public function getObjectifSantes(): Collection
+    {
+        return $this->objectifSantes;
+    }
+
+    public function addObjectifSante(ObjectifSante $objectifSante): self
+    {
+        if (!$this->objectifSantes->contains($objectifSante)) {
+            $this->objectifSantes->add($objectifSante);
+            $objectifSante->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeObjectifSante(ObjectifSante $objectifSante): self
+    {
+        if ($this->objectifSantes->removeElement($objectifSante)) {
+            if ($objectifSante->getUser() === $this) {
+                $objectifSante->setUser(null);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tache>
+     */
+    public function getTaches(): Collection
+    {
+        return $this->taches;
+    }
+
+    public function addTache(Tache $tache): self
+    {
+        if (!$this->taches->contains($tache)) {
+            $this->taches->add($tache);
+            $tache->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeTache(Tache $tache): self
+    {
+        if ($this->taches->removeElement($tache)) {
+            if ($tache->getUser() === $this) {
+                $tache->setUser(null);
+            }
+        }
+        return $this;
+    }
+
+    public function isVerified(): ?bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(?bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+}

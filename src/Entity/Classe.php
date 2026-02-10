@@ -136,7 +136,6 @@ class Classe
     {
         return $this->nom . ' - ' . $this->getFormattedNiveau() . ' (' . $this->anneeuniversitaire . ')';
     }
-
     public function __toString(): string
     {
         return $this->getDisplayName();
