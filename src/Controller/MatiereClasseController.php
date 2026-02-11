@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\MatiereClasse;
+use App\Entity\Classe;
 use App\Form\MatiereClasseType;
 use App\Repository\MatiereClasseRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -78,4 +79,13 @@ final class MatiereClasseController extends AbstractController
 
         return $this->redirectToRoute('app_matiere_classe_index', [], Response::HTTP_SEE_OTHER);
     }
+   #[Route('/classe/{id}/matieres', name: 'app_matiere_classe_by_classe')]
+public function byClasse(Classe $classe): Response
+{
+    return $this->render('matiere_classe/Classes.html.twig', [
+        'classe' => $classe,
+        'matieresClasse' => $classe->getMatiereClasses(),
+    ]);
+}
+
 }
