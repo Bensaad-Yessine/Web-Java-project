@@ -19,8 +19,6 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\Json;   
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-
-
 #[Route('/user')]
 class UserController extends AbstractController
 {
@@ -30,6 +28,78 @@ class UserController extends AbstractController
         return $this->render('user/index.html.twig', [
             'users' => $userRepository->findAll(),
             'current_user' => $this->getUser(),
+        ]);
+    }
+
+    #[Route('/search', name: 'app_user_search', methods: ['GET'])]
+    public function search(Request $request, UserRepository $userRepository): JsonResponse
+    {
+        $searchTerm = $request->query->get('q', '');
+        $role = $request->query->get('role', '');
+        $verified = $request->query->get('verified', '');
+        $sortBy = $request->query->get('sortBy', 'id');
+        $sortOrder = $request->query->get('sortOrder', 'ASC');
+
+        // Build query using QueryBuilder
+        $qb = $userRepository->createQueryBuilder('u')
+            ->leftJoin('u.classe', 'c');
+
+        // Search filter
+        if (!empty($searchTerm)) {
+            $qb->andWhere('u.nom LIKE :searchTerm OR u.prenom LIKE :searchTerm OR u.email LIKE :searchTerm OR u.numTel LIKE :searchTerm')
+               ->setParameter('searchTerm', '%' . $searchTerm . '%');
+        }
+
+        // Role filter
+        if (!empty($role)) {
+            if ($role === 'admin') {
+                $qb->andWhere('u.roles LIKE :role')
+                   ->setParameter('role', '%ROLE_ADMIN%');
+            } elseif ($role === 'user') {
+                $qb->andWhere('u.roles NOT LIKE :adminRole')
+                   ->setParameter('adminRole', '%ROLE_ADMIN%');
+            }
+        }
+
+        // Verified filter
+        if ($verified !== '') {
+            $qb->andWhere('u.isVerified = :verified')
+               ->setParameter('verified', $verified === '1');
+        }
+
+        // Sorting
+        $validSortFields = ['id', 'nom', 'prenom', 'email', 'DateDeNaissance', 'sexe'];
+        if (in_array($sortBy, $validSortFields)) {
+            $qb->orderBy('u.' . $sortBy, strtoupper($sortOrder) === 'DESC' ? 'DESC' : 'ASC');
+        }
+
+        $users = $qb->getQuery()->getResult();
+
+        // Transform users to array for JSON response
+        $usersData = [];
+        foreach ($users as $user) {
+            $usersData[] = [
+                'id' => $user->getId(),
+                'nom' => $user->getNom(),
+                'prenom' => $user->getPrenom(),
+                'email' => $user->getEmail(),
+                'dateDeNaissance' => $user->getDateDeNaissance() ? $user->getDateDeNaissance()->format('d/m/Y') : '—',
+                'classe' => $user->getClasse() ? $user->getClasse()->getNom() : null,
+                'numTel' => $user->getNumTel(),
+                'sexe' => $user->getSexe(),
+                'roles' => $user->getRoles(),
+                'isAdmin' => in_array('ROLE_ADMIN', $user->getRoles()),
+                'isVerified' => $user->isVerified(),
+                'profilePic' => $user->getProfilePic(),
+                'initials' => strtoupper(substr($user->getPrenom(), 0, 1) . substr($user->getNom(), 0, 1)),
+                'isCurrentUser' => $this->getUser() && $user->getId() === $this->getUser()->getId(),
+            ];
+        }
+
+        return $this->json([
+            'success' => true,
+            'users' => $usersData,
+            'count' => count($usersData)
         ]);
     }
 
@@ -181,10 +251,11 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/FrontOffice.html.twig', [
- 'tasks' => $tacheRepository->findBy(
+            'tasks' => $tacheRepository->findBy(
                 ['user' => $this->getUser()],
                 ['id' => 'DESC']
-            ),        ]);
+            ),
+        ]);
     }
 
     #[Route('/dashboard/my-tasks', name: 'app_my_tasks', methods: ['GET'])]
@@ -294,135 +365,131 @@ class UserController extends AbstractController
             ], 400);
         }
     }
-#[Route('/dashboard/task/add', name: 'app_task_add', methods: ['GET', 'POST'])]
-public function addTask(Request $request, EntityManagerInterface $em): Response
-{
-    $user = $this->getUser();
-    
-    if (!$user) {
-        throw $this->createAccessDeniedException();
+
+    #[Route('/dashboard/task/add', name: 'app_task_add', methods: ['GET', 'POST'])]
+    public function addTask(Request $request, EntityManagerInterface $em): Response
+    {
+        $user = $this->getUser();
+        
+        if (!$user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $tache = new Tache();
+        $tache->setUser($user);
+        
+        $form = $this->createForm(FrontOfficeTacheType::class, $tache);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $typeMap = [
+                'course' => 'MANUEL',
+                'exam' => 'REVISION',
+                'meeting' => 'REUNION',
+                'personal' => 'MANUEL',
+                'project' => 'MANUEL',
+                'assignment' => 'MANUEL'
+            ];
+
+            $priorityMap = [
+                'low' => 'FAIBLE',
+                'medium' => 'MOYEN',
+                'high' => 'ELEVEE'
+            ];
+
+            $statusMap = [
+                'pending' => 'A_FAIRE',
+                'in_progress' => 'EN_COURS',
+                'completed' => 'TERMINEE'
+            ];
+
+            $formType = $tache->getType();
+            $entityType = $typeMap[$formType] ?? 'MANUEL';
+            $tache->setType($entityType);
+
+            $formPriority = $tache->getPriorite();
+            $entityPriority = $priorityMap[$formPriority] ?? 'MOYEN';
+            $tache->setPriorite($entityPriority);
+
+            $formStatus = $tache->getStatut();
+            $entityStatus = $statusMap[$formStatus] ?? 'A_FAIRE';
+            $tache->setStatut($entityStatus);
+
+            if (!$tache->getDateDebut()) {
+                $tache->setDateDebut(new \DateTime());
+            }
+            if (!$tache->getDateFin()) {
+                $tache->setDateFin((new \DateTime())->modify('+1 hour'));
+            }
+            if (!$tache->getDureeEstimee()) {
+                $tache->setDureeEstimee(60);
+            }
+            
+            if (!$tache->getCreatedAt()) {
+                $tache->setCreatedAt(new \DateTimeImmutable());
+            }
+
+            $em->persist($tache);
+            $em->flush();
+
+            $this->addFlash('success', 'Task created successfully!');
+            return $this->redirectToRoute('app_my_tasks');
+        }
+
+        return $this->render('user/add_task.html.twig', [
+            'form' => $form->createView(),
+            'is_edit' => false,
+        ]);
     }
 
-    $tache = new Tache();
-    $tache->setUser($user); // Automatically set current user
-    
-    $form = $this->createForm(FrontOfficeTacheType::class, $tache);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        // Map frontend values to entity values
-        $typeMap = [
-            'course' => 'MANUEL',
-            'exam' => 'REVISION',
-            'meeting' => 'REUNION',
-            'personal' => 'MANUEL',
-            'project' => 'MANUEL',
-            'assignment' => 'MANUEL'
-        ];
-
-        $priorityMap = [
-            'low' => 'FAIBLE',
-            'medium' => 'MOYEN',
-            'high' => 'ELEVEE'
-        ];
-
-        $statusMap = [
-            'pending' => 'A_FAIRE',
-            'in_progress' => 'EN_COURS',
-            'completed' => 'TERMINEE'
-        ];
-
-        // Map the values
-        $formType = $tache->getType();
-        $entityType = $typeMap[$formType] ?? 'MANUEL';
-        $tache->setType($entityType);
-
-        $formPriority = $tache->getPriorite();
-        $entityPriority = $priorityMap[$formPriority] ?? 'MOYEN';
-        $tache->setPriorite($entityPriority);
-
-        $formStatus = $tache->getStatut();
-        $entityStatus = $statusMap[$formStatus] ?? 'A_FAIRE';
-        $tache->setStatut($entityStatus);
-
-        // Ensure required fields are set
-        if (!$tache->getDateDebut()) {
-            $tache->setDateDebut(new \DateTime());
-        }
-        if (!$tache->getDateFin()) {
-            $tache->setDateFin((new \DateTime())->modify('+1 hour'));
-        }
-        if (!$tache->getDureeEstimee()) {
-            $tache->setDureeEstimee(60);
+    #[Route('/dashboard/task/{id}/edit', name: 'app_task_edit', methods: ['GET', 'POST'])]
+    public function editTask(Request $request, Tache $tache, EntityManagerInterface $em): Response
+    {
+        if ($request->getMethod() === 'GET' && $request->get('_route') === 'legacy_task_edit') {
+            return $this->redirectToRoute('app_task_edit', ['id' => $tache->getId()]);
         }
         
-        if (!$tache->getCreatedAt()) {
-            $tache->setCreatedAt(new \DateTimeImmutable());
+        $user = $this->getUser();
+        
+        if (!$user || $tache->getUser() !== $user) {
+            throw $this->createAccessDeniedException();
         }
 
-        $em->persist($tache);
-        $em->flush();
+        $form = $this->createForm(FrontOfficeTacheType::class, $tache);
+        $form->handleRequest($request);
 
-        $this->addFlash('success', 'Task created successfully!');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
+
+            $this->addFlash('success', 'Task updated successfully!');
+            return $this->redirectToRoute('app_my_tasks');
+        }
+
+        return $this->render('user/edit_task.html.twig', [
+            'form' => $form->createView(),
+            'task' => $tache,
+            'is_edit' => true,
+        ]);
+    }
+
+    #[Route('/dashboard/task/{id}/delete', name: 'app_task_delete', methods: ['POST'])]
+    public function deleteTask(Request $request, Tache $tache, EntityManagerInterface $em): Response
+    {
+        $user = $this->getUser();
+        
+        if (!$user || $tache->getUser() !== $user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if ($this->isCsrfTokenValid('delete'.$tache->getId(), $request->request->get('_token'))) {
+            $em->remove($tache);
+            $em->flush();
+
+            $this->addFlash('success', 'Task deleted successfully!');
+        }
+
         return $this->redirectToRoute('app_my_tasks');
     }
-
-    return $this->render('user/add_task.html.twig', [
-        'form' => $form->createView(),
-        'is_edit' => false,
-    ]);
-}
-
-#[Route('/dashboard/task/{id}/edit', name: 'app_task_edit', methods: ['GET', 'POST'])]
-public function editTask(Request $request, Tache $tache, EntityManagerInterface $em): Response
-{
-    // If legacy GET route, forward to dashboard edit logic
-    if ($request->getMethod() === 'GET' && $request->get('_route') === 'legacy_task_edit') {
-        return $this->redirectToRoute('app_task_edit', ['id' => $tache->getId()]);
-    }
-    $user = $this->getUser();
-    
-    if (!$user || $tache->getUser() !== $user) {
-        throw $this->createAccessDeniedException();
-    }
-
-    $form = $this->createForm(FrontOfficeTacheType::class, $tache);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        // The form uses the entity's choice values (e.g. 'MANUEL','MOYEN','A_FAIRE'),
-        // so no remapping is required here.
-        $em->flush();
-
-        $this->addFlash('success', 'Task updated successfully!');
-        return $this->redirectToRoute('app_my_tasks');
-    }
-
-    return $this->render('user/edit_task.html.twig', [
-        'form' => $form->createView(),
-        'task' => $tache,
-        'is_edit' => true,
-    ]);
-}
-
-#[Route('/dashboard/task/{id}/delete', name: 'app_task_delete', methods: ['POST'])]
-public function deleteTask(Request $request, Tache $tache, EntityManagerInterface $em): Response
-{
-    $user = $this->getUser();
-    
-    if (!$user || $tache->getUser() !== $user) {
-        throw $this->createAccessDeniedException();
-    }
-
-    if ($this->isCsrfTokenValid('delete'.$tache->getId(), $request->request->get('_token'))) {
-        $em->remove($tache);
-        $em->flush();
-
-        $this->addFlash('success', 'Task deleted successfully!');
-    }
-
-    return $this->redirectToRoute('app_my_tasks');
-}
 
     #[Route('/tasks/{id}/toggle', name: 'app_task_toggle', methods: ['POST'])]
     public function toggleTask(Request $request, Tache $tache, EntityManagerInterface $em): JsonResponse
