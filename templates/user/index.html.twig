@@ -159,7 +159,6 @@
         display: inline-block;
       }
       
-      /* Fix for profile section alignment */
       .profile-pic {
         display: flex;
         align-items: center;
@@ -175,29 +174,195 @@
         flex-grow: 1;
       }
       
-      /* Fix for navbar profile alignment */
       .navbar-profile {
         display: flex;
         align-items: center;
         padding: 5px 0;
       }
       
-      /* Ensure table cells align properly */
       .table td {
         vertical-align: middle;
       }
       
-      /* Fix for duplicate avatar display */
       .avatar-container {
         display: flex;
         align-items: center;
         gap: 12px;
       }
+
+      /* Filter and Sort Controls */
+      .filter-controls {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      }
+
+      .filter-group {
+        margin-bottom: 15px;
+      }
+
+      .filter-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .filter-group label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+        display: block;
+        font-size: 0.9rem;
+      }
+
+      .filter-group select,
+      .filter-group input {
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+        padding: 8px 12px;
+        transition: all 0.3s ease;
+      }
+
+      .filter-group select:focus,
+      .filter-group input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        outline: none;
+      }
+
+      .filter-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .btn-filter {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .btn-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-reset {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .btn-reset:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+      }
+
+      .sort-header {
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+        padding-right: 20px;
+      }
+
+      .sort-header:hover {
+        background-color: rgba(102, 126, 234, 0.1);
+      }
+
+      .sort-header .sort-icon {
+        position: absolute;
+        right: 5px;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0.3;
+        transition: opacity 0.3s ease;
+      }
+
+      .sort-header.active .sort-icon {
+        opacity: 1;
+        color: #667eea;
+      }
+
+      .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        border-radius: 10px;
+      }
+
+      .loading-overlay.active {
+        display: flex;
+      }
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
+      .results-info {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin-top: 10px;
+      }
+
+      .filter-toggle {
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        border: 1px solid #dee2e6;
+      }
+
+      .filter-toggle:hover {
+        background: #e9ecef;
+        border-color: #667eea;
+      }
+
+      .filter-toggle i {
+        transition: transform 0.3s ease;
+      }
+
+      .filter-toggle.active i {
+        transform: rotate(180deg);
+      }
+
+      #filterSection {
+        transition: all 0.3s ease;
+        overflow: hidden;
+      }
     </style>
   </head>
   <body>
     <div class="container-scroller">
-      <!-- Sidebar -->
+      <!-- Sidebar (keeping original) -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
           <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
@@ -250,7 +415,6 @@
             <span class="nav-link">Navigation</span>
           </li>
           
-          <!-- Dashboard -->
           <li class="nav-item menu-items ">
             <a class="nav-link" href="#">
               <span class="menu-icon">
@@ -260,7 +424,6 @@
             </a>
           </li>
           
-          <!-- Utilisateurs -->
           <li class="nav-item menu-items active">
             <a class="nav-link" href="{{ path('app_user_index') }}">
               <span class="menu-icon">
@@ -270,7 +433,6 @@
             </a>
           </li>
           
-          <!-- Matières -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="{{ path('app_matiere_classe_index') }}">
               <span class="menu-icon">
@@ -280,7 +442,6 @@
             </a>
           </li>
           
-          <!-- Classes -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="{{ path('app_classe_index') }}">
               <span class="menu-icon">
@@ -290,7 +451,6 @@
             </a>
           </li>
           
-          <!-- Salles -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="{{ path('app_salle_index') }}">
               <span class="menu-icon">
@@ -300,7 +460,6 @@
             </a>
           </li>
           
-          <!-- Séances -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="{{ path('app_seance_index') }}">
               <span class="menu-icon">
@@ -310,7 +469,6 @@
             </a>
           </li>
           
-          <!-- Groupes -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="{{ path('app_groupe_projet_index') }}">
               <span class="menu-icon">
@@ -320,7 +478,6 @@
             </a>
           </li>
           
-          <!-- Tâches -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="{{ path('app_tache_index') }}">
               <span class="menu-icon">
@@ -330,7 +487,6 @@
             </a>
           </li>
           
-          <!-- Alertes -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="#">
               <span class="menu-icon">
@@ -340,7 +496,6 @@
             </a>
           </li>
           
-          <!-- Exercices de santé -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="{{ path('app_objectif_sante_index') }}">
               <span class="menu-icon">
@@ -350,7 +505,6 @@
             </a>
           </li>
           
-          <!-- Logout -->
           <li class="nav-item menu-items">
             <a class="nav-link" href="{{ path('app_logout') }}">
               <span class="menu-icon">
@@ -364,7 +518,7 @@
 
       <!-- Main Content -->
       <div class="container-fluid page-body-wrapper">
-        <!-- Navbar -->
+        <!-- Navbar (keeping original) -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
           <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
             <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
@@ -549,7 +703,7 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0 stat-count">{{ users|length }}</h3>
+                          <h3 class="mb-0 stat-count" id="totalCount">{{ users|length }}</h3>
                           <p class="text-success ms-2 mb-0 font-weight-medium">+12%</p>
                         </div>
                       </div>
@@ -570,7 +724,7 @@
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
                           {% set userRole = users|filter(u => 'ROLE_USER' in u.roles and 'ROLE_ADMIN' not in u.roles)|length %}
-                          <h3 class="mb-0 stat-count">{{ userRole }}</h3>
+                          <h3 class="mb-0 stat-count" id="studentsCount">{{ userRole }}</h3>
                           <p class="text-success ms-2 mb-0 font-weight-medium">+5%</p>
                         </div>
                       </div>
@@ -591,7 +745,7 @@
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
                           {% set admins = users|filter(u => 'ROLE_ADMIN' in u.roles)|length %}
-                          <h3 class="mb-0 stat-count">{{ admins }}</h3>
+                          <h3 class="mb-0 stat-count" id="adminsCount">{{ admins }}</h3>
                           <p class="text-success ms-2 mb-0 font-weight-medium">+0%</p>
                         </div>
                       </div>
@@ -612,7 +766,7 @@
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
                           {% set verified = users|filter(u => u.isVerified)|length %}
-                          <h3 class="mb-0 stat-count">{{ verified }}</h3>
+                          <h3 class="mb-0 stat-count" id="verifiedCount">{{ verified }}</h3>
                           <p class="text-success ms-2 mb-0 font-weight-medium">+3%</p>
                         </div>
                       </div>
@@ -632,12 +786,18 @@
             <div class="row">
               <div class="col-12 grid-margin">
                 <div class="card">
-                  <div class="card-body">
+                  <div class="card-body" style="position: relative;">
+                    <!-- Loading Overlay -->
+                    <div class="loading-overlay" id="loadingOverlay">
+                      <div class="spinner"></div>
+                    </div>
+
                     <div class="d-flex justify-content-between align-items-center mb-4">
                       <h4 class="card-title">👥 Liste des Utilisateurs</h4>
-                      <div class="d-flex">
-                        <div class="search-box me-3">
-                          <input type="text" class="form-control" placeholder="Rechercher..." id="tableSearchInput">
+                      <div class="d-flex gap-2">
+                        <div class="filter-toggle" id="filterToggle">
+                          <i class="mdi mdi-filter-variant"></i>
+                          <span>Filtres</span>
                         </div>
                         <a href="{{ path('app_user_new') }}" class="btn btn-gradient-primary btn-icon-text">
                           <i class="mdi mdi-account-plus btn-icon-prepend"></i>
@@ -646,8 +806,90 @@
                       </div>
                     </div>
 
+                    <!-- Filter Controls -->
+                    <div id="filterSection" style="display: none;">
+                      <div class="filter-controls">
+                        <div class="row">
+                          <div class="col-md-3">
+                            <div class="filter-group">
+                              <label for="searchFilter">
+                                <i class="mdi mdi-magnify me-1"></i>Recherche
+                              </label>
+                              <input type="text" class="form-control" id="searchFilter" placeholder="Nom, prénom, email...">
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="filter-group">
+                              <label for="roleFilter">
+                                <i class="mdi mdi-account-key me-1"></i>Rôle
+                              </label>
+                              <select class="form-select" id="roleFilter">
+                                <option value="">Tous les rôles</option>
+                                <option value="admin">Administrateurs</option>
+                                <option value="user">Utilisateurs</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="filter-group">
+                              <label for="verifiedFilter">
+                                <i class="mdi mdi-check-circle me-1"></i>Statut
+                              </label>
+                              <select class="form-select" id="verifiedFilter">
+                                <option value="">Tous</option>
+                                <option value="1">Vérifiés</option>
+                                <option value="0">Non vérifiés</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="filter-group">
+                              <label for="sortByFilter">
+                                <i class="mdi mdi-sort me-1"></i>Trier par
+                              </label>
+                              <select class="form-select" id="sortByFilter">
+                                <option value="id">ID</option>
+                                <option value="nom">Nom</option>
+                                <option value="prenom">Prénom</option>
+                                <option value="email">Email</option>
+                                <option value="DateDeNaissance">Date de naissance</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="col-md-1">
+                            <div class="filter-group">
+                              <label for="sortOrderFilter">
+                                <i class="mdi mdi-sort-ascending me-1"></i>Ordre
+                              </label>
+                              <select class="form-select" id="sortOrderFilter">
+                                <option value="ASC">A-Z</option>
+                                <option value="DESC">Z-A</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <div class="filter-group">
+                              <label>&nbsp;</label>
+                              <div class="filter-actions">
+                                <button type="button" class="btn btn-filter" id="applyFilters">
+                                  <i class="mdi mdi-check me-1"></i>Appliquer
+                                </button>
+                                <button type="button" class="btn btn-reset" id="resetFilters">
+                                  <i class="mdi mdi-refresh me-1"></i>Réinitialiser
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="results-info mt-2">
+                          <i class="mdi mdi-information-outline me-1"></i>
+                          <span id="resultsCount">{{ users|length }} utilisateur(s) trouvé(s)</span>
+                        </div>
+                      </div>
+                    </div>
+
                     {% if users is empty %}
-                      <div class="empty-state">
+                      <div class="empty-state" id="emptyState">
                         <i class="mdi mdi-account-off"></i>
                         <h4 class="text-muted">Aucun utilisateur trouvé</h4>
                         <p class="text-muted mb-4">Commencez par ajouter un nouvel utilisateur</p>
@@ -661,19 +903,34 @@
                         <table class="table table-hover" id="usersTable">
                           <thead>
                             <tr>
-                              <th>ID</th>
-                              <th>Utilisateur</th>
-                              <th>Email</th>
-                              <th>Date de naissance</th>
+                              <th class="sort-header" data-sort="id">
+                                ID
+                                <i class="mdi mdi-chevron-down sort-icon"></i>
+                              </th>
+                              <th class="sort-header" data-sort="nom">
+                                Utilisateur
+                                <i class="mdi mdi-chevron-down sort-icon"></i>
+                              </th>
+                              <th class="sort-header" data-sort="email">
+                                Email
+                                <i class="mdi mdi-chevron-down sort-icon"></i>
+                              </th>
+                              <th class="sort-header" data-sort="DateDeNaissance">
+                                Date de naissance
+                                <i class="mdi mdi-chevron-down sort-icon"></i>
+                              </th>
                               <th>Classe</th>
                               <th>Téléphone</th>
-                              <th>Sexe</th>
+                              <th class="sort-header" data-sort="sexe">
+                                Sexe
+                                <i class="mdi mdi-chevron-down sort-icon"></i>
+                              </th>
                               <th>Rôle</th>
                               <th>Status</th>
                               <th>Actions</th>
                             </tr>
                           </thead>
-                          <tbody>
+                          <tbody id="usersTableBody">
                             {% for user in users %}
                               <tr>
                                 <td>{{ user.id }}</td>
@@ -782,7 +1039,7 @@
                   © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
                 </span>
                 <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
-                  Gestion des Utilisateurs - {{ users|length }} utilisateur{{ users|length > 1 ? 's' : '' }}
+                  Gestion des Utilisateurs - <span id="footerCount">{{ users|length }}</span> utilisateur{{ users|length > 1 ? 's' : '' }}
                   {% if app.user %}
                     | Connecté: {{ app.user.prenom|slice(0, 10) }}...
                   {% endif %}
@@ -826,66 +1083,284 @@
       </div>
     </div>
 
-   <!-- Scripts -->
+    <!-- Scripts -->
     <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
     <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
     <script src="{{ asset('assets/js/misc.js') }}"></script>
     
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality for navbar
+        // Elements
+        const filterToggle = document.getElementById('filterToggle');
+        const filterSection = document.getElementById('filterSection');
+        const searchFilter = document.getElementById('searchFilter');
+        const roleFilter = document.getElementById('roleFilter');
+        const verifiedFilter = document.getElementById('verifiedFilter');
+        const sortByFilter = document.getElementById('sortByFilter');
+        const sortOrderFilter = document.getElementById('sortOrderFilter');
+        const applyFiltersBtn = document.getElementById('applyFilters');
+        const resetFiltersBtn = document.getElementById('resetFilters');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const usersTableBody = document.getElementById('usersTableBody');
+        const resultsCount = document.getElementById('resultsCount');
+        const footerCount = document.getElementById('footerCount');
+        const totalCount = document.getElementById('totalCount');
         const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-          searchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#usersTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
-            });
+        const sortHeaders = document.querySelectorAll('.sort-header');
+
+        // Current user ID for comparison
+        const currentUserId = {{ app.user ? app.user.id : 'null' }};
+
+        // Toggle filter section
+        filterToggle.addEventListener('click', function() {
+          if (filterSection.style.display === 'none') {
+            filterSection.style.display = 'block';
+            filterToggle.classList.add('active');
+          } else {
+            filterSection.style.display = 'none';
+            filterToggle.classList.remove('active');
+          }
+        });
+
+        // Apply filters
+        function applyFilters() {
+          const searchTerm = searchFilter.value.trim();
+          const role = roleFilter.value;
+          const verified = verifiedFilter.value;
+          const sortBy = sortByFilter.value;
+          const sortOrder = sortOrderFilter.value;
+
+          // Show loading
+          loadingOverlay.classList.add('active');
+
+          // Build query parameters
+          const params = new URLSearchParams();
+          if (searchTerm) params.append('q', searchTerm);
+          if (role) params.append('role', role);
+          if (verified) params.append('verified', verified);
+          if (sortBy) params.append('sortBy', sortBy);
+          if (sortOrder) params.append('sortOrder', sortOrder);
+
+          // Make AJAX request
+          fetch('/user/search?' + params.toString(), {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              updateTable(data.users);
+              updateStats(data);
+              resultsCount.textContent = data.count + ' utilisateur(s) trouvé(s)';
+              footerCount.textContent = data.count;
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Une erreur est survenue lors du filtrage');
+          })
+          .finally(() => {
+            loadingOverlay.classList.remove('active');
           });
         }
-        
-        // Search functionality for table
-        const tableSearchInput = document.getElementById('tableSearchInput');
-        if (tableSearchInput) {
-          tableSearchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#usersTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
-            });
-          });
+
+        // Update table with new data
+        function updateTable(users) {
+          if (users.length === 0) {
+            usersTableBody.innerHTML = `
+              <tr>
+                <td colspan="10" class="text-center py-5">
+                  <i class="mdi mdi-account-off" style="font-size: 48px; color: #dee2e6;"></i>
+                  <p class="text-muted mt-3">Aucun utilisateur trouvé</p>
+                </td>
+              </tr>
+            `;
+            return;
+          }
+
+          usersTableBody.innerHTML = users.map(user => `
+            <tr>
+              <td>${user.id}</td>
+              <td>
+                <div class="d-flex align-items-center">
+                  ${user.profilePic ? 
+                    `<img src="/uploads/profile_pics/${user.profilePic}" alt="${user.prenom}" class="user-avatar-img me-3">` :
+                    `<div class="user-avatar me-3">${user.initials}</div>`
+                  }
+                  <div>
+                    <h6 class="mb-0">${user.prenom} ${user.nom}</h6>
+                    <small class="text-muted">${user.email}</small>
+                    ${user.isCurrentUser ? 
+                      '<div class="mt-1"><small class="text-primary"><i class="mdi mdi-account-circle me-1"></i>C\'est vous</small></div>' : 
+                      ''
+                    }
+                  </div>
+                </div>
+              </td>
+              <td>${user.email}</td>
+              <td>${user.dateDeNaissance || '—'}</td>
+              <td>
+                ${user.classe ? 
+                  `<span class="badge badge-light">${user.classe}</span>` :
+                  '<span class="text-muted">—</span>'
+                }
+              </td>
+              <td>
+                ${user.numTel ? 
+                  `<span class="badge badge-info">${user.numTel}</span>` :
+                  '<span class="text-muted">—</span>'
+                }
+              </td>
+              <td>
+                ${user.sexe === 'Homme' ?
+                  `<span class="badge badge-primary">${user.sexe}</span>` :
+                  `<span class="badge badge-pink">${user.sexe}</span>`
+                }
+              </td>
+              <td>
+                ${user.isAdmin ?
+                  '<span class="badge badge-admin">Administrateur</span>' :
+                  '<span class="badge badge-etudiant">Utilisateur</span>'
+                }
+              </td>
+              <td>
+                ${user.isVerified ?
+                  '<span class="badge badge-success">Vérifié</span>' :
+                  '<span class="badge badge-warning">Non vérifié</span>'
+                }
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <a href="/user/${user.id}" class="btn btn-info btn-sm btn-icon" title="Voir">
+                    <i class="mdi mdi-eye"></i>
+                  </a>
+                  <a href="/user/${user.id}/edit" class="btn btn-warning btn-sm btn-icon" title="Modifier">
+                    <i class="mdi mdi-pencil"></i>
+                  </a>
+                  ${!user.isCurrentUser ?
+                    `<button type="button" class="btn btn-danger btn-sm btn-icon delete-btn" 
+                             data-user-id="${user.id}" 
+                             data-user-name="${user.prenom} ${user.nom}" 
+                             title="Supprimer">
+                      <i class="mdi mdi-delete"></i>
+                    </button>` :
+                    '<span class="badge badge-secondary">Vous</span>'
+                  }
+                </div>
+              </td>
+            </tr>
+          `).join('');
+
+          // Reattach delete button listeners
+          attachDeleteListeners();
         }
-        
-        // Delete confirmation modal
-        const deleteButtons = document.querySelectorAll('.delete-btn');
-        deleteButtons.forEach(button => {
-          button.addEventListener('click', function() {
-            const userId = this.getAttribute('data-user-id');
-            const userName = this.getAttribute('data-user-name');
-            const csrfToken = this.getAttribute('data-csrf-token');
-            
-            // Update modal content
-            document.getElementById('userNameDisplay').textContent = userName;
-            
-            // Set the form action - Build the URL dynamically
-            const deleteForm = document.getElementById('deleteForm');
-            deleteForm.action = '/user/' + userId + '/delete';
-            
-            // Set CSRF token
-            document.getElementById('csrfToken').value = csrfToken;
-            
-            // Show modal using Bootstrap 5
-            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-            modal.show();
+
+        // Update statistics
+        function updateStats(data) {
+          totalCount.textContent = data.count;
+          
+          // Count admins and students
+          let admins = 0;
+          let students = 0;
+          let verified = 0;
+
+          data.users.forEach(user => {
+            if (user.isAdmin) admins++;
+            else students++;
+            if (user.isVerified) verified++;
+          });
+
+          document.getElementById('adminsCount').textContent = admins;
+          document.getElementById('studentsCount').textContent = students;
+          document.getElementById('verifiedCount').textContent = verified;
+        }
+
+        // Reset filters
+        resetFiltersBtn.addEventListener('click', function() {
+          searchFilter.value = '';
+          roleFilter.value = '';
+          verifiedFilter.value = '';
+          sortByFilter.value = 'id';
+          sortOrderFilter.value = 'ASC';
+          
+          applyFilters();
+        });
+
+        // Apply filters on button click
+        applyFiltersBtn.addEventListener('click', applyFilters);
+
+        // Apply filters on Enter key in search
+        searchFilter.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            applyFilters();
+          }
+        });
+
+        // Navbar search (real-time)
+        let searchTimeout;
+        searchInput.addEventListener('keyup', function() {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => {
+            searchFilter.value = this.value;
+            applyFilters();
+          }, 500);
+        });
+
+        // Sort by clicking headers
+        sortHeaders.forEach(header => {
+          header.addEventListener('click', function() {
+            const sortField = this.getAttribute('data-sort');
+            const currentSort = sortByFilter.value;
+            const currentOrder = sortOrderFilter.value;
+
+            // Toggle sort order if clicking same column
+            if (sortField === currentSort) {
+              sortOrderFilter.value = currentOrder === 'ASC' ? 'DESC' : 'ASC';
+            } else {
+              sortByFilter.value = sortField;
+              sortOrderFilter.value = 'ASC';
+            }
+
+            // Update active state
+            sortHeaders.forEach(h => h.classList.remove('active'));
+            this.classList.add('active');
+
+            applyFilters();
           });
         });
-        
-        // Auto-hide alerts after 5 seconds
+
+        // Delete confirmation
+        function attachDeleteListeners() {
+          const deleteButtons = document.querySelectorAll('.delete-btn');
+          deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+              const userId = this.getAttribute('data-user-id');
+              const userName = this.getAttribute('data-user-name');
+              const csrfToken = this.getAttribute('data-csrf-token');
+              
+              document.getElementById('userNameDisplay').textContent = userName;
+              
+              const deleteForm = document.getElementById('deleteForm');
+              deleteForm.action = '/user/' + userId + '/delete';
+              
+              if (csrfToken) {
+                document.getElementById('csrfToken').value = csrfToken;
+              }
+              
+              const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+              modal.show();
+            });
+          });
+        }
+
+        // Initial delete listeners
+        attachDeleteListeners();
+
+        // Auto-hide alerts
         setTimeout(() => {
           const alerts = document.querySelectorAll('.alert');
           alerts.forEach(alert => {
