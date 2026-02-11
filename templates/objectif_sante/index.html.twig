@@ -551,7 +551,7 @@
               <span class="menu-title">Alertes</span>
             </a>
           </li>
-          
+        
           <li class="nav-item menu-items active">
             <a class="nav-link" href="#">
               <span class="menu-icon"><i class="mdi mdi-heart-pulse"></i></span>
@@ -776,7 +776,7 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set en_cours = objectif_santes|filter(o => o.statut == 'En cours')|length %}
+                          {% set en_cours = objectif_santes|filter(o => o.statut == 'EN_COURS')|length %}
                           <h3 class="mb-0 stat-count">{{ en_cours }}</h3>
                           <p class="text-info ms-2 mb-0 font-weight-medium">Actifs</p>
                         </div>
@@ -798,7 +798,7 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set haute_priorite = objectif_santes|filter(o => o.priorite == 'Haute')|length %}
+                         {% set haute_priorite = objectif_santes|filter(o => o.priorite == 'HAUTE')|length %}
                           <h3 class="mb-0 stat-count">{{ haute_priorite }}</h3>
                           <p class="text-danger ms-2 mb-0 font-weight-medium">Urgent</p>
                         </div>
@@ -820,7 +820,7 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set termines = objectif_santes|filter(o => o.statut == 'Terminé')|length %}
+                          {% set termines = objectif_santes|filter(o => o.statut == 'ATTEINT')|length %}
                           <h3 class="mb-0 stat-count">{{ termines }}</h3>
                           <p class="text-success ms-2 mb-0 font-weight-medium">+8%</p>
                         </div>
@@ -847,15 +847,42 @@
                         <i class="mdi mdi-format-list-bulleted me-2"></i>
                         Liste des Objectifs de Santé
                       </h4>
-                      <div class="d-flex gap-2">
-                        <div class="search-box">
-                          <input type="text" class="form-control" placeholder="Rechercher..." id="tableSearchInput">
-                        </div>
-                        <a href="{{ path('app_objectif_sante_new') }}" class="btn btn-gradient-primary btn-icon-text">
-                          <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
-                          Nouvel objectif
-                        </a>
-                      </div>
+                      <div class="d-flex gap-2 align-items-center flex-wrap">
+
+  <select id="filterType" class="form-select" style="max-width: 200px;">
+    <option value="ALL">Tous les types</option>
+    <option value="SOMMEIL">SOMMEIL</option>
+    <option value="STRESS">STRESS</option>
+    <option value="SPORT">SPORT</option>
+    <option value="ALIMENTATION">ALIMENTATION</option>
+  </select>
+
+  <select id="filterPriorite" class="form-select" style="max-width: 200px;">
+    <option value="ALL">Toutes les priorités</option>
+    <option value="HAUTE">HAUTE</option>
+    <option value="MOYENNE">MOYENNE</option>
+    <option value="BASSE">BASSE</option>
+  </select>
+
+  <select id="sortBy" class="form-select" style="max-width: 200px;">
+    <option value="dateDebut">Trier par date début</option>
+    <option value="priorite">Trier par priorité</option>
+  </select>
+
+  <select id="sortDir" class="form-select" style="max-width: 160px;">
+    <option value="DESC">DESC</option>
+    <option value="ASC">ASC</option>
+  </select>
+
+  <input id="q" type="text" class="form-control" placeholder="Rechercher titre..." style="max-width: 260px;">
+
+  <a href="{{ path('app_objectif_sante_new') }}" class="btn btn-gradient-primary btn-icon-text">
+    <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
+    Nouvel objectif
+  </a>
+
+</div>
+
                     </div>
 
                     {% if objectif_santes is empty %}
@@ -885,135 +912,10 @@
                               <th>Actions</th>
                             </tr>
                           </thead>
-                          <tbody>
-                            {% for objectif_sante in objectif_santes %}
-                              <tr>
-                                <td><strong>#{{ objectif_sante.id }}</strong></td>
-                                <td>
-                                  <div>
-                                    <h6 class="mb-0">{{ objectif_sante.titre }}</h6>
-                                    <small class="text-muted">Objectif #{{ objectif_sante.id }}</small>
-                                  </div>
-                                </td>
-                                <td>
-                                  <span class="type-badge type-{{ objectif_sante.type|lower|replace({' ': '-'}) }}">
-                                    <i class="mdi mdi-{{ 
-                                      objectif_sante.type == 'Poids' ? 'weight' : 
-                                      objectif_sante.type == 'Cardio' ? 'heart-pulse' : 
-                                      objectif_sante.type == 'Sommeil' ? 'sleep' : 
-                                      objectif_sante.type == 'Nutrition' ? 'food-apple' : 
-                                      objectif_sante.type == 'Hydratation' ? 'water' : 
-                                      objectif_sante.type == 'Musculation' ? 'arm-flex' : 
-                                      'star' }} me-1"></i>
-                                    {{ objectif_sante.type }}
-                                  </span>
-                                </td>
-                                <td>
-                                  {% if objectif_sante.valeurCible %}
-                                    <span class="target-value">
-                                      <i class="mdi mdi-target"></i>
-                                      {{ objectif_sante.valeurCible }}
-                                    </span>
-                                  {% else %}
-                                    <span class="text-muted">—</span>
-                                  {% endif %}
-                                </td>
-                                <td>
-                                  <div class="date-cell">
-                                    <span class="date-label">Début</span>
-                                    <span class="date-value">{{ objectif_sante.dateDebut ? objectif_sante.dateDebut|date('d/m/Y') : '—' }}</span>
-                                    <span class="date-label mt-1">Fin</span>
-                                    <span class="date-value">{{ objectif_sante.dateFin ? objectif_sante.dateFin|date('d/m/Y') : '—' }}</span>
-                                  </div>
-                                </td>
-                                <td>
-                                  {% if objectif_sante.progression is not null %}
-                                    <div class="d-flex align-items-center">
-                                      <div class="progress me-2" style="width: 100px;">
-                                        {% set prog = objectif_sante.progression %}
-                                        <div class="progress-bar bg-health" role="progressbar" 
-                                             style="width: {{ prog > 100 ? 100 : prog }}%" 
-                                             aria-valuenow="{{ prog }}" 
-                                             aria-valuemin="0" 
-                                             aria-valuemax="100"></div>
-                                      </div>
-                                      <small class="fw-bold">{{ objectif_sante.progression }}%</small>
-                                    </div>
-                                  {% else %}
-                                    <span class="text-muted">—</span>
-                                  {% endif %}
-                                </td>
-                                <td>
-                                  {% if objectif_sante.priorite %}
-                                    <span class="priority-badge priority-{{ objectif_sante.priorite|lower }}">
-                                      <i class="mdi mdi-flag me-1"></i>
-                                      {{ objectif_sante.priorite }}
-                                    </span>
-                                  {% else %}
-                                    <span class="text-muted">—</span>
-                                  {% endif %}
-                                </td>
-                                <td>
-                                  {% if objectif_sante.statut %}
-                                    <span class="status-badge status-{{ objectif_sante.statut|lower|replace({' ': '-'}) }}">
-                                      <i class="mdi mdi-{{ 
-                                        objectif_sante.statut == 'En cours' ? 'progress-clock' : 
-                                        objectif_sante.statut == 'Terminé' ? 'check-circle' : 
-                                        objectif_sante.statut == 'Abandonné' ? 'close-circle' : 
-                                        'pause-circle' }} me-1"></i>
-                                      {{ objectif_sante.statut }}
-                                    </span>
-                                  {% else %}
-                                    <span class="text-muted">—</span>
-                                  {% endif %}
-                                </td>
-                                <td>
-                                  {% if objectif_sante.user %}
-                                    <div class="user-info">
-                                      {% if objectif_sante.user.profilePic %}
-                                        <img src="{{ asset('uploads/profile_pics/' ~ objectif_sante.user.profilePic) }}" 
-                                             alt="{{ objectif_sante.user.nom }}" 
-                                             class="user-avatar-img">
-                                      {% else %}
-                                        <div class="user-avatar">
-                                          {{ objectif_sante.user.nom|first|upper }}
-                                        </div>
-                                      {% endif %}
-                                      <div class="user-info-text">
-                                        <span class="user-name">{{ objectif_sante.user.nom }}</span>
-                                        <span class="user-email">{{ objectif_sante.user.email }}</span>
-                                      </div>
-                                    </div>
-                                  {% else %}
-                                    <span class="text-muted">Non assigné</span>
-                                  {% endif %}
-                                </td>
-                                <td>
-                                  <div class="action-buttons">
-                                    <a href="{{ path('app_objectif_sante_show', { id: objectif_sante.id }) }}" 
-                                       class="btn btn-info btn-sm"
-                                       title="Voir les détails">
-                                      <i class="mdi mdi-eye"></i>
-                                    </a>
-                                    <a href="{{ path('app_objectif_sante_edit', { id: objectif_sante.id }) }}" 
-                                       class="btn btn-warning btn-sm"
-                                       title="Modifier">
-                                      <i class="mdi mdi-pencil"></i>
-                                    </a>
-                                    <form action="{{ path('app_objectif_sante_delete', { id: objectif_sante.id }) }}" 
-                                          method="POST" 
-                                          style="display: inline;"
-                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet objectif ?');">
-                                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ objectif_sante.id) }}">
-                                      <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
-                                        <i class="mdi mdi-delete"></i>
-                                      </button>
-                                    </form>
-                                  </div>
-                                </td>
-                              </tr>
-                            {% endfor %}
-                          </tbody>
+                          <tbody id="tableBody">
+  {% include 'objectif_sante/_rows.html.twig' with { objectif_santes: objectif_santes } %}
+</tbody>
+
                         </table>
                       </div>
                     {% endif %}
@@ -1031,7 +933,7 @@
                 <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
                   <i class="mdi mdi-heart-pulse text-danger"></i>
                   Objectifs de Santé - {{ objectif_santes|length }} objectif{{ objectif_santes|length > 1 ? 's' : '' }}
-                  {% set en_cours = objectif_santes|filter(o => o.statut == 'En cours')|length %}
+                  {% set en_cours = objectif_santes|filter(o => o.statut == 'EN_COURS')|length %}
                   | {{ en_cours }} en cours
                 </span>
               </div>
@@ -1047,54 +949,65 @@
     <script src="{{ asset('assets/js/misc.js') }}"></script>
     
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality for navbar
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-          searchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#objectifsTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
-            });
-          });
-        }
-        
-        // Search functionality for table
-        const tableSearchInput = document.getElementById('tableSearchInput');
-        if (tableSearchInput) {
-          tableSearchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#objectifsTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
-            });
-          });
-        }
-        
-        // Auto-hide alerts after 5 seconds
-        setTimeout(() => {
-          const alerts = document.querySelectorAll('.alert');
-          alerts.forEach(alert => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-          });
-        }, 5000);
-        
-        // Highlight high priority objectives
-        const highPriorityRows = document.querySelectorAll('.priority-haute');
-        highPriorityRows.forEach(badge => {
-          const row = badge.closest('tr');
-          if (row) {
-            row.style.borderLeft = '4px solid #f5576c';
-          }
-        });
+document.addEventListener('DOMContentLoaded', () => {
+  const typeEl = document.getElementById('filterType');
+  const prioEl = document.getElementById('filterPriorite');
+  const sortByEl = document.getElementById('sortBy');
+  const sortDirEl = document.getElementById('sortDir');
+  const qEl = document.getElementById('q');
+  const tbody = document.getElementById('tableBody');
+
+  let timer = null;
+
+  async function loadFiltered() {
+    const params = new URLSearchParams({
+      type: typeEl.value,
+      priorite: prioEl.value,
+      sort: sortByEl.value,
+      dir: sortDirEl.value,
+      q: qEl.value || ''
+    });
+
+    // IMPORTANT: ici on utilise la route Symfony (comme toi)
+    const url = "{{ path('app_objectif_sante_filter') }}" + "?" + params.toString();
+    console.log("AJAX =>", url);
+
+    try {
+      const res = await fetch(url, {
+        headers: { "X-Requested-With": "XMLHttpRequest" }
       });
-    </script>
+
+      if (!res.ok) {
+        console.error("HTTP ERROR:", res.status, await res.text());
+        return;
+      }
+
+      const data = await res.json();
+
+      // Injection HTML
+      tbody.innerHTML = data.html || "";
+
+    } catch (e) {
+      console.error("FETCH/JSON ERROR:", e);
+    }
+  }
+
+  // Events
+  [typeEl, prioEl, sortByEl, sortDirEl].forEach(el => {
+    el.addEventListener('change', loadFiltered);
+  });
+
+  qEl.addEventListener('keyup', () => {
+    clearTimeout(timer);
+    timer = setTimeout(loadFiltered, 250);
+  });
+
+  // Optionnel: charger une fois au démarrage
+  // loadFiltered();
+});
+</script>
+
+
   </body>
 </html>
 {% endblock %}

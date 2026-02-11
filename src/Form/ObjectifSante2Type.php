@@ -15,7 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
-class ObjectifSanteType extends AbstractType
+class ObjectifSante2Type extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -75,12 +75,6 @@ class ObjectifSanteType extends AbstractType
                     'placeholder' => 'Ex: Dormir 8 heures par nuit',
                     'maxlength' => 100,
                 ],
-            ])
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'email',
-                'label' => 'Utilisateur',
-                'attr' => ['class' => 'form-control'],
             ])
             
         ;

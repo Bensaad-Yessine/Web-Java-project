@@ -5,28 +5,38 @@
     <small class="text-muted">{{ suivi.dateSaisie ? suivi.dateSaisie|date('H:i') : '' }}</small>
   </td>
 
-  <td>
-    {% if suivi.humeur %}
-      <span class="mood-badge mood-{{ suivi.humeur }}">
-        <i class="mdi mdi-{{
-          suivi.humeur == 1 ? 'emoticon-sad' :
-          suivi.humeur == 2 ? 'emoticon-neutral' :
-          suivi.humeur == 3 ? 'emoticon' :
-          suivi.humeur == 4 ? 'emoticon-happy' :
-          'emoticon-excited'
-        }}"></i>
-        {{
-          suivi.humeur == 1 ? 'Très mauvaise' :
-          suivi.humeur == 2 ? 'Mauvaise' :
-          suivi.humeur == 3 ? 'Neutre' :
-          suivi.humeur == 4 ? 'Bonne' :
-          'Excellente'
-        }}
-      </span>
+ <td>
+  {% if suivi.humeur %}
+    {% set h = suivi.humeur|trim %}
+
+    {% if h == 'Très mauvaise' %}
+      {% set icon = 'emoticon-sad' %}
+      {% set label = 'Très mauvaise' %}
+    {% elseif h == 'Mauvaise' %}
+      {% set icon = 'emoticon-neutral' %}
+      {% set label = 'Mauvaise' %}
+    {% elseif h == 'Neutre' %}
+      {% set icon = 'emoticon' %}
+      {% set label = 'Neutre' %}
+    {% elseif h == 'Bonne' %}
+      {% set icon = 'emoticon-happy' %}
+      {% set label = 'Bonne' %}
+    {% elseif h == 'Excellente' %}
+      {% set icon = 'emoticon-excited' %}
+      {% set label = 'Excellente' %}
     {% else %}
-      <span class="text-muted">—</span>
+      {% set icon = 'help-circle' %}
+      {% set label = h %}
     {% endif %}
-  </td>
+
+    <span class="mood-badge mood-{{ h|lower|replace({' ':'-'}) }}">
+      <i class="mdi mdi-{{ icon }}"></i>
+      {{ label }}
+    </span>
+  {% else %}
+    <span class="text-muted">—</span>
+  {% endif %}
+</td>
 
   <td>
     {% if suivi.qualiteSommeil is not null %}

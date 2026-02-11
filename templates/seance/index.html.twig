@@ -381,7 +381,7 @@
             
             <!-- Groupes -->
             <li class="nav-item menu-items">
-                <a class="nav-link" href="{{ path('app_group_index') }}">
+                <a class="nav-link" href="#">
                     <span class="menu-icon">
                         <i class="mdi mdi-account-multiple"></i>
                     </span>
@@ -944,7 +944,14 @@
                                                                     </span>
                                                                 </div>
                                                                 <div>
-                                                                    {% set uniqueMatieres = seances|map(s => s.matiere)|unique|length %}
+                                                                    {# Compute unique matieres without the unique filter #}
+                                                                    {% set matiereIds = [] %}
+                                                                    {% for s in seances %}
+                                                                        {% if s.matiere and s.matiere.id is defined and s.matiere.id not in matiereIds %}
+                                                                            {% set matiereIds = matiereIds|merge([s.matiere.id]) %}
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                    {% set uniqueMatieres = matiereIds|length %}
                                                                     <h6 class="mb-0">{{ uniqueMatieres }}</h6>
                                                                     <small class="text-muted">Matières différentes</small>
                                                                 </div>

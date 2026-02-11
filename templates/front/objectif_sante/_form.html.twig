@@ -1,0 +1,14 @@
+{# templates/front/objectif_sante/_form.html.twig #}
+{{ form_start(form) }}
+
+  {{ form_row(form.titre) }}
+  {{ form_row(form.type) }}
+  {{ form_row(form.priorite) }}
+  {{ form_row(form.valeurCible) }}
+  {{ form_row(form.dateDebut) }}
+  {{ form_row(form.dateFin) }}
+  {# زيد هنا أي champs آخرين عندك #}
+
+  <button type="submit">{{ button_label|default('Valider') }}</button>
+
+{{ form_end(form) }}

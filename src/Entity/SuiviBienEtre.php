@@ -6,6 +6,7 @@ use App\Repository\SuiviBienEtreRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\ObjectifSante;
 
 #[ORM\Entity(repositoryClass: SuiviBienEtreRepository::class)]
 class SuiviBienEtre
