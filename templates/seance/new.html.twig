@@ -1,11 +1,1332 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Nouvelle Séance - ESPRIT</title>
+    
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css') }}">
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+    
+    <style>
+        /* Main Container */
+        .form-main-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
 
-{% block title %}New Seance{% endblock %}
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            margin-top: 30px;
+            position: relative;
+            overflow: hidden;
+        }
 
-{% block body %}
-    <h1>Create new Seance</h1>
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
 
-    {{ include('seance/_form.html.twig') }}
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
 
-    <a href="{{ path('app_seance_index') }}">back to list</a>
-{% endblock %}
+        .form-header h2 {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .form-header p {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 0;
+        }
+
+        /* Form Sections */
+        .form-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #eaeaea;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            transition: all 0.3s ease;
+        }
+
+        .form-section:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .section-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 22px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin: 5px 0 0 0;
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .required::after {
+            content: " *";
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        /* Form Controls */
+        .form-control, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+            background: #fff;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: #999;
+        }
+
+        /* DateTime Inputs */
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+            background: #fff;
+            transition: all 0.3s;
+        }
+
+        input[type="datetime-local"]:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none;
+        }
+
+        /* Dropdown Enhancement */
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+            padding-right: 2.5rem;
+        }
+
+        /* Help Text */
+        .help-text {
+            display: block;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        /* Error Messages */
+        .error-message {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .error-message::before {
+            content: "⚠";
+        }
+
+        .form-control.is-invalid, .form-select.is-invalid, input[type="datetime-local"].is-invalid {
+            border-color: #dc3545;
+        }
+
+        .form-control.is-invalid:focus, .form-select.is-invalid:focus, input[type="datetime-local"].is-invalid:focus {
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+        }
+
+        /* Form Actions */
+        .form-actions {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #eaeaea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-outline-secondary {
+            background: transparent;
+            color: #666;
+            border: 2px solid #ddd;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .btn-gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-gradient-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-bottom: 40px;
+            padding: 0 20px;
+        }
+
+        .progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #eaeaea;
+            z-index: 1;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid #eaeaea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: 600;
+            color: #999;
+            transition: all 0.3s;
+        }
+
+        .step.active .step-circle {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .step.completed .step-circle {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #999;
+        }
+
+        .step.active .step-label {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* Alert Styling */
+        .alert {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .alert-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+        }
+
+        /* Footer */
+        .form-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 20px;
+                margin-top: 20px;
+            }
+            
+            .form-header h2 {
+                font-size: 24px;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .section-icon {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .form-actions .btn {
+                width: 100%;
+            }
+            
+            .progress-steps {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .step {
+                flex: none;
+                width: calc(50% - 10px);
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-section {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Loading State */
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Profile Avatar Styles */
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .badge-admin {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        
+        .badge-etudiant {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+        }
+        
+        .avatar-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .navbar-profile {
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+        }
+        
+        .navbar-profile-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+        
+        .profile-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .profile-avatar-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fff;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+        }
+        
+        .user-role-badge {
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 10px;
+            margin-top: 5px;
+            display: inline-block;
+        }
+        
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-header h3 {
+            display: flex;
+            align-items: center;
+            margin: 0;
+        }
+        
+        .page-title-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+<body>
+<div class="container-scroller">
+    <!-- Sidebar -->
+    <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+            <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
+                <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+            </a>
+            <a class="sidebar-brand brand-logo-mini" href="{{ path('app_user_index') }}">
+                <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+            </a>
+        </div>
+        <ul class="nav">
+            <li class="nav-item profile">
+                <div class="profile-desc">
+                    <div class="profile-pic">
+                        <div class="count-indicator">
+                            {% if app.user %}
+                                {% if app.user.profilePic %}
+                                    <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                                         alt="{{ app.user.prenom }}" 
+                                         class="profile-avatar-img">
+                                {% else %}
+                                    <div class="profile-avatar">
+                                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                            {% endif %}
+                            <span class="count bg-success"></span>
+                        </div>
+                        <div class="profile-name">
+                            {% if app.user %}
+                                <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                                <span class="text-muted">{{ app.user.email }}</span>
+                                <div class="mt-1">
+                                    {% if 'ROLE_ADMIN' in app.user.roles %}
+                                        <span class="user-role-badge badge-admin">Administrateur</span>
+                                    {% else %}
+                                        <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                                <span>Veuillez vous connecter</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item nav-category">
+                <span class="nav-link">Navigation</span>
+            </li>
+            
+            <!-- Dashboard -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="#">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-speedometer"></i>
+                    </span>
+                    <span class="menu-title">Dashboard</span>
+                </a>
+            </li>
+            
+            <!-- Utilisateurs -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_user_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-account-group"></i>
+                    </span>
+                    <span class="menu-title">Utilisateurs</span>
+                </a>
+            </li>
+            
+            <!-- Matières -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_matiere_classe_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-book-open-page-variant"></i>
+                    </span>
+                    <span class="menu-title">Matières</span>
+                </a>
+            </li>
+            
+            <!-- Classes -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_classe_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-school"></i>
+                    </span>
+                    <span class="menu-title">Classes</span>
+                </a>
+            </li>
+            
+            <!-- Salles -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_salle_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-office-building"></i>
+                    </span>
+                    <span class="menu-title">Salles</span>
+                </a>
+            </li>
+            
+            <!-- Séances -->
+            <li class="nav-item menu-items active">
+                <a class="nav-link" href="{{ path('app_seance_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-calendar-clock"></i>
+                    </span>
+                    <span class="menu-title">Séances</span>
+                </a>
+            </li>
+            
+            <!-- Groupes -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="#">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-account-multiple"></i>
+                    </span>
+                    <span class="menu-title">Groupes</span>
+                </a>
+            </li>
+            
+            <!-- Tâches -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_tache_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+                    </span>
+                    <span class="menu-title">Tâches</span>
+                </a>
+            </li>
+            
+            <!-- Alertes -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="#">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-alert-circle-outline"></i>
+                    </span>
+                    <span class="menu-title">Alertes</span>
+                </a>
+            </li>
+            
+            <!-- Exercices de santé -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_objectif_sante_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-heart-pulse"></i>
+                    </span>
+                    <span class="menu-title">Exercices de santé</span>
+                </a>
+            </li>
+            
+            <!-- Logout -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_logout') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-logout text-danger"></i>
+                    </span>
+                    <span class="menu-title text-danger">Déconnexion</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid page-body-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+            <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+                <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+            </div>
+            <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+                <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                    <span class="mdi mdi-menu"></span>
+                </button>
+                <ul class="navbar-nav w-100">
+                    <li class="nav-item w-100">
+                        <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                            <input type="text" class="form-control" placeholder="Rechercher..." id="searchInput">
+                        </form>
+                    </li>
+                </ul>
+                <ul class="navbar-nav navbar-nav-right">
+                    <li class="nav-item dropdown border-left">
+                        <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                            <i class="mdi mdi-bell"></i>
+                            <span class="count bg-danger">2</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                            <h6 class="p-3 mb-0">Notifications</h6>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item preview-item">
+                                <div class="preview-thumbnail">
+                                    <div class="preview-icon bg-success rounded-circle">
+                                        <i class="mdi mdi-calendar-clock"></i>
+                                    </div>
+                                </div>
+                                <div class="preview-item-content">
+                                    <p class="preview-subject mb-1">Nouvelle séance</p>
+                                    <p class="text-muted ellipsis mb-0">Séance Mathématiques programmée</p>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                            <div class="navbar-profile">
+                                {% if app.user %}
+                                    <div class="avatar-container">
+                                        {% if app.user.profilePic %}
+                                            <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                                                 alt="{{ app.user.prenom }}" 
+                                                 class="user-avatar-img">
+                                        {% else %}
+                                            <div class="user-avatar">
+                                                {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                                            </div>
+                                        {% endif %}
+                                        <div class="text-start ms-2">
+                                            <p class="mb-0 d-none d-sm-block navbar-profile-name">
+                                                {{ app.user.prenom }} {{ app.user.nom }}
+                                            </p>
+                                            <small class="text-muted d-none d-sm-block">
+                                                {% if 'ROLE_ADMIN' in app.user.roles %}
+                                                    <span class="badge badge-admin">Admin</span>
+                                                {% else %}
+                                                    <span class="badge badge-etudiant">Utilisateur</span>
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                                {% endif %}
+                                <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                            </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                            <div class="dropdown-header p-3">
+                                {% if app.user %}
+                                    <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                                    <p class="text-muted mb-0">{{ app.user.email }}</p>
+                                    <small class="text-muted">
+                                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                                            <span class="badge badge-admin">Administrateur</span>
+                                        {% else %}
+                                            <span class="badge badge-etudiant">Utilisateur</span>
+                                        {% endif %}
+                                    </small>
+                                {% else %}
+                                    <h6 class="mb-0">Non connecté</h6>
+                                    <p class="text-muted mb-0">Veuillez vous connecter</p>
+                                {% endif %}
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            {% if app.user %}
+                                <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-primary rounded-circle">
+                                            <i class="mdi mdi-account"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Mon profil</p>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-warning rounded-circle">
+                                            <i class="mdi mdi-account-edit"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Modifier mon profil</p>
+                                    </div>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                            {% endif %}
+                            <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
+                                <div class="preview-thumbnail">
+                                    <div class="preview-icon bg-dark rounded-circle">
+                                        <i class="mdi mdi-logout text-danger"></i>
+                                    </div>
+                                </div>
+                                <div class="preview-item-content">
+                                    <p class="preview-subject mb-1">Déconnexion</p>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="main-panel">
+            <div class="content-wrapper">
+                <!-- Header -->
+                <div class="page-header">
+                    <h3 class="page-title">
+                        <span class="page-title-icon bg-gradient-primary text-white me-2">
+                            <i class="mdi mdi-plus-circle"></i>
+                        </span> 
+                        Nouvelle Séance
+                    </h3>
+                    <nav aria-label="breadcrumb">
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{{ path('app_seance_index') }}" class="text-primary">
+                                    <i class="mdi mdi-calendar-clock me-1"></i>Séances
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                <span></span>Création
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <!-- Progress Steps -->
+                <div class="progress-steps">
+                    <div class="step active">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">Informations</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">Type & Mode</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">Horaire</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">Localisation</div>
+                    </div>
+                </div>
+
+                <!-- Flash Messages -->
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                            <i class="mdi mdi-{{ label == 'success' ? 'check-circle' : 'alert-circle' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <!-- Form Container -->
+                <div class="form-main-container">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-container">
+                                <div class="form-header">
+                                    <h2>Créer une nouvelle séance</h2>
+                                    <p>Remplissez tous les champs pour planifier une nouvelle séance</p>
+                                </div>
+
+                                {{ form_start(form, {'attr': {'class': 'seance-form'}}) }}
+                                
+                                <!-- Section 1: Basic Information -->
+                                <div class="form-section">
+                                    <div class="section-header">
+                                        <div class="section-icon">
+                                            <i class="mdi mdi-information-outline"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="section-title">Informations de base</h4>
+                                            <p class="section-subtitle">Informations essentielles sur la séance</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            {{ form_label(form.matiere, null, {'label_attr': {'class': 'required'}}) }}
+                                            {{ form_widget(form.matiere, {'attr': {
+                                                'class': 'form-select'
+                                            }}) }}
+                                            {{ form_errors(form.matiere) }}
+                                            <span class="help-text">Sélectionnez la matière de la séance</span>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            {{ form_label(form.classe, null, {'label_attr': {'class': 'required'}}) }}
+                                            {{ form_widget(form.classe, {'attr': {
+                                                'class': 'form-select'
+                                            }}) }}
+                                            {{ form_errors(form.classe) }}
+                                            <span class="help-text">Sélectionnez la classe concernée</span>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            {{ form_label(form.jour, null, {'label_attr': {'class': 'required'}}) }}
+                                            {{ form_widget(form.jour, {'attr': {
+                                                'class': 'form-control',
+                                                'placeholder': 'Ex: Lundi, Mardi...'
+                                            }}) }}
+                                            {{ form_errors(form.jour) }}
+                                            <span class="help-text">Jour de la semaine où se déroule la séance</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Section 2: Type and Mode -->
+                                <div class="form-section">
+                                    <div class="section-header">
+                                        <div class="section-icon">
+                                            <i class="mdi mdi-format-list-checks"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="section-title">Type et mode de séance</h4>
+                                            <p class="section-subtitle">Définissez le format d'enseignement</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            {{ form_label(form.typeSeance, null, {'label_attr': {'class': 'required'}}) }}
+                                            {{ form_widget(form.typeSeance, {'attr': {
+                                                'class': 'form-select'
+                                            }}) }}
+                                            {{ form_errors(form.typeSeance) }}
+                                            <span class="help-text">Type d'enseignement (Cours, TD, TP)</span>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            {{ form_label(form.mode, null, {'label_attr': {'class': 'required'}}) }}
+                                            {{ form_widget(form.mode, {'attr': {
+                                                'class': 'form-select'
+                                            }}) }}
+                                            {{ form_errors(form.mode) }}
+                                            <span class="help-text">Mode d'enseignement (Présentiel, Distanciel, Hybride)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Section 3: Schedule -->
+                                <div class="form-section">
+                                    <div class="section-header">
+                                        <div class="section-icon">
+                                            <i class="mdi mdi-clock-outline"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="section-title">Horaire</h4>
+                                            <p class="section-subtitle">Définissez les dates et heures de la séance</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="required">Date et heure de début</label>
+                                            {{ form_widget(form.heureDebut, {'attr': {
+                                                'class': 'form-control datetime-input'
+                                            }}) }}
+                                            {{ form_errors(form.heureDebut) }}
+                                            <span class="help-text">Date et heure de début de la séance</span>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label class="required">Date et heure de fin</label>
+                                            {{ form_widget(form.heureFin, {'attr': {
+                                                'class': 'form-control datetime-input'
+                                            }}) }}
+                                            {{ form_errors(form.heureFin) }}
+                                            <span class="help-text">Date et heure de fin de la séance</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Section 4: Location -->
+                                <div class="form-section">
+                                    <div class="section-header">
+                                        <div class="section-icon">
+                                            <i class="mdi mdi-map-marker-outline"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="section-title">Localisation</h4>
+                                            <p class="section-subtitle">Attribuez une salle à la séance</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            {{ form_label(form.salle, null, {'label_attr': {'class': 'required'}}) }}
+                                            {{ form_widget(form.salle, {'attr': {
+                                                'class': 'form-select'
+                                            }}) }}
+                                            {{ form_errors(form.salle) }}
+                                            <span class="help-text">Salle attribuée à cette séance</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Form Actions -->
+                                <div class="form-actions">
+                                    <a href="{{ path('app_seance_index') }}" class="btn btn-outline-secondary">
+                                        <i class="mdi mdi-arrow-left me-1"></i>Retour
+                                    </a>
+                                    <button type="submit" class="btn btn-gradient-primary">
+                                        <i class="mdi mdi-check-circle me-1"></i>Créer la séance
+                                    </button>
+                                </div>
+                                
+                                {{ form_end(form) }}
+                                
+                                <!-- Form Footer -->
+                                <div class="form-footer">
+                                    <p>Tous les champs marqués d'un astérisque (*) sont obligatoires.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                    <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                        © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
+                    </span>
+                    <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                        Création de séance | {{ "now"|date("d/m/Y H:i") }}
+                    </span>
+                </div>
+            </footer>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+<script src="{{ asset('assets/vendors/chart.js/Chart.min.js') }}"></script>
+<script src="{{ asset('assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
+<script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+<script src="{{ asset('assets/js/misc.js') }}"></script>
+<script src="{{ asset('assets/js/dashboard.js') }}"></script>
+<script src="{{ asset('assets/js/chart.js') }}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form validation
+        const form = document.querySelector('.seance-form');
+        const datetimeInputs = form.querySelectorAll('input[type="datetime-local"]');
+        
+        // Update progress steps based on section visibility
+        const steps = document.querySelectorAll('.step');
+        const sections = document.querySelectorAll('.form-section');
+        
+        function updateProgressSteps() {
+            let currentStep = 0;
+            
+            sections.forEach((section, index) => {
+                const rect = section.getBoundingClientRect();
+                const viewHeight = Math.max(document.documentElement.clientHeight || window.innerHeight);
+                const isVisible = (rect.top <= viewHeight / 2) && (rect.bottom >= viewHeight / 2);
+                
+                if (isVisible) {
+                    currentStep = index + 1;
+                }
+            });
+            
+            steps.forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < currentStep) {
+                    step.classList.add('completed');
+                } else if (index === currentStep) {
+                    step.classList.add('active');
+                }
+            });
+        }
+        
+        // Initial update
+        updateProgressSteps();
+        
+        // Update on scroll
+        window.addEventListener('scroll', updateProgressSteps);
+        
+        // DateTime validation
+        datetimeInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                validateDateTimeRange();
+            });
+        });
+        
+        function validateDateTimeRange() {
+            const startTime = document.querySelector('#{{ form.heureDebut.vars.id }}');
+            const endTime = document.querySelector('#{{ form.heureFin.vars.id }}');
+            
+            if (startTime.value && endTime.value) {
+                const startDate = new Date(startTime.value);
+                const endDate = new Date(endTime.value);
+                
+                if (endDate <= startDate) {
+                    // Add error class
+                    startTime.classList.add('is-invalid');
+                    endTime.classList.add('is-invalid');
+                    
+                    // Show error message for start time
+                    let startErrorDiv = startTime.parentElement.querySelector('.error-message');
+                    if (!startErrorDiv) {
+                        startErrorDiv = document.createElement('div');
+                        startErrorDiv.className = 'error-message';
+                        startTime.parentElement.appendChild(startErrorDiv);
+                    }
+                    startErrorDiv.textContent = "La date/heure de fin doit être après la date/heure de début";
+                    
+                    // Show error message for end time
+                    let endErrorDiv = endTime.parentElement.querySelector('.error-message');
+                    if (!endErrorDiv) {
+                        endErrorDiv = document.createElement('div');
+                        endErrorDiv.className = 'error-message';
+                        endTime.parentElement.appendChild(endErrorDiv);
+                    }
+                    endErrorDiv.textContent = "La date/heure de fin doit être après la date/heure de début";
+                    
+                    return false;
+                } else {
+                    // Remove error class
+                    startTime.classList.remove('is-invalid');
+                    endTime.classList.remove('is-invalid');
+                    
+                    // Remove error messages
+                    const startErrorDiv = startTime.parentElement.querySelector('.error-message');
+                    if (startErrorDiv) {
+                        startErrorDiv.remove();
+                    }
+                    
+                    const endErrorDiv = endTime.parentElement.querySelector('.error-message');
+                    if (endErrorDiv) {
+                        endErrorDiv.remove();
+                    }
+                    
+                    return true;
+                }
+            }
+            return true;
+        }
+        
+        // Set default datetime values (today, rounded to nearest 30 minutes)
+        function setDefaultDatetime() {
+            const now = new Date();
+            const startTime = document.querySelector('#{{ form.heureDebut.vars.id }}');
+            const endTime = document.querySelector('#{{ form.heureFin.vars.id }}');
+            
+            // Round to nearest 30 minutes
+            const minutes = Math.ceil(now.getMinutes() / 30) * 30;
+            now.setMinutes(minutes);
+            now.setSeconds(0);
+            
+            // Start time: now (rounded)
+            const startDateTime = new Date(now);
+            startTime.value = startDateTime.toISOString().slice(0, 16);
+            
+            // End time: 1.5 hours later
+            const endDateTime = new Date(startDateTime);
+            endDateTime.setHours(endDateTime.getHours() + 1);
+            endDateTime.setMinutes(endDateTime.getMinutes() + 30);
+            endTime.value = endDateTime.toISOString().slice(0, 16);
+        }
+        
+        // Set default values if fields are empty
+        window.addEventListener('load', function() {
+            const startTime = document.querySelector('#{{ form.heureDebut.vars.id }}');
+            const endTime = document.querySelector('#{{ form.heureFin.vars.id }}');
+            
+            if (!startTime.value || !endTime.value) {
+                setDefaultDatetime();
+            }
+        });
+        
+        // Form submission validation
+        form.addEventListener('submit', function(e) {
+            // Add loading state to submit button
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.classList.add('btn-loading');
+            submitBtn.disabled = true;
+            
+            // Validate datetime range
+            if (!validateDateTimeRange()) {
+                e.preventDefault();
+                alert('Veuillez corriger les erreurs dans le formulaire. La date/heure de fin doit être après la date/heure de début.');
+                submitBtn.classList.remove('btn-loading');
+                submitBtn.disabled = false;
+                return false;
+            }
+            
+            // Check if all required fields are filled
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            let errorFields = [];
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                    const label = form.querySelector(`label[for="${field.id}"]`);
+                    if (label) {
+                        errorFields.push(label.textContent.replace(' *', '').trim());
+                    }
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Veuillez remplir tous les champs obligatoires :\n\n• ' + errorFields.join('\n• '));
+                submitBtn.classList.remove('btn-loading');
+                submitBtn.disabled = false;
+                return false;
+            }
+            
+            return true;
+        });
+        
+        // Auto-remove invalid class on input
+        const inputs = form.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+            });
+            
+            input.addEventListener('focus', function() {
+                // Scroll to the section containing this input
+                const section = this.closest('.form-section');
+                if (section) {
+                    section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            });
+        });
+        
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+        
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    window.location.href = '{{ path('app_seance_index') }}?search=' + encodeURIComponent(this.value);
+                }
+            });
+        }
+        
+        // Focus on first field
+        const firstInput = form.querySelector('input, select');
+        if (firstInput) {
+            setTimeout(() => {
+                firstInput.focus();
+            }, 300);
+        }
+    });
+</script>
+</body>
+</html>

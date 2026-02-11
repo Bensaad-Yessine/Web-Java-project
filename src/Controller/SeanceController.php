@@ -23,24 +23,53 @@ final class SeanceController extends AbstractController
     }
 
     #[Route('/new', name: 'app_seance_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $seance = new Seance();
-        $form = $this->createForm(SeanceType::class, $seance);
-        $form->handleRequest($request);
+public function new(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $seance = new Seance();
+    $form = $this->createForm(SeanceType::class, $seance);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($seance);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_seance_index', [], Response::HTTP_SEE_OTHER);
+    if ($form->isSubmitted()) {
+        // Debug: Check if form is valid
+        if (!$form->isValid()) {
+            // Get all errors
+            $errors = $form->getErrors(true, true);
+            foreach ($errors as $error) {
+                $this->addFlash('error', $error->getMessage());
+            }
+            
+            // Check specific field errors
+            $fields = ['matiere', 'classe', 'salle', 'jour', 'typeSeance', 'mode'];
+            foreach ($fields as $field) {
+                if ($form->has($field)) {
+                    $fieldErrors = $form->get($field)->getErrors();
+                    if ($fieldErrors->count() > 0) {
+                        foreach ($fieldErrors as $error) {
+                            $this->addFlash('error', "Champ {$field}: " . $error->getMessage());
+                        }
+                    }
+                }
+            }
         }
+        
+        if ($form->isValid()) {
+            try {
+                $entityManager->persist($seance);
+                $entityManager->flush();
 
-        return $this->render('seance/new.html.twig', [
-            'seance' => $seance,
-            'form' => $form,
-        ]);
+                $this->addFlash('success', 'Séance créée avec succès!');
+                return $this->redirectToRoute('app_seance_index', [], Response::HTTP_SEE_OTHER);
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Erreur lors de la création: ' . $e->getMessage());
+            }
+        }
     }
+
+    return $this->render('seance/new.html.twig', [
+        'seance' => $seance,
+        'form' => $form->createView(),
+    ]);
+}
 
     #[Route('/{id}', name: 'app_seance_show', methods: ['GET'])]
     public function show(Seance $seance): Response
@@ -64,7 +93,7 @@ final class SeanceController extends AbstractController
 
         return $this->render('seance/edit.html.twig', [
             'seance' => $seance,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -78,4 +107,5 @@ final class SeanceController extends AbstractController
 
         return $this->redirectToRoute('app_seance_index', [], Response::HTTP_SEE_OTHER);
     }
+    
 }
