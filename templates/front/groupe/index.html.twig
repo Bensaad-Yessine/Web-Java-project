@@ -1,8 +1,9 @@
-{% extends 'FrontBase.html.twig' %}
+{% extends 'user/FrontOffice.html.twig' %}
 
 {% block title %}Gestion de Groupe - ESPRIT{% endblock %}
 
 {% block body %}
+<main class="main">
 <header class="header">
     <div>
         <h1 class="h1">Gestion de Groupe</h1>
@@ -63,13 +64,14 @@
                     <circle cx="9" cy="7" r="4"/>
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                 </svg>
-                <h3 style="font-size: 20px; color: var(--gray-600); margin-bottom: 8px;">Aucun groupe trouvé</h3>
-                <p style="color: var(--gray-400); margin-bottom: 24px;">Créez votre premier groupe pour commencer</p>
+                <h3 style="font-size: 20px; color: var(--gray-600); margin-bottom: 8px;">Aucun groupe</h3>
+                <p style="color: var(--gray-400); margin-bottom: 24px;">Vous ne faites partie d'aucun groupe pour le moment. Créez un groupe ou attendez qu'un autre membre vous y ajoute.</p>
                 <a href="{{ path('front_groupe_projet_new') }}" class="btn btn-primary">Créer un groupe</a>
             </div>
         {% endfor %}
     </div>
 </div>
+</main>
 
 <script>
 function filterGroups() {

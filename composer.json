@@ -10,11 +10,7 @@
         "doctrine/doctrine-bundle": "^2.18",
         "doctrine/doctrine-migrations-bundle": "^3.7",
         "doctrine/orm": "^3.6",
-<<<<<<< HEAD
-        "phpdocumentor/reflection-docblock": "^6.0",
-=======
         "phpdocumentor/reflection-docblock": "5.2",
->>>>>>> master
         "phpstan/phpdoc-parser": "^2.3",
         "symfony/asset": "6.4.*",
         "symfony/asset-mapper": "6.4.*",
@@ -45,12 +41,8 @@
         "symfony/validator": "6.4.*",
         "symfony/web-link": "6.4.*",
         "symfony/yaml": "6.4.*",
-<<<<<<< HEAD
-        "twig/extra-bundle": "^2.12|^3.0",
-=======
         "symfonycasts/verify-email-bundle": "^1.18",
         "twig/extra-bundle": "^3.23",
->>>>>>> master
         "twig/twig": "^2.12|^3.0"
     },
     "config": {

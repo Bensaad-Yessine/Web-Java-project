@@ -1,0 +1,100 @@
+{% extends 'user/FrontOffice.html.twig' %}
+
+{% block title %}Nouvelle proposition - {{ groupe_projet.nomProjet }}{% endblock %}
+
+{% block body %}
+<main class="main">
+<header class="header">
+    <div>
+        <h1 class="h1">Nouvelle proposition de réunion</h1>
+        <p class="muted">Groupe : {{ groupe_projet.nomProjet }}</p>
+    </div>
+    <a href="{{ path('front_groupe_projet_show', { id: groupe_projet.id }) }}" style="padding: 12px 24px; background: white; color: var(--gray-700); text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; border: 1px solid var(--gray-300); transition: all var(--transition); display: inline-flex; align-items: center; gap: 8px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+        Retour au groupe
+    </a>
+</header>
+
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ label }}" style="margin-bottom: 20px; padding: 16px 20px; border-radius: 12px; background: {% if label == 'success' %}var(--green-50){% elseif label == 'error' %}var(--red-50){% else %}var(--blue-50){% endif %}; border: 1px solid {% if label == 'success' %}var(--green-200){% elseif label == 'error' %}var(--red-200){% else %}var(--blue-200){% endif %}; color: {% if label == 'success' %}var(--green-900){% elseif label == 'error' %}var(--red-900){% else %}var(--blue-900){% endif %};">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
+
+<div class="profile-container">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <div class="card" style="border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+            <div style="padding: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h2 style="margin: 0 0 4px 0; font-size: 18px;">{{ groupe_projet.nomProjet }}</h2>
+                <p style="margin: 0; opacity: 0.9; font-size: 14px;">{{ groupe_projet.matiere }} · {{ groupe_projet.nbrMembre }} membre(s)</p>
+            </div>
+            <div class="card-content" style="padding: 24px;">
+                {{ form_start(form, {'action': path('front_proposition_reunion_new', { id: groupe_projet.id }), 'method': 'POST', 'attr': {'id': 'propositionForm'}}) }}
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    {{ form_label(form.titre) }}
+                    {{ form_widget(form.titre, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px;'}}) }}
+                    {{ form_errors(form.titre) }}
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        {{ form_label(form.dateReunion) }}
+                        {{ form_widget(form.dateReunion, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px;'}}) }}
+                        {{ form_errors(form.dateReunion) }}
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        {{ form_label(form.lieu) }}
+                        {{ form_widget(form.lieu, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px;'}}) }}
+                        {{ form_errors(form.lieu) }}
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        {{ form_label(form.heureDebut) }}
+                        {{ form_widget(form.heureDebut, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px;'}}) }}
+                        {{ form_errors(form.heureDebut) }}
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        {{ form_label(form.heureFin) }}
+                        {{ form_widget(form.heureFin, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px;'}}) }}
+                        {{ form_errors(form.heureFin) }}
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 20px;">
+                    {{ form_label(form.description) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px; min-height: 120px; resize: vertical;', 'rows': 5}}) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div class="form-group" style="margin-bottom: 24px;">
+                    {{ form_label(form.status) }}
+                    {{ form_widget(form.status, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px;'}}) }}
+                    {{ form_errors(form.status) }}
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--gray-200); flex-wrap: wrap;">
+                    <button type="submit" style="flex: 1; min-width: 200px; padding: 16px; background: linear-gradient(135deg, var(--green-500), var(--green-600)); color: white; border: none; border-radius: var(--radius-lg); font-weight: 700; font-size: 16px; cursor: pointer; transition: all var(--transition); box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+                        </svg>
+                        Créer la proposition
+                    </button>
+                    <a href="{{ path('front_groupe_projet_show', { id: groupe_projet.id }) }}" style="padding: 16px 24px; background: white; color: var(--gray-700); text-decoration: none; border: 1px solid var(--gray-300); border-radius: var(--radius-lg); font-weight: 600; font-size: 16px; transition: all var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 10px;">
+                        Annuler
+                    </a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+</main>
+{% endblock %}

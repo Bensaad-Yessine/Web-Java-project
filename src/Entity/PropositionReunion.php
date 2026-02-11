@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\PropositionReunionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity(repositoryClass: PropositionReunionRepository::class)]
 class PropositionReunion
@@ -51,8 +53,8 @@ class PropositionReunion
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $updatedAt = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTime $updatedAt = null;
 
     public function getId(): ?int
     {
@@ -203,15 +205,75 @@ class PropositionReunion
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
+    public function setUpdatedAt(?\DateTime $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    /**
+     * Form-level validation for meeting times.
+     * Ensures start is at least 1 hour from now, end is after start,
+     * and duration is at least 30 minutes.
+     *
+     * @Assert\Callback
+     */
+    public function validateDates(ExecutionContextInterface $context): void
+    {
+        if (!$this->dateReunion || !$this->heureDebut || !$this->heureFin) {
+            return;
+        }
+
+        // Build full DateTime for start and end
+        $start = (clone $this->dateReunion)->setTime((int)$this->heureDebut->format('H'), (int)$this->heureDebut->format('i'), 0);
+        $end = (clone $this->dateReunion)->setTime((int)$this->heureFin->format('H'), (int)$this->heureFin->format('i'), 0);
+
+        // Ensure the date is not in the past (at least today)
+        $today = (new \DateTime())->setTime(0, 0, 0);
+        $dateOnly = (clone $this->dateReunion)->setTime(0, 0, 0);
+        if ($dateOnly < $today) {
+            $context->buildViolation('La date de la proposition ne peut pas être dans le passé. Choisissez au minimum aujourd\'hui.')
+                ->atPath('dateReunion')
+                ->addViolation();
+            // no need to continue if the date itself is invalid
+            return;
+        }
+
+        $now = new \DateTime();
+        // If the proposition is for today, require start >= now + 1 hour
+        if ($dateOnly == $today) {
+            $minStart = (clone $now)->modify('+1 hour');
+            if ($start < $minStart) {
+                $context->buildViolation('Pour aujourd\'hui, l\'heure de début doit être au moins une heure après maintenant.')
+                    ->atPath('heureDebut')
+                    ->addViolation();
+            }
+        }
+
+        if ($end <= $start) {
+            $context->buildViolation('L\'heure de fin doit être après l\'heure de début.')
+                ->atPath('heureFin')
+                ->addViolation();
+        } else {
+            $diffMinutes = (int)(($end->getTimestamp() - $start->getTimestamp()) / 60);
+            if ($diffMinutes < 30) {
+                $context->buildViolation('La durée doit être au moins de 30 minutes.')
+                    ->atPath('heureFin')
+                    ->addViolation();
+            }
+
+            // Maximum duration: 3 hours (180 minutes)
+            if ($diffMinutes > 180) {
+                $context->buildViolation('La durée maximale autorisée est de 3 heures.')
+                    ->atPath('heureFin')
+                    ->addViolation();
+            }
+        }
     }
 }

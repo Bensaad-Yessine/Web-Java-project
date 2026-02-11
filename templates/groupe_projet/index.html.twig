@@ -1,9 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Groupes de Projet{% endblock %}
+
+{% block body %}
 <!DOCTYPE html>
 <html lang="fr">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>ESPRIT - Gestion des Groupes Projet</title>
+    <title>ESPRIT - Gestion des Groupes</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
@@ -13,15 +18,83 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
     <style>
+      /* Profile Avatar Styles */
+      .img-xs {
+        width: 37px !important;
+        height: 37px !important;
+      }
+      
+      .profile-avatar-img {
+        width: 37px;
+        height: 37px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      
+      .profile-avatar {
+        width: 37px;
+        height: 37px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+      }
+      
+      .navbar-avatar-img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      
+      .navbar-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 13px;
+      }
+      
+      .user-role-badge {
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        border-radius: 10px;
+        margin-top: 3px;
+        display: inline-block;
+      }
+      
+      .badge-admin {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      
+      .badge-etudiant {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+      }
+      
+      /* Styles spécifiques pour la page des groupes */
       .stat-card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         border-radius: 10px;
         overflow: hidden;
+        margin-bottom: 20px;
       }
+      
       .stat-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       }
+      
       .stat-icon {
         width: 60px;
         height: 60px;
@@ -33,17 +106,20 @@
         color: white;
         margin: 0 auto;
       }
+      
       .stat-count {
         font-size: 1.8rem;
         font-weight: 700;
         margin-bottom: 5px;
       }
+      
       .stat-label {
         font-size: 0.9rem;
         color: #6c757d;
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
+      
       .card-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
       .card-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
       .card-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
@@ -64,72 +140,6 @@
         flex-shrink: 0;
       }
       
-      .profile-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 20px;
-        margin-right: 15px;
-        flex-shrink: 0;
-      }
-      
-      .profile-avatar-img {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid #fff;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-      }
-      
-      /* Style pour les avatars de la navbar */
-      .navbar-avatar-img {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #fff;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      }
-      
-      .navbar-avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 14px;
-        flex-shrink: 0;
-      }
-      
-      .badge-active {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        color: white;
-        border: none;
-      }
-      
-      .badge-inactive {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        color: white;
-        border: none;
-      }
-      
-      .badge-completed {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        color: white;
-        border: none;
-      }
-      
       .action-buttons {
         display: flex;
         gap: 5px;
@@ -138,6 +148,25 @@
       .action-buttons .btn {
         padding: 5px 10px;
         border-radius: 5px;
+        font-size: 0.875rem;
+      }
+      
+      .btn-view {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border: none;
+      }
+      
+      .btn-edit {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+        border: none;
+      }
+      
+      .btn-delete {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border: none;
       }
       
       .search-box {
@@ -146,6 +175,50 @@
       
       .table-hover tbody tr:hover {
         background-color: rgba(102, 126, 234, 0.05);
+      }
+      
+      .table th {
+        font-weight: 600;
+        color: #333;
+        border-top: none;
+      }
+      
+      .table td {
+        vertical-align: middle;
+      }
+      
+      .badge-status {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+      
+      .badge-active {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+      }
+      
+      .badge-inactive {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+      }
+      
+      .badge-completed {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+      }
+      
+      .badge-pending {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        color: white;
+      }
+      
+      .description-cell {
+        max-width: 250px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       
       .empty-state {
@@ -158,7 +231,7 @@
         color: #dee2e6;
         margin-bottom: 20px;
       }
-
+      
       .alert {
         border-radius: 10px;
         border: none;
@@ -166,57 +239,55 @@
         margin-bottom: 20px;
       }
       
-      .user-role-badge {
-        font-size: 0.75rem;
-        padding: 3px 10px;
-        border-radius: 10px;
-        margin-top: 5px;
-        display: inline-block;
-      }
-      
-      .profile-pic {
-        display: flex;
-        align-items: center;
-        padding: 10px 0;
-      }
-      
-      .count-indicator {
-        position: relative;
-        margin-right: 15px;
-      }
-      
-      .profile-name {
-        flex-grow: 1;
-      }
-      
-      .navbar-profile {
-        display: flex;
-        align-items: center;
-        padding: 5px 0;
-      }
-      
-      .table td {
-        vertical-align: middle;
-      }
-      
-      .avatar-container {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      
-      .description-cell {
-        max-width: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowarp;
-      }
-      
-      /* Style pour mieux aligner le contenu de la navbar */
-      .navbar-profile-name {
-        font-size: 0.875rem;
+      .btn-new {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 12px 25px;
         font-weight: 500;
-        margin-bottom: 0;
+        border-radius: 8px;
+        transition: all 0.3s;
+      }
+      
+      .btn-new:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        color: white;
+      }
+      
+      .page-header {
+        margin-bottom: 30px;
+      }
+      
+      .filter-section {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      
+      .filter-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+      }
+      
+      .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+      }
+      
+      .card-title-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        color: white;
       }
     </style>
   </head>
@@ -241,11 +312,9 @@
                     {% if app.user.profilePic %}
                       <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
                            alt="{{ app.user.prenom }}" 
-                           class="profile-avatar-img">
+                           class="img-xs rounded-circle">
                     {% else %}
-                      <div class="profile-avatar">
-                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
-                      </div>
+                      <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
                     {% endif %}
                   {% else %}
                     <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
@@ -276,7 +345,7 @@
           </li>
           
           <!-- Dashboard -->
-          <li class="nav-item menu-items ">
+          <li class="nav-item menu-items">
             <a class="nav-link" href="#">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
@@ -414,15 +483,15 @@
                 <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
                   <h6 class="p-3 mb-0">Notifications</h6>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item">
+                  <a class="dropdown-item preview-item" href="#">
                     <div class="preview-thumbnail">
-                      <div class="preview-icon bg-warning rounded-circle">
-                        <i class="mdi mdi-account-multiple"></i>
-                      </div>
+                        <div class="preview-icon bg-info rounded-circle">
+                            <i class="mdi mdi-account-multiple"></i>
+                        </div>
                     </div>
                     <div class="preview-item-content">
-                      <p class="preview-subject mb-1">Nouveau groupe</p>
-                      <p class="text-muted ellipsis mb-0"> Groupe {{ groupe_projets[0].nomProjet|default('Nouveau') }} créé</p>
+                        <p class="preview-subject mb-1">Groupes de projet</p>
+                        <p class="text-muted ellipsis mb-0"> {{ groupe_projets|length }} groupes disponibles</p>
                     </div>
                   </a>
                 </div>
@@ -432,29 +501,14 @@
                 <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
                   <div class="navbar-profile">
                     {% if app.user %}
-                      <div class="avatar-container">
-                        {% if app.user.profilePic %}
-                          <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
-                               alt="{{ app.user.prenom }}" 
-                               class="navbar-avatar-img">
-                        {% else %}
-                          <div class="navbar-avatar">
-                            {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
-                          </div>
-                        {% endif %}
-                        <div class="text-start ms-2">
-                          <p class="mb-0 d-none d-sm-block navbar-profile-name">
-                            {{ app.user.prenom }} {{ app.user.nom }}
-                          </p>
-                          <small class="text-muted d-none d-sm-block">
-                            {% if 'ROLE_ADMIN' in app.user.roles %}
-                              <span class="badge badge-admin badge-sm">Admin</span>
-                            {% else %}
-                              <span class="badge badge-etudiant badge-sm">Utilisateur</span>
-                            {% endif %}
-                          </small>
-                        </div>
-                      </div>
+                      {% if app.user.profilePic %}
+                        <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                             alt="{{ app.user.prenom }}" 
+                             class="img-xs rounded-circle">
+                      {% else %}
+                        <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                      {% endif %}
+                      <p class="mb-0 d-none d-sm-block navbar-profile-name">{{ app.user.prenom }} {{ app.user.nom }}</p>
                     {% else %}
                       <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
                       <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
@@ -537,19 +591,29 @@
             <div class="row">
               <div class="col-12">
                 <div class="page-header">
-                  <h3 class="page-title">
-                    <span class="page-title-icon bg-gradient-primary text-white me-2">
-                      <i class="mdi mdi-account-multiple"></i>
-                    </span> 
-                    Gestion des Groupes Projet
-                  </h3>
-                  <nav aria-label="breadcrumb">
-                    <ul class="breadcrumb">
-                      <li class="breadcrumb-item active" aria-current="page">
-                        <span></span>Liste complète des groupes projet ESPRIT
-                      </li>
-                    </ul>
-                  </nav>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h3 class="page-title">
+                        <span class="page-title-icon bg-gradient-primary text-white me-2">
+                          <i class="mdi mdi-account-multiple"></i>
+                        </span> 
+                        Gestion des Groupes de Projet
+                      </h3>
+                      <nav aria-label="breadcrumb">
+                        <ul class="breadcrumb">
+                          <li class="breadcrumb-item active" aria-current="page">
+                            <span></span>Liste des groupes
+                          </li>
+                        </ul>
+                      </nav>
+                    </div>
+                    <div>
+                      <a href="{{ path('app_groupe_projet_new') }}" class="btn btn-new">
+                        <i class="mdi mdi-plus-circle me-2"></i>
+                        Nouveau Groupe
+                      </a>
+                    </div>
+                  </div>
                   {% if app.user %}
                     <div class="mt-2">
                       <small class="text-muted">
@@ -565,17 +629,16 @@
                 </div>
               </div>
             </div>
-            
+
             <!-- Statistics -->
             <div class="row">
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card stat-card">
+              <div class="col-xl-3 col-sm-6 grid-margin">
+                <div class="stat-card">
                   <div class="card-body">
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          <h3 class="mb-0 stat-count">{{ groupe_projets|length }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+{{ groupe_projets|length * 2 }}%</p>
+                          <h3 class="stat-count">{{ groupe_projets|length }}</h3>
                         </div>
                       </div>
                       <div class="col-3">
@@ -584,194 +647,202 @@
                         </div>
                       </div>
                     </div>
-                    <h6 class="stat-label">Total Groupes</h6>
+                    <h6 class="stat-label">Groupes totaux</h6>
                   </div>
                 </div>
               </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card stat-card">
+              <div class="col-xl-3 col-sm-6 grid-margin">
+                <div class="stat-card">
                   <div class="card-body">
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set activeGroups = 0 %}
-                          {% for groupe in groupe_projets %}
-                            {% if groupe.statut == 'Actif' %}
-                              {% set activeGroups = activeGroups + 1 %}
-                            {% endif %}
-                          {% endfor %}
-                          <h3 class="mb-0 stat-count">{{ activeGroups }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+15%</p>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="stat-icon card-2">
-                          <i class="mdi mdi-check-circle"></i>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="stat-label">Groupes Actifs</h6>
-                  </div>
-                </div>
-              </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card stat-card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          {% set totalMembers = 0 %}
-                          {% for groupe in groupe_projets %}
-                            {% set totalMembers = totalMembers + groupe.nbrMembre %}
-                          {% endfor %}
-                          <h3 class="mb-0 stat-count">{{ totalMembers }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+25%</p>
-                        </div>
-                      </div>
-                      <div class="col-3">
-                        <div class="stat-icon card-3">
-                          <i class="mdi mdi-account"></i>
-                        </div>
-                      </div>
-                    </div>
-                    <h6 class="stat-label">Total Membres</h6>
-                  </div>
-                </div>
-              </div>
-              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                <div class="card stat-card">
-                  <div class="card-body">
-                    <div class="row">
-                      <div class="col-9">
-                        <div class="d-flex align-items-center align-self-start">
-                          {# Créer un tableau pour stocker les matières uniques #}
-                          {% set matieresUniques = [] %}
-                          {% for groupe in groupe_projets %}
-                            {% if groupe.matiere not in matieresUniques %}
-                              {% set matieresUniques = matieresUniques|merge([groupe.matiere]) %}
-                            {% endif %}
-                          {% endfor %}
-                          <h3 class="mb-0 stat-count">{{ matieresUniques|length }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+8%</p>
+                          <h3 class="stat-count">{{ groupe_projets|filter(g => g.statut == 'Actif')|length }}</h3>
                         </div>
                       </div>
                       <div class="col-3">
                         <div class="stat-icon card-4">
-                          <i class="mdi mdi-book-open"></i>
+                          <i class="mdi mdi-check-circle"></i>
                         </div>
                       </div>
                     </div>
-                    <h6 class="stat-label">Matières couvertes</h6>
+                    <h6 class="stat-label">Groupes actifs</h6>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-sm-6 grid-margin">
+                <div class="stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          <h3 class="stat-count">{{ groupe_projets|filter(g => g.statut == 'Terminé')|length }}</h3>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-icon card-3">
+                          <i class="mdi mdi-flag-checkered"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="stat-label">Groupes terminés</h6>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-sm-6 grid-margin">
+                <div class="stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          {% set total_members = 0 %}
+                          {% for groupe in groupe_projets %}
+                            {% set total_members = total_members + groupe.nbrMembre %}
+                          {% endfor %}
+                          <h3 class="stat-count">{{ total_members }}</h3>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-icon card-2">
+                          <i class="mdi mdi-account"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="stat-label">Membres totaux</h6>
                   </div>
                 </div>
               </div>
             </div>
-            
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+              <div class="row">
+                <div class="col-md-8">
+                  <h6 class="filter-title">Filtres de recherche</h6>
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">Statut</label>
+                        <select class="form-control" id="statusFilter">
+                          <option value="">Tous les statuts</option>
+                          <option value="Actif">Actif</option>
+                          <option value="Terminé">Terminé</option>
+                          <option value="En pause">En pause</option>
+                          <option value="Annulé">Annulé</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">Matière</label>
+                        <input type="text" class="form-control" id="matiereFilter" placeholder="Filtrer par matière">
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="form-group">
+                        <label class="form-label">Tri par</label>
+                        <select class="form-control" id="sortFilter">
+                          <option value="nom">Nom (A-Z)</option>
+                          <option value="date">Date de création</option>
+                          <option value="membres">Nombre de membres</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                  <button class="btn btn-secondary me-2" id="resetFilters">
+                    <i class="mdi mdi-refresh me-1"></i>
+                    Réinitialiser
+                  </button>
+                  <button class="btn btn-primary" id="applyFilters">
+                    <i class="mdi mdi-filter me-1"></i>
+                    Appliquer les filtres
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <!-- Groups Table -->
             <div class="row">
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                      <h4 class="card-title">👥 Liste des Groupes Projet</h4>
-                      <div class="d-flex">
-                        <div class="search-box me-3">
-                          <input type="text" class="form-control" placeholder="Rechercher..." id="tableSearchInput">
-                        </div>
-                        <a href="{{ path('app_groupe_projet_new') }}" class="btn btn-gradient-primary btn-icon-text">
-                          <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
-                          Créer un groupe
-                        </a>
+                    <h4 class="card-title d-flex align-items-center">
+                      <div class="card-title-icon card-1 me-3">
+                        <i class="mdi mdi-format-list-bulleted"></i>
                       </div>
-                    </div>
-
-                    {% if groupe_projets is empty %}
-                      <div class="empty-state">
-                        <i class="mdi mdi-account-group-off"></i>
-                        <h4 class="text-muted">Aucun groupe trouvé</h4>
-                        <p class="text-muted mb-4">Commencez par créer un nouveau groupe</p>
-                        <a href="{{ path('app_groupe_projet_new') }}" class="btn btn-gradient-primary">
-                          <i class="mdi mdi-plus-circle"></i>
-                          Créer le premier groupe
-                        </a>
-                      </div>
-                    {% else %}
+                      Liste des Groupes
+                    </h4>
+                    
+                    {% if groupe_projets|length > 0 %}
                       <div class="table-responsive">
-                        <table class="table table-hover" id="groupsTable">
+                        <table class="table table-hover">
                           <thead>
                             <tr>
                               <th>ID</th>
                               <th>Groupe</th>
-                              <th>Nom du Projet</th>
                               <th>Matière</th>
                               <th>Membres</th>
                               <th>Description</th>
-                              <th>Créé le</th>
                               <th>Statut</th>
+                              <th>Créé le</th>
                               <th>Actions</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {% for groupe_projet in groupe_projets %}
+                            {% for groupe in groupe_projets %}
                               <tr>
-                                <td>{{ groupe_projet.id }}</td>
+                                <td>#{{ groupe.id }}</td>
                                 <td>
                                   <div class="d-flex align-items-center">
                                     <div class="group-avatar me-3">
-                                      GP{{ groupe_projet.id }}
+                                      GP{{ groupe.id }}
                                     </div>
                                     <div>
-                                      <h6 class="mb-0">Groupe {{ groupe_projet.id }}</h6>
-                                      <small class="text-muted">ID: {{ groupe_projet.id }}</small>
+                                      <strong>{{ groupe.nomProjet }}</strong>
                                     </div>
                                   </div>
                                 </td>
+                                <td>{{ groupe.matiere }}</td>
                                 <td>
-                                  <strong>{{ groupe_projet.nomProjet }}</strong>
+                                  <span class="badge bg-primary">{{ groupe.nbrMembre }} membres</span>
+                                </td>
+                                <td class="description-cell" title="{{ groupe.description }}">
+                                  {{ groupe.description|length > 50 ? groupe.description|slice(0, 50) ~ '...' : groupe.description }}
                                 </td>
                                 <td>
-                                  <span class="badge badge-info">{{ groupe_projet.matiere }}</span>
-                                </td>
-                                <td>
-                                  <div class="d-flex align-items-center">
-                                    <span class="badge badge-light me-2">{{ groupe_projet.nbrMembre }} membre(s)</span>
-                                    {% if groupe_projet.nbrMembre > 4 %}
-                                      <span class="badge badge-warning">Grand groupe</span>
-                                    {% endif %}
-                                  </div>
-                                </td>
-                                <td class="description-cell">
-                                  {{ groupe_projet.description|slice(0, 50) }}{% if groupe_projet.description|length > 50 %}...{% endif %}
-                                </td>
-                                <td>
-                                  {{ groupe_projet.CreatedAt ? groupe_projet.CreatedAt|date('d/m/Y H:i') : '—' }}
-                                </td>
-                                <td>
-                                  {% if groupe_projet.statut == 'Actif' %}
-                                    <span class="badge badge-active">{{ groupe_projet.statut }}</span>
-                                  {% elseif groupe_projet.statut == 'Terminé' %}
-                                    <span class="badge badge-completed">{{ groupe_projet.statut }}</span>
+                                  {% if groupe.statut == 'Actif' %}
+                                    <span class="badge-status badge-active">{{ groupe.statut }}</span>
+                                  {% elseif groupe.statut == 'Terminé' %}
+                                    <span class="badge-status badge-completed">{{ groupe.statut }}</span>
+                                  {% elseif groupe.statut == 'En pause' %}
+                                    <span class="badge-status badge-pending">{{ groupe.statut }}</span>
                                   {% else %}
-                                    <span class="badge badge-inactive">{{ groupe_projet.statut }}</span>
+                                    <span class="badge-status badge-inactive">{{ groupe.statut }}</span>
                                   {% endif %}
                                 </td>
                                 <td>
+                                  {{ groupe.CreatedAt ? groupe.CreatedAt|date('d/m/Y') : 'N/A' }}
+                                </td>
+                                <td>
                                   <div class="action-buttons">
-                                    <a href="{{ path('app_groupe_projet_show', { id: groupe_projet.id }) }}" 
-                                       class="btn btn-info btn-sm btn-icon"
-                                       title="Voir">
+                                    <a href="{{ path('app_groupe_projet_show', {'id': groupe.id}) }}" 
+                                       class="btn btn-view" 
+                                       title="Voir détails">
                                       <i class="mdi mdi-eye"></i>
                                     </a>
-                                    <a href="{{ path('app_groupe_projet_edit', { id: groupe_projet.id }) }}" 
-                                       class="btn btn-warning btn-sm btn-icon"
+                                    <a href="{{ path('app_groupe_projet_edit', {'id': groupe.id}) }}" 
+                                       class="btn btn-edit" 
                                        title="Modifier">
                                       <i class="mdi mdi-pencil"></i>
                                     </a>
-                                    <form method="POST" action="{{ path('app_groupe_projet_delete', { id: groupe_projet.id }) }}" 
+                                    <form method="post" 
+                                          action="{{ path('app_groupe_projet_delete', {'id': groupe.id}) }}" 
                                           class="d-inline"
                                           onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce groupe ?');">
-                                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ groupe_projet.id) }}">
-                                      <button type="submit" class="btn btn-danger btn-sm btn-icon" title="Supprimer">
+                                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ groupe.id) }}">
+                                      <button type="submit" class="btn btn-delete" title="Supprimer">
                                         <i class="mdi mdi-delete"></i>
                                       </button>
                                     </form>
@@ -782,12 +853,22 @@
                           </tbody>
                         </table>
                       </div>
+                    {% else %}
+                      <div class="empty-state">
+                        <i class="mdi mdi-account-multiple-off"></i>
+                        <h4>Aucun groupe trouvé</h4>
+                        <p>Commencez par créer votre premier groupe de projet.</p>
+                        <a href="{{ path('app_groupe_projet_new') }}" class="btn btn-new mt-3">
+                          <i class="mdi mdi-plus-circle me-2"></i>
+                          Créer un groupe
+                        </a>
+                      </div>
                     {% endif %}
                   </div>
                 </div>
               </div>
             </div>
-          
+
             <!-- Footer -->
             <footer class="footer">
               <div class="d-sm-flex justify-content-center justify-content-sm-between">
@@ -795,14 +876,9 @@
                   © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
                 </span>
                 <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
-                  Gestion des Groupes Projet - {{ groupe_projets|length }} groupe{{ groupe_projets|length > 1 ? 's' : '' }}
-                  {% set totalMembers = 0 %}
-                  {% for groupe in groupe_projets %}
-                    {% set totalMembers = totalMembers + groupe.nbrMembre %}
-                  {% endfor %}
-                  ({{ totalMembers }} membre{{ totalMembers > 1 ? 's' : '' }})
+                  {{ groupe_projets|length }} groupes | 
                   {% if app.user %}
-                    | Connecté: {{ app.user.prenom|slice(0, 10) }}...
+                    Connecté: {{ app.user.prenom }} {{ app.user.nom }}
                   {% endif %}
                 </span>
               </div>
@@ -818,57 +894,133 @@
     <script src="{{ asset('assets/js/misc.js') }}"></script>
     
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality for navbar
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-          searchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#groupsTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
-            });
-          });
-        }
-        
-        // Search functionality for table
-        const tableSearchInput = document.getElementById('tableSearchInput');
-        if (tableSearchInput) {
-          tableSearchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#groupsTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
-            });
-          });
-        }
-        
+    document.addEventListener('DOMContentLoaded', function() {
         // Auto-hide alerts after 5 seconds
         setTimeout(() => {
-          const alerts = document.querySelectorAll('.alert');
-          alerts.forEach(alert => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-          });
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
         }, 5000);
         
-        // Add confirmation for delete buttons in forms
-        const deleteForms = document.querySelectorAll('form[onsubmit]');
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('tbody tr');
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Filter functionality
+        const statusFilter = document.getElementById('statusFilter');
+        const matiereFilter = document.getElementById('matiereFilter');
+        const sortFilter = document.getElementById('sortFilter');
+        const applyFiltersBtn = document.getElementById('applyFilters');
+        const resetFiltersBtn = document.getElementById('resetFilters');
+        
+        if (applyFiltersBtn) {
+            applyFiltersBtn.addEventListener('click', function() {
+                const status = statusFilter.value;
+                const matiere = matiereFilter.value.toLowerCase();
+                const rows = document.querySelectorAll('tbody tr');
+                
+                rows.forEach(row => {
+                    const statusCell = row.querySelector('.badge-status');
+                    const matiereCell = row.cells[2]; // Matière column
+                    
+                    let showRow = true;
+                    
+                    // Filter by status
+                    if (status && statusCell) {
+                        if (!statusCell.textContent.includes(status)) {
+                            showRow = false;
+                        }
+                    }
+                    
+                    // Filter by matière
+                    if (matiere && matiereCell) {
+                        if (!matiereCell.textContent.toLowerCase().includes(matiere)) {
+                            showRow = false;
+                        }
+                    }
+                    
+                    row.style.display = showRow ? '' : 'none';
+                });
+            });
+        }
+        
+        if (resetFiltersBtn) {
+            resetFiltersBtn.addEventListener('click', function() {
+                statusFilter.value = '';
+                matiereFilter.value = '';
+                sortFilter.value = 'nom';
+                
+                const rows = document.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    row.style.display = '';
+                });
+            });
+        }
+        
+        // Sort functionality
+        if (sortFilter) {
+            sortFilter.addEventListener('change', function() {
+                const sortBy = this.value;
+                const tbody = document.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                
+                rows.sort((a, b) => {
+                    let aValue, bValue;
+                    
+                    switch(sortBy) {
+                        case 'nom':
+                            aValue = a.cells[1].querySelector('strong').textContent;
+                            bValue = b.cells[1].querySelector('strong').textContent;
+                            return aValue.localeCompare(bValue);
+                        case 'date':
+                            aValue = a.cells[6].textContent;
+                            bValue = b.cells[6].textContent;
+                            return new Date(aValue.split('/').reverse().join('-')) - new Date(bValue.split('/').reverse().join('-'));
+                        case 'membres':
+                            aValue = parseInt(a.cells[3].querySelector('.badge').textContent);
+                            bValue = parseInt(b.cells[3].querySelector('.badge').textContent);
+                            return bValue - aValue; // Descending order
+                        default:
+                            return 0;
+                    }
+                });
+                
+                // Reorder rows
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        }
+        
+        // Confirmation for delete buttons
+        const deleteForms = document.querySelectorAll('form[onsubmit*="confirm"]');
         deleteForms.forEach(form => {
-          const originalOnsubmit = form.onsubmit;
-          form.onsubmit = function(e) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer ce groupe ? Cette action est irréversible.')) {
-              e.preventDefault();
-              return false;
+            const deleteButton = form.querySelector('button[type="submit"]');
+            if (deleteButton) {
+                deleteButton.addEventListener('click', function(e) {
+                    if (!confirm('Êtes-vous sûr de vouloir supprimer définitivement ce groupe ? Cette action est irréversible.')) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
             }
-            return originalOnsubmit.call(this, e);
-          };
         });
-      });
+    });
     </script>
   </body>
 </html>
+{% endblock %}

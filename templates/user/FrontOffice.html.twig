@@ -1194,8 +1194,11 @@
             </div>
 
             <!-- Navigation -->
+            {% set current_route = app.request.get('_route') ?? '' %}
+            {% set is_profile = current_route in ['app_dashboard', 'app_profile'] %}
+            {% set is_groupes = current_route starts with 'front_groupe_projet_' %}
             <nav class="nav">
-                <a href="{{ path('app_dashboard') }}">
+                <a href="{{ path('app_dashboard') }}" class="{{ current_route == 'app_dashboard' ? 'active' : '' }}">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/>
                     </svg>
@@ -1207,12 +1210,20 @@
                     </svg>
                     My Tasks
                 </a>
-                <a href="{{ path('app_profile') }}" class="active">
+                <a href="{{ path('app_profile') }}" class="{{ is_profile ? 'active' : '' }}">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                         <circle cx="12" cy="7" r="4"/>
                     </svg>
                     Profile
+                </a>
+                <a href="{{ path('front_groupe_projet_index') }}" class="{{ is_groupes ? 'active' : '' }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    Gestion de groupe
                 </a>
                 <a href="#">
                     <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1229,7 +1240,8 @@
             </nav>
         </aside>
 
-        <!-- Main content -->
+        <!-- Main content (remplacé par les pages filles comme Gestion de groupe) -->
+        {% block body %}
         <main class="main">
             <header class="header">
                 <div>
@@ -1423,6 +1435,7 @@
                 </div>
             </div>
         </main>
+        {% endblock %}
     </div>
 
     <script>

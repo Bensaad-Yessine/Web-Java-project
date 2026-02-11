@@ -24,8 +24,13 @@ class GroupeProjetType extends AbstractType
             ->add('statut')
             ->add('idUser', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => 'id',
+                'choice_label' => function (User $user) {
+                    return $user->getPrenom() . ' ' . $user->getNom() . ' (' . $user->getEmail() . ')';
+                },
                 'multiple' => true,
+                'expanded' => false,
+                'placeholder' => 'Choisir des membres',
+                'label' => 'Membres du groupe',
             ])
         ;
     }
