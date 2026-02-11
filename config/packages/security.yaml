@@ -45,6 +45,7 @@ security:
         - { path: ^/verify, roles: PUBLIC_ACCESS }
         - { path: ^/user/dashboard, roles: ROLE_USER }
         - { path: ^/user, roles: ROLE_ADMIN }
+        
 when@test:
     security:
         password_hashers:
