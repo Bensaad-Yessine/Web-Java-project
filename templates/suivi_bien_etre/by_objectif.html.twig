@@ -252,15 +252,15 @@
           <span class="menu-title">Alertes</span>
         </a>
       </li>
+      <li class="nav-item menu-items active">
+            <a class="nav-link" href="#">
+              <span class="menu-icon"><i class="mdi mdi-heart-pulse"></i></span>
+              <span class="menu-title">Objectifs suivis</span>
+            </a>
+          </li>
 
       <!-- Keep same active section -->
-      <li class="nav-item menu-items active">
-        <a class="nav-link" href="{{ path('app_objectif_sante_index') }}">
-          <span class="menu-icon"><i class="mdi mdi-heart-pulse"></i></span>
-          <span class="menu-title">Objectifs de santé</span>
-        </a>
-      </li>
-
+      
       <li class="nav-item menu-items">
         <a class="nav-link" href="{{ path('app_logout') }}">
           <span class="menu-icon"><i class="mdi mdi-logout text-danger"></i></span>
@@ -460,44 +460,7 @@
               </nav>
             </div>
 
-            <div class="d-flex gap-2 flex-wrap">
-  <div class="search-box">
-    <input type="text" class="form-control" id="tableSearchInput" placeholder="Rechercher dans les suivis...">
-  </div>
-
-  {# ✅ ICI: filtres AJAX #}
-  <select id="humeurFilter" class="form-control" style="max-width:200px;border-radius:10px;">
-    <option value="">Toutes les humeurs</option>
-    <option value="1">Très mauvaise</option>
-    <option value="2">Mauvaise</option>
-    <option value="3">Neutre</option>
-    <option value="4">Bonne</option>
-    <option value="5">Excellente</option>
-  </select>
-
-  <select id="sortBy" class="form-control" style="max-width:170px;border-radius:10px;">
-    <option value="date">Trier par date</option>
-    <option value="score">Trier par score</option>
-  </select>
-
-  <select id="sortDir" class="form-control" style="max-width:170px;border-radius:10px;">
-    <option value="DESC">DESC</option>
-    <option value="ASC">ASC</option>
-  </select>
-
-  <a href="{{ path('app_objectif_suivi_new', {id: objectif.id}) }}"
-     class="btn btn-gradient-primary btn-icon-text btn-black"
-     style="color: black !important;">
-     <i class="mdi mdi-plus-circle btn-icon-prepend" style="color: black !important;"></i>
-     Nouveau suivi
-  </a>
-
-  <a href="{{ path('app_objectif_sante_index') }}"
-     class="btn btn-outline-light btn-black"
-     style="color: black !important; border-color: black !important;">
-     <i class="mdi mdi-arrow-left" style="color: black !important;"></i> Retour
-  </a>
-</div>
+           
 
           </div>
         </div>
@@ -583,15 +546,54 @@
                   <i class="mdi mdi-format-list-bulleted me-2"></i>
                   Liste des suivis ({{ suivis|length }})
                 </h4>
+<div class="d-flex gap-2 flex-wrap align-items-center mb-3">
+  <div class="search-box">
+    <input type="text" class="form-control" id="tableSearchInput" placeholder="Rechercher dans les suivis...">
+  </div>
+
+  <select id="humeurFilter" class="form-control" style="max-width:200px;border-radius:10px;">
+    <option value="">Toutes les humeurs</option>
+    <option value="1">Très mauvaise</option>
+    <option value="2">Mauvaise</option>
+    <option value="3">Neutre</option>
+    <option value="4">Bonne</option>
+    <option value="5">Excellente</option>
+  </select>
+
+  <select id="sortBy" class="form-control" style="max-width:170px;border-radius:10px;">
+    <option value="date">Trier par date</option>
+    <option value="score">Trier par score</option>
+  </select>
+
+  <select id="sortDir" class="form-control" style="max-width:170px;border-radius:10px;">
+    <option value="DESC">DESC</option>
+    <option value="ASC">ASC</option>
+  </select>
+
+ <a href="{{ path('app_objectif_suivi_new', {id: objectif.id}) }}"
+   class="btn btn-light btn-white">
+   <i class="mdi mdi-plus-circle"></i>
+   Nouveau suivi
+</a>
+
+  <a href="{{ path('app_objectif_sante_index') }}"
+   class="btn btn-light btn-white">
+   <i class="mdi mdi-arrow-left"></i>
+   Retour
+</a>
+</div>
 
                 {% if suivis is empty %}
                   <div class="empty-state">
                     <i class="mdi mdi-chart-line"></i>
                     <h4 class="text-muted mt-3">Aucun suivi pour cet objectif</h4>
                     <p class="text-muted mb-4">Ajoutez votre premier suivi pour commencer le suivi de votre bien-être.</p>
-                    <a href="{{ path('app_objectif_suivi_new', {id: objectif.id}) }}" class="btn btn-gradient-primary btn-lg">
-                      <i class="mdi mdi-plus-circle me-2"></i> Ajouter un suivi
-                    </a>
+                   <a href="{{ path('app_objectif_suivi_new', {id: objectif.id}) }}"
+   class="btn btn-light btn-icon-text"
+   style="border-radius:10px; border:1px solid #dee2e6; font-weight:600;">
+   <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
+   Nouveau suivi
+</a>
                   </div>
                 {% else %}
                   <div class="table-responsive">
@@ -609,140 +611,10 @@
                           <th>Actions</th>
                         </tr>
                       </thead>
-                      <tbody>
-                      {% for suivi in suivis %}
-                        <tr>
-                          <td>
-                            <strong>{{ suivi.dateSaisie ? suivi.dateSaisie|date('d/m/Y') : '—' }}</strong>
-                            <br>
-                            <small class="text-muted">{{ suivi.dateSaisie ? suivi.dateSaisie|date('H:i') : '' }}</small>
-                          </td>
-                          <td>
-                            {% if suivi.humeur %}
-                              <span class="mood-badge mood-{{ suivi.humeur }}">
-                                <i class="mdi mdi-{{
-                                  suivi.humeur == 1 ? 'emoticon-sad' :
-                                  suivi.humeur == 2 ? 'emoticon-neutral' :
-                                  suivi.humeur == 3 ? 'emoticon' :
-                                  suivi.humeur == 4 ? 'emoticon-happy' :
-                                  'emoticon-excited'
-                                }}"></i>
-                                {{
-                                  suivi.humeur == 1 ? 'Très mauvaise' :
-                                  suivi.humeur == 2 ? 'Mauvaise' :
-                                  suivi.humeur == 3 ? 'Neutre' :
-                                  suivi.humeur == 4 ? 'Bonne' :
-                                  'Excellente'
-                                }}
-                              </span>
-                            {% else %}
-                              <span class="text-muted">—</span>
-                            {% endif %}
-                          </td>
-                          <td>
-                            {% if suivi.qualiteSommeil is not null %}
-                              <span class="rating-badge rating-{{ 
-                                suivi.qualiteSommeil <= 3 ? '0-3' :
-                                suivi.qualiteSommeil <= 6 ? '4-6' :
-                                suivi.qualiteSommeil <= 8 ? '7-8' :
-                                '9-10'
-                              }}">
-                                {{ suivi.qualiteSommeil }}
-                              </span>
-                            {% else %}
-                              <span class="text-muted">—</span>
-                            {% endif %}
-                          </td>
-                          <td>
-                            {% if suivi.niveauEnergie is not null %}
-                              <span class="rating-badge rating-{{
-                                suivi.niveauEnergie <= 3 ? '0-3' :
-                                suivi.niveauEnergie <= 6 ? '4-6' :
-                                suivi.niveauEnergie <= 8 ? '7-8' :
-                                '9-10'
-                              }}">
-                                {{ suivi.niveauEnergie }}
-                              </span>
-                            {% else %}
-                              <span class="text-muted">—</span>
-                            {% endif %}
-                          </td>
-                          <td>
-                            {% if suivi.niveauStress is not null %}
-                              <span class="rating-badge rating-{{
-                                suivi.niveauStress >= 7 ? '0-3' :
-                                suivi.niveauStress >= 4 ? '4-6' :
-                                suivi.niveauStress >= 2 ? '7-8' :
-                                '9-10'
-                              }}">
-                                {{ suivi.niveauStress }}
-                              </span>
-                            {% else %}
-                              <span class="text-muted">—</span>
-                            {% endif %}
-                          </td>
-                          <td>
-                            {% if suivi.qualiteAlimentation is not null %}
-                              <span class="rating-badge rating-{{
-                                suivi.qualiteAlimentation <= 3 ? '0-3' :
-                                suivi.qualiteAlimentation <= 6 ? '4-6' :
-                                suivi.qualiteAlimentation <= 8 ? '7-8' :
-                                '9-10'
-                              }}">
-                                {{ suivi.qualiteAlimentation }}
-                              </span>
-                            {% else %}
-                              <span class="text-muted">—</span>
-                            {% endif %}
-                          </td>
-                          <td style="max-width:200px;">
-                            {% if suivi.notesLibres %}
-                              <small class="text-muted" title="{{ suivi.notesLibres }}">
-                                {{ suivi.notesLibres|slice(0, 50) }}{{ suivi.notesLibres|length > 50 ? '...' : '' }}
-                              </small>
-                            {% else %}
-                              <span class="text-muted">—</span>
-                            {% endif %}
-                          </td>
-                          <td>
-                            {% if suivi.score is not null %}
-                              {% set scoreClass = 
-                                suivi.score >= 80 ? 'badge-score-excellent' :
-                                suivi.score >= 60 ? 'badge-score-good' :
-                                suivi.score >= 40 ? 'badge-score-medium' :
-                                'badge-score-poor'
-                              %}
-                              <span class="badge-pill {{ scoreClass }}">
-                                <i class="mdi mdi-star"></i> {{ suivi.score }}%
-                              </span>
-                              <div class="progress-small mt-1">
-                                <div class="progress-bar" style="width: {{ suivi.score }}%"></div>
-                              </div>
-                            {% else %}
-                              <span class="text-muted">—</span>
-                            {% endif %}
-                          </td>
-                          <td>
-                            <div class="action-buttons">
-                              <a href="{{ path('app_objectif_suivi_edit', {id: objectif.id, suiviId: suivi.id}) }}"
-                                 class="btn btn-warning btn-sm" title="Modifier">
-                                <i class="mdi mdi-pencil"></i>
-                              </a>
+                      <tbody id="suivisTbody">
+  {{ include('suivi_bien_etre/_rows.html.twig', { objectif: objectif, suivis: suivis }) }}
+</tbody>
 
-                              <form action="{{ path('app_objectif_suivi_delete', {id: objectif.id, suiviId: suivi.id}) }}"
-                                    method="POST"
-                                    style="display:inline;"
-                                    onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce suivi ?');">
-                                <input type="hidden" name="_token" value="{{ csrf_token('delete_suivi' ~ suivi.id) }}">
-                                <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
-                                  <i class="mdi mdi-delete"></i>
-                                </button>
-                              </form>
-                            </div>
-                          </td>
-                        </tr>
-                      {% endfor %}
-                      </tbody>
                     </table>
                   </div>
                 {% endif %}
@@ -776,65 +648,88 @@
 <script src="{{ asset('assets/js/misc.js') }}"></script>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    function filterRows(inputId) {
-      const input = document.getElementById(inputId);
-      if (!input) return;
+document.addEventListener('DOMContentLoaded', () => {
+  const tbody = document.getElementById('suivisTbody');
 
-      input.addEventListener('keyup', function () {
-        const filter = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#suivisTable tbody tr');
-        let visibleCount = 0;
-        
-        rows.forEach(row => {
-          const text = row.textContent.toLowerCase();
-          const isVisible = text.includes(filter);
-          row.style.display = isVisible ? '' : 'none';
-          if (isVisible) visibleCount++;
-        });
+  const humeurEl = document.getElementById('humeurFilter');
+  const sortByEl = document.getElementById('sortBy');
+  const sortDirEl = document.getElementById('sortDir');
 
-        // Update table header count
-        const header = document.querySelector('.card-title');
-        if (header && inputId === 'tableSearchInput') {
-          const originalText = 'Liste des suivis ({{ suivis|length }})';
-          if (filter) {
-            header.textContent = `Liste des suivis (${visibleCount} sur {{ suivis|length }})`;
-          } else {
-            header.textContent = originalText;
-          }
-        }
-      });
+  const tableSearchEl = document.getElementById('tableSearchInput');
+  const navSearchEl = document.getElementById('navSearchInput');
+
+  // Route AJAX (Symfony path)
+  const filterUrlBase = "{{ path('app_objectif_suivis_filter', {id: objectif.id}) }}";
+
+  let debounceTimer = null;
+
+  function buildUrl() {
+    const params = new URLSearchParams();
+
+    // humeur
+    if (humeurEl && humeurEl.value) params.set('humeur', humeurEl.value);
+
+    // sorting
+    if (sortByEl) params.set('sortBy', sortByEl.value || 'date');
+    if (sortDirEl) params.set('sortDir', sortDirEl.value || 'DESC');
+
+    // search: خذ القيمة من tableSearchInput (وإذا خاوي خد navSearchInput)
+    const q = (tableSearchEl && tableSearchEl.value.trim())
+      ? tableSearchEl.value.trim()
+      : (navSearchEl ? navSearchEl.value.trim() : '');
+
+    if (q) params.set('q', q);
+
+    return `${filterUrlBase}?${params.toString()}`;
+  }
+
+  async function loadRows() {
+    if (!tbody) return;
+
+    const url = buildUrl();
+
+    try {
+      tbody.style.opacity = '0.6';
+
+      const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+      const html = await res.text();
+
+      tbody.innerHTML = html;
+      tbody.style.opacity = '1';
+
+      // تحديث العنوان (عدد النتائج)
+      const count = tbody.querySelectorAll('tr').length;
+      const header = document.querySelector('.card-title');
+      if (header) {
+        // إذا كاين "Aucun résultat" راه row واحدة، ولكن فيها colspan
+        const hasNoResult = tbody.textContent.toLowerCase().includes('aucun résultat');
+        const realCount = hasNoResult ? 0 : count;
+
+        header.innerHTML = `<i class="mdi mdi-format-list-bulleted me-2"></i> Liste des suivis (${realCount})`;
+      }
+
+    } catch (e) {
+      tbody.style.opacity = '1';
+      console.error(e);
     }
+  }
 
-    filterRows('tableSearchInput');
-    filterRows('navSearchInput');
-    
-    // Auto-hide alerts after 5 seconds
-    setTimeout(() => {
-  const alerts = document.querySelectorAll('.alert');
-  alerts.forEach(alert => {
-    if (window.bootstrap && bootstrap.Alert) {
-      const bsAlert = new bootstrap.Alert(alert);
-      bsAlert.close();
-    } else {
-      alert.style.display = 'none';
-    }
-  });
-}, 5000);
+  function debouncedLoad() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(loadRows, 250);
+  }
 
-    
-    // Add hover effects
-    const tableRows = document.querySelectorAll('#suivisTable tbody tr');
-    tableRows.forEach(row => {
-      row.addEventListener('mouseenter', function() {
-        this.style.backgroundColor = 'rgba(102, 126, 234, 0.03)';
-      });
-      row.addEventListener('mouseleave', function() {
-        this.style.backgroundColor = '';
-      });
-    });
-  });
+  // events: filters
+  if (humeurEl) humeurEl.addEventListener('change', loadRows);
+  if (sortByEl) sortByEl.addEventListener('change', loadRows);
+  if (sortDirEl) sortDirEl.addEventListener('change', loadRows);
+
+  // events: search
+  if (tableSearchEl) tableSearchEl.addEventListener('input', debouncedLoad);
+  if (navSearchEl) navSearchEl.addEventListener('input', debouncedLoad);
+});
 </script>
+
 
 </body>
 </html>

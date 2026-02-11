@@ -1,0 +1,129 @@
+{% for objectif_sante in objectif_santes %}
+<tr>
+  <td><strong>#{{ objectif_sante.id }}</strong></td>
+
+  <td>
+    <div>
+      <h6 class="mb-0">{{ objectif_sante.titre }}</h6>
+      <small class="text-muted">Objectif #{{ objectif_sante.id }}</small>
+    </div>
+  </td>
+
+  <td>
+    <span class="type-badge type-{{ objectif_sante.type|lower|replace({' ': '-'}) }}">
+      {{ objectif_sante.type }}
+    </span>
+  </td>
+
+  <td>
+    {% if objectif_sante.valeurCible %}
+      <span class="target-value">
+        <i class="mdi mdi-target"></i>
+        {{ objectif_sante.valeurCible }}
+      </span>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    <div class="date-cell">
+      <span class="date-label">Début</span>
+      <span class="date-value">{{ objectif_sante.dateDebut ? objectif_sante.dateDebut|date('d/m/Y') : '—' }}</span>
+      <span class="date-label mt-1">Fin</span>
+      <span class="date-value">{{ objectif_sante.dateFin ? objectif_sante.dateFin|date('d/m/Y') : '—' }}</span>
+    </div>
+  </td>
+
+  <td>
+    {% if objectif_sante.progression is not null %}
+      <div class="d-flex align-items-center">
+        <div class="progress me-2" style="width: 100px;">
+          {% set prog = objectif_sante.progression %}
+          <div class="progress-bar bg-health" role="progressbar"
+               style="width: {{ prog > 100 ? 100 : prog }}%"
+               aria-valuenow="{{ prog }}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <small class="fw-bold">{{ objectif_sante.progression }}%</small>
+      </div>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% if objectif_sante.priorite %}
+      <span class="priority-badge priority-{{ objectif_sante.priorite|lower }}">
+        <i class="mdi mdi-flag me-1"></i>
+        {{ objectif_sante.priorite }}
+      </span>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% if objectif_sante.statut %}
+      <span class="status-badge status-{{ objectif_sante.statut|lower|replace({'_':'-'}) }}">
+        {{ objectif_sante.statut }}
+      </span>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% if objectif_sante.user %}
+      <div class="user-info">
+        {% if objectif_sante.user.profilePic %}
+          <img src="{{ asset('uploads/profile_pics/' ~ objectif_sante.user.profilePic) }}"
+               alt="{{ objectif_sante.user.nom }}"
+               class="user-avatar-img">
+        {% else %}
+          <div class="user-avatar">
+            {{ objectif_sante.user.nom|first|upper }}
+          </div>
+        {% endif %}
+        <div class="user-info-text">
+          <span class="user-name">{{ objectif_sante.user.nom }}</span>
+          <span class="user-email">{{ objectif_sante.user.email }}</span>
+        </div>
+      </div>
+    {% else %}
+      <span class="text-muted">Non assigné</span>
+    {% endif %}
+  </td>
+
+  <td>
+    <div class="action-buttons">
+      <a href="{{ path('app_objectif_suivis', { id: objectif_sante.id }) }}"
+         class="btn btn-success btn-sm" title="Voir les suivis">
+        <i class="mdi mdi-chart-line"></i>
+      </a>
+
+      <a href="{{ path('app_objectif_sante_show', { id: objectif_sante.id }) }}"
+         class="btn btn-info btn-sm" title="Voir">
+        <i class="mdi mdi-eye"></i>
+      </a>
+
+      <a href="{{ path('app_objectif_sante_edit', { id: objectif_sante.id }) }}"
+         class="btn btn-warning btn-sm" title="Modifier">
+        <i class="mdi mdi-pencil"></i>
+      </a>
+
+      <form action="{{ path('app_objectif_sante_delete', { id: objectif_sante.id }) }}"
+            method="POST" style="display:inline"
+            onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet objectif ?');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ objectif_sante.id) }}">
+        <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+          <i class="mdi mdi-delete"></i>
+        </button>
+      </form>
+    </div>
+  </td>
+</tr>
+{% else %}
+<tr>
+  <td colspan="10" class="text-center text-muted py-4">Aucun résultat</td>
+</tr>
+{% endfor %}

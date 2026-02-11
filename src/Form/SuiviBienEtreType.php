@@ -28,20 +28,20 @@ class SuiviBienEtreType extends AbstractType
                 'required' => true,
             ])
             ->add('humeur', ChoiceType::class, [
-                'label' => 'Humeur générale',
-                'choices' => [
-                    'Très mauvaise 😢' => 1,
-                    'Mauvaise 😔' => 2,
-                    'Neutre 😐' => 3,
-                    'Bonne 😊' => 4,
-                    'Excellente 😄' => 5,
-                ],
-                'placeholder' => 'Sélectionnez votre humeur',
-                'attr' => [
-                    'class' => 'form-select'
-                ],
-                'required' => true,
-            ])
+    'label' => 'Humeur générale',
+    'choices' => [
+        'Très mauvaise 😢' => 'Très mauvaise',
+        'Mauvaise 😔' => 'Mauvaise',
+        'Neutre 😐' => 'Neutre',
+        'Bonne 😊' => 'Bonne',
+        'Excellente 😄' => 'Excellente',
+    ],
+    'placeholder' => 'Sélectionnez votre humeur',
+    'attr' => [
+        'class' => 'form-select'
+    ],
+    'required' => true,
+])
             ->add('niveauEnergie', IntegerType::class, [
                 'label' => 'Niveau d\'énergie (1-10)',
                 'attr' => [

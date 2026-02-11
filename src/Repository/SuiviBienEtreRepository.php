@@ -15,6 +15,20 @@ class SuiviBienEtreRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, SuiviBienEtre::class);
     }
+// src/Repository/SuiviBienEtreRepository.php
+
+public function findByUserAndObjectif(int $userId, int $objectifId): array
+{
+    return $this->createQueryBuilder('s')
+        ->join('s.objectif', 'o')
+        ->andWhere('o.user = :userId')
+        ->andWhere('o.id = :objectifId')
+        ->setParameter('userId', $userId)
+        ->setParameter('objectifId', $objectifId)
+        ->orderBy('s.dateSaisie', 'DESC')
+        ->getQuery()
+        ->getResult();
+}
 
 //    /**
 //     * @return SuiviBienEtre[] Returns an array of SuiviBienEtre objects
