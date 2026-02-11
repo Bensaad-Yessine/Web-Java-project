@@ -42,7 +42,7 @@ class MatiereClasse
      * @var Collection<int, Classe>
      */
     #[ORM\ManyToMany(targetEntity: Classe::class, inversedBy: 'matiereClasses')]
-    private Collection $Classe;
+    private Collection $classes;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $nom = null;
@@ -52,7 +52,7 @@ class MatiereClasse
 
     public function __construct()
     {
-        $this->Classe = new ArrayCollection();
+        $this->classes = new ArrayCollection();
     }
 
    
@@ -98,23 +98,23 @@ class MatiereClasse
     /**
      * @return Collection<int, Classe>
      */
-    public function getClasse(): Collection
+    public function getClasses(): Collection
     {
-        return $this->Classe;
+        return $this->classes;
     }
 
-    public function addClasse(Classe $classe): static
+    public function addClass(Classe $classe): static
     {
-        if (!$this->Classe->contains($classe)) {
-            $this->Classe->add($classe);
+        if (!$this->classes->contains($classe)) {
+            $this->classes->add($classe);
         }
 
         return $this;
     }
 
-    public function removeClasse(Classe $classe): static
+    public function removeClass(Classe $classe): static
     {
-        $this->Classe->removeElement($classe);
+        $this->classes->removeElement($classe);
 
         return $this;
     }

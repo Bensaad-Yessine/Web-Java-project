@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Classe;
+use App\Entity\User;
+use App\Repository\UserRepository;
 use App\Form\ClasseType;
 use App\Repository\ClasseRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -96,5 +98,13 @@ public function index(
         }
 
         return $this->redirectToRoute('app_classe_index', [], Response::HTTP_SEE_OTHER);
+    }
+    #[Route('/{id}/users', name: 'app_classe_users', methods: ['GET'])]
+    public function users(Classe $classe, UserRepository $userRepository): Response
+    {        $users = $userRepository->findUsersByClasse($classe);     
+        return $this->render('classe/users.html.twig', [
+            'classe' => $classe,
+            'users' => $users,
+        ]);
     }
 }

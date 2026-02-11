@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Entity;
-
+use App\Entity\MatiereClasse;
 use App\Repository\ClasseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -24,16 +24,19 @@ class Classe
     /**
      * @var Collection<int, MatiereClasse>
      */
-    #[ORM\ManyToMany(targetEntity: MatiereClasse::class, mappedBy: 'Classe')]
+    #[ORM\ManyToMany(targetEntity: MatiereClasse::class, mappedBy: 'classes')]
     private Collection $matiereClasses;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'classes')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'Classe')]
 #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
 private ?User $user = null;
 
 
     #[ORM\Column(length: 255)]
 private ?string $anneeuniversitaire = "2025/2026";
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
 
     public function __construct()
     {
@@ -115,6 +118,18 @@ private ?string $anneeuniversitaire = "2025/2026";
 public function setUser(?User $user): static
 {
     $this->user = $user;
+    return $this;
+}
+
+public function getDescription(): ?string
+{
+    return $this->description;
+}
+
+public function setDescription(?string $description): static
+{
+    $this->description = $description;
+
     return $this;
 }
 }

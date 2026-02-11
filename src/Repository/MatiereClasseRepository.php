@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Repository;
-
+use App\Entity\Classe;
 use App\Entity\MatiereClasse;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -40,4 +40,5 @@ class MatiereClasseRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
 }
