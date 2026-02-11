@@ -718,7 +718,7 @@
                     <h1>Mes Préférences d'Alerte</h1>
                     <p>Gérez vos paramètres de notification</p>
                 </div>
-                <a href="{{ path('app_preference_alerte_new') }}" class="create-btn">
+                <a href="{{ path('front_preference_alerte_add', {'id': app.user.id}) }}" class="create-btn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M12 5v14"/><path d="M5 12h14"/>
                     </svg>
