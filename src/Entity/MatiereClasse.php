@@ -50,9 +50,16 @@ class MatiereClasse
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
+    /**
+     * @var Collection<int, Seance>
+     */
+    #[ORM\OneToMany(targetEntity: Seance::class, mappedBy: 'matiere')]
+    private Collection $seances;
+
     public function __construct()
     {
         $this->classes = new ArrayCollection();
+        $this->seances = new ArrayCollection();
     }
 
    
@@ -142,6 +149,40 @@ class MatiereClasse
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Seance>
+     */
+    public function getSeances(): Collection
+    {
+        return $this->seances;
+    }
+
+    public function addSeance(Seance $seance): static
+    {
+        if (!$this->seances->contains($seance)) {
+            $this->seances->add($seance);
+            $seance->setMatiere($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSeance(Seance $seance): static
+    {
+        if ($this->seances->removeElement($seance)) {
+            // set the owning side to null (unless already changed)
+            if ($seance->getMatiere() === $this) {
+                $seance->setMatiere(null);
+            }
+        }
+
+        return $this;
+    }
+  public function __toString(): string
+{
+    return $this->nom ?? 'Matière';
+}
 
     
 }

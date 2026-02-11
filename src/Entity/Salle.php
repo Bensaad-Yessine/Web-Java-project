@@ -46,6 +46,9 @@ class Salle
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $capacite = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -132,4 +135,21 @@ class Salle
 
         return $this;
     }
+    public function __toString(): string
+{
+    return $this->nom ?? 'Salle';
+}
+
+    public function getCapacite(): ?int
+    {
+        return $this->capacite;
+    }
+
+    public function setCapacite(?int $capacite): static
+    {
+        $this->capacite = $capacite;
+
+        return $this;
+    }
+
 }

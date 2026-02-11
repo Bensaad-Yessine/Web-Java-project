@@ -38,9 +38,19 @@ private ?string $anneeuniversitaire = "2025/2026";
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
+    /**
+     * @var Collection<int, Seance>
+     */
+    #[ORM\OneToMany(targetEntity: Seance::class, mappedBy: 'classe')]
+    private Collection $seances;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $filiere = null;
+
     public function __construct()
     {
         $this->matiereClasses = new ArrayCollection();
+        $this->seances = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -132,4 +142,51 @@ public function setDescription(?string $description): static
 
     return $this;
 }
+
+/**
+ * @return Collection<int, Seance>
+ */
+public function getSeances(): Collection
+{
+    return $this->seances;
+}
+
+public function addSeance(Seance $seance): static
+{
+    if (!$this->seances->contains($seance)) {
+        $this->seances->add($seance);
+        $seance->setClasse($this);
+    }
+
+    return $this;
+}
+
+public function removeSeance(Seance $seance): static
+{
+    if ($this->seances->removeElement($seance)) {
+        // set the owning side to null (unless already changed)
+        if ($seance->getClasse() === $this) {
+            $seance->setClasse(null);
+        }
+    }
+
+    return $this;
+}
+public function __toString(): string
+{
+    return $this->nom ?? 'Classe';
+}
+
+public function getFiliere(): ?string
+{
+    return $this->filiere;
+}
+
+public function setFiliere(?string $filiere): static
+{
+    $this->filiere = $filiere;
+
+    return $this;
+}
+
 }
