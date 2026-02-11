@@ -1,0 +1,27 @@
+{# templates/front/objectif_sante/_delete_form.html.twig #}
+<form method="post"
+      action="{{ path('front_objectif_sante_delete', { id: objectif_sante.id }) }}"
+      style="display:inline"
+      onsubmit="return confirm('Supprimer cet objectif ?');">
+
+  <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ objectif_sante.id) }}">
+  <button type="submit" 
+          style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+                 color: white;
+                 border: none;
+                 padding: 8px 18px;
+                 margin: 5px;
+                 border-radius: 8px;
+                 cursor: pointer;
+                 font-size: 14px;
+                 font-weight: 600;
+                 display: inline-flex;
+                 align-items: center;
+                 gap: 8px;
+                 box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                 transition: all 0.3s ease;
+                 text-transform: uppercase;
+                 letter-spacing: 0.5px;">
+    <span style="font-size: 16px;">🗑️</span> Supprimer
+  </button>
+</form>

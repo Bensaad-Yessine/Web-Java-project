@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PreferenceAlerte index{% endblock %}
+
+{% block body %}
+    <h1>PreferenceAlerte index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>EmailActif</th>
+                <th>PushActif</th>
+                <th>SiteNotifActive</th>
+                <th>DelaiRappelMin</th>
+                <th>DelaiUrgentHeures</th>
+                <th>FreaquenceMaxParJour</th>
+                <th>HeureSilenceDebut</th>
+                <th>HeureSilenceFin</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for preference_alerte in preference_alertes %}
+            <tr>
+                <td>{{ preference_alerte.id }}</td>
+                <td>{{ preference_alerte.emailActif ? 'Yes' : 'No' }}</td>
+                <td>{{ preference_alerte.pushActif ? 'Yes' : 'No' }}</td>
+                <td>{{ preference_alerte.siteNotifActive ? 'Yes' : 'No' }}</td>
+                <td>{{ preference_alerte.delaiRappelMin }}</td>
+                <td>{{ preference_alerte.delaiUrgentHeures }}</td>
+                <td>{{ preference_alerte.freaquenceMaxParJour }}</td>
+                <td>{{ preference_alerte.heureSilenceDebut ? preference_alerte.heureSilenceDebut|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ preference_alerte.heureSilenceFin ? preference_alerte.heureSilenceFin|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_preference_alerte_show', {'id': preference_alerte.id}) }}">show</a>
+                    <a href="{{ path('app_preference_alerte_edit', {'id': preference_alerte.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="10">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_preference_alerte_new') }}">Create new</a>
+{% endblock %}

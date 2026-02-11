@@ -3,6 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Tache;
+use App\Entity\User;
+use Dom\Entity;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -66,6 +69,14 @@ class TacheType extends AbstractType
                     'Santé' => 'SANTE',
                     'Emploi du temps' => 'EMPLOI',
                 ],
+            ])
+            ->add('User', EntityType::class, [
+                'label' => 'User email',
+                'class' => User::class,
+                'choice_label' => 'email',
+                'placeholder' => 'Choisir un utilisateur',
+                'required' => false,
+                'attr' => ['class' => 'form-select'],
             ]);
     }
 

@@ -11,149 +11,71 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class TacheController extends AbstractController
+#[Route('/tache')]
+final class TacheController extends AbstractController
 {
-    #[Route('/showTache', name: 'showTache')]
-    public function showTache(TacheRepository $repo): Response
+    #[Route(name: 'app_tache_index', methods: ['GET'])]
+    public function index(TacheRepository $tacheRepository): Response
     {
-        return $this->render('tache/showTache.html.twig', [
-            'taches' => $repo->findAll(),
+        return $this->render('tache/index.html.twig', [
+            'taches' => $tacheRepository->findAll(),
         ]);
     }
 
-    #[Route('/addTache', name: 'addTache')]
-    public function addTache(Request $request, EntityManagerInterface $em, TacheRepository $repo): Response
+    #[Route('/new', name: 'app_tache_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $tache = new Tache();
-        $form = $this->createForm(TacheType::class, $tache, [
-            'attr' => ['novalidate' => 'novalidate']
-        ]);
+        $form = $this->createForm(TacheType::class, $tache);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($tache);
+            $entityManager->flush();
 
-            // ======================
-            // Interval uniqueness check
-            // Prevent overlapping tasks for the same student
-            // ======================
-            $overlap = $repo->findOverlappingTasks(
-                $tache->getDateDebut(),
-                $tache->getDateFin()
-            );
-
-            if (count($overlap) > 0) {
-                $this->addFlash('error', 'Une autre tâche existe déjà pendant cet intervalle !');
-                return $this->render('tache/addTache.html.twig', [
-                    'form' => $form->createView(),
-                ]);
-            }
-
-            $em->persist($tache);
-            $em->flush();
-
-            // ======================
-            // Flash message for feedback
-            // ======================
-            $this->addFlash('success', 'Tâche ajoutée avec succès !');
-
-            return $this->redirectToRoute('showTache');
+            return $this->redirectToRoute('app_tache_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('tache/addTache.html.twig', [
-            'form' => $form->createView(),
+        return $this->render('tache/new.html.twig', [
+            'tache' => $tache,
+            'form' => $form,
         ]);
     }
 
-    #[Route('/{id}/editTache', name: 'editTache')]
-    public function editTache(Request $request, Tache $tache, EntityManagerInterface $em, TacheRepository $repo): Response
+    #[Route('/{id}', name: 'app_tache_show', methods: ['GET'])]
+    public function show(Tache $tache): Response
     {
-        $form = $this->createForm(TacheType::class, $tache, [
-            'attr' => ['novalidate' => 'novalidate']
-        ]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            // Interval uniqueness check for edit (exclude current task)
-            $overlap = $repo->findOverlappingTasks(
-                $tache->getDateDebut(),
-                $tache->getDateFin(),
-                $tache->getId() // ignore current task
-            );
-
-            if (count($overlap) > 0) {
-                $this->addFlash('error', 'Une autre tâche existe déjà pendant cet intervalle !');
-                return $this->render('tache/editTache.html.twig', [
-                    'form' => $form->createView(),
-                    'tache' => $tache,
-                ]);
-            }
-
-            $em->flush();
-
-            $this->addFlash('success', 'Tâche modifiée avec succès !');
-
-            return $this->redirectToRoute('showTache');
-        }
-
-        return $this->render('tache/editTache.html.twig', [
-            'form' => $form->createView(),
+        return $this->render('tache/show.html.twig', [
             'tache' => $tache,
         ]);
     }
 
-    #[Route('/{id}/delete', name: 'deleteTache')]
-    public function deleteTache(Request $request, Tache $tache, EntityManagerInterface $em): Response
+    #[Route('/{id}/edit', name: 'app_tache_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Tache $tache, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$tache->getId(), $request->request->get('_token'))) {
-            $em->remove($tache);
-            $em->flush();
+        $form = $this->createForm(TacheType::class, $tache);
+        $form->handleRequest($request);
 
-            // Flash message after delete
-            $this->addFlash('success', 'Tâche supprimée avec succès !');
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_tache_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->redirectToRoute('showTache');
-    }
-    #[Route('/showTacheCalendar', name: 'showTacheCalendar')]
-    public function showTacheCalendar(TacheRepository $repo): Response
-    {
-        $taches = $repo->findAll(); // or filter by student if you have users
-        return $this->render('tache/showTacheCalendar.html.twig', [
-            'taches' => $taches
+        return $this->render('tache/edit.html.twig', [
+            'tache' => $tache,
+            'form' => $form,
         ]);
     }
 
-    //search by titre
-    #[Route('/taches/search', name: 'searchTache')]
-    public function searchTache(Request $request, TacheRepository $repo): Response
+    #[Route('/{id}', name: 'app_tache_delete', methods: ['POST'])]
+    public function delete(Request $request, Tache $tache, EntityManagerInterface $entityManager): Response
     {
-        $titre = $request->query->get('titre',''); //default empty
-        //call repository function
-        $taches = $repo->searchByTitre($titre);
+        if ($this->isCsrfTokenValid('delete'.$tache->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($tache);
+            $entityManager->flush();
+        }
 
-        return $this->render('tache/showTache.html.twig', [
-            'taches' => $taches,
-            'titre' => $titre,
-        ]);
+        return $this->redirectToRoute('app_tache_index', [], Response::HTTP_SEE_OTHER);
     }
-    
-    // filter tasks in days intervale 
-    #[Route('/taches/filter', name: 'filterTasks')]
-    public function filterTasks(Request $request, TacheRepository $repo): Response
-    {
-        $startInput = $request->query->get('start');
-        $endInput = $request->query->get('end');
-
-        $startDate = $startInput ? new \DateTime($startInput) : null;
-        $endDate   = $endInput ? new \DateTime($endInput) : null;
-
-        $tasks = $repo->findTasksInInterval($startDate, $endDate);
-
-        return $this->render('tache/showTache.html.twig', [
-            'taches' => $tasks,
-        ]);
-    }
- 
-
 }

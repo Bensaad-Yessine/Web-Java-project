@@ -1,0 +1,1144 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Groupe Projet{% endblock %}
+
+{% block body %}
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ESPRIT - Modifier Groupe Projet</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+    <style>
+      .stat-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      }
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+        margin: 0 auto;
+      }
+      .stat-count {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+      .stat-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .card-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+      .card-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+      .card-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+      .card-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+      .card-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+      
+      .group-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      
+      .profile-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 20px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      
+      .profile-avatar-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #fff;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      }
+      
+      /* Style pour les avatars de la navbar */
+      .navbar-avatar-img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      
+      .navbar-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+      
+      .badge-active {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+        border: none;
+      }
+      
+      .badge-inactive {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border: none;
+      }
+      
+      .badge-completed {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border: none;
+      }
+      
+      .action-buttons {
+        display: flex;
+        gap: 5px;
+      }
+      
+      .action-buttons .btn {
+        padding: 5px 10px;
+        border-radius: 5px;
+      }
+      
+      .search-box {
+        max-width: 300px;
+      }
+      
+      .table-hover tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+      }
+      
+      .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+      }
+      
+      .empty-state i {
+        font-size: 60px;
+        color: #dee2e6;
+        margin-bottom: 20px;
+      }
+
+      .alert {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+      }
+      
+      .user-role-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 10px;
+        margin-top: 5px;
+        display: inline-block;
+      }
+      
+      .profile-pic {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+      }
+      
+      .count-indicator {
+        position: relative;
+        margin-right: 15px;
+      }
+      
+      .profile-name {
+        flex-grow: 1;
+      }
+      
+      .navbar-profile {
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+      }
+      
+      .table td {
+        vertical-align: middle;
+      }
+      
+      .avatar-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      
+      .description-cell {
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      
+      /* Style pour mieux aligner le contenu de la navbar */
+      .navbar-profile-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0;
+      }
+      
+      /* Styles pour le formulaire */
+      .form-card {
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        border: none;
+      }
+      
+      .form-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px 15px 0 0;
+        padding: 20px 30px;
+      }
+      
+      .form-body {
+        padding: 30px;
+      }
+      
+      .form-section {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+      }
+      
+      .form-section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+      
+      .form-section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #667eea;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      
+      .form-group-enhanced {
+        margin-bottom: 25px;
+      }
+      
+      .form-label {
+        font-weight: 500;
+        color: #555;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .form-control-custom {
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 12px 15px;
+        transition: all 0.3s;
+        font-size: 0.95rem;
+      }
+      
+      .form-control-custom:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+      }
+      
+      .form-text-help {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 5px;
+      }
+      
+      .required-field::after {
+        content: " *";
+        color: #f5576c;
+      }
+      
+      .btn-update {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.3s;
+      }
+      
+      .btn-update:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(67, 233, 123, 0.3);
+      }
+      
+      .btn-cancel {
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        color: #333;
+        padding: 12px 30px;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.3s;
+      }
+      
+      .btn-cancel:hover {
+        background: #e9ecef;
+        border-color: #ccc;
+      }
+      
+      .btn-delete {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.3s;
+      }
+      
+      .btn-delete:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(240, 147, 251, 0.3);
+      }
+      
+      .form-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+      }
+      
+      .group-info-box {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+      }
+      
+      .info-row {
+        display: flex;
+        margin-bottom: 15px;
+      }
+      
+      .info-label {
+        font-weight: 600;
+        color: #333;
+        width: 150px;
+        flex-shrink: 0;
+      }
+      
+      .info-value {
+        color: #555;
+      }
+      
+      .info-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+      
+      .info-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-scroller">
+      <!-- Sidebar -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+          <a class="sidebar-brand brand-logo" href="{{ path('app_groupe_projet_index') }}">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </a>
+          <a class="sidebar-brand brand-logo-mini" href="{{ path('app_groupe_projet_index') }}">
+            <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+          </a>
+        </div>
+        <ul class="nav">
+          <li class="nav-item profile">
+            <div class="profile-desc">
+              <div class="profile-pic">
+                <div class="count-indicator">
+                  {% if app.user %}
+                    {% if app.user.profilePic %}
+                      <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                           alt="{{ app.user.prenom }}" 
+                           class="profile-avatar-img">
+                    {% else %}
+                      <div class="profile-avatar">
+                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                      </div>
+                    {% endif %}
+                  {% else %}
+                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  {% endif %}
+                  <span class="count bg-success"></span>
+                </div>
+                <div class="profile-name">
+                  {% if app.user %}
+                    <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                    <span class="text-muted">{{ app.user.email }}</span>
+                    <div class="mt-1">
+                      {% if 'ROLE_ADMIN' in app.user.roles %}
+                        <span class="user-role-badge badge-admin">Administrateur</span>
+                      {% else %}
+                        <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                    <span>Veuillez vous connecter</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Navigation</span>
+          </li>
+          
+          <!-- Dashboard -->
+          <li class="nav-item menu-items ">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-speedometer"></i>
+              </span>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          
+          <!-- Utilisateurs -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_user_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-group"></i>
+              </span>
+              <span class="menu-title">Utilisateurs</span>
+            </a>
+          </li>
+          
+          <!-- Matières -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_matiere_classe_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-book-open-page-variant"></i>
+              </span>
+              <span class="menu-title">Matieres</span>
+            </a>
+          </li>
+          
+          <!-- Classes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_classe_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-school"></i>
+              </span>
+              <span class="menu-title">Classes</span>
+            </a>
+          </li>
+          
+          <!-- Salles -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_salle_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-office-building"></i>
+              </span>
+              <span class="menu-title">Salles</span>
+            </a>
+          </li>
+          
+          <!-- Séances -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_seance_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-calendar-clock"></i>
+              </span>
+              <span class="menu-title">Séances</span>
+            </a>
+          </li>
+          
+          <!-- Groupes - ACTIVE -->
+          <li class="nav-item menu-items active">
+            <a class="nav-link" href="{{ path('app_groupe_projet_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-multiple"></i>
+              </span>
+              <span class="menu-title">Groupes</span>
+            </a>
+          </li>
+          
+          <!-- Tâches -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_tache_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+              </span>
+              <span class="menu-title">Tâches</span>
+            </a>
+          </li>
+          
+          <!-- Alertes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-alert-circle-outline"></i>
+              </span>
+              <span class="menu-title">Alertes</span>
+            </a>
+          </li>
+          
+          <!-- Exercices de santé -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_objectif_sante_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-heart-pulse"></i>
+              </span>
+              <span class="menu-title">Exercices de santé</span>
+            </a>
+          </li>
+          
+          <!-- Logout -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_logout') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-logout text-danger"></i>
+              </span>
+              <span class="menu-title text-danger">Déconnexion</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Main Content -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+          <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </div>
+          <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+              <span class="mdi mdi-menu"></span>
+            </button>
+            <ul class="navbar-nav w-100">
+              <li class="nav-item w-100">
+                <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                  <input type="text" class="form-control" placeholder="Rechercher..." id="searchInput">
+                </form>
+              </li>
+            </ul>
+            <ul class="navbar-nav navbar-nav-right">
+              <li class="nav-item dropdown border-left">
+                <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                  <i class="mdi mdi-bell"></i>
+                  <span class="count bg-danger">3</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                  <h6 class="p-3 mb-0">Notifications</h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-warning rounded-circle">
+                        <i class="mdi mdi-account-multiple"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Modification de groupe</p>
+                      <p class="text-muted ellipsis mb-0"> Groupe {{ groupe_projet.nomProjet }} en cours de modification</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+              
+              <li class="nav-item dropdown">
+                <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                  <div class="navbar-profile">
+                    {% if app.user %}
+                      <div class="avatar-container">
+                        {% if app.user.profilePic %}
+                          <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                               alt="{{ app.user.prenom }}" 
+                               class="navbar-avatar-img">
+                        {% else %}
+                          <div class="navbar-avatar">
+                            {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                          </div>
+                        {% endif %}
+                        <div class="text-start ms-2">
+                          <p class="mb-0 d-none d-sm-block navbar-profile-name">
+                            {{ app.user.prenom }} {{ app.user.nom }}
+                          </p>
+                          <small class="text-muted d-none d-sm-block">
+                            {% if 'ROLE_ADMIN' in app.user.roles %}
+                              <span class="badge badge-admin badge-sm">Admin</span>
+                            {% else %}
+                              <span class="badge badge-etudiant badge-sm">Utilisateur</span>
+                            {% endif %}
+                          </small>
+                        </div>
+                      </div>
+                    {% else %}
+                      <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                      <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                    {% endif %}
+                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                  </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                  <div class="dropdown-header p-3">
+                    {% if app.user %}
+                      <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                      <p class="text-muted mb-0">{{ app.user.email }}</p>
+                      <small class="text-muted">
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin">Administrateur</span>
+                        {% else %}
+                          <span class="badge badge-etudiant">Utilisateur</span>
+                        {% endif %}
+                      </small>
+                    {% else %}
+                      <h6 class="mb-0">Non connecté</h6>
+                      <p class="text-muted mb-0">Veuillez vous connecter</p>
+                    {% endif %}
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  {% if app.user %}
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-primary rounded-circle">
+                          <i class="mdi mdi-account"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Mon profil</p>
+                      </div>
+                    </a>
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-warning rounded-circle">
+                          <i class="mdi mdi-account-edit"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Modifier mon profil</p>
+                      </div>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                  {% endif %}
+                  <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-logout text-danger"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Déconnexion</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="main-panel">
+          <div class="content-wrapper">
+            {# Flash Messages #}
+            {% for label, messages in app.flashes %}
+              {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                  <i class="mdi mdi-{{ label == 'success' ? 'check-circle' : 'alert-circle' }} me-2"></i>
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            {% endfor %}
+
+            <!-- Header -->
+            <div class="row">
+              <div class="col-12">
+                <div class="page-header">
+                  <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                      <i class="mdi mdi-account-multiple-edit"></i>
+                    </span> 
+                    Modifier le Groupe Projet
+                  </h3>
+                  <nav aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                      <li class="breadcrumb-item">
+                        <a href="{{ path('app_groupe_projet_index') }}">Groupes</a>
+                      </li>
+                      <li class="breadcrumb-item">
+                        <a href="{{ path('app_groupe_projet_show', {'id': groupe_projet.id}) }}">{{ groupe_projet.nomProjet }}</a>
+                      </li>
+                      <li class="breadcrumb-item active" aria-current="page">
+                        <span></span>Modification
+                      </li>
+                    </ul>
+                  </nav>
+                  {% if app.user %}
+                    <div class="mt-2">
+                      <small class="text-muted">
+                        <i class="mdi mdi-account me-1"></i>
+                        Connecté en tant que: <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong>
+                        ({{ app.user.email }})
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin ms-2">Administrateur</span>
+                        {% endif %}
+                      </small>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            <!-- Group Information -->
+            <div class="row">
+              <div class="col-12 grid-margin">
+                <div class="group-info-box">
+                  <div class="d-flex align-items-center mb-3">
+                    <div class="group-avatar me-3" style="width: 50px; height: 50px; font-size: 18px;">
+                      GP{{ groupe_projet.id }}
+                    </div>
+                    <div>
+                      <h4 class="mb-1">Groupe #{{ groupe_projet.id }} - {{ groupe_projet.nomProjet }}</h4>
+                      <p class="text-muted mb-0">Modifiez les informations de ce groupe projet</p>
+                    </div>
+                  </div>
+                  
+                  <div class="row">
+                    <div class="col-md-3">
+                      <div class="info-row">
+                        <span class="info-label">Statut actuel:</span>
+                        <span class="info-value">
+                          {% if groupe_projet.statut == 'Actif' %}
+                            <span class="info-badge badge-active">{{ groupe_projet.statut }}</span>
+                          {% elseif groupe_projet.statut == 'Terminé' %}
+                            <span class="info-badge badge-completed">{{ groupe_projet.statut }}</span>
+                          {% else %}
+                            <span class="info-badge badge-inactive">{{ groupe_projet.statut }}</span>
+                          {% endif %}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="info-row">
+                        <span class="info-label">Matière:</span>
+                        <span class="info-value">{{ groupe_projet.matiere }}</span>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="info-row">
+                        <span class="info-label">Nombre de membres:</span>
+                        <span class="info-value">{{ groupe_projet.nbrMembre }}</span>
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <div class="info-row">
+                        <span class="info-label">Créé le:</span>
+                        <span class="info-value">{{ groupe_projet.CreatedAt ? groupe_projet.CreatedAt|date('d/m/Y H:i') : 'N/A' }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Edit Form -->
+            <div class="row">
+              <div class="col-12 grid-margin">
+                <div class="card form-card">
+                  <div class="form-header">
+                    <div class="d-flex align-items-center">
+                      <div class="info-icon card-1 me-3">
+                        <i class="mdi mdi-pencil"></i>
+                      </div>
+                      <div>
+                        <h4 class="mb-1">Formulaire de modification</h4>
+                        <p class="mb-0 opacity-75">Modifiez les champs nécessaires ci-dessous</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="form-body">
+                    {{ form_start(form, {'attr': {'class': 'form-sample'}}) }}
+                    
+                    <!-- Section 1: Informations de base -->
+                    <div class="form-section">
+                      <h5 class="form-section-title">
+                        <i class="mdi mdi-information-outline"></i>
+                        Informations de base
+                      </h5>
+                      
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group-enhanced">
+                            <label class="form-label required-field">
+                              <i class="mdi mdi-rename-box"></i>
+                              {{ form_label(form.nomProjet) }}
+                            </label>
+                            {{ form_widget(form.nomProjet, {'attr': {
+                              'class': 'form-control form-control-custom',
+                              'placeholder': 'Ex: Système de gestion des étudiants'
+                            }}) }}
+                            <div class="form-text-help">
+                              Donnez un nom clair et descriptif à votre projet
+                            </div>
+                            {{ form_errors(form.nomProjet) }}
+                          </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                          <div class="form-group-enhanced">
+                            <label class="form-label required-field">
+                              <i class="mdi mdi-book-open"></i>
+                              {{ form_label(form.matiere) }}
+                            </label>
+                            {{ form_widget(form.matiere, {'attr': {
+                              'class': 'form-control form-control-custom',
+                              'placeholder': 'Ex: Développement Web, Base de données...'
+                            }}) }}
+                            <div class="form-text-help">
+                              Spécifiez la matière concernée par ce projet
+                            </div>
+                            {{ form_errors(form.matiere) }}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="row">
+                        <div class="col-md-4">
+                          <div class="form-group-enhanced">
+                            <label class="form-label required-field">
+                              <i class="mdi mdi-account-multiple"></i>
+                              {{ form_label(form.nbrMembre) }}
+                            </label>
+                            {{ form_widget(form.nbrMembre, {'attr': {
+                              'class': 'form-control form-control-custom',
+                              'min': '1',
+                              'max': '10'
+                            }}) }}
+                            <div class="form-text-help">
+                              Nombre de membres dans le groupe (1-10)
+                            </div>
+                            {{ form_errors(form.nbrMembre) }}
+                          </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                          <div class="form-group-enhanced">
+                            <label class="form-label">
+                              <i class="mdi mdi-calendar-check"></i>
+                              {{ form_label(form.CreatedAt) }}
+                            </label>
+                            {{ form_widget(form.CreatedAt, {'attr': {
+                              'class': 'form-control form-control-custom'
+                            }}) }}
+                            <div class="form-text-help">
+                              Date de création du groupe
+                            </div>
+                            {{ form_errors(form.CreatedAt) }}
+                          </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                          <div class="form-group-enhanced">
+                            <label class="form-label required-field">
+                              <i class="mdi mdi-progress-check"></i>
+                              {{ form_label(form.statut) }}
+                            </label>
+                            {{ form_widget(form.statut, {'attr': {
+                              'class': 'form-control form-control-custom'
+                            }}) }}
+                            <div class="form-text-help">
+                              Mettez à jour le statut du groupe
+                            </div>
+                            {{ form_errors(form.statut) }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Section 2: Description -->
+                    <div class="form-section">
+                      <h5 class="form-section-title">
+                        <i class="mdi mdi-text-box-outline"></i>
+                        Description du projet
+                      </h5>
+                      
+                      <div class="form-group-enhanced">
+                        <label class="form-label required-field">
+                          <i class="mdi mdi-text"></i>
+                          {{ form_label(form.description) }}
+                        </label>
+                        {{ form_widget(form.description, {'attr': {
+                          'class': 'form-control form-control-custom',
+                          'rows': '5',
+                          'placeholder': 'Décrivez les objectifs, les fonctionnalités et les technologies utilisées dans ce projet...'
+                        }}) }}
+                        <div class="form-text-help">
+                          Décrivez en détail le projet, ses objectifs et son fonctionnement
+                        </div>
+                        {{ form_errors(form.description) }}
+                      </div>
+                    </div>
+                    
+                    <!-- Section 3: Actions -->
+                    <div class="form-actions">
+                      <div>
+                        <form method="post" action="{{ path('app_groupe_projet_delete', {'id': groupe_projet.id}) }}" 
+                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce groupe ? Cette action est irréversible.');"
+                              class="d-inline">
+                          <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ groupe_projet.id) }}">
+                          <button type="submit" class="btn btn-delete">
+                            <i class="mdi mdi-delete me-1"></i>
+                            Supprimer
+                          </button>
+                        </form>
+                      </div>
+                      
+                      <div class="d-flex gap-3">
+                        <a href="{{ path('app_groupe_projet_show', {'id': groupe_projet.id}) }}" class="btn btn-cancel">
+                          <i class="mdi mdi-close me-1"></i>
+                          Annuler
+                        </a>
+                        <button type="submit" class="btn btn-update">
+                          <i class="mdi mdi-content-save me-1"></i>
+                          Enregistrer les modifications
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {{ form_end(form) }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- History Section -->
+            <div class="row mt-4">
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">
+                      <i class="mdi mdi-history text-primary me-2"></i>
+                      Historique du groupe
+                    </h5>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="d-flex align-items-start mb-3">
+                          <div class="me-3">
+                            <div class="stat-icon card-2" style="width: 40px; height: 40px; font-size: 16px;">
+                              <i class="mdi mdi-calendar"></i>
+                            </div>
+                          </div>
+                          <div>
+                            <h6 class="mb-1">Date de création</h6>
+                            <p class="text-muted mb-0">{{ groupe_projet.CreatedAt ? groupe_projet.CreatedAt|date('d F Y à H:i') : 'Date non spécifiée' }}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="d-flex align-items-start mb-3">
+                          <div class="me-3">
+                            <div class="stat-icon card-3" style="width: 40px; height: 40px; font-size: 16px;">
+                              <i class="mdi mdi-update"></i>
+                            </div>
+                          </div>
+                          <div>
+                            <h6 class="mb-1">Dernière modification</h6>
+                            <p class="text-muted mb-0">En cours de modification</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="mt-3">
+                      <small class="text-muted">
+                        <i class="mdi mdi-information-outline me-1"></i>
+                        Les modifications seront visibles immédiatement après l'enregistrement.
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          
+            <!-- Footer -->
+            <footer class="footer">
+              <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                  © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
+                </span>
+                <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                  Modification du groupe #{{ groupe_projet.id }}
+                  {% if app.user %}
+                    | Modifié par: {{ app.user.prenom }} {{ app.user.nom }}
+                  {% endif %}
+                </span>
+              </div>
+            </footer>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('assets/js/misc.js') }}"></script>
+    
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+          const alerts = document.querySelectorAll('.alert');
+          alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+          });
+        }, 5000);
+        
+        // Add character counter for description
+        const descriptionField = document.getElementById('{{ form.description.vars.id }}');
+        if (descriptionField) {
+          const counter = document.createElement('div');
+          counter.className = 'form-text-help text-end';
+          counter.innerHTML = '<span id="charCount">' + descriptionField.value.length + '</span> / 1000 caractères';
+          descriptionField.parentNode.appendChild(counter);
+          
+          descriptionField.addEventListener('input', function() {
+            const charCount = this.value.length;
+            document.getElementById('charCount').textContent = charCount;
+            
+            if (charCount > 1000) {
+              counter.classList.add('text-danger');
+            } else {
+              counter.classList.remove('text-danger');
+            }
+          });
+        }
+        
+        // Add tooltips for required fields
+        const requiredLabels = document.querySelectorAll('.required-field');
+        requiredLabels.forEach(label => {
+          label.title = 'Ce champ est obligatoire';
+        });
+        
+        // Format date for CreatedAt field
+        const createdAtField = document.getElementById('{{ form.CreatedAt.vars.id }}');
+        if (createdAtField && createdAtField.value) {
+          // Convert date to local format if needed
+          const date = new Date(createdAtField.value);
+          if (!isNaN(date.getTime())) {
+            const formattedDate = date.toISOString().slice(0, 16);
+            createdAtField.value = formattedDate;
+          }
+        }
+        
+        // Confirmation for delete button
+        const deleteForm = document.querySelector('form[onsubmit*="confirm"]');
+        if (deleteForm) {
+          const deleteButton = deleteForm.querySelector('button[type="submit"]');
+          if (deleteButton) {
+            deleteButton.addEventListener('click', function(e) {
+              if (!confirm('Êtes-vous sûr de vouloir supprimer définitivement ce groupe ? Cette action est irréversible.')) {
+                e.preventDefault();
+                return false;
+              }
+            });
+          }
+        }
+        
+        // Highlight changes in form
+        const form = document.querySelector('form.form-sample');
+        if (form) {
+          const initialValues = {};
+          const inputs = form.querySelectorAll('input, textarea, select');
+          
+          inputs.forEach(input => {
+            if (input.name) {
+              initialValues[input.name] = input.value;
+            }
+          });
+          
+          form.addEventListener('submit', function(e) {
+            let hasChanges = false;
+            const changedFields = [];
+            
+            inputs.forEach(input => {
+              if (input.name && initialValues[input.name] !== input.value) {
+                hasChanges = true;
+                changedFields.push(input.name);
+              }
+            });
+            
+            if (!hasChanges) {
+              if (!confirm('Aucune modification détectée. Voulez-vous quand même continuer ?')) {
+                e.preventDefault();
+                return false;
+              }
+            }
+          });
+        }
+      });
+    </script>
+  </body>
+</html>
+{% endblock %}
