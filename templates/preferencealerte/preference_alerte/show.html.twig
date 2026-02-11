@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PreferenceAlerte{% endblock %}
+
+{% block body %}
+    <h1>PreferenceAlerte</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ preference_alerte.id }}</td>
+            </tr>
+            <tr>
+                <th>EmailActif</th>
+                <td>{{ preference_alerte.emailActif ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>PushActif</th>
+                <td>{{ preference_alerte.pushActif ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>SiteNotifActive</th>
+                <td>{{ preference_alerte.siteNotifActive ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>DelaiRappelMin</th>
+                <td>{{ preference_alerte.delaiRappelMin }}</td>
+            </tr>
+            <tr>
+                <th>DelaiUrgentHeures</th>
+                <td>{{ preference_alerte.delaiUrgentHeures }}</td>
+            </tr>
+            <tr>
+                <th>FreaquenceMaxParJour</th>
+                <td>{{ preference_alerte.freaquenceMaxParJour }}</td>
+            </tr>
+            <tr>
+                <th>HeureSilenceDebut</th>
+                <td>{{ preference_alerte.heureSilenceDebut ? preference_alerte.heureSilenceDebut|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>HeureSilenceFin</th>
+                <td>{{ preference_alerte.heureSilenceFin ? preference_alerte.heureSilenceFin|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_preference_alerte_index') }}">back to list</a>
+
+    <a href="{{ path('app_preference_alerte_edit', {'id': preference_alerte.id}) }}">edit</a>
+
+    {{ include('preference_alerte/_delete_form.html.twig') }}
+{% endblock %}

@@ -4,165 +4,106 @@ namespace App\Controller;
 
 use App\Entity\ObjectifSante;
 use App\Form\ObjectifSanteType;
+use App\Repository\ObjectifSanteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-#[Route('/objectif')]
+
+#[Route('/objectif/sante')]
 final class ObjectifSanteController extends AbstractController
 {
-    #[Route('/', name: 'app_objectif_index')]
-    public function index(EntityManagerInterface $em): Response
+    #[Route(name: 'app_objectif_sante_index', methods: ['GET'])]
+    public function index(ObjectifSanteRepository $objectifSanteRepository): Response
     {
-        $objectifs = $em->getRepository(ObjectifSante::class)->findAll();
-
-        return $this->render('objectif/show.html.twig', [
-            'objectifs' => $objectifs,
+        return $this->render('objectif_sante/index.html.twig', [
+            'objectif_santes' => $objectifSanteRepository->findAll(),
         ]);
     }
 
-    #[Route('/add', name: 'app_objectif_add')]
-    public function add(Request $request, EntityManagerInterface $em): Response
+    #[Route('/new', name: 'app_objectif_sante_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $objectif = new ObjectifSante();
-        $objectif->setStatut('EN_COURS');
-        $objectif->setProgression(0);
-
-        $form = $this->createForm(ObjectifSanteType::class, $objectif);
+        $objectifSante = new ObjectifSante();
+        $form = $this->createForm(ObjectifSanteType::class, $objectifSante);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($objectifSante);
+            $entityManager->flush();
 
-            // ✅ Contrôle des dates
-            if ($objectif->getDateFin() < $objectif->getDateDebut()) {
-                $this->addFlash('danger', 'La date de fin doit être postérieure à la date de début.');
-                return $this->render('objectif/add.html.twig', [
-                    'form' => $form->createView(),
-                ]);
-            }
-
-            // ✅ Contrôle valeur cible حسب النوع
-            $type = $objectif->getType();
-            $v = $objectif->getValeurCible();
-
-            if ($type === 'SOMMEIL' && ($v < 1 || $v > 24)) {
-                $this->addFlash('danger', 'Sommeil : la valeur cible doit être comprise entre 1 et 24 heures.');
-                return $this->render('objectif/add.html.twig', [
-                    'form' => $form->createView()
-                ]);
-            }
-
-            if ($type === 'STRESS' && ($v < 0 || $v > 10)) {
-                $this->addFlash('danger', 'Stress : la valeur cible doit être comprise entre 0 et 10.');
-                return $this->render('objectif/add.html.twig', [
-                    'form' => $form->createView()
-                ]);
-            }
-
-            if ($type === 'ALIMENTATION' && ($v < 0 || $v > 10)) {
-                $this->addFlash('danger', 'Alimentation : la valeur cible doit être comprise entre 0 et 10.');
-                return $this->render('objectif/add.html.twig', [
-                    'form' => $form->createView()
-                ]);
-            }
-
-            if ($type === 'SPORT' && $v < 0) {
-                $this->addFlash('danger', 'Sport : la valeur cible doit être supérieure ou égale à 0.');
-                return $this->render('objectif/add.html.twig', [
-                    'form' => $form->createView()
-                ]);
-            }
-
-            $em->persist($objectif);
-            $em->flush();
-
-            $this->addFlash('success', 'Objectif ajouté avec succès ✅');
-            return $this->redirectToRoute('app_objectif_index');
+            return $this->redirectToRoute('app_objectif_sante_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('objectif/add.html.twig', [
-            'form' => $form->createView(),
+        return $this->render('objectif_sante/new.html.twig', [
+            'objectif_sante' => $objectifSante,
+            'form' => $form,
         ]);
     }
-
-    #[Route('/show', name: 'app_objectif_show')]
-    public function show(EntityManagerInterface $em): Response
-    {
-        $objectifs = $em->getRepository(ObjectifSante::class)->findAll();
-
-        return $this->render('objectif/show.html.twig', [
-            'objectifs' => $objectifs,
-        ]);
-    }
-
-    #[Route('/edit/{id}', name: 'app_objectif_edit')]
-    public function edit(Request $request, ObjectifSante $objectif, EntityManagerInterface $em): Response
-    {
-        $form = $this->createForm(ObjectifSanteType::class, $objectif);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            // ✅ Contrôle des dates
-            if ($objectif->getDateFin() < $objectif->getDateDebut()) {
-                $this->addFlash('danger', 'La date de fin doit être postérieure à la date de début.');
-                return $this->render('objectif/edit.html.twig', [
-                    'form' => $form->createView(),
-                    'objectif' => $objectif
-                ]);
-            }
-
-            $em->flush();
-
-            $this->addFlash('success', 'Objectif modifié avec succès ✏️');
-            return $this->redirectToRoute('app_objectif_show');
-        }
-
-        return $this->render('objectif/edit.html.twig', [
-            'form' => $form->createView(),
-            'objectif' => $objectif,
-        ]);
-    }
-
-    #[Route('/delete/{id}/confirm', name: 'app_objectif_delete_confirm', methods: ['GET'])]
-    public function deleteConfirm(ObjectifSante $objectif): Response
-    {
-        return $this->render('objectif/delete.html.twig', [
-            'objectif' => $objectif,
-        ]);
-    }
-
-    #[Route('/delete/{id}', name: 'app_objectif_delete', methods: ['POST'])]
-    public function delete(Request $request, ObjectifSante $objectif, EntityManagerInterface $em): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$objectif->getId(), (string) $request->request->get('_token'))) {
-            $em->remove($objectif);
-            $em->flush();
-            $this->addFlash('success', 'Objectif supprimé avec succès 🗑️');
-        }
-
-        return $this->redirectToRoute('app_objectif_show');
-    }
-    #[Route('/filter', name: 'app_objectif_filter', methods: ['GET'])]
-public function filter(Request $request, EntityManagerInterface $em): JsonResponse
+#[Route('/filter', name: 'app_objectif_sante_filter', methods: ['GET'])]
+public function filter(Request $request, ObjectifSanteRepository $repo): JsonResponse
 {
-    $type = $request->query->get('type');
+    $type = (string) $request->query->get('type', 'ALL');
+    $priorite = (string) $request->query->get('priorite', 'ALL');
+    $q = (string) $request->query->get('q', '');
+    $sort = (string) $request->query->get('sort', 'dateDebut');
+    $dir = strtoupper((string) $request->query->get('dir', 'DESC'));
 
-    $repo = $em->getRepository(ObjectifSante::class);
-
-    if ($type && $type !== 'ALL') {
-        $objectifs = $repo->findBy(['type' => $type], ['dateDebut' => 'DESC']);
-    } else {
-        $objectifs = $repo->findAll();
+    // sécurité
+    if (!in_array($dir, ['ASC', 'DESC'], true)) {
+        $dir = 'DESC';
     }
 
-    $html = $this->renderView('objectif/_rows.html.twig', [
-        'objectifs' => $objectifs
+    $objectifs = $repo->findFiltered($type, $priorite, $q, $sort, $dir);
+
+    $html = $this->renderView('objectif_sante/_rows.html.twig', [
+        'objectif_santes' => $objectifs
     ]);
 
-    return new JsonResponse(['html' => $html]);
+    return $this->json(['html' => $html]);
 }
+
+
+    #[Route('/{id}', name: 'app_objectif_sante_show', methods: ['GET'])]
+    public function show(ObjectifSante $objectifSante): Response
+    {
+        return $this->render('objectif_sante/show.html.twig', [
+            'objectif_sante' => $objectifSante,
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_objectif_sante_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, ObjectifSante $objectifSante, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(ObjectifSanteType::class, $objectifSante);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+             $this->addFlash('success', 'L\'objectif de santé a été modifié avec succès !');
+
+            return $this->redirectToRoute('app_objectif_sante_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('objectif_sante/edit.html.twig', [
+            'objectif_sante' => $objectifSante,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_objectif_sante_delete', methods: ['POST'])]
+    public function delete(Request $request, ObjectifSante $objectifSante, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$objectifSante->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($objectifSante);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_objectif_sante_index', [], Response::HTTP_SEE_OTHER);
+    }
+  
+
 }

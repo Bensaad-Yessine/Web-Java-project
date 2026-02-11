@@ -15,8 +15,7 @@ class GroupeProjet
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $groupeId = null;
+    
 
     #[ORM\Column(length: 255)]
     private ?string $nomProjet = null;
@@ -36,6 +35,18 @@ class GroupeProjet
     #[ORM\OneToMany(targetEntity: PropositionReunion::class, mappedBy: 'idGroupe')]
     private Collection $idReunion;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $nbrMembre = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $CreatedAt = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $statut = null;
+
     public function __construct()
     {
         $this->idUser = new ArrayCollection();
@@ -47,17 +58,7 @@ class GroupeProjet
         return $this->id;
     }
 
-    public function getGroupeId(): ?int
-    {
-        return $this->groupeId;
-    }
-
-    public function setGroupeId(int $groupeId): static
-    {
-        $this->groupeId = $groupeId;
-
-        return $this;
-    }
+   
 
     public function getNomProjet(): ?string
     {
@@ -133,6 +134,54 @@ class GroupeProjet
                 $idReunion->setIdGroupe(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNbrMembre(): ?int
+    {
+        return $this->nbrMembre;
+    }
+
+    public function setNbrMembre(?int $nbrMembre): static
+    {
+        $this->nbrMembre = $nbrMembre;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->CreatedAt;
+    }
+
+    public function setCreatedAt(?\DateTimeImmutable $CreatedAt): static
+    {
+        $this->CreatedAt = $CreatedAt;
+
+        return $this;
+    }
+
+    public function getStatut(): ?string
+    {
+        return $this->statut;
+    }
+
+    public function setStatut(?string $statut): static
+    {
+        $this->statut = $statut;
 
         return $this;
     }

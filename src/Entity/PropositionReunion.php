@@ -44,9 +44,16 @@ class PropositionReunion
     #[ORM\Column(nullable: true)]
     private ?int $nbrVoteAccept = null;
 
-    #[ORM\ManyToOne(inversedBy: 'idReunion')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: GroupeProjet::class,inversedBy: 'idReunion')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+
     private ?GroupeProjet $idGroupe = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     public function getId(): ?int
     {
@@ -181,6 +188,30 @@ class PropositionReunion
     public function setIdGroupe(?GroupeProjet $idGroupe): static
     {
         $this->idGroupe = $idGroupe;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

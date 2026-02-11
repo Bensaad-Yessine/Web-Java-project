@@ -1,36 +1,148 @@
-{# templates/suivi_bien_etre/_rows.html.twig #}
-{% for s in suivis %}
-  <tr>
-    <td>{{ s.id }}</td>
-    <td>{{ s.dateSaisie ? s.dateSaisie|date('d/m/Y') : '—' }}</td>
-    <td>{{ s.humeur }}</td>
-    <td>{{ s.qualiteSommeil }}/10</td>
-    <td>{{ s.niveauEnergie }}/10</td>
-    <td>{{ s.niveauStress }}/10</td>
-    <td>{{ s.qualiteAlimentation }}/10</td>
+{% for suivi in suivis %}
+<tr>
+  <td>
+    <strong>{{ suivi.dateSaisie ? suivi.dateSaisie|date('d/m/Y') : '—' }}</strong><br>
+    
+  </td>
 
-    <td>
-      <label class="badge badge-gradient-success">
-        {{ s.score ?? 0 }}%
-      </label>
-    </td>
+ <td>
+  {% if suivi.humeur %}
+    {% set h = suivi.humeur|trim %}
 
-    <td>
-      <div class="btn-group" role="group">
-        <a href="{{ path('app_suivi_edit', { id: s.id }) }}" class="btn btn-warning btn-sm btn-icon">
-          <i class="mdi mdi-pencil"></i>
-        </a>
+    {% if h == 'Très mauvaise' %}
+      {% set icon = 'emoticon-sad' %}
+      {% set label = 'Très mauvaise' %}
+    {% elseif h == 'Mauvaise' %}
+      {% set icon = 'emoticon-neutral' %}
+      {% set label = 'Mauvaise' %}
+    {% elseif h == 'Neutre' %}
+      {% set icon = 'emoticon' %}
+      {% set label = 'Neutre' %}
+    {% elseif h == 'Bonne' %}
+      {% set icon = 'emoticon-happy' %}
+      {% set label = 'Bonne' %}
+    {% elseif h == 'Excellente' %}
+      {% set icon = 'emoticon-excited' %}
+      {% set label = 'Excellente' %}
+    {% else %}
+      {% set icon = 'help-circle' %}
+      {% set label = h %}
+    {% endif %}
 
-        <form method="POST"
-              action="{{ path('app_suivi_delete', { id: s.id }) }}"
-              style="display:inline;"
-              onsubmit="return confirm('Supprimer ce suivi ?');">
-          <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ s.id) }}">
-          <button type="submit" class="btn btn-danger btn-sm btn-icon">
-            <i class="mdi mdi-delete"></i>
-          </button>
-        </form>
+    <span class="mood-badge mood-{{ h|lower|replace({' ':'-'}) }}">
+      <i class="mdi mdi-{{ icon }}"></i>
+      {{ label }}
+    </span>
+  {% else %}
+    <span class="text-muted">—</span>
+  {% endif %}
+</td>
+
+  <td>
+    {% if suivi.qualiteSommeil is not null %}
+      <span class="rating-badge rating-{{
+        suivi.qualiteSommeil <= 3 ? '0-3' :
+        suivi.qualiteSommeil <= 6 ? '4-6' :
+        suivi.qualiteSommeil <= 8 ? '7-8' :
+        '9-10'
+      }}">
+        {{ suivi.qualiteSommeil }}
+      </span>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% if suivi.niveauEnergie is not null %}
+      <span class="rating-badge rating-{{
+        suivi.niveauEnergie <= 3 ? '0-3' :
+        suivi.niveauEnergie <= 6 ? '4-6' :
+        suivi.niveauEnergie <= 8 ? '7-8' :
+        '9-10'
+      }}">{{ suivi.niveauEnergie }}</span>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% if suivi.niveauStress is not null %}
+      <span class="rating-badge rating-{{
+        suivi.niveauStress >= 7 ? '0-3' :
+        suivi.niveauStress >= 4 ? '4-6' :
+        suivi.niveauStress >= 2 ? '7-8' :
+        '9-10'
+      }}">{{ suivi.niveauStress }}</span>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% if suivi.qualiteAlimentation is not null %}
+      <span class="rating-badge rating-{{
+        suivi.qualiteAlimentation <= 3 ? '0-3' :
+        suivi.qualiteAlimentation <= 6 ? '4-6' :
+        suivi.qualiteAlimentation <= 8 ? '7-8' :
+        '9-10'
+      }}">{{ suivi.qualiteAlimentation }}</span>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td style="max-width:200px;">
+    {% if suivi.notesLibres %}
+      <small class="text-muted" title="{{ suivi.notesLibres }}">
+        {{ suivi.notesLibres|slice(0, 50) }}{{ suivi.notesLibres|length > 50 ? '...' : '' }}
+      </small>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    {% if suivi.score is not null %}
+      {% set scoreClass =
+        suivi.score >= 80 ? 'badge-score-excellent' :
+        suivi.score >= 60 ? 'badge-score-good' :
+        suivi.score >= 40 ? 'badge-score-medium' :
+        'badge-score-poor'
+      %}
+      <span class="badge-pill {{ scoreClass }}">
+        <i class="mdi mdi-star"></i> {{ suivi.score }}%
+      </span>
+      <div class="progress-small mt-1">
+        <div class="progress-bar" style="width: {{ suivi.score }}%"></div>
       </div>
-    </td>
-  </tr>
+    {% else %}
+      <span class="text-muted">—</span>
+    {% endif %}
+  </td>
+
+  <td>
+    <div class="action-buttons">
+      <a href="{{ path('app_objectif_suivi_edit', {id: objectif.id, suiviId: suivi.id}) }}"
+         class="btn btn-warning btn-sm" title="Modifier">
+        <i class="mdi mdi-pencil"></i>
+      </a>
+
+      <form action="{{ path('app_objectif_suivi_delete', {id: objectif.id, suiviId: suivi.id}) }}"
+            method="POST" style="display:inline;"
+            onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce suivi ?');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete_suivi' ~ suivi.id) }}">
+        <button type="submit" class="btn btn-danger btn-sm" title="Supprimer">
+          <i class="mdi mdi-delete"></i>
+        </button>
+      </form>
+    </div>
+  </td>
+</tr>
+{% else %}
+<tr>
+  <td colspan="9" class="text-center text-muted py-4">
+    Aucun résultat.
+  </td>
+</tr>
 {% endfor %}

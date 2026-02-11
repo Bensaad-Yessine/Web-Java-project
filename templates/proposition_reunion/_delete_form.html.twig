@@ -1,0 +1,7 @@
+<form method="post" action="{{ path('app_proposition_reunion_delete', {'id': proposition_reunion.id, 'groupeId': groupe_projet.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette proposition ?');" class="delete-form">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ proposition_reunion.id) }}">
+    <button class="btn btn-delete">
+        <i class="mdi mdi-delete me-1"></i>
+        Supprimer définitivement
+    </button>
+</form>
