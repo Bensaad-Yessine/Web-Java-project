@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\PreferenceAlerte;
 use App\Form\PreferenceAlerteType;
 use App\Repository\PreferenceAlerteRepository;
+use App\Form\PreferencesOFAlertsType;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -105,5 +107,38 @@ final class PreferenceAlerteController extends AbstractController
         }
 
         return $this->redirectToRoute('app_preference_alerte_index', [], Response::HTTP_SEE_OTHER);
+    }
+    #[Route('/FrontOffice/show/{id}', name: 'front_preference_alerte_show', methods: ['GET'])]
+public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAlerteRepository, UserRepository $userRepository, int $id): Response
+{   
+    $preferenceAlerte = $preferenceAlerteRepository->findBy([
+        'etudiant' => $this->getUser()
+    ]);
+
+    return $this->render('preference_alerte/showAlertFO.html.twig', [
+        'preference_alertes' => $preferenceAlerte
+    ]);
+}
+   #[Route('/FrontOffice/edit/{id}', name: 'front_preference_alerte_edit', methods: ['GET', 'POST'])]
+    public function editPreferencesbyUser(Request $request, PreferenceAlerteRepository $preferenceAlerteRepository, UserRepository $userRepository, int $id, EntityManagerInterface $entityManager): Response
+    {
+        $preferenceAlerte = $preferenceAlerteRepository->find($id);
+        if (!$preferenceAlerte || $preferenceAlerte->getEtudiant()->getId() !== $this->getUser()->getId()) {
+            throw $this->createNotFoundException('Préférence d\'alerte non trouvée ou accès non autorisé.');
+        }
+
+        $form = $this->createForm(PreferencesOFAlertsType::class, $preferenceAlerte);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('front_preference_alerte_show', ['id' => $this->getUser()->getId()]);
+        }
+
+        return $this->render('preference_alerte/editAlertFO.html.twig', [
+            'form' => $form,
+            'preference_alerte' => $preferenceAlerte
+        ]);
     }
 }

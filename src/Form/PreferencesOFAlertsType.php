@@ -9,7 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class PreferenceAlerteType extends AbstractType
+class PreferencesOFAlertsType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -46,13 +46,8 @@ class PreferenceAlerteType extends AbstractType
                 'label' => 'Heure fin silence',
                 'required' => false,
             ]);
-            
 
-        
-        // Removed fields: isDefault, dateCreation, dateMiseAJour, etudiant
-        // These will be managed automatically in the controller
     }
-
 
     public function configureOptions(OptionsResolver $resolver): void
     {

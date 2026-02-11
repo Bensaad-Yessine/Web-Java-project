@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESPRIT — Mes Préférences d'Alerte</title>
+    <style>
+        :root {
+            --font-size: 16px;
+            --red-500: #ef4444;
+            --red-600: #dc2626;
+            --red-700: #b91c1c;
+            --orange-500: #f97316;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-900: #111827;
+            --blue-500: #3b82f6;
+            --green-500: #22c55e;
+            --purple-500: #8b5cf6;
+            --pink-500: #ec4899;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        html { 
+            font-size: var(--font-size); 
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, #ffffff 30%, var(--gray-50) 100%);
+            color: var(--gray-900);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(165deg, rgba(255, 255, 255, 0.92) 0%, rgba(249, 250, 251, 0.88) 100%);
+            border-right: 1px solid rgba(229, 231, 235, 0.6);
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
+        }
+
+        .brand {
+            margin-bottom: 36px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--red-700) 100%);
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+        }
+
+        .brand-title {
+            font-weight: 800;
+            font-size: 20px;
+            color: var(--gray-900);
+        }
+
+        .brand-sub {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: 6px;
+        }
+
+        .user-session {
+            margin-top: 28px;
+            padding: 24px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.9) 100%);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-session::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 20px;
+            border: 3px solid white;
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.2);
+        }
+
+        .user-details h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .user-details p {
+            margin: 6px 0 0;
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        .session-info {
+            font-size: 13px;
+            color: #4b5563;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .session-info div {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .session-info strong {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 32px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            border-radius: var(--radius-lg);
+            color: #374151;
+            text-decoration: none;
+            transition: all var(--transition);
+            font-weight: 500;
+        }
+
+        .nav a:hover {
+            background: linear-gradient(90deg, rgba(254, 242, 242, 0.7) 0%, rgba(254, 242, 242, 0.4) 100%);
+            color: var(--red-600);
+            transform: translateX(8px);
+        }
+
+        .nav a.active {
+            background: linear-gradient(90deg, rgba(254, 242, 242, 0.9) 0%, rgba(254, 242, 242, 0.6) 100%);
+            color: var(--red-600);
+            font-weight: 600;
+            border-left: 4px solid var(--red-500);
+        }
+
+        .nav a .icon {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+        }
+
+        /* MAIN CONTENT */
+        .main {
+            flex: 1;
+            padding: 32px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
+        }
+
+        .header-content h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin: 0 0 8px 0;
+            color: var(--gray-900);
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-content p {
+            color: var(--gray-500);
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray-600);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 18px;
+            border-radius: 10px;
+            transition: all var(--transition);
+            border: 2px solid var(--gray-200);
+            background: white;
+        }
+
+        .back-link:hover {
+            background: var(--gray-100);
+            color: var(--gray-900);
+            border-color: var(--gray-300);
+            transform: translateY(-2px);
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            background: white;
+            border-radius: var(--radius-xl);
+            border: 2px dashed var(--gray-300);
+            margin: 40px 0;
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            color: var(--blue-500);
+        }
+
+        .empty-state h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 12px;
+        }
+
+        .empty-state p {
+            color: var(--gray-600);
+            font-size: 16px;
+            margin-bottom: 32px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .create-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--blue-500) 0%, var(--purple-500) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .create-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        /* PREFERENCES LIST */
+        .preferences-container {
+            margin-top: 32px;
+        }
+
+        .preferences-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .preferences-header h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0;
+        }
+
+        .preferences-count {
+            font-size: 14px;
+            color: var(--gray-500);
+            background: var(--gray-100);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .preferences-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .preferences-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* PREFERENCE CARD */
+        .preference-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(249, 250, 251, 0.95) 100%);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(229, 231, 235, 0.6);
+            box-shadow: var(--shadow-lg);
+            padding: 24px;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preference-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .preference-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+        }
+
+        .preference-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.1) 100%);
+            color: #059669;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .status-inactive {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.1) 100%);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status-default {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+            color: #2563EB;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            margin-left: 8px;
+        }
+
+        /* QUICK INFO */
+        .quick-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--gray-500);
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .info-value {
+            font-size: 14px;
+            color: var(--gray-900);
+            font-weight: 600;
+        }
+
+        /* CHANNELS PREVIEW */
+        .channels-preview {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .channel-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid var(--gray-200);
+            background: white;
+        }
+
+        .channel-badge.active {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+            border-color: rgba(34, 197, 94, 0.3);
+            color: #059669;
+        }
+
+        .channel-badge.inactive {
+            opacity: 0.6;
+            filter: grayscale(0.5);
+        }
+
+        /* SILENCE PERIOD */
+        .silence-period {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.05) 0%, rgba(249, 115, 22, 0.02) 100%);
+            border: 1px solid rgba(249, 115, 22, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 24px;
+            font-size: 13px;
+        }
+
+        .silence-title {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--orange-500);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .silence-times {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--gray-700);
+            font-size: 13px;
+        }
+
+        .silence-time {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ACTIONS */
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            text-decoration: none;
+            flex: 1;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, var(--blue-500) 0%, rgba(59, 130, 246, 0.9) 100%);
+            color: white;
+        }
+
+        .btn-edit {
+            background: transparent;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+
+        .btn-edit:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-400);
+        }
+
+        .btn-delete {
+            background: transparent;
+            color: var(--red-600);
+            border: 1px solid var(--red-200);
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--red-300);
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .app-shell {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 20px;
+            }
+            
+            .main {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            
+            .header-content h1 {
+                font-size: 28px;
+            }
+            
+            .quick-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .preference-card {
+            animation: fadeIn 0.4s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-row">
+                    <div class="brand-icon">ES</div>
+                    <div>
+                        <div class="brand-title">ESPRIT</div>
+                        <div class="brand-sub">Assistant Étudiant</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-session">
+                <div class="user-info">
+                    <div class="avatar">
+                        {{ app.user.nom|first }}{{ app.user.prenom|first }}
+                    </div>
+                    <div class="user-details">
+                        <h3>{{ app.user.nom }} {{ app.user.prenom }}</h3>
+                        <p>📚 {{ app.user.classe is not null ? app.user.classe.nom : 'Aucune classe' }}</p>
+                    </div>
+                </div>
+                <div class="session-info">
+                    <div><strong>Email:</strong> {{ app.user.email }}</div>
+                    <div><strong>Role:</strong> {{ app.user.roles[0]|replace({'ROLE_': ''})|capitalize }}</div>
+                </div>
+            </div>
+
+            <nav class="nav">
+                <a href="{{ path('app_dashboard') }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="{{ path('app_my_tasks') }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                    Mes Tâches
+                </a>
+                <a href="{{ path('front_preference_alerte_show', {'id': app.user.id}) }}" class="active">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    Alertes
+                </a>
+                <a href="{{ path('app_profile') }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Profile
+                </a>
+                <a href="{{ path('app_logout') }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>
+                    </svg>
+                    Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main">
+            <header class="header">
+                <div class="header-content">
+                    <h1>Mes Préférences d'Alerte</h1>
+                    <p>Gérez vos paramètres de notification</p>
+                </div>
+                <a href="{{ path('app_preference_alerte_new') }}" class="create-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14"/><path d="M5 12h14"/>
+                    </svg>
+                    Nouvelle Préférence
+                </a>
+            </header>
+
+            {% if preference_alertes is empty %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                    </div>
+                    <h2>Aucune préférence configurée</h2>
+                    <p>Vous n'avez pas encore configuré vos préférences d'alerte. Créez votre première préférence pour personnaliser vos notifications.</p>
+                    <a href="{{ path('app_preference_alerte_new') }}" class="create-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14"/><path d="M5 12h14"/>
+                        </svg>
+                        Créer une Préférence
+                    </a>
+                </div>
+            {% else %}
+                <div class="preferences-container">
+                    <div class="preferences-header">
+                        <h2>Toutes vos préférences</h2>
+                        <span class="preferences-count">{{ preference_alertes|length }} préférence(s)</span>
+                    </div>
+
+                    <div class="preferences-grid">
+                        {% for preference in preference_alertes %}
+                            <div class="preference-card">
+                                <div class="preference-header">
+                                    <h3 class="preference-title">{{ preference.nom }}</h3>
+                                    <div>
+                                        <span class="status-badge {{ preference.isActive ? 'status-active' : 'status-inactive' }}">
+                                            {{ preference.isActive ? 'Active' : 'Inactive' }}
+                                        </span>
+                                        {% if preference.isDefault %}
+                                            <span class="status-badge status-default">
+                                                Défaut
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <div class="quick-info">
+                                    <div class="info-item">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <polyline points="12 6 12 12 16 14"/>
+                                        </svg>
+                                        <div>
+                                            <div class="info-label">Délai de rappel</div>
+                                            <div class="info-value">{{ preference.delaiRappelMin }} min</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-item">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                                        </svg>
+                                        <div>
+                                            <div class="info-label">Créée le</div>
+                                            <div class="info-value">{{ preference.dateCreation|date('d/m/Y') }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="channels-preview">
+                                    <span class="channel-badge {{ preference.emailActif ? 'active' : 'inactive' }}">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                            <polyline points="22,6 12,13 2,6"/>
+                                        </svg>
+                                        Email
+                                    </span>
+                                    <span class="channel-badge {{ preference.pushActif ? 'active' : 'inactive' }}">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                                            <path d="M12 18h.01"/>
+                                        </svg>
+                                        Push
+                                    </span>
+                                    <span class="channel-badge {{ preference.siteNotifActive ? 'active' : 'inactive' }}">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <line x1="2" y1="12" x2="22" y2="12"/>
+                                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                                        </svg>
+                                        Site Web
+                                    </span>
+                                </div>
+
+                                {% if preference.heureSilenceDebut and preference.heureSilenceFin %}
+                                    <div class="silence-period">
+                                        <div class="silence-title">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                            </svg>
+                                            Période de silence
+                                        </div>
+                                        <div class="silence-times">
+                                            <span class="silence-time">{{ preference.heureSilenceDebut|date('H:i') }}</span>
+                                            →
+                                            <span class="silence-time">{{ preference.heureSilenceFin|date('H:i') }}</span>
+                                        </div>
+                                    </div>
+                                {% endif %}
+
+                                <div class="card-actions">
+                                    <a href="{{ path('app_preference_alerte_show', {'id': preference.id}) }}" class="btn btn-view">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                        Voir
+                                    </a>
+                                    <a href="{{ path('front_preference_alerte_edit', {'id': preference.id}) }}" class="btn btn-edit">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                        </svg>
+                                        Modifier
+                                    </a>
+                                    {% if not preference.isDefault %}
+                                        <form method="post" action="{{ path('app_preference_alerte_delete', {'id': preference.id}) }}" 
+                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette préférence ?');"
+                                              style="display: contents;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ preference.id) }}">
+                                            <button type="submit" class="btn btn-delete">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
+                                                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                                </svg>
+                                                Supprimer
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% for message in app.flashes('info') %}
+                <script>
+                    setTimeout(() => {
+                        alert("{{ message }}");
+                    }, 100);
+                </script>
+            {% endfor %}
+        </main>
+    </div>
+
+    <script>
+        // Add hover animations
+        document.querySelectorAll('.preference-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-4px)';
+                card.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.15)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.12)';
+            });
+        });
+    </script>
+</body>
+</html>
