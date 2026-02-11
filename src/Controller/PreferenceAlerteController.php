@@ -141,4 +141,27 @@ public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAler
             'preference_alerte' => $preferenceAlerte
         ]);
     }
+    #[Route('/FrontOffice/add/{id}', name: 'front_preference_alerte_add', methods: ['GET', 'POST'])]
+    public function addPreferencesbyUser(Request $request, PreferenceAlerteRepository $preferenceAlerteRepository, UserRepository $userRepository, int $id, EntityManagerInterface $entityManager): Response
+    {
+        $preferenceAlerte = new PreferenceAlerte();
+        $preferenceAlerte->setEtudiant($this->getUser());
+        $form = $this->createForm(PreferencesOFAlertsType::class, $preferenceAlerte);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Force template logic
+            $preferenceAlerte->setIsDefault(false);
+            $preferenceAlerte->setIsActive(true);
+
+            $entityManager->persist($preferenceAlerte);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('front_preference_alerte_show', ['id' => $this->getUser()->getId()]);
+        }
+
+        return $this->render('preference_alerte/addPreferencesAlertFO.html.twig', [
+            'form' => $form,
+        ]);
+    }
 }
