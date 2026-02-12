@@ -405,6 +405,21 @@ public function editTask(Request $request, Tache $tache, EntityManagerInterface 
     ]);
 }
 
+#[Route('/dashboard/task/{id}/show', name: 'app_task_show', methods: ['GET'])]
+public function showTask(Tache $tache): Response
+{
+    $user = $this->getUser();
+
+    if (!$user || $tache->getUser() !== $user) {
+        throw $this->createAccessDeniedException();
+    }
+
+    return $this->render('user/show_task.html.twig', [
+        'task' => $tache,
+    ]);
+}
+
+
 #[Route('/dashboard/task/{id}/delete', name: 'app_task_delete', methods: ['POST'])]
 public function deleteTask(Request $request, Tache $tache, EntityManagerInterface $em): Response
 {

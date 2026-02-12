@@ -213,6 +213,36 @@ final class TacheController extends AbstractController
         return $this->redirectToRoute('app_tache_show', ['id' => $tache->getId()]);
     }
 
+    //suivi tache history
+    #[Route('/{id}/action', name: 'app_tache_action_user', methods: ['POST'])]
+    public function actionUser(Request $request, Tache $tache, EntityManagerInterface $em): Response
+    {
+        $newStatus = $request->request->get('action');
+        $currentStatus = $tache->getStatut();
+
+        if ($newStatus && $newStatus !== $currentStatus) {
+            // 1️⃣ Create SuiviTache entry
+            $suivi = new SuiviTache();
+            $suivi->setTache($tache);
+            $suivi->setAncienStatut($currentStatus);
+            $suivi->setNouveauStatut($newStatus);
+            $suivi->setDateAction(new \DateTime());
+
+            $em->persist($suivi);
+
+            // 2️⃣ Update the Tache status
+            $tache->setStatut($newStatus);
+
+            $em->flush();
+
+            $this->addFlash('success', 'Statut mis à jour !');
+        }
+
+        return $this->redirectToRoute('app_task_show', ['id' => $tache->getId()]);
+    }
+
+
+
 
     //search 
     #[Route('/search-by-title', name: 'app_tache_search_by_title', methods: ['GET'])]
@@ -250,8 +280,5 @@ final class TacheController extends AbstractController
             'email' => $email,
         ]);
     }
-
-
-
 
 }
