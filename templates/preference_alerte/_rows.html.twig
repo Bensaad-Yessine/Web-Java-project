@@ -1,0 +1,21 @@
+{# Renders rows for PreferenceAlerte AJAX table #}
+{% for alerte in preference_alertes %}
+<tr class="text-white" style="color: #fff !important;">
+    <td style="color: #fff !important;">{{ alerte.id }}</td>
+    <td style="color: #fff !important;">{{ alerte.nom }}</td>
+    <td style="color: #fff !important;">{{ alerte.etudiant ? alerte.etudiant.nom ~ ' ' ~ alerte.etudiant.prenom : 'N/A' }}</td>
+    <td style="color: #fff !important;">{{ alerte.dateCreation ? alerte.dateCreation|date('d/m/Y H:i') : '' }}</td>
+    <td style="color: #fff !important;">{{ alerte.isActive ? 'Active' : 'Inactive' }}</td>
+    <td style="color: #fff !important;">{{ alerte.isDefault ? 'Oui' : 'Non' }}</td>
+    <td style="color: #fff !important;">
+        <a href="{{ path('app_preference_alerte_show', {id: alerte.id}) }}" class="btn btn-sm btn-info">Voir</a>
+        <a href="{{ path('app_preference_alerte_edit', {id: alerte.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+        <form method="post" action="{{ path('app_preference_alerte_delete', {id: alerte.id}) }}" style="display:inline-block" onsubmit="return confirm('Confirmer la suppression ?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ alerte.id) }}">
+            <button class="btn btn-sm btn-danger">Supprimer</button>
+        </form>
+    </td>
+</tr>
+{% else %}
+<tr class="text-white" style="color: #fff !important;"><td colspan="7" class="text-center" style="color: #fff !important;">Aucune alerte trouvée.</td></tr>
+{% endfor %}

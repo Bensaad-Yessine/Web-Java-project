@@ -1,0 +1,91 @@
+{% for objectif_sante in objectif_santes %}
+<tr>
+    <td style="font-weight: 600; color: var(--gray-800);">
+        {{ objectif_sante.titre }}
+    </td>
+    <td>
+        <span class="badge badge-primary">
+            {{ objectif_sante.type }}
+        </span>
+    </td>
+   <td>
+    {% set p = (objectif_sante.priorite ?? '')|lower %}
+    {% if p == 'haute' %}
+        <span class="badge badge-danger">Haute</span>
+    {% elseif p == 'moyenne' %}
+        <span class="badge badge-warning">Moyenne</span>
+    {% elseif p == 'basse' %}
+        <span class="badge badge-success">Basse</span>
+    {% else %}
+        <span class="badge badge-warning">{{ objectif_sante.priorite ?: '—' }}</span>
+    {% endif %}
+</td>
+
+    <td style="font-weight: 500;">
+        {{ objectif_sante.dateDebut ? objectif_sante.dateDebut|date('d/m/Y') : '' }}
+    </td>
+    <td style="font-weight: 500;">
+        {{ objectif_sante.dateFin ? objectif_sante.dateFin|date('d/m/Y') : '' }}
+    </td>
+   <td>
+    {% set s = (objectif_sante.statut ?? '')|lower|replace({' ': '_'}) %}
+
+    {% if s == 'en_cours' %}
+        <span class="badge"
+              style="background: linear-gradient(135deg, var(--blue-100) 0%, var(--blue-50) 100%);
+                     color: var(--blue-700);
+                     border-color: var(--blue-200);">
+            En cours
+        </span>
+
+    {% elseif s in ['termine', 'terminé'] %}
+        <span class="badge"
+              style="background: linear-gradient(135deg, var(--green-100) 0%, var(--green-50) 100%);
+                     color: var(--green-700);
+                     border-color: var(--green-200);">
+            Terminé
+        </span>
+
+    {% elseif s == 'abandonne' %}
+        <span class="badge"
+              style="background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-50) 100%);
+                     color: var(--gray-700);
+                     border-color: var(--gray-200);">
+            Abandonné
+        </span>
+
+    {% else %}
+        <span class="badge badge-warning">
+            {{ objectif_sante.statut ?: '—' }}
+        </span>
+    {% endif %}
+</td>
+    <td>
+        <div class="action-buttons">
+            <a href="{{ path('front_objectif_sante_show', {'id': objectif_sante.id}) }}" 
+               class="btn-icon btn-edit" 
+               title="Voir détails">
+                👁️
+            </a>
+            <a href="{{ path('front_objectif_suivis', {'id': objectif_sante.id}) }}"
+   class="btn-icon btn-edit"
+   title="Suivis">
+   📈
+</a> 
+            <a href="{{ path('front_objectif_sante_edit', {'id': objectif_sante.id}) }}" 
+               class="btn-icon btn-edit" 
+               title="Modifier">
+                ✏️
+            </a>
+            <form method="post" action="{{ path('front_objectif_sante_delete', {'id': objectif_sante.id}) }}" 
+                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet objectif ?');" 
+                  style="display: inline;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ objectif_sante.id) }}">
+                <button type="submit" class="btn-icon btn-delete" title="Supprimer">
+                    🗑️
+                </button>
+            </form>
+        </div>
+    </td>
+</tr>
+{% endfor %}

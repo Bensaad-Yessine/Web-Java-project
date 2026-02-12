@@ -1,0 +1,158 @@
+{# templates/tache/_rows.html.twig #}
+
+{% for tache in taches %}
+  {# Optional: data-* attributes (useful if you ever add client-side filters) #}
+  <tr
+    data-type="{{ tache.type }}"
+    data-statut="{{ tache.statut }}"
+    data-email="{{ tache.user ? tache.user.email : '' }}"
+  >
+    <td>
+      <strong>#{{ tache.id }}</strong>
+    </td>
+
+    <td>
+      <div>
+        <h6 class="mb-1">{{ tache.titre }}</h6>
+      </div>
+    </td>
+
+    {# =========================
+       TYPE (based on your Entity)
+       ========================= #}
+    <td>
+      {% set typeMap = {
+        'MANUEL':   ['type-feature',     'MANUEL'],
+        'REUNION':  ['type-maintenance', 'REUNION'],
+        'REVISION': ['type-improvement', 'REVISION'],
+        'SANTE':    ['type-other',       'SANTE'],
+        'EMPLOI':   ['type-bug',         'EMPLOI']
+      } %}
+
+      {% set typeInfo = typeMap[tache.type]|default(['type-other', tache.type]) %}
+
+      <span class="type-badge {{ typeInfo[0] }}">
+        {{ typeInfo[1] }}
+      </span>
+    </td>
+
+    {# =========================
+       DATES
+       ========================= #}
+    <td>
+      <div class="date-container">
+        <span class="date-label">Début</span>
+        <span class="date-value">
+          {{ tache.dateDebut ? tache.dateDebut|date('d/m/Y H:i') : '—' }}
+        </span>
+      </div>
+
+      <div class="date-container mt-2">
+        <span class="date-label">Fin</span>
+        <span class="date-value">
+          {{ tache.dateFin ? tache.dateFin|date('d/m/Y H:i') : '—' }}
+        </span>
+      </div>
+    </td>
+
+    {# =========================
+       PRIORITE (Entity: FAIBLE / MOYEN / ELEVEE)
+       ========================= #}
+    <td>
+      {% set prioriteMap = {
+        'ELEVEE': ['priority-high', 'Urgent'],
+        'MOYEN':  ['priority-medium', 'Moyenne'],
+        'FAIBLE': ['priority-low', 'Basse']
+      } %}
+
+      {% set pr = prioriteMap[tache.priorite]|default(['priority-low', tache.priorite]) %}
+
+      <span class="{{ pr[0] }}">
+        {{ pr[1] }}
+      </span>
+    </td>
+
+    {# =========================
+       STATUT (Entity: A_FAIRE / EN_COURS / TERMINEE / EN_RETARD / PAUSED)
+       ========================= #}
+    <td>
+      {% set statutMap = {
+        'TERMINEE':  ['status-completed', 'Terminé'],
+        'EN_COURS':  ['status-inprogress', 'En cours'],
+        'A_FAIRE':   ['status-pending', 'À faire'],
+        'EN_RETARD': ['status-pending', 'En retard'],
+        'PAUSED':    ['status-pending', 'En pause']
+      } %}
+
+      {% set st = statutMap[tache.statut]|default(['status-pending', tache.statut]) %}
+
+      <span class="{{ st[0] }}">
+        {{ st[1] }}
+      </span>
+    </td>
+
+    {# =========================
+       USER
+       ========================= #}
+    <td>
+      {% if tache.user %}
+        <div class="user-cell">
+          {% if tache.user.profilePic %}
+            <img
+              src="{{ asset('uploads/profile_pics/' ~ tache.user.profilePic) }}"
+              alt="{{ tache.user.prenom }}"
+              class="user-avatar-img-small"
+            >
+          {% else %}
+            <div class="user-avatar-small">
+              {{ tache.user.prenom|first|upper }}{{ tache.user.nom|first|upper }}
+            </div>
+          {% endif %}
+
+          <div>
+            <div>{{ tache.user.email }}</div>
+            <small class="text-muted">
+              {{ tache.user.prenom }} {{ tache.user.nom }}
+            </small>
+          </div>
+        </div>
+      {% else %}
+        <span class="text-muted">—</span>
+      {% endif %}
+    </td>
+
+    {# =========================
+       ACTIONS
+       ========================= #}
+    <td>
+      <div class="d-flex">
+        <a href="{{ path('app_tache_show', { id: tache.id }) }}"
+           class="action-btn btn-view" title="Voir">
+          <i class="mdi mdi-eye"></i>
+        </a>
+
+        <a href="{{ path('app_tache_edit', { id: tache.id }) }}"
+           class="action-btn btn-edit" title="Modifier">
+          <i class="mdi mdi-pencil"></i>
+        </a>
+
+        <form action="{{ path('app_tache_delete', { id: tache.id }) }}"
+              method="POST"
+              style="display:inline;"
+              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?');">
+          <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ tache.id) }}">
+          <button type="submit" class="action-btn btn-delete" title="Supprimer">
+            <i class="mdi mdi-delete"></i>
+          </button>
+        </form>
+      </div>
+    </td>
+  </tr>
+
+{% else %}
+  <tr>
+    <td colspan="8" class="text-center text-muted py-4">
+      Aucune tâche trouvée.
+    </td>
+  </tr>
+{% endfor %}

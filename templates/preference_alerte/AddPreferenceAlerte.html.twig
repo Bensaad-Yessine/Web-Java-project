@@ -1,0 +1,11 @@
+<div style="max-width:500px; margin:30px auto;">
+    <h1>Ajouter une préférence</h1>
+
+    {# Include your form partial like in your task example #}
+    {% include 'preference_alerte/_form.html.twig' with {
+        form: form,
+        button_label: 'Créer'
+    } %}
+
+    <a href="{{ path('preference_alerte_add') }}">⬅ Retour à la liste des préférences</a>
+</div>

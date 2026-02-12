@@ -1,0 +1,1220 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier l'Utilisateur{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <style>
+        /* Form container with colored background */
+        .form-container {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+            padding: 35px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Input fields with colored background */
+        .form-control, .form-select {
+            border: 2px solid #d1d9ff;
+            border-radius: 10px;
+            padding: 14px 18px;
+            height: 50px;
+            background-color: #ffffff;
+            color: #2c3e50;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #ffa726;
+            background-color: #ffa726;
+            box-shadow: 0 5px 15px rgba(255, 167, 38, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        /* Form sections with subtle borders */
+        .form-section {
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 2px dashed #d1d9ff;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        
+        /* Form section title with gradient */
+        .form-section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #ffa726;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .form-section-title i {
+            background: linear-gradient(135deg, #ffa726 0%, #ff7043 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-right: 10px;
+        }
+        
+        /* Labels with better visibility */
+        .form-group label {
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+        
+        /* Radio buttons styling */
+        .radio-group {
+            display: flex;
+            gap: 30px;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #e8edff;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: center;
+            padding: 8px 15px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #e8edff;
+            transition: all 0.3s ease;
+        }
+        
+        .form-check:hover {
+            border-color: #ffa726;
+            background: #f8f9ff;
+        }
+        
+        .form-check-input {
+            margin-right: 10px;
+            margin-top: 0;
+            border: 2px solid #bdc3ff;
+            width: 20px;
+            height: 20px;
+        }
+        
+        .form-check-input:checked {
+            background-color: #ffa726;
+            border-color: #ffa726;
+        }
+        
+        /* Checkbox group styling */
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e8edff;
+        }
+        
+        /* Button styling */
+        .btn-warning {
+            background: linear-gradient(135deg, #ffa726 0%, #ff7043 100%);
+            border: none;
+            padding: 14px 35px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(255, 167, 38, 0.3);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 167, 38, 0.4);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            border: none;
+            padding: 14px 35px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #7f8c8d 0%, #95a5a6 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(149, 165, 166, 0.4);
+            color: white;
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, #26c6da 0%, #00acc1 100%);
+            border: none;
+            padding: 14px 35px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(38, 198, 218, 0.3);
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: linear-gradient(135deg, #00acc1 0%, #26c6da 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(38, 198, 218, 0.4);
+            color: white;
+        }
+        
+        /* Action buttons container */
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: flex-end;
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 2px dashed #d1d9ff;
+        }
+        
+        /* Validation styles */
+        .invalid-feedback {
+            display: block;
+            color: #e74c3c;
+            font-size: 0.9em;
+            margin-top: 8px;
+            font-weight: 500;
+            padding: 8px 12px;
+            background: rgba(231, 76, 60, 0.1);
+            border-radius: 6px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        /* Form text hints */
+        .form-text {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 8px;
+            font-style: italic;
+        }
+        
+        /* Password section */
+        .password-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 2px solid #ffe0b2;
+            box-shadow: 0 4px 15px rgba(255, 224, 178, 0.3);
+        }
+        
+        .password-note {
+            font-size: 0.9em;
+            color: #ff8f00;
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: rgba(255, 241, 224, 0.5);
+            border-radius: 8px;
+            border-left: 4px solid #ffb74d;
+        }
+        
+        /* Required field indicator */
+        .required-field::after {
+            content: " *";
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        /* Placeholder styling */
+        .form-control::placeholder {
+            color: #95a5a6;
+            font-weight: 400;
+        }
+        
+        /* Date input styling */
+        input[type="date"] {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            background-color: #ffa726;
+            padding: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+        }
+        
+        /* Select dropdown styling */
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffa726' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 16px 12px;
+            padding-right: 45px;
+        }
+        
+        /* Custom focus glow for all inputs */
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+        }
+        
+        /* Make invalid inputs more visible */
+        .form-control.is-invalid {
+            border-color: #e74c3c;
+            background-color: rgba(231, 76, 60, 0.05);
+        }
+        
+        /* Row spacing */
+        .row {
+            margin-bottom: 10px;
+        }
+        
+        /* Make sure all text is visible */
+        body {
+            background-color: #f5f7ff;
+        }
+        
+        .content-wrapper {
+            background-color: #f5f7ff;
+        }
+        
+        /* Card header for form */
+        .form-header {
+            background: linear-gradient(135deg, #ffa726 0%, #ff7043 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px 15px 0 0;
+            margin: -35px -35px 30px -35px;
+        }
+        
+        .form-header h3 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        
+        .form-header i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+        
+        /* User info card */
+        .user-info-card {
+            background: linear-gradient(135deg, #ffa726 0%, #ff7043 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(255, 167, 38, 0.3);
+            border: none;
+        }
+        
+        .user-avatar-large {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: white;
+            color: #ffa726;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0 auto 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Edit specific styles */
+        .edit-mode-badge {
+            background: linear-gradient(135deg, #ffa726 0%, #ff7043 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            box-shadow: 0 3px 10px rgba(255, 167, 38, 0.3);
+        }
+        
+        /* Profile avatar styles */
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .profile-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .user-avatar-img, .profile-avatar-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .profile-avatar-img {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #fff;
+        }
+        
+        .user-role-badge {
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 10px;
+            margin-top: 5px;
+            display: inline-block;
+        }
+        
+        .badge-admin {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+        }
+        
+        .badge-etudiant {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+        }
+        
+        /* Profile section alignment */
+        .profile-pic {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+        }
+        
+        .count-indicator {
+            position: relative;
+            margin-right: 15px;
+        }
+        
+        .profile-name {
+            flex-grow: 1;
+        }
+        
+        .navbar-profile {
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+        }
+        
+        .avatar-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<body>
+    <div class="container-scroller">
+        <!-- Sidebar -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+            <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+                <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
+                    <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+                </a>
+                <a class="sidebar-brand brand-logo-mini" href="{{ path('app_user_index') }}">
+                    <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+                </a>
+            </div>
+            <ul class="nav">
+                <li class="nav-item profile">
+                    <div class="profile-desc">
+                        <div class="profile-pic">
+                            <div class="count-indicator">
+                                {% if app.user %}
+                                    {% if app.user.profilePic %}
+                                        <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                                             alt="{{ app.user.prenom }}" 
+                                             class="profile-avatar-img">
+                                    {% else %}
+                                        <div class="profile-avatar">
+                                            {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                                {% endif %}
+                                <span class="count bg-success"></span>
+                            </div>
+                            <div class="profile-name">
+                                {% if app.user %}
+                                    <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                                    <span class="text-muted">{{ app.user.email }}</span>
+                                    <div class="mt-1">
+                                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                                            <span class="user-role-badge badge-admin">Administrateur</span>
+                                        {% else %}
+                                            <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                                    <span>Veuillez vous connecter</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item nav-category">
+                    <span class="nav-link">Navigation</span>
+                </li>
+                
+                <!-- Dashboard -->
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-speedometer"></i>
+                        </span>
+                        <span class="menu-title">Dashboard</span>
+                    </a>
+                </li>
+                
+                <!-- Utilisateurs -->
+                <li class="nav-item menu-items active">
+                    <a class="nav-link" href="{{ path('app_user_index') }}">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-account-group"></i>
+                        </span>
+                        <span class="menu-title">Utilisateurs</span>
+                    </a>
+                </li>
+                
+                <!-- Matières -->
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-book-open-page-variant"></i>
+                        </span>
+                        <span class="menu-title">Matieres</span>
+                    </a>
+                </li>
+                
+                <!-- Classes -->
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-school"></i>
+                        </span>
+                        <span class="menu-title">Classes</span>
+                    </a>
+                </li>
+                
+                <!-- Salles -->
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-office-building"></i>
+                        </span>
+                        <span class="menu-title">Salles</span>
+                    </a>
+                </li>
+                
+                <!-- Séances -->
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-calendar-clock"></i>
+                        </span>
+                        <span class="menu-title">Séances</span>
+                    </a>
+                </li>
+                
+                <!-- Groupes -->
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-account-multiple"></i>
+                        </span>
+                        <span class="menu-title">Groupes</span>
+                    </a>
+                </li>
+                
+                <!-- Tâches -->
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+                        </span>
+                        <span class="menu-title">Tâches</span>
+                    </a>
+                </li>
+                
+                <!-- Alertes -->
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-alert-circle-outline"></i>
+                        </span>
+                        <span class="menu-title">Alertes</span>
+                    </a>
+                </li>
+                
+                <!-- Exercices de santé -->
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="#">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-heart-pulse"></i>
+                        </span>
+                        <span class="menu-title">Exercices de santé</span>
+                    </a>
+                </li>
+                
+                <!-- Logout -->
+                <li class="nav-item menu-items">
+                    <a class="nav-link" href="{{ path('app_logout') }}">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-logout text-danger"></i>
+                        </span>
+                        <span class="menu-title text-danger">Déconnexion</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container-fluid page-body-wrapper">
+            <!-- Navbar -->
+            <nav class="navbar p-0 fixed-top d-flex flex-row">
+                <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+                    <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+                </div>
+                <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+                    <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                        <span class="mdi mdi-menu"></span>
+                    </button>
+                    <ul class="navbar-nav w-100">
+                        <li class="nav-item w-100">
+                            <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                                <input type="text" class="form-control" placeholder="Rechercher..." style="border-color: #d1d9ff; background: white;">
+                            </form>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav navbar-nav-right">
+                        <li class="nav-item dropdown border-left">
+                            <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                                <i class="mdi mdi-bell"></i>
+                                <span class="count bg-warning">2</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                                <h6 class="p-3 mb-0">Notifications</h6>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-warning rounded-circle">
+                                            <i class="mdi mdi-account-edit"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Modification utilisateur</p>
+                                        <p class="text-muted ellipsis mb-0"> Mise à jour en cours</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </li>
+                        
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                                <div class="navbar-profile">
+                                    {% if app.user %}
+                                        <div class="avatar-container">
+                                            {% if app.user.profilePic %}
+                                                <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                                                     alt="{{ app.user.prenom }}" 
+                                                     class="user-avatar-img">
+                                            {% else %}
+                                                <div class="user-avatar">
+                                                    {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                                                </div>
+                                            {% endif %}
+                                            <div class="text-start ms-2">
+                                                <p class="mb-0 d-none d-sm-block navbar-profile-name">
+                                                    {{ app.user.prenom }} {{ app.user.nom }}
+                                                </p>
+                                                <small class="text-muted d-none d-sm-block">
+                                                    {% if 'ROLE_ADMIN' in app.user.roles %}
+                                                        <span class="badge badge-admin">Admin</span>
+                                                    {% else %}
+                                                        <span class="badge badge-etudiant">Utilisateur</span>
+                                                    {% endif %}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                                        <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                                    {% endif %}
+                                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                                </div>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                                <div class="dropdown-header p-3">
+                                    {% if app.user %}
+                                        <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                                        <p class="text-muted mb-0">{{ app.user.email }}</p>
+                                        <small class="text-muted">
+                                            {% if 'ROLE_ADMIN' in app.user.roles %}
+                                                <span class="badge badge-admin">Administrateur</span>
+                                            {% else %}
+                                                <span class="badge badge-etudiant">Utilisateur</span>
+                                            {% endif %}
+                                        </small>
+                                    {% else %}
+                                        <h6 class="mb-0">Non connecté</h6>
+                                        <p class="text-muted mb-0">Veuillez vous connecter</p>
+                                    {% endif %}
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                {% if app.user %}
+                                    <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                                        <div class="preview-thumbnail">
+                                            <div class="preview-icon bg-primary rounded-circle">
+                                                <i class="mdi mdi-account"></i>
+                                            </div>
+                                        </div>
+                                        <div class="preview-item-content">
+                                            <p class="preview-subject mb-1">Mon profil</p>
+                                        </div>
+                                    </a>
+                                    <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                                        <div class="preview-thumbnail">
+                                            <div class="preview-icon bg-warning rounded-circle">
+                                                <i class="mdi mdi-account-edit"></i>
+                                            </div>
+                                        </div>
+                                        <div class="preview-item-content">
+                                            <p class="preview-subject mb-1">Modifier mon profil</p>
+                                        </div>
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                {% endif %}
+                                <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-dark rounded-circle">
+                                            <i class="mdi mdi-logout text-danger"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Déconnexion</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Panel -->
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <!-- Header -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-header">
+                                <h3 class="page-title">
+                                    <span class="page-title-icon bg-gradient-warning text-white me-2">
+                                        <i class="mdi mdi-account-edit"></i>
+                                    </span> 
+                                    Modifier l'Utilisateur
+                                </h3>
+                                <nav aria-label="breadcrumb">
+                                    <ul class="breadcrumb">
+                                        <li class="breadcrumb-item"><a href="{{ path('app_user_index') }}">Utilisateurs</a></li>
+                                        <li class="breadcrumb-item"><a href="{{ path('app_user_show', { id: user.id }) }}">{{ user.prenom }} {{ user.nom }}</a></li>
+                                        <li class="breadcrumb-item active" aria-current="page">Modifier</li>
+                                    </ul>
+                                </nav>
+                                {% if app.user %}
+                                    <div class="mt-2">
+                                        <small class="text-muted">
+                                            <i class="mdi mdi-account me-1"></i>
+                                            Connecté en tant que: <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong>
+                                            {% if 'ROLE_ADMIN' in app.user.roles %}
+                                                <span class="badge badge-admin ms-2">Administrateur</span>
+                                            {% endif %}
+                                        </small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Info Card -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="user-info-card">
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        {% if user.profilePic %}
+                                            <img src="{{ asset('uploads/profile_pics/' ~ user.profilePic) }}" 
+                                                 alt="{{ user.prenom }}" 
+                                                 style="width: 90px; height: 90px; border-radius: 50%; border: 3px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                                        {% else %}
+                                            <div class="user-avatar-large">
+                                                {{ user.prenom|first|upper }}{{ user.nom|first|upper }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col">
+                                        <h4 class="mb-1">{{ user.prenom }} {{ user.nom }}</h4>
+                                        <p class="mb-0 opacity-90">{{ user.email }}</p>
+                                        <p class="mb-0 opacity-90">
+                                            <i class="mdi mdi-identifier me-1"></i>ID: {{ user.id }} | 
+                                            <i class="mdi mdi-calendar me-1"></i>Date de naissance: {{ user.DateDeNaissance ? user.DateDeNaissance|date('d/m/Y') }}
+                                        </p>
+                                        <div class="mt-2">
+                                            {% if 'ROLE_ADMIN' in user.roles %}
+                                                <span class="badge badge-admin">Administrateur</span>
+                                            {% else %}
+                                                <span class="badge badge-etudiant">Utilisateur</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="edit-mode-badge mt-3">
+                                            <i class="mdi mdi-pencil me-1"></i>Mode Édition Activé
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Container -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-container">
+                                <!-- Form Header -->
+                                <div class="form-header">
+                                    <h3><i class="mdi mdi-account-edit"></i> Modification de l'Utilisateur</h3>
+                                    <p class="mb-0 opacity-90">Modifiez les informations de {{ user.prenom }} {{ user.nom }}</p>
+                                </div>
+                                
+                                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                                
+                                <!-- Personal Information Section -->
+                                <div class="form-section">
+                                    <h4 class="form-section-title">
+                                        <i class="mdi mdi-account-circle"></i>
+                                        Informations Personnelles
+                                    </h4>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.nom, null, {'label_attr': {'class': 'required-field'}}) }}
+                                                {{ form_widget(form.nom, {
+                                                    'attr': {
+                                                        'class': 'form-control'
+                                                    }
+                                                }) }}
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.nom) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.prenom, null, {'label_attr': {'class': 'required-field'}}) }}
+                                                {{ form_widget(form.prenom, {
+                                                    'attr': {
+                                                        'class': 'form-control'
+                                                    }
+                                                }) }}
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.prenom) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.email, null, {'label_attr': {'class': 'required-field'}}) }}
+                                                {{ form_widget(form.email, {
+                                                    'attr': {
+                                                        'class': 'form-control'
+                                                    }
+                                                }) }}
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.email) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.numTel) }}
+                                                {{ form_widget(form.numTel, {
+                                                    'attr': {
+                                                        'class': 'form-control',
+                                                        'placeholder': '+216 XX XXX XXX'
+                                                    }
+                                                }) }}
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.numTel) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.DateDeNaissance, null, {'label_attr': {'class': 'required-field'}}) }}
+                                                {{ form_widget(form.DateDeNaissance, {
+                                                    'attr': {
+                                                        'class': 'form-control'
+                                                    }
+                                                }) }}
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.DateDeNaissance) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.sexe, null, {'label_attr': {'class': 'required-field'}}) }}
+                                                <div class="radio-group">
+                                                    {{ form_widget(form.sexe) }}
+                                                </div>
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.sexe) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Academic Information Section -->
+                                <div class="form-section">
+                                    <h4 class="form-section-title">
+                                        <i class="mdi mdi-school"></i>
+                                        Informations Académiques
+                                    </h4>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.classe, null, {'label_attr': {'class': 'required-field'}}) }}
+                                                {{ form_widget(form.classe, {
+                                                    'attr': {
+                                                        'class': 'form-select'
+                                                    }
+                                                }) }}
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.classe) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group mb-4">
+                                                {{ form_label(form.roles, null, {'label_attr': {'class': 'required-field'}}) }}
+                                                <div class="checkbox-group">
+                                                    {{ form_widget(form.roles) }}
+                                                </div>
+                                                <div class="invalid-feedback">
+                                                    {{ form_errors(form.roles) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Password Section (Optional) -->
+                                <div class="password-section">
+                                    <h4 class="form-section-title">
+                                        <i class="mdi mdi-lock-reset"></i>
+                                        Changer le mot de passe (optionnel)
+                                    </h4>
+                                    
+                                    <div class="form-group mb-4">
+                                        {{ form_label(form.plainPassword) }}
+                                        {{ form_widget(form.plainPassword, {
+                                            'attr': {
+                                                'class': 'form-control',
+                                                'placeholder': 'Laissez vide pour garder le mot de passe actuel'
+                                            }
+                                        }) }}
+                                        <p class="password-note">
+                                            <i class="mdi mdi-information-outline me-1"></i>
+                                            Remplissez uniquement si vous souhaitez changer le mot de passe. Minimum 6 caractères.
+                                        </p>
+                                        <div class="invalid-feedback">
+                                            {{ form_errors(form.plainPassword) }}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Profile Picture Section -->
+                                <div class="form-section">
+                                    <h4 class="form-section-title">
+                                        <i class="mdi mdi-account-box"></i>
+                                        Photo de Profil
+                                    </h4>
+                                    
+                                    {% if user.profilePic %}
+                                        <div class="mb-3">
+                                            <p class="text-muted">Photo actuelle:</p>
+                                            <img src="{{ asset('uploads/profile_pics/' ~ user.profilePic) }}" 
+                                                 alt="Photo actuelle" 
+                                                 style="max-width: 200px; max-height: 200px; border-radius: 10px; border: 2px solid #667eea;">
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="form-group mb-4">
+                                        {{ form_label(form.profilePicFile) }}
+                                        {{ form_widget(form.profilePicFile, {
+                                            'attr': {
+                                                'class': 'form-control',
+                                                'id': 'profilePicInput',
+                                                'onchange': 'previewImage(this)'
+                                            }
+                                        }) }}
+                                        <div class="invalid-feedback">
+                                            {{ form_errors(form.profilePicFile) }}
+                                        </div>
+                                        <small class="form-text">
+                                            {% if user.profilePic %}
+                                                Téléchargez une nouvelle image pour remplacer l'actuelle.
+                                            {% else %}
+                                                Formats acceptés: JPG, PNG, GIF, WEBP. Taille maximale: 2 Mo
+                                            {% endif %}
+                                        </small>
+                                        
+                                        <!-- Image Preview -->
+                                        <div id="imagePreview" class="mt-3" style="display: none;">
+                                            <p class="text-muted">Nouvelle photo:</p>
+                                            <img id="previewImg" src="" alt="Preview" style="max-width: 200px; max-height: 200px; border-radius: 10px; border: 2px solid #ffa726;">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="action-buttons">
+                                    <a href="{{ path('app_user_index') }}" class="btn btn-secondary">
+                                        <i class="mdi mdi-arrow-left me-2"></i>Annuler
+                                    </a>
+                                    <a href="{{ path('app_user_show', { id: user.id }) }}" class="btn btn-info">
+                                        <i class="mdi mdi-eye me-2"></i>Voir le profil
+                                    </a>
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="mdi mdi-content-save me-2"></i>Mettre à jour
+                                    </button>
+                                </div>
+                                
+                                {{ form_end(form) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <footer class="footer">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                            © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
+                        </span>
+                        <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                            Modification d'utilisateur: {{ user.prenom }} {{ user.nom }}
+                        </span>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('assets/js/misc.js') }}"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Phone number formatting
+            const phoneInput = document.querySelector('#{{ form.numTel.vars.id }}');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length > 0) {
+                        value = '+216 ' + value;
+                        if (value.length > 10) {
+                            value = value.substring(0, 10) + ' ' + value.substring(10);
+                        }
+                        if (value.length > 15) {
+                            value = value.substring(0, 15);
+                        }
+                    }
+                    e.target.value = value;
+                });
+            }
+            
+            // Form submission loading state
+            const form = document.querySelector('form');
+            if (form) {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                
+                form.addEventListener('submit', function() {
+                    submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin me-2"></i>Mise à jour...';
+                    submitBtn.disabled = true;
+                });
+            }
+            
+            // Style form elements
+            const requiredLabels = document.querySelectorAll('.required-field');
+            requiredLabels.forEach(label => {
+                if (!label.innerHTML.includes('*')) {
+                    label.innerHTML = label.innerHTML + ' *';
+                }
+            });
+            
+            // Style radio buttons
+            const radioButtons = document.querySelectorAll('input[type="radio"]');
+            radioButtons.forEach(radio => {
+                radio.classList.add('form-check-input');
+                const label = radio.nextElementSibling;
+                if (label && label.tagName === 'LABEL') {
+                    label.classList.add('form-check-label');
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'form-check form-check-inline';
+                    radio.parentNode.insertBefore(wrapper, radio);
+                    wrapper.appendChild(radio);
+                    wrapper.appendChild(label);
+                }
+            });
+            
+            // Style checkboxes
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.classList.add('form-check-input');
+                const label = checkbox.nextElementSibling;
+                if (label && label.tagName === 'LABEL') {
+                    label.classList.add('form-check-label');
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'form-check';
+                    checkbox.parentNode.insertBefore(wrapper, checkbox);
+                    wrapper.appendChild(checkbox);
+                    wrapper.appendChild(label);
+                }
+            });
+            
+            // Add current year to footer
+            const currentYear = new Date().getFullYear();
+            const footerText = document.querySelector('.footer span:first-child');
+            if (footerText) {
+                footerText.innerHTML = footerText.innerHTML.replace('2024', currentYear);
+            }
+            
+            // Show warning if leaving page with unsaved changes
+            let formChanged = false;
+            const formInputs = document.querySelectorAll('form input, form select, form textarea');
+            
+            formInputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    formChanged = true;
+                });
+                
+                input.addEventListener('change', () => {
+                    formChanged = true;
+                });
+            });
+            
+            window.addEventListener('beforeunload', (e) => {
+                if (formChanged) {
+                    e.preventDefault();
+                    e.returnValue = 'Vous avez des modifications non sauvegardées. Êtes-vous sûr de vouloir quitter ?';
+                }
+            });
+            
+            // Prevent accidental navigation
+            const cancelButton = document.querySelector('a[href*="index"]');
+            if (cancelButton) {
+                cancelButton.addEventListener('click', (e) => {
+                    if (formChanged) {
+                        const confirmLeave = confirm('Vous avez des modifications non sauvegardées. Êtes-vous sûr de vouloir annuler ?');
+                        if (!confirmLeave) {
+                            e.preventDefault();
+                        }
+                    }
+                });
+            }
+        });
+        
+        // Image preview function
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            const img = document.getElementById('previewImg');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+                img.src = '';
+            }
+        }
+    </script>
+{% endblock %}

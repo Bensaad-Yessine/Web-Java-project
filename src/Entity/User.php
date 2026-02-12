@@ -1,0 +1,327 @@
+<?php
+
+namespace App\Entity;
+
+use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\Tache;
+use App\Entity\ObjectifSante;
+
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: '`user`')]
+#[UniqueEntity(fields: ['email'], message: 'Un compte existe déjà avec cet email')]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 180, unique: true)]
+    #[Assert\NotBlank(message: 'L\'email est obligatoire')]
+    #[Assert\Email(message: 'L\'email {{ value }} n\'est pas valide')]
+    private ?string $email = null;
+
+    #[ORM\Column]
+    private array $roles = [];
+
+    #[ORM\Column]
+    private ?string $password = null;
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isVerified = false;
+
+    #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: 'Le nom est obligatoire')]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères'
+    )]
+    private ?string $nom = null;
+
+    #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: 'Le prénom est obligatoire')]
+    #[Assert\Length(
+        min: 2,
+        max: 100,
+        minMessage: 'Le prénom doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le prénom ne peut pas dépasser {{ limit }} caractères'
+    )]
+    private ?string $prenom = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    #[Assert\Regex(
+        pattern: '/^[+]?[0-9\s]{8,20}$/',
+        message: 'Le numéro de téléphone n\'est pas valide'
+    )]
+    private ?string $numTel = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank(message: 'La date de naissance est obligatoire')]
+    #[Assert\LessThan('-10 years', message: 'Vous devez avoir au moins 10 ans')]
+    private ?\DateTimeInterface $DateDeNaissance = null;
+
+    #[ORM\Column(length: 10)]
+    #[Assert\NotBlank(message: 'Le sexe est obligatoire')]
+    #[Assert\Choice(choices: ['Homme', 'Femme'], message: 'Choisissez un sexe valide')]
+    private ?string $sexe = null;
+  #[ORM\ManyToOne(targetEntity: Classe::class, inversedBy: 'users')]
+#[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+private ?Classe $classe = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $profilePic = null;
+
+    /**
+     * @var Collection<int, Tache>
+     */
+    #[ORM\OneToMany(targetEntity: Tache::class, mappedBy: 'idUser')]
+    private Collection $taches;
+
+    /**
+     * @var Collection<int, ObjectifSante>
+     */
+    #[ORM\OneToMany(targetEntity: ObjectifSante::class, mappedBy: 'user')]
+    private Collection $objectifSantes;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    public function __construct()
+    {
+        $this->taches = new ArrayCollection();
+        $this->objectifSantes = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        $roles[] = 'ROLE_USER';
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+        return $this;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(string $nom): static
+    {
+        $this->nom = $nom;
+        return $this;
+    }
+
+    public function getPrenom(): ?string
+    {
+        return $this->prenom;
+    }
+
+    public function setPrenom(string $prenom): static
+    {
+        $this->prenom = $prenom;
+        return $this;
+    }
+
+    public function getNumTel(): ?string
+    {
+        return $this->numTel;
+    }
+
+    public function setNumTel(?string $numTel): static
+    {
+        $this->numTel = $numTel;
+        return $this;
+    }
+
+    public function getDateDeNaissance(): ?\DateTimeInterface
+    {
+        return $this->DateDeNaissance;
+    }
+
+    public function setDateDeNaissance(\DateTimeInterface $DateDeNaissance): static
+    {
+        $this->DateDeNaissance = $DateDeNaissance;
+        return $this;
+    }
+
+    public function getSexe(): ?string
+    {
+        return $this->sexe;
+    }
+
+    public function setSexe(string $sexe): static
+    {
+        $this->sexe = $sexe;
+        return $this;
+    }
+
+    public function getClasse(): ?Classe
+    {
+        return $this->classe;
+    }
+
+    public function setClasse(?Classe $classe): static
+    {
+        $this->classe = $classe;
+        return $this;
+    }
+
+    public function getFullName(): string
+    {
+        return $this->prenom . ' ' . $this->nom;
+    }
+
+    public function getProfilePic(): ?string
+    {
+        return $this->profilePic;
+    }
+
+    public function setProfilePic(?string $profilePic): static
+    {
+        $this->profilePic = $profilePic;
+
+        return $this;
+    }
+    public function getProfilePicUrl(): string
+{
+    if ($this->profilePic) {
+        return '/uploads/profile_pics/' . $this->profilePic;
+    }
+    return '/assets/images/faces/face15.jpg'; // Default image
+}
+
+    /**
+     * @return Collection<int, Tache>
+     */
+    public function getTaches(): Collection
+    {
+        return $this->taches;
+    }
+
+    public function addTach(Tache $tach): static
+    {
+        if (!$this->taches->contains($tach)) {
+            $this->taches->add($tach);
+            $tach->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTach(Tache $tach): static
+    {
+        if ($this->taches->removeElement($tach)) {
+            // set the owning side to null (unless already changed)
+            if ($tach->getUser() === $this) {
+                $tach->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ObjectifSante>
+     */
+    public function getObjectifSantes(): Collection
+    {
+        return $this->objectifSantes;
+    }
+
+    public function addObjectifSante(ObjectifSante $objectifSante): static
+    {
+        if (!$this->objectifSantes->contains($objectifSante)) {
+            $this->objectifSantes->add($objectifSante);
+            $objectifSante->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeObjectifSante(ObjectifSante $objectifSante): static
+    {
+        if ($this->objectifSantes->removeElement($objectifSante)) {
+            // set the owning side to null (unless already changed)
+            if ($objectifSante->getUser() === $this) {
+                $objectifSante->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+}

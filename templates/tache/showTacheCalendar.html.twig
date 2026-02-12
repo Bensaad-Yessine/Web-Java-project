@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Calendrier des Tâches{% endblock %}
+
+{% block stylesheets %}
+    {# FullCalendar CSS #}
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">🗓 Calendrier des Tâches</h1>
+    <div id="calendar"></div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {# FullCalendar JS #}
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridWeek',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            allDaySlot: false,
+            slotMinTime: "06:00:00",
+            slotMaxTime: "22:00:00",
+            events: [
+                {% for tache in taches %}
+                {
+                    title: "{{ tache.titre|e }} ({{ tache.priorite|capitalize }})",
+                    start: "{{ tache.dateDebut ? tache.dateDebut|date('Y-m-d\\TH:i:s') : '' }}",
+                    end: "{{ tache.dateFin ? tache.dateFin|date('Y-m-d\\TH:i:s') : '' }}",
+                    color: "{% if tache.priorite == 'faible' %}green{% elseif tache.priorite == 'moyenne' %}orange{% else %}red{% endif %}",
+                },
+                {% endfor %}
+            ]
+        });
+
+        calendar.render();
+    });
+    </script>
+{% endblock %}
