@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Seance;
+use App\Entity\Classe;
 use App\Form\SeanceType;
 use App\Repository\SeanceRepository;
+use App\Repository\ClasseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,7 +16,10 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/seance')]
 final class SeanceController extends AbstractController
 {
-    #[Route(name: 'app_seance_index', methods: ['GET'])]
+    // =========================
+    // INDEX
+    // =========================
+    #[Route('/', name: 'app_seance_index', methods: ['GET'])]
     public function index(SeanceRepository $seanceRepository): Response
     {
         return $this->render('seance/index.html.twig', [
@@ -22,56 +27,59 @@ final class SeanceController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_seance_new', methods: ['GET', 'POST'])]
-public function new(Request $request, EntityManagerInterface $entityManager): Response
-{
-    $seance = new Seance();
-    $form = $this->createForm(SeanceType::class, $seance);
-    $form->handleRequest($request);
+    // =========================
+    // SHOW SEANCES BY CLASSE
+    // IMPORTANT: placed BEFORE /{id}
+    // =========================
+    #[Route('/by-classe/{id<\d+>}', name: 'app_seance_by_classe', methods: ['GET'])]
+    public function showSeanceByClasse(
+        SeanceRepository $seanceRepository,
+        Classe $classe
+    ): Response
+    {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-    if ($form->isSubmitted()) {
-        // Debug: Check if form is valid
-        if (!$form->isValid()) {
-            // Get all errors
-            $errors = $form->getErrors(true, true);
-            foreach ($errors as $error) {
-                $this->addFlash('error', $error->getMessage());
-            }
-            
-            // Check specific field errors
-            $fields = ['matiere', 'classe', 'salle', 'jour', 'typeSeance', 'mode'];
-            foreach ($fields as $field) {
-                if ($form->has($field)) {
-                    $fieldErrors = $form->get($field)->getErrors();
-                    if ($fieldErrors->count() > 0) {
-                        foreach ($fieldErrors as $error) {
-                            $this->addFlash('error', "Champ {$field}: " . $error->getMessage());
-                        }
-                    }
-                }
-            }
-        }
-        
-        if ($form->isValid()) {
-            try {
-                $entityManager->persist($seance);
-                $entityManager->flush();
+        $seances = $seanceRepository->findBy(
+            ['classe' => $classe],
+            ['jour' => 'ASC', 'heureDebut' => 'ASC']
+        );
 
-                $this->addFlash('success', 'Séance créée avec succès!');
-                return $this->redirectToRoute('app_seance_index', [], Response::HTTP_SEE_OTHER);
-            } catch (\Exception $e) {
-                $this->addFlash('error', 'Erreur lors de la création: ' . $e->getMessage());
-            }
-        }
+        return $this->render('seance/schedule.html.twig', [
+            'seances' => $seances,
+            'classe' => $classe,
+        ]);
     }
 
-    return $this->render('seance/new.html.twig', [
-        'seance' => $seance,
-        'form' => $form->createView(),
-    ]);
-}
+    // =========================
+    // NEW
+    // =========================
+    #[Route('/new', name: 'app_seance_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $seance = new Seance();
+        $form = $this->createForm(SeanceType::class, $seance);
+        $form->handleRequest($request);
 
-    #[Route('/{id}', name: 'app_seance_show', methods: ['GET'])]
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $entityManager->persist($seance);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Séance créée avec succès.');
+
+            return $this->redirectToRoute('app_seance_index');
+        }
+
+        return $this->render('seance/new.html.twig', [
+            'seance' => $seance,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    // =========================
+    // SHOW ONE SEANCE
+    // =========================
+    #[Route('/{id<\d+>}', name: 'app_seance_show', methods: ['GET'])]
     public function show(Seance $seance): Response
     {
         return $this->render('seance/show.html.twig', [
@@ -79,16 +87,26 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_seance_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Seance $seance, EntityManagerInterface $entityManager): Response
+    // =========================
+    // EDIT
+    // =========================
+    #[Route('/{id<\d+>}/edit', name: 'app_seance_edit', methods: ['GET', 'POST'])]
+    public function edit(
+        Request $request,
+        Seance $seance,
+        EntityManagerInterface $entityManager
+    ): Response
     {
         $form = $this->createForm(SeanceType::class, $seance);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_seance_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Séance modifiée avec succès.');
+
+            return $this->redirectToRoute('app_seance_index');
         }
 
         return $this->render('seance/edit.html.twig', [
@@ -97,15 +115,26 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         ]);
     }
 
-    #[Route('/{id}', name: 'app_seance_delete', methods: ['POST'])]
-    public function delete(Request $request, Seance $seance, EntityManagerInterface $entityManager): Response
+    // =========================
+    // DELETE
+    // =========================
+    #[Route('/{id<\d+>}', name: 'app_seance_delete', methods: ['POST'])]
+    public function delete(
+        Request $request,
+        Seance $seance,
+        EntityManagerInterface $entityManager
+    ): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$seance->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid(
+            'delete'.$seance->getId(),
+            $request->request->get('_token')
+        )) {
             $entityManager->remove($seance);
             $entityManager->flush();
+
+            $this->addFlash('success', 'Séance supprimée.');
         }
 
-        return $this->redirectToRoute('app_seance_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_seance_index');
     }
-    
 }
