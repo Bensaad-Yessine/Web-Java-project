@@ -736,7 +736,7 @@
                     </div>
                     <h2>Aucune préférence configurée</h2>
                     <p>Vous n'avez pas encore configuré vos préférences d'alerte. Créez votre première préférence pour personnaliser vos notifications.</p>
-                    <a href="{{ path('app_preference_alerte_new') }}" class="create-btn">
+                    <a href="{{ path('front_preference_alerte_add', {'id': app.user.id})  }}" class="create-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 5v14"/><path d="M5 12h14"/>
                         </svg>
@@ -832,7 +832,7 @@
                                 {% endif %}
 
                                 <div class="card-actions">
-                                    <a href="{{ path('app_preference_alerte_show', {'id': preference.id}) }}" class="btn btn-view">
+                                    <a href="{{ path('front_preference_alerte_detail', {'userId': userId,'preferenceId': preference.id}) }}" class="btn btn-view">
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                             <circle cx="12" cy="12" r="3"/>

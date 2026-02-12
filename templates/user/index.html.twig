@@ -1141,13 +1141,20 @@
           if (sortBy) params.append('sortBy', sortBy);
           if (sortOrder) params.append('sortOrder', sortOrder);
 
+          // Cancel previous request if any and use AbortController to avoid race conditions
+          if (window.__userSearchController) {
+            try { window.__userSearchController.abort(); } catch (e) {}
+          }
+          window.__userSearchController = new AbortController();
+
           // Make AJAX request
-          fetch('/user/search?' + params.toString(), {
+          fetch('{{ path("app_user_ajax_filter") }}?' + params.toString(), {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
               'X-Requested-With': 'XMLHttpRequest'
-            }
+            },
+            signal: window.__userSearchController.signal
           })
           .then(response => response.json())
           .then(data => {
@@ -1159,6 +1166,7 @@
             }
           })
           .catch(error => {
+            if (error.name === 'AbortError') return; // request was cancelled
             console.error('Error:', error);
             alert('Une erreur est survenue lors du filtrage');
           })
@@ -1244,6 +1252,7 @@
                     `<button type="button" class="btn btn-danger btn-sm btn-icon delete-btn" 
                              data-user-id="${user.id}" 
                              data-user-name="${user.prenom} ${user.nom}" 
+                             data-csrf-token="${user.csrfToken}"
                              title="Supprimer">
                       <i class="mdi mdi-delete"></i>
                     </button>` :
@@ -1300,14 +1309,23 @@
           }
         });
 
-        // Navbar search (real-time)
+        // Navbar and filter search (real-time) with debounce
         let searchTimeout;
-        searchInput.addEventListener('keyup', function() {
+        function scheduleApplyFromInput(value) {
           clearTimeout(searchTimeout);
           searchTimeout = setTimeout(() => {
-            searchFilter.value = this.value;
+            searchFilter.value = value;
             applyFilters();
-          }, 500);
+          }, 450);
+        }
+
+        searchInput.addEventListener('keyup', function() {
+          scheduleApplyFromInput(this.value);
+        });
+
+        // Also trigger while typing directly in filter input
+        searchFilter.addEventListener('keyup', function() {
+          scheduleApplyFromInput(this.value);
         });
 
         // Sort by clicking headers

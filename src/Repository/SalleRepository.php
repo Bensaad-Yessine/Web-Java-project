@@ -40,4 +40,54 @@ class SalleRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function findWithFilters(
+        ?string $search = null,
+        ?string $block = null,
+        ?int $minCapacite = null,
+        ?int $maxCapacite = null,
+        string $sort = 'id',
+        string $direction = 'asc'
+    ): array {
+        $qb = $this->createQueryBuilder('s');
+
+        if ($search) {
+            $qb->andWhere('s.name LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        if ($block) {
+            $qb->andWhere('s.block = :block')
+               ->setParameter('block', $block);
+        }
+
+        if ($minCapacite) {
+            $qb->andWhere('s.capacite >= :minCapacite')
+               ->setParameter('minCapacite', $minCapacite);
+        }
+
+        if ($maxCapacite) {
+            $qb->andWhere('s.capacite <= :maxCapacite')
+               ->setParameter('maxCapacite', $maxCapacite);
+        }
+
+        $allowedSorts = ['id', 'name', 'block', 'number', 'capacite'];
+        if (!in_array($sort, $allowedSorts, true)) {
+            $sort = 'id';
+        }
+
+        $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+        $qb->orderBy('s.' . $sort, $direction);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function getDistinctBlocks(): array
+    {
+        return $this->createQueryBuilder('s')
+            ->select('DISTINCT s.block')
+            ->orderBy('s.block', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
+

@@ -21,18 +21,33 @@ final class TacheController extends AbstractController
     {
         $titre = $request->query->get('titre');
         $email = $request->query->get('email');
-        $sort  = $request->query->get('sort', 'desc');
+        $sortParam  = $request->query->get('sort', 'dateDebut|desc');
 
         // ✅ ADD filters (that was the missing part)
         $type     = $request->query->get('type');
         $statut   = $request->query->get('statut');
         $priorite = $request->query->get('priorite');
 
-        // ✅ same method, just pass more params
+        // parse sort param which can be either a direction (legacy) or field|direction
+        $sortField = 'dateDebut';
+        $direction = 'DESC';
+        if ($sortParam) {
+            if (strpos($sortParam, '|') !== false) {
+                [$f, $d] = explode('|', $sortParam, 2);
+                $sortField = $f ?: $sortField;
+                $direction = strtolower($d) === 'asc' ? 'ASC' : 'DESC';
+            } else {
+                // legacy: only direction provided
+                $direction = strtolower($sortParam) === 'asc' ? 'ASC' : 'DESC';
+            }
+        }
+
+        // ✅ same method, now pass sort field + direction
         $taches = $repo->searchAjax(
             $titre,
             $email,
-            $sort,
+            $sortField,
+            $direction,
             $type,
             $statut,
             $priorite
@@ -50,7 +65,7 @@ final class TacheController extends AbstractController
             'taches'  => $taches,
             'titre'   => $titre,
             'email'   => $email,
-            'sort'    => $sort,
+            'sort'    => $sortField . '|' . (strtolower($direction) === 'asc' ? 'asc' : 'desc'),
             'type'    => $type,
             'statut'  => $statut,
             'priorite'=> $priorite,
@@ -213,6 +228,36 @@ final class TacheController extends AbstractController
         return $this->redirectToRoute('app_tache_show', ['id' => $tache->getId()]);
     }
 
+    //suivi tache history
+    #[Route('/{id}/action', name: 'app_tache_action_user', methods: ['POST'])]
+    public function actionUser(Request $request, Tache $tache, EntityManagerInterface $em): Response
+    {
+        $newStatus = $request->request->get('action');
+        $currentStatus = $tache->getStatut();
+
+        if ($newStatus && $newStatus !== $currentStatus) {
+            // 1️⃣ Create SuiviTache entry
+            $suivi = new SuiviTache();
+            $suivi->setTache($tache);
+            $suivi->setAncienStatut($currentStatus);
+            $suivi->setNouveauStatut($newStatus);
+            $suivi->setDateAction(new \DateTime());
+
+            $em->persist($suivi);
+
+            // 2️⃣ Update the Tache status
+            $tache->setStatut($newStatus);
+
+            $em->flush();
+
+            $this->addFlash('success', 'Statut mis à jour !');
+        }
+
+        return $this->redirectToRoute('app_task_show', ['id' => $tache->getId()]);
+    }
+
+
+
 
     //search 
     #[Route('/search-by-title', name: 'app_tache_search_by_title', methods: ['GET'])]
@@ -250,8 +295,5 @@ final class TacheController extends AbstractController
             'email' => $email,
         ]);
     }
-
-
-
 
 }

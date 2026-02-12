@@ -204,18 +204,27 @@
             font-style: italic;
         }
 
-        /* Error Messages */
-        .error-message {
+        /* Style Symfony default error lists */
+        .form-group ul {
+            list-style: none;
+            padding: 0;
+            margin: 5px 0 0 0;
             color: #dc3545;
             font-size: 12px;
-            margin-top: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .form-group ul li {
             display: flex;
             align-items: center;
             gap: 5px;
         }
 
-        .error-message::before {
+        .form-group ul li::before {
             content: "⚠";
+            font-weight: bold;
         }
 
         .form-control.is-invalid, .form-select.is-invalid, input[type="datetime-local"].is-invalid {
@@ -1007,7 +1016,7 @@
                                     <p>Modifiez les champs nécessaires pour mettre à jour cette séance</p>
                                 </div>
 
-                                {{ form_start(form, {'attr': {'class': 'seance-form'}}) }}
+                                {{ form_start(form, {'attr': {'class': 'seance-form', 'novalidate': 'novalidate'}}) }}
                                 {{ form_widget(form._token) }} <!-- Ensure CSRF token is included -->
 
                                 
@@ -1070,7 +1079,8 @@
                                         <div class="form-group">
                                             {{ form_label(form.typeSeance, null, {'label_attr': {'class': 'required'}}) }}
                                             {{ form_widget(form.typeSeance, {'attr': {
-                                                'class': 'form-select'
+                                                'class': 'form-control' ~ (form.typeSeance.vars.errors|length > 0 ? ' is-invalid' : ''),
+                                                'placeholder': 'Ex: Cours, TD, TP'
                                             }}) }}
                                             {{ form_errors(form.typeSeance) }}
                                             <span class="help-text">Type d'enseignement (Cours, TD, TP)</span>
@@ -1079,7 +1089,8 @@
                                         <div class="form-group">
                                             {{ form_label(form.mode, null, {'label_attr': {'class': 'required'}}) }}
                                             {{ form_widget(form.mode, {'attr': {
-                                                'class': 'form-select'
+                                                'class': 'form-control' ~ (form.mode.vars.errors|length > 0 ? ' is-invalid' : ''),
+                                                'placeholder': 'Ex: Présentiel, Distanciel, Hybride'
                                             }}) }}
                                             {{ form_errors(form.mode) }}
                                             <span class="help-text">Mode d'enseignement (Présentiel, Distanciel, Hybride)</span>

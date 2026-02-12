@@ -195,7 +195,7 @@
         box-shadow: 0 8px 20px rgba(0,0,0,0.2);
       }
       
-      /* Enhanced table styling */
+      /* Enhanced table styling - FIXED: Keep text light */
       .table-card {
         border-radius: 16px;
         overflow: hidden;
@@ -239,10 +239,11 @@
         border-top-right-radius: 16px;
       }
       
+      /* FIX: This ensures text in table cells remains light colored */
       .table tbody td {
         padding: 1rem 1rem;
         vertical-align: middle;
-        color: #4a5568;
+        color: #6c757d !important; /* Light text color - IMPORTANT to override Bootstrap */
         font-weight: 500;
       }
       
@@ -296,6 +297,170 @@
         margin-top: 5px;
         display: inline-block;
         font-weight: 600;
+      }
+      /* IMPROVED Filter Container */
+      /* Darker & modern filter container */
+      .filter-container-card {
+        background: linear-gradient(135deg, rgba(10, 25, 60, 0.9) 0%, rgba(15, 35, 80, 0.95) 100%);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        animation: fadeIn 0.5s ease;
+        color: #f2f2f2; /* soft white text, not too harsh */
+      }
+      
+      .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(106, 17, 203, 0.1);
+      }
+      
+      .filter-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      
+      .filter-title i {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 1.5rem;
+      }
+      
+      .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      
+      .filter-group {
+        margin-bottom: 0;
+      }
+      
+      .filter-label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #495057;
+        font-size: 0.9rem;
+      }
+      
+      .filter-input-group {
+        position: relative;
+      }
+      
+      .filter-input {
+        width: 100%;
+        padding: 0.75rem 1rem 0.75rem 3rem;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background: white;
+        color: #495057;
+      }
+      
+      .filter-input:focus {
+        outline: none;
+        border-color: #6a11cb;
+        box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+      }
+      
+      .filter-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        background: white;
+        color: #495057;
+        cursor: pointer;
+      }
+      
+      .filter-select:focus {
+        outline: none;
+        border-color: #6a11cb;
+        box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+      }
+      
+      .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6a11cb;
+        font-size: 1.2rem;
+      }
+      
+      .filter-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1.5rem;
+        border-top: 2px solid rgba(106, 17, 203, 0.1);
+      }
+      
+      .results-info {
+        color: #6c757d;
+        font-weight: 500;
+      }
+      
+      .results-info i {
+        color: #6a11cb;
+      }
+      
+      .btn-apply {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .btn-apply:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(106, 17, 203, 0.3);
+      }
+      
+      .btn-clear {
+        background: transparent;
+        color: #6c757d;
+        border: 2px solid #e9ecef;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      
+      .btn-clear:hover {
+        background: #f8f9fa;
+        border-color: #6a11cb;
+        color: #6a11cb;
+      }
+      
+      .action-buttons {
+        display: flex;
+        gap: 0.75rem;
       }
       
       /* Original styles kept for compatibility */
@@ -833,179 +998,105 @@
                     </div>
                 </div>
 
-                <!-- Enhanced Préférences d'Alerte Table -->
+                <!-- IMPROVED AJAX Filter/Search/Sort for Préférences d'Alerte -->
                 <div class="row">
-                    <div class="col-12 grid-margin">
-                        <div class="card table-card">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h4 class="card-title">🔔 Liste des Préférences d'Alerte</h4>
-                                    <div class="d-flex">
-                                        <a href="{{ path('app_preference_alerte_new') }}" class="btn btn-gradient-primary">
-                                            <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
-                                            Nouvelle Préférence
-                                        </a>
-                                    </div>
-                                </div>
-
-                                {% if preference_alertes is empty %}
-                                    <div class="empty-state">
-                                        <i class="mdi mdi-bell-off-outline"></i>
-                                        <h4 class="text-muted">Aucune préférence d'alerte trouvée</h4>
-                                        <p class="text-muted mb-4">Commencez par créer une nouvelle préférence</p>
-                                        <a href="{{ path('app_preference_alerte_new') }}" class="btn btn-gradient-primary">
-                                            <i class="mdi mdi-plus-circle"></i>
-                                            Créer la première préférence
-                                        </a>
-                                    </div>
-                                {% else %}
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Type</th>
-                                                    <th>Notifications</th>
-                                                    <th>Statut</th>
-                                                    <th>Utilisateur</th>
-                                                    <th>Créé le</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                            {% for preference in preference_alertes %}
-                                                <tr>
-                                                    <td>
-                                                        <strong>#{{ preference.id }}</strong>
-                                                    </td>
-
-                                                    <!-- Type: computed using virtual getter getType() -->
-                                                    <td>
-                                                        <span class="badge badge-info">
-                                                            {{ preference.type }}
-                                                        </span>
-                                                    </td>
-
-                                                    <!-- Enhanced Notifications badges -->
-                                                    <td>
-                                                        <div class="d-flex flex-wrap gap-1">
-                                                            {% if preference.emailActif %} 
-                                                                <span class="notification-badge badge-primary">
-                                                                    <i class="mdi mdi-email me-1"></i>Email
-                                                                </span>
-                                                            {% endif %}
-                                                            {% if preference.pushActif %} 
-                                                                <span class="notification-badge badge-warning">
-                                                                    <i class="mdi mdi-bell me-1"></i>In-App
-                                                                </span>
-                                                            {% endif %}
-                                                        </div>
-                                                    </td>
-
-                                                    <!-- Enhanced Statut -->
-                                                    <td>
-                                                        {% if preference.isActive %}
-                                                            <span class="badge badge-success">
-                                                                <i class="mdi mdi-check-circle-outline me-1"></i>
-                                                                Active
-                                                            </span>
-                                                        {% else %}
-                                                            <span class="badge badge-danger">
-                                                                <i class="mdi mdi-close-circle-outline me-1"></i>
-                                                                Inactive
-                                                            </span>
-                                                        {% endif %}
-                                                    </td>
-
-                                                    <!-- Enhanced Utilisateur display -->
-                                                    <td>
-                                                        {% if preference.etudiant %}
-                                                            <div class="d-flex align-items-center">
-                                                                {% if preference.etudiant.profilePic %}
-                                                                    <img src="{{ asset('uploads/profile_pics/' ~ preference.etudiant.profilePic) }}" 
-                                                                        alt="{{ preference.etudiant.prenom }}" 
-                                                                        class="user-avatar-img me-2">
-                                                                {% else %}
-                                                                    <div class="user-avatar me-2">
-                                                                        {{ preference.etudiant.prenom|first|upper }}{{ preference.etudiant.nom|first|upper }}
-                                                                    </div>
-                                                                {% endif %}
-                                                                <div>
-                                                                    <div class="fw-bold">{{ preference.etudiant.prenom }} {{ preference.etudiant.nom }}</div>
-                                                                    <small class="text-muted">{{ preference.etudiant.email }}</small>
-                                                                </div>
-                                                            </div>
-                                                        {% else %}
-                                                            <span class="text-muted fst-italic">—</span>
-                                                        {% endif %}
-                                                    </td>
-
-                                                    <!-- Enhanced Date display -->
-                                                    <td>
-                                                        {% if preference.dateCreation %}
-                                                            <div class="date-cell">
-                                                                <div class="date-value">
-                                                                    <i class="mdi mdi-calendar-clock me-1 text-primary"></i>
-                                                                    {{ preference.dateCreation|date('d/m/Y H:i') }}
-                                                                </div>
-                                                            </div>
-                                                        {% else %}
-                                                            <span class="text-muted fst-italic">—</span>
-                                                        {% endif %}
-                                                    </td>
-
-                                                    <!-- Enhanced Actions -->
-                                                    <td>
-                                                        <div class="action-buttons">
-                                                            <a href="{{ path('app_preference_alerte_show', { id: preference.id }) }}" 
-                                                            class="btn-icon btn-info" title="Voir">
-                                                                <i class="mdi mdi-eye"></i>
-                                                            </a>
-                                                            <a href="{{ path('app_preference_alerte_edit', { id: preference.id }) }}" 
-                                                            class="btn-icon btn-warning" title="Modifier">
-                                                                <i class="mdi mdi-pencil"></i>
-                                                            </a>
-                                                            <form action="{{ path('app_preference_alerte_delete', { id: preference.id }) }}"
-                                                                method="POST"
-                                                                style="display:inline;"
-                                                                onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette préférence ?');">
-                                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ preference.id) }}">
-                                                                <button type="submit" class="btn-icon btn-danger" title="Supprimer">
-                                                                    <i class="mdi mdi-delete"></i>
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                {% endif %}
-                            </div>
+                  <div class="col-12 grid-margin">
+                    <div class="filter-container-card">
+                      <div class="filter-header">
+                        <div class="filter-title">
+                          <i class="mdi mdi-filter-variant"></i>
+                          Filtres, Tri & Recherche
                         </div>
+                        <a href="{{ path('app_preference_alerte_new') }}" class="btn btn-gradient-primary">
+                          <i class="mdi mdi-plus-circle"></i>
+                          Nouvelle Préférence
+                        </a>
+                      </div>
+                      <div class="filter-grid">
+                        <div class="filter-group">
+                          <label class="filter-label">Recherche par titre</label>
+                          <div class="filter-input-group">
+                            <i class="mdi mdi-format-title input-icon"></i>
+                            <input type="text" id="searchTitre" name="titre" class="filter-input" placeholder="Saisir un titre..." value="{{ titre|default('') }}">
+                          </div>
+                        </div>
+                        <div class="filter-group">
+                          <label class="filter-label">ID Étudiant</label>
+                          <div class="filter-input-group">
+                            <i class="mdi mdi-account input-icon"></i>
+                            <input type="number" id="searchEtudiantId" name="etudiantId" class="filter-input" placeholder="ID de l'étudiant..." value="{{ etudiantId|default('') }}">
+                          </div>
+                        </div>
+                        <div class="filter-group">
+                          <label class="filter-label">Statut</label>
+                          <select id="filterStatut" class="filter-select" name="statut">
+                            <option value="">Tous</option>
+                            <option value="1" {% if statut == '1' %}selected{% endif %}>Active</option>
+                            <option value="0" {% if statut == '0' %}selected{% endif %}>Inactive</option>
+                          </select>
+                        </div>
+                        <div class="filter-group">
+                          <label class="filter-label">Défaut</label>
+                          <select id="filterIsDefault" class="filter-select" name="isDefault">
+                            <option value="">Tous</option>
+                            <option value="1" {% if isDefault == '1' %}selected{% endif %}>Oui</option>
+                            <option value="0" {% if isDefault == '0' %}selected{% endif %}>Non</option>
+                          </select>
+                        </div>
+                        <div class="filter-group">
+                          <label class="filter-label">Tri par date</label>
+                          <select id="sortDateCreation" class="filter-select">
+                            <option value="desc" {% if sort == 'desc' %}selected{% endif %}>Plus récent d'abord</option>
+                            <option value="asc" {% if sort == 'asc' %}selected{% endif %}>Plus ancien d'abord</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div class="filter-actions">
+                        <div class="results-info">
+                          <span>
+                            <i class="mdi mdi-information-outline me-1"></i>
+                            {{ preference_alertes|length }} préférence{{ preference_alertes|length > 1 ? 's' : '' }} trouvée{{ preference_alertes|length > 1 ? 's' : '' }}
+                          </span>
+                        </div>
+                        <div class="action-buttons">
+                          <button type="button" class="btn-clear" id="clearFilters">
+                            <i class="mdi mdi-filter-remove"></i>
+                            Effacer filtres
+                          </button>
+                          <button type="button" class="btn-apply" id="applyFilters">
+                            <i class="mdi mdi-check"></i>
+                            Appliquer
+                          </button>
+                        </div>
+                      </div>
                     </div>
+                    <div class="card table-card mt-4">
+                      <div class="card-body">
+                        <h4 class="card-title mb-4">🔔 Liste des Préférences d'Alerte</h4>
+                        <div class="table-responsive">
+                          <table class="table table-hover" id="alerteTable">
+                            <thead>
+                              <tr>
+                                <th>ID</th>
+                                <th>Titre</th>
+                                <th>Utilisateur</th>
+                                <th>Créé le</th>
+                                <th>Statut</th>
+                                <th>Défaut</th>
+                                <th>Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody id="alerteTableBody" data-url="{{ path('app_preference_alerte_index') }}">
+                              {{ include('preference_alerte/_rows.html.twig', { preference_alertes: preference_alertes }) }}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- Footer - UNCHANGED -->
-                <footer class="footer">
-                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
-                            © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
-                        </span>
-                        <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
-                            Préférences d'Alerte - {{ preference_alertes|length }} préférence{{ preference_alertes|length > 1 ? 's' : '' }}
-                            {% set actives = preference_alertes|filter(p => p.isActive)|length %}
-                            | {{ actives }} active{{ actives > 1 ? 's' : '' }}
-                            {% if app.user %}
-                                | Connecté: {{ app.user.prenom|slice(0, 10) }}...
-                            {% endif %}
-                        </span>
-                    </div>
-                </footer>
-            </div>
-        </div>
-    </div>
+    
 
     <!-- Enhanced Delete Confirmation Modal -->
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -1051,25 +1142,111 @@
     
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Add animations to cards
+        // -------------------------
+        // 1️⃣ AJAX SEARCH + FILTER + SORT
+        // -------------------------
+        const titreInput = document.getElementById('searchTitre');
+        const etudiantInput = document.getElementById('searchEtudiantId');
+        const statutSelect = document.getElementById('filterStatut');
+        const isDefaultSelect = document.getElementById('filterIsDefault');
+        const sortSelect = document.getElementById('sortDateCreation');
+        const applyBtn = document.getElementById('applyFilters');
+        const clearBtn = document.getElementById('clearFilters');
+        const tbody = document.getElementById('alerteTableBody');
+
+        let ajaxTimer;
+        const debounce = (fn, delay = 350) => (...args) => {
+          clearTimeout(ajaxTimer);
+          ajaxTimer = setTimeout(() => fn(...args), delay);
+        };
+
+        async function reloadAlertesAjax() {
+          if (!tbody) return;
+          const url = tbody.dataset.url;
+          if (!url) return;
+
+          tbody.innerHTML = `
+            <tr><td colspan="7" class="text-center py-5">
+              <div class="d-flex flex-column align-items-center">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                  <span class="visually-hidden">Chargement...</span>
+                </div>
+                <p class="text-muted">Chargement des préférences...</p>
+              </div>
+            </td></tr>
+          `;
+
+          const params = new URLSearchParams({
+            titre: titreInput ? titreInput.value.trim() : '',
+            etudiantId: etudiantInput ? etudiantInput.value : '',
+            statut: statutSelect ? statutSelect.value : '',
+            isDefault: isDefaultSelect ? isDefaultSelect.value : '',
+            sort: sortSelect ? sortSelect.value : 'desc'
+          });
+
+          try {
+            const res = await fetch(url + '?' + params.toString(), {
+              headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const html = await res.text();
+            tbody.innerHTML = html;
+
+            // Add animations to new rows
+            const ajaxRows = tbody.querySelectorAll('tr');
+            ajaxRows.forEach((row, index) => {
+              row.style.animationDelay = `${index * 0.05}s`;
+              row.style.animation = 'fadeIn 0.5s ease forwards';
+              row.style.opacity = '0';
+              setTimeout(() => { row.style.opacity = '1'; }, index * 50);
+            });
+
+          } catch (e) {
+            tbody.innerHTML = `
+              <tr><td colspan="7" class="text-center py-5">
+                <div class="d-flex flex-column align-items-center">
+                  <i class="mdi mdi-alert-circle-outline mb-3" style="font-size: 48px; color: #dc3545;"></i>
+                  <p class="text-danger">Erreur lors du chargement des données</p>
+                </div>
+              </td></tr>
+            `;
+          }
+        }
+
+        const reloadDebounced = debounce(reloadAlertesAjax, 350);
+        if (titreInput) titreInput.addEventListener('input', reloadDebounced);
+        if (etudiantInput) etudiantInput.addEventListener('input', reloadDebounced);
+        if (statutSelect) statutSelect.addEventListener('change', reloadAlertesAjax);
+        if (isDefaultSelect) isDefaultSelect.addEventListener('change', reloadAlertesAjax);
+        if (sortSelect) sortSelect.addEventListener('change', reloadAlertesAjax);
+        if (applyBtn) applyBtn.addEventListener('click', reloadAlertesAjax);
+        if (clearBtn) {
+          clearBtn.addEventListener('click', function() {
+            if (titreInput) titreInput.value = '';
+            if (etudiantInput) etudiantInput.value = '';
+            if (statutSelect) statutSelect.value = '';
+            if (isDefaultSelect) isDefaultSelect.value = '';
+            if (sortSelect) sortSelect.value = 'desc';
+            reloadAlertesAjax();
+          });
+        }
+
+        // -------------------------
+        // 2️⃣ UI ANIMATIONS / EFFECTS
+        // -------------------------
+        // Card animations
         const cards = document.querySelectorAll('.stat-card');
-        cards.forEach((card, index) => {
-          card.style.animationDelay = `${index * 0.1}s`;
-        });
-        
-        // Add animations to table rows
+        cards.forEach((card, index) => card.style.animationDelay = `${index * 0.1}s`);
+
+        // Table row animations for static rows
         const tableRows = document.querySelectorAll('.table tbody tr');
         tableRows.forEach((row, index) => {
           row.style.animationDelay = `${index * 0.05}s`;
           row.style.animation = 'fadeIn 0.5s ease forwards';
           row.style.opacity = '0';
-          
-          setTimeout(() => {
-            row.style.opacity = '1';
-          }, index * 50);
+          setTimeout(() => row.style.opacity = '1', index * 50);
         });
-        
-        // Add ripple effect to buttons
+
+        // Button ripple effect
         const buttons = document.querySelectorAll('.btn-gradient-primary, .btn-icon');
         buttons.forEach(button => {
           button.addEventListener('click', function(e) {
@@ -1078,7 +1255,7 @@
             const size = Math.max(rect.width, rect.height);
             const x = e.clientX - rect.left - size / 2;
             const y = e.clientY - rect.top - size / 2;
-            
+
             ripple.style.cssText = `
               position: absolute;
               border-radius: 50%;
@@ -1091,52 +1268,34 @@
               left: ${x}px;
               pointer-events: none;
             `;
-            
+
             this.style.position = 'relative';
             this.style.overflow = 'hidden';
             this.appendChild(ripple);
-            
+
             setTimeout(() => ripple.remove(), 600);
           });
         });
-        
-        // Add CSS for animations
+
+        // Inject CSS for animations
         const style = document.createElement('style');
         style.textContent = `
-          @keyframes ripple {
-            to {
-              transform: scale(4);
-              opacity: 0;
-            }
-          }
-          
-          .table tbody tr {
-            opacity: 0;
-          }
-          
-          .table tbody tr:nth-child(odd) {
-            background-color: rgba(0,0,0,0.01);
-          }
+          @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+          .table tbody tr { opacity: 0; }
+          .table tbody tr:nth-child(odd) { background-color: rgba(0,0,0,0.01); }
+          @keyframes fadeIn { to { opacity: 1; } }
         `;
         document.head.appendChild(style);
-        
-        // Auto-hide alerts after 5 seconds
+
+        // Auto-hide alerts
         setTimeout(() => {
           const alerts = document.querySelectorAll('.alert.alert-dismissible');
-          alerts.forEach(alert => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-          });
+          alerts.forEach(alert => new bootstrap.Alert(alert).close());
         }, 5000);
-        
-        // Table row hover effect
-        tableRows.forEach(row => {
-          row.addEventListener('mouseenter', function() {
-            this.style.transition = 'all 0.25s ease';
-          });
-        });
+
       });
     </script>
+
   </body>
 </html>
 {% endblock %}

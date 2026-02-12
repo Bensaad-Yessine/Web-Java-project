@@ -28,13 +28,16 @@ class Salle
     // Number: 1..40 (1er étage 1..10, 2ème 11..20, 3ème 21..30, 4ème 31..40)
     #[ORM\Column]
     #[Assert\NotNull(message: "Le numéro est obligatoire.")]
-    #[Assert\Positive(message: "Le numéro doit être positif.")]
+    #[Assert\Regex(
+        pattern: "/^\d+$/",
+        message: "Veuillez n'utiliser que des chiffres pour le numéro de salle."
+    )]
     #[Assert\Range(
         min: 1,
-        max: 40,
+        max: 999,
         notInRangeMessage: "Le numéro doit être entre {{ min }} et {{ max }}."
     )]
-    private ?int $number = null;
+    private $number = null;
 
     // Name dérivé: block + number (ex: J38)
     #[ORM\Column(length: 10)]
@@ -46,8 +49,31 @@ class Salle
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $capacite = null;
+    #[ORM\Column]
+    #[Assert\NotNull(message: "Le statut de disponibilité est obligatoire.")]
+    private ?bool $disponibilite = true;
+
+    #[ORM\Column]
+    #[Assert\NotNull(message: "L'étage est obligatoire.")]
+    #[Assert\Range(
+        min: 1,
+        max: 4,
+        notInRangeMessage: "L'étage doit être entre {{ min }} et {{ max }}."
+    )]
+    private ?int $etage = null;
+
+    #[ORM\Column]
+    #[Assert\NotNull(message: "La capacité est obligatoire.")]
+    #[Assert\Regex(
+        pattern: "/^\d+$/",
+        message: "Veuillez n'utiliser que des chiffres pour la capacité."
+    )]
+    #[Assert\Range(
+        min: 1,
+        max: 30,
+        notInRangeMessage: "La capacité doit être entre {{ min }} et {{ max }}."
+    )]
+    private $capacite = null;
 
     public function getId(): ?int
     {
@@ -77,7 +103,7 @@ class Salle
         return $this->number;
     }
 
-    public function setNumber(?int $number): static
+    public function setNumber($number): static
     {
         $this->number = $number;
         $this->updateName();
@@ -136,20 +162,43 @@ class Salle
         return $this;
     }
     public function __toString(): string
-{
-    return $this->nom ?? 'Salle';
-}
+    {
+        return $this->name ?? 'Salle';
+    }
 
     public function getCapacite(): ?int
     {
         return $this->capacite;
     }
 
-    public function setCapacite(?int $capacite): static
+    public function setCapacite($capacite): static
     {
         $this->capacite = $capacite;
 
         return $this;
     }
 
+    public function isDisponibilite(): ?bool
+    {
+        return $this->disponibilite;
+    }
+
+    public function setDisponibilite(bool $disponibilite): static
+    {
+        $this->disponibilite = $disponibilite;
+
+        return $this;
+    }
+
+    public function getEtage(): ?int
+    {
+        return $this->etage;
+    }
+
+    public function setEtage(int $etage): static
+    {
+        $this->etage = $etage;
+
+        return $this;
+    }
 }

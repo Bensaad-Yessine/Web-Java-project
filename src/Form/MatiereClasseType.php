@@ -13,18 +13,21 @@ class MatiereClasseType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-       $builder
-    ->add('coefficient')
-    ->add('chargehoraire')
-    ->add('scorecomplexite')
-    ->add('
-    ', EntityType::class, [ // matches the entity property name exactly
-        'class' => Classe::class,
-        'choice_label' => 'nom', // or 'id'
-        'multiple' => true,       // must be true for ManyToMany
-        'expanded' => false,      // false = multi-select, true = checkboxes
-        'required' => true,
-    ]);
+        $builder
+            ->add('nom')
+            ->add('description')
+            ->add('coefficient')
+            ->add('chargehoraire')
+            ->add('scorecomplexite')
+            ->add('progression')
+            ->add('classes', EntityType::class, [
+                'class' => Classe::class,
+                'choice_label' => 'nom',
+                'multiple' => true,
+                'expanded' => false,
+                'required' => false,
+                'attr' => ['class' => 'form-control']
+            ]);
 
     }
 

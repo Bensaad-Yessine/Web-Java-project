@@ -697,443 +697,388 @@
                     </div>
                 </div>
                 
-                <!-- Filter Controls -->
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title mb-3">
-                                    <i class="mdi mdi-filter me-2"></i>Filtres
-                                </h5>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <h6>Jour de la semaine:</h6>
-                                        <div class="day-filter">
-                                            <button class="btn btn-outline-primary filter-btn" data-filter="all">Tous</button>
-                                            <button class="btn btn-outline-primary filter-btn" data-filter="Lundi">Lundi</button>
-                                            <button class="btn btn-outline-primary filter-btn" data-filter="Mardi">Mardi</button>
-                                            <button class="btn btn-outline-primary filter-btn" data-filter="Mercredi">Mercredi</button>
-                                            <button class="btn btn-outline-primary filter-btn" data-filter="Jeudi">Jeudi</button>
-                                            <button class="btn btn-outline-primary filter-btn" data-filter="Vendredi">Vendredi</button>
-                                            <button class="btn btn-outline-primary filter-btn" data-filter="Samedi">Samedi</button>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h6>Type de séance:</h6>
-                                        <div class="type-filter">
-                                            <button class="btn btn-outline-info filter-type-btn" data-type="all">Tous</button>
-                                            <button class="btn btn-outline-info filter-type-btn" data-type="Cours">Cours</button>
-                                            <button class="btn btn-outline-info filter-type-btn" data-type="TD">TD</button>
-                                            <button class="btn btn-outline-info filter-type-btn" data-type="TP">TP</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+            <!-- Filters Panel -->
+            <div class="row">
+              <div class="col-12 grid-margin stretch-card">
+                <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border: none; border-radius: 12px;">
+                  <div class="card-body">
+                    <h4 class="card-title mb-4 text-primary"><i class="mdi mdi-filter-variant me-2"></i>Filtrer et Rechercher</h4>
+                    <div class="row g-3">
+                      <!-- Search -->
+                      <div class="col-md-3">
+                        <label class="fw-bold mb-1">Recherche</label>
+                        <div class="search-box">
+                          <i class="mdi mdi-magnify search-icon"></i>
+                          <input type="text" id="filterSearchInput" class="form-control form-control-lg border-primary" 
+                                 placeholder="Matière, Salle..." value="{{ search }}">
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Seances Table -->
-                <div class="row">
-                    <div class="col-12 grid-margin">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h4 class="card-title">📅 Liste des Séances</h4>
-                                    <div class="d-flex">
-                                        <div class="search-box me-3">
-                                            <input type="text" class="form-control" placeholder="Rechercher..." id="tableSearchInput">
-                                        </div>
-                                        <a href="{{ path('app_seance_new') }}" class="btn btn-gradient-primary btn-icon-text">
-                                            <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
-                                            Nouvelle Séance
-                                        </a>
-                                    </div>
-                                </div>
+                      </div>
+                      
+                      <!-- Filters -->
+                      <div class="col-md-2">
+                        <label class="fw-bold mb-1">Jour</label>
+                        <select id="jourFilter" class="form-select form-select-lg border-primary">
+                          <option value="">Tous les jours</option>
+                          <option value="Lundi" {% if jour == 'Lundi' %}selected{% endif %}>Lundi</option>
+                          <option value="Mardi" {% if jour == 'Mardi' %}selected{% endif %}>Mardi</option>
+                          <option value="Mercredi" {% if jour == 'Mercredi' %}selected{% endif %}>Mercredi</option>
+                          <option value="Jeudi" {% if jour == 'Jeudi' %}selected{% endif %}>Jeudi</option>
+                          <option value="Vendredi" {% if jour == 'Vendredi' %}selected{% endif %}>Vendredi</option>
+                          <option value="Samedi" {% if jour == 'Samedi' %}selected{% endif %}>Samedi</option>
+                        </select>
+                      </div>
 
-                                {% if seances is empty %}
-                                    <div class="empty-state">
-                                        <i class="mdi mdi-calendar-clock-outline"></i>
-                                        <h4 class="text-muted">Aucune séance trouvée</h4>
-                                        <p class="text-muted mb-4">Commencez par créer une nouvelle séance</p>
-                                        <a href="{{ path('app_seance_new') }}" class="btn btn-gradient-primary">
-                                            <i class="mdi mdi-plus-circle"></i>
-                                            Créer la première séance
-                                        </a>
-                                    </div>
-                                {% else %}
-                                    <div class="table-responsive">
-                                        <table class="table table-hover" id="seancesTable">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>Matière</th>
-                                                    <th>Jour</th>
-                                                    <th>Type</th>
-                                                    <th>Mode</th>
-                                                    <th>Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for seance in seances %}
-                                                    <tr data-day="{{ seance.jour }}" data-type="{{ seance.typeSeance }}">
-                                                        <td>
-                                                            <span class="text-muted">#{{ seance.id }}</span>
-                                                        </td>
-                                                        <td>
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="seance-avatar me-3">
-                                                                    <i class="mdi mdi-book-open-page-variant"></i>
-                                                                </div>
-                                                                <div>
-                                                                    <h6 class="mb-0 font-weight-bold">{{ seance.matiere }}</h6>
-                                                                    <small class="text-muted">ID: {{ seance.id }}</small>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <span class="jour-badge">
-                                                                <i class="mdi mdi-calendar me-1"></i>
-                                                                {{ seance.jour }}
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            {% if seance.typeSeance == 'Cours' %}
-                                                                <span class="seance-badge badge-cours">
-                                                                    <i class="mdi mdi-book-open me-1"></i>
-                                                                    {{ seance.typeSeance }}
-                                                                </span>
-                                                            {% elseif seance.typeSeance == 'TD' %}
-                                                                <span class="seance-badge badge-td">
-                                                                    <i class="mdi mdi-account-group me-1"></i>
-                                                                    {{ seance.typeSeance }}
-                                                                </span>
-                                                            {% elseif seance.typeSeance == 'TP' %}
-                                                                <span class="seance-badge badge-tp">
-                                                                    <i class="mdi mdi-flask me-1"></i>
-                                                                    {{ seance.typeSeance }}
-                                                                </span>
-                                                            {% else %}
-                                                                <span class="seance-badge">
-                                                                    {{ seance.typeSeance }}
-                                                                </span>
-                                                            {% endif %}
-                                                        </td>
-                                                        <td>
-                                                            {% if seance.mode == 'Présentiel' %}
-                                                                <span class="seance-badge badge-presentiel">
-                                                                    <i class="mdi mdi-account-group me-1"></i>
-                                                                    {{ seance.mode }}
-                                                                </span>
-                                                            {% elseif seance.mode == 'Distanciel' %}
-                                                                <span class="seance-badge badge-distanciel">
-                                                                    <i class="mdi mdi-monitor me-1"></i>
-                                                                    {{ seance.mode }}
-                                                                </span>
-                                                            {% elseif seance.mode == 'Hybride' %}
-                                                                <span class="seance-badge badge-hybride">
-                                                                    <i class="mdi mdi-mixed-reality me-1"></i>
-                                                                    {{ seance.mode }}
-                                                                </span>
-                                                            {% else %}
-                                                                <span class="seance-badge">
-                                                                    {{ seance.mode }}
-                                                                </span>
-                                                            {% endif %}
-                                                        </td>
-                                                        <td>
-                                                            <div class="action-buttons">
-                                                                <a href="{{ path('app_seance_show', {'id': seance.id}) }}" 
-                                                                   class="btn btn-info btn-sm btn-icon"
-                                                                   title="Voir détails">
-                                                                   <i class="mdi mdi-eye"></i>
-                                                                </a>
-                                                                <a href="{{ path('app_seance_edit', {'id': seance.id}) }}" 
-                                                                   class="btn btn-warning btn-sm btn-icon"
-                                                                   title="Modifier">
-                                                                   <i class="mdi mdi-pencil"></i>
-                                                                </a>
-                                                                <button type="button" 
-                                                                        class="btn btn-danger btn-sm btn-icon delete-btn"
-                                                                        data-seance-id="{{ seance.id }}"
-                                                                        data-seance-name="Séance #{{ seance.id }}"
-                                                                        data-csrf-token="{{ csrf_token('delete' ~ seance.id) }}"
-                                                                        title="Supprimer">
-                                                                   <i class="mdi mdi-delete"></i>
-                                                                </button>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    
-                                    <!-- Quick Stats -->
-                                    <div class="row mt-4">
-                                        <div class="col-md-12">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">📊 Vue d'ensemble des séances</h5>
-                                                    <div class="row">
-                                                        <div class="col-md-3">
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="me-3">
-                                                                    <span class="badge bg-info">
-                                                                        Moy. Type
-                                                                    </span>
-                                                                </div>
-                                                                <div>
-                                                                    {% set typeDistribution = {
-                                                                        'Cours': seances|filter(s => s.typeSeance == 'Cours')|length,
-                                                                        'TD': seances|filter(s => s.typeSeance == 'TD')|length,
-                                                                        'TP': seances|filter(s => s.typeSeance == 'TP')|length
-                                                                    } %}
-                                                                    {% set mostCommonType = typeDistribution|sort|reverse|first %}
-                                                                    <h6 class="mb-0">{{ mostCommonType }}</h6>
-                                                                    <small class="text-muted">{{ typeDistribution|keys|first }}</small>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="me-3">
-                                                                    <span class="badge bg-warning">
-                                                                        Mode fréquent
-                                                                    </span>
-                                                                </div>
-                                                                <div>
-                                                                    {% set modeDistribution = {
-                                                                        'Présentiel': seances|filter(s => s.mode == 'Présentiel')|length,
-                                                                        'Distanciel': seances|filter(s => s.mode == 'Distanciel')|length,
-                                                                        'Hybride': seances|filter(s => s.mode == 'Hybride')|length
-                                                                    } %}
-                                                                    {% set mostCommonMode = modeDistribution|sort|reverse|first %}
-                                                                    <h6 class="mb-0">{{ mostCommonMode }}</h6>
-                                                                    <small class="text-muted">{{ modeDistribution|keys|first }}</small>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="me-3">
-                                                                    <span class="badge bg-success">
-                                                                        Jour chargé
-                                                                    </span>
-                                                                </div>
-                                                                <div>
-                                                                    {% set dayDistribution = {
-                                                                        'Lundi': seances|filter(s => s.jour == 'Lundi')|length,
-                                                                        'Mardi': seances|filter(s => s.jour == 'Mardi')|length,
-                                                                        'Mercredi': seances|filter(s => s.jour == 'Mercredi')|length,
-                                                                        'Jeudi': seances|filter(s => s.jour == 'Jeudi')|length,
-                                                                        'Vendredi': seances|filter(s => s.jour == 'Vendredi')|length,
-                                                                        'Samedi': seances|filter(s => s.jour == 'Samedi')|length
-                                                                    } %}
-                                                                    {% set mostCommonDay = dayDistribution|sort|reverse|first %}
-                                                                    <h6 class="mb-0">{{ mostCommonDay }}</h6>
-                                                                    <small class="text-muted">{{ dayDistribution|keys|first }}</small>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="me-3">
-                                                                    <span class="badge bg-secondary">
-                                                                        Diversité
-                                                                    </span>
-                                                                </div>
-                                                                <div>
-                                                                    {# Compute unique matieres without the unique filter #}
-                                                                    {% set matiereIds = [] %}
-                                                                    {% for s in seances %}
-                                                                        {% if s.matiere and s.matiere.id is defined and s.matiere.id not in matiereIds %}
-                                                                            {% set matiereIds = matiereIds|merge([s.matiere.id]) %}
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                    {% set uniqueMatieres = matiereIds|length %}
-                                                                    <h6 class="mb-0">{{ uniqueMatieres }}</h6>
-                                                                    <small class="text-muted">Matières différentes</small>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                      <div class="col-md-2">
+                         <label class="fw-bold mb-1">Type</label>
+                          <select id="typeFilter" class="form-select form-select-lg border-primary">
+                             <option value="">Tous les types</option>
+                             <option value="Cours" {% if type == 'Cours' %}selected{% endif %}>Cours</option>
+                             <option value="TD" {% if type == 'TD' %}selected{% endif %}>TD</option>
+                             <option value="TP" {% if type == 'TP' %}selected{% endif %}>TP</option>
+                          </select>
+                      </div>
+
+                      <div class="col-md-2">
+                         <label class="fw-bold mb-1">Mode</label>
+                          <select id="modeFilter" class="form-select form-select-lg border-primary">
+                             <option value="">Tous les modes</option>
+                             <option value="Présentiel" {% if mode == 'Présentiel' %}selected{% endif %}>Présentiel</option>
+                             <option value="Distanciel" {% if mode == 'Distanciel' %}selected{% endif %}>Distanciel</option>
+                             <option value="Hybride" {% if mode == 'Hybride' %}selected{% endif %}>Hybride</option>
+                          </select>
+                      </div>
+
+                      <!-- Sort -->
+                      <div class="col-md-3">
+                        <label class="fw-bold mb-1">Trier par</label>
+                        <select id="sortSelect" class="form-select form-select-lg border-primary">
+                          <option value="id-asc" {% if sort == 'id' and direction == 'asc' %}selected{% endif %}>ID (Croissant)</option>
+                          <option value="id-desc" {% if sort == 'id' and direction == 'desc' %}selected{% endif %}>ID (Décroissant)</option>
+                          <option value="jour-asc" {% if sort == 'jour' and direction == 'asc' %}selected{% endif %}>Jour (Lun-Sam)</option>
+                          <option value="heureDebut-asc" {% if sort == 'heureDebut' and direction == 'asc' %}selected{% endif %}>Heure Début (Tôt-Tard)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="mt-4 d-flex justify-content-end">
+                      <button id="resetFilters" class="btn btn-inverse-dark btn-icon-text me-2">
+                        <i class="mdi mdi-refresh btn-icon-prepend"></i> Réinitialiser
+                      </button>
+                      <button id="applyFilters" class="btn btn-gradient-primary btn-icon-text">
+                        <i class="mdi mdi-filter btn-icon-prepend"></i> FILTRER
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Seances Table -->
+            <div class="row">
+                <div class="col-12 grid-margin">
+                    <div class="card table-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="card-title mb-0">📅 Liste des Séances</h4>
+                                <span id="resultCount" class="badge badge-outline-primary badge-pill">
+                                    <i class="mdi mdi-format-list-bulleted me-1"></i>Résultats: {{ seances|length }}
+                                </span>
+                                <a href="{{ path('app_seance_new') }}" class="btn btn-gradient-primary btn-icon-text">
+                                    <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
+                                    Nouvelle Séance
+                                </a>
+                            </div>
+
+                            <div class="table-responsive" id="seancesTableContainer">
+                                <table class="table table-hover" id="seancesTable">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Matière</th>
+                                            <th>Classe</th>
+                                            <th>Salle</th>
+                                            <th>Jour</th>
+                                            <th>Horaires</th>
+                                            <th>Mode</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for seance in seances %}
+                                            <tr>
+                                                <td><span class="text-muted">#{{ seance.id }}</span></td>
+                                                <td><span class="fw-bold">{{ seance.matiere ? seance.matiere.nom : 'N/A' }}</span></td>
+                                                <td><label class="badge badge-info">{{ seance.classe ? seance.classe.nom : 'N/A' }}</label></td>
+                                                <td>{{ seance.salle ? seance.salle.name : 'N/A' }}</td>
+                                                <td><span class="jour-badge">{{ seance.jour }}</span></td>
+                                                <td>
+                                                    {{ seance.heureDebut ? seance.heureDebut|date('H:i') : '' }} - 
+                                                    {{ seance.heureFin ? seance.heureFin|date('H:i') : '' }}
+                                                </td>
+                                                <td>
+                                                    {% if seance.mode|lower in ['présentiel', 'presentiel'] %}
+                                                        <label class="badge badge-presentiel">PRESENTIEL</label>
+                                                    {% elseif seance.mode|lower in ['distanciel', 'en_ligne'] %}
+                                                        <label class="badge badge-distanciel">EN_LIGNE</label>
+                                                    {% elseif seance.mode|lower == 'hybride' %}
+                                                        <label class="badge badge-info">HYBRIDE</label>
+                                                    {% else %}
+                                                        <label class="badge badge-secondary">{{ seance.mode }}</label>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <a href="{{ path('app_seance_show', {'id': seance.id}) }}" class="btn btn-sm btn-info" title="Voir"><i class="mdi mdi-eye"></i></a>
+                                                        <a href="{{ path('app_seance_edit', {'id': seance.id}) }}" class="btn btn-sm btn-warning" title="Modifier"><i class="mdi mdi-pencil"></i></a>
+                                                        <button type="button" class="btn btn-sm btn-danger delete-btn" 
+                                                                data-id="{{ seance.id }}" 
+                                                                data-title="Seance #{{ seance.id }}"
+                                                                data-token="{{ csrf_token('delete' ~ seance.id) }}"
+                                                                title="Supprimer">
+                                                            <i class="mdi mdi-delete"></i>
+                                                        </button>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="8" class="text-center py-5">
+                                                    <div class="empty-state">
+                                                        <i class="mdi mdi-calendar-blank-outline empty-state-icon"></i>
+                                                        <h4>Aucune séance trouvée</h4>
+                                                        <p class="text-muted">Commencez par créer une nouvelle séance</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
-            
-                <!-- Footer -->
-                <footer class="footer">
-                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                        <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
-                            © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
-                        </span>
-                        <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
-                            Gestion des Séances - {{ seances|length }} séance{{ seances|length > 1 ? 's' : '' }}
-                            {% if app.user %}
-                                | Connecté: {{ app.user.prenom|slice(0, 10) }}...
-                            {% endif %}
-                        </span>
-                    </div>
-                </footer>
             </div>
+
+            <!-- Footer -->
+            <footer class="footer">
+              <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                  © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
+                </span>
+                <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                  Gestion des Séances
+                </span>
+              </div>
+            </footer>
         </div>
     </div>
 </div>
+</div>
 
-<!-- Delete Confirmation Modal -->
+<!-- Delete Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title" id="deleteModalLabel">
-                    <i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Êtes-vous sûr de vouloir supprimer <strong id="seanceNameDisplay"></strong> ?</p>
-                <p class="text-danger mb-0">
-                    <i class="mdi mdi-alert me-1"></i>
-                    <small>Cette action est irréversible. La séance sera définitivement supprimée.</small>
-                </p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="mdi mdi-close me-1"></i>Annuler
-                </button>
-                <form id="deleteForm" method="POST" style="display: inline;">
-                    <input type="hidden" name="_token" id="csrfToken" value="">
-                    <input type="hidden" name="_method" value="DELETE">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="mdi mdi-delete me-1"></i>Supprimer
-                    </button>
-                </form>
-            </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteModalLabel">
+          <i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <div class="mb-3">
+          <i class="mdi mdi-trash-can-outline" style="font-size: 60px; color: #dc3545;"></i>
         </div>
+        <h5 class="mb-3">Êtes-vous sûr de vouloir supprimer <span id="itemTitle" class="fw-bold"></span> ?</h5>
+        <p class="text-muted">Cette action est irréversible.</p>
+        <form id="deleteForm" method="post" action="">
+            <input type="hidden" name="_token" id="deleteToken">
+        </form>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-danger px-4" onclick="document.getElementById('deleteForm').submit();">Supprimer</button>
+      </div>
     </div>
+  </div>
 </div>
-{% endblock %}
 
-{% block javascripts %}
-{{ parent() }}
 <!-- Scripts -->
 <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
 <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
 <script src="{{ asset('assets/js/misc.js') }}"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality for navbar
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('keyup', function() {
-                const filter = this.value.toLowerCase();
-                const rows = document.querySelectorAll('#seancesTable tbody tr');
-                
-                rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(filter) ? '' : 'none';
-                });
-            });
-        }
-        
-        // Search functionality for table
-        const tableSearchInput = document.getElementById('tableSearchInput');
-        if (tableSearchInput) {
-            tableSearchInput.addEventListener('keyup', function() {
-                const filter = this.value.toLowerCase();
-                const rows = document.querySelectorAll('#seancesTable tbody tr');
-                
-                rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(filter) ? '' : 'none';
-                });
-            });
-        }
-        
-        // Day filter functionality
-        const dayFilterButtons = document.querySelectorAll('.filter-btn');
-        dayFilterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const day = this.getAttribute('data-filter');
-                const rows = document.querySelectorAll('#seancesTable tbody tr');
-                
-                rows.forEach(row => {
-                    const rowDay = row.getAttribute('data-day');
-                    if (day === 'all' || rowDay === day) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-                
-                // Update active button
-                dayFilterButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-        
-        // Type filter functionality
-        const typeFilterButtons = document.querySelectorAll('.filter-type-btn');
-        typeFilterButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const type = this.getAttribute('data-type');
-                const rows = document.querySelectorAll('#seancesTable tbody tr');
-                
-                rows.forEach(row => {
-                    const rowType = row.getAttribute('data-type');
-                    if (type === 'all' || rowType === type) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-                
-                // Update active button
-                typeFilterButtons.forEach(btn => btn.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-        
-        // Delete confirmation modal
-        const deleteButtons = document.querySelectorAll('.delete-btn');
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const seanceId = this.getAttribute('data-seance-id');
-                const seanceName = this.getAttribute('data-seance-name');
-                const csrfToken = this.getAttribute('data-csrf-token');
-                
-                // Update modal content
-                document.getElementById('seanceNameDisplay').textContent = seanceName;
-                
-                // Set the form action - Build the URL dynamically
-                const deleteForm = document.getElementById('deleteForm');
-                deleteForm.action = '/seance/' + seanceId;
-                
-                // Set CSRF token
-                document.getElementById('csrfToken').value = csrfToken;
-                
-                // Show modal using Bootstrap 5
-                const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-                modal.show();
-            });
-        });
-        
-        // Auto-hide alerts after 5 seconds
-        setTimeout(() => {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                const bsAlert = new bootstrap.Alert(alert);
-                bsAlert.close();
-            });
-        }, 5000);
-    });
+  document.addEventListener('DOMContentLoaded', function() {
+      // Delete Modal Handling
+      const deleteModalEl = document.getElementById('deleteModal');
+      let deleteModal = null;
+      if (deleteModalEl) {
+         deleteModal = new bootstrap.Modal(deleteModalEl);
+      }
+      const itemTitleSpan = document.getElementById('itemTitle');
+      const deleteForm = document.getElementById('deleteForm');
+      const deleteTokenInput = document.getElementById('deleteToken');
+
+      function attachDeleteHandlers() {
+          document.querySelectorAll('.delete-btn').forEach(button => {
+              button.addEventListener('click', function() {
+                  const id = this.getAttribute('data-id');
+                  const title = this.getAttribute('data-title');
+                  const token = this.getAttribute('data-token');
+
+                  if(itemTitleSpan) itemTitleSpan.textContent = title;
+                  if(deleteForm) deleteForm.action = '/seance/' + id; // Standard delete route
+                  if(deleteTokenInput) deleteTokenInput.value = token;
+                  
+                  if(deleteModal) deleteModal.show();
+              });
+          });
+      }
+      
+      attachDeleteHandlers();
+
+      // AJAX Filtering
+      const searchInput = document.getElementById('filterSearchInput');
+      const jourFilter = document.getElementById('jourFilter');
+      const typeFilter = document.getElementById('typeFilter');
+      const modeFilter = document.getElementById('modeFilter');
+      const sortSelect = document.getElementById('sortSelect');
+      const applyFiltersBtn = document.getElementById('applyFilters');
+      const resetFiltersBtn = document.getElementById('resetFilters');
+      const resultCountSpan = document.getElementById('resultCount');
+      const tableBody = document.querySelector('#seancesTable tbody');
+      const tableContainer = document.getElementById('seancesTableContainer');
+
+      function fetchResults() {
+          const params = new URLSearchParams();
+          if (searchInput && searchInput.value) params.append('search', searchInput.value);
+          if (jourFilter && jourFilter.value) params.append('jour', jourFilter.value);
+          if (typeFilter && typeFilter.value) params.append('type', typeFilter.value);
+          if (modeFilter && modeFilter.value) params.append('mode', modeFilter.value);
+          
+          if (sortSelect && sortSelect.value) {
+              const [sort, direction] = sortSelect.value.split('-');
+              params.append('sort', sort);
+              params.append('direction', direction);
+          }
+
+          // UI Loading State
+          if (applyFiltersBtn) {
+              applyFiltersBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin me-2"></i>Chargement...';
+              applyFiltersBtn.disabled = true;
+          }
+          if (tableContainer) tableContainer.style.opacity = '0.5';
+
+          fetch('{{ path("app_seance_ajax_filter") }}?' + params.toString())
+              .then(response => response.json())
+              .then(data => {
+                  updateTable(data.data);
+                  if (resultCountSpan) resultCountSpan.innerHTML = '<i class="mdi mdi-format-list-bulleted me-1"></i>Résultats: ' + data.count;
+              })
+              .catch(err => console.error('Error fetching data:', err))
+              .finally(() => {
+                  if (applyFiltersBtn) {
+                      applyFiltersBtn.innerHTML = '<i class="mdi mdi-filter btn-icon-prepend"></i> FILTRER';
+                      applyFiltersBtn.disabled = false;
+                  }
+                  if (tableContainer) tableContainer.style.opacity = '1';
+              });
+      }
+
+      function updateTable(seances) {
+          if (!tableBody) return;
+
+          if (seances.length === 0) {
+              tableBody.innerHTML = `
+                  <tr>
+                    <td colspan="8" class="text-center py-5">
+                      <div class="empty-state">
+                        <i class="mdi mdi-calendar-blank-outline empty-state-icon"></i>
+                        <h4>Aucune séance trouvée</h4>
+                        <p class="text-muted">Essayez de modifier vos filtres.</p>
+                      </div>
+                    </td>
+                  </tr>
+              `;
+              return;
+          }
+
+          tableBody.innerHTML = seances.map(seance => {
+              let modeBadge = '';
+              const mode = seance.mode ? seance.mode.toLowerCase() : '';
+              
+              if (mode === 'présentiel' || mode === 'presentiel') {
+                  modeBadge = '<label class="badge badge-presentiel">PRESENTIEL</label>';
+              } else if (mode === 'distanciel' || mode === 'en_ligne') {
+                  modeBadge = '<label class="badge badge-distanciel">EN_LIGNE</label>';
+              } else if (mode === 'hybride') {
+                  modeBadge = '<label class="badge badge-info">HYBRIDE</label>';
+              } else {
+                  modeBadge = `<label class="badge badge-secondary">${seance.mode || 'N/A'}</label>`;
+              }
+
+              return `
+                  <tr>
+                      <td><span class="text-muted">#${seance.id}</span></td>
+                      <td><span class="fw-bold">${seance.matiere}</span></td>
+                      <td><label class="badge badge-info">${seance.classe}</label></td>
+                      <td>${seance.salle}</td>
+                      <td><span class="jour-badge">${seance.jour}</span></td>
+                      <td>
+                          ${seance.heureDebut} - ${seance.heureFin}
+                      </td>
+                      <td>${modeBadge}</td>
+                      <td>
+                          <div class="action-buttons">
+                              <a href="${seance.url}" class="btn btn-sm btn-info" title="Voir"><i class="mdi mdi-eye"></i></a>
+                              <a href="${seance.editUrl}" class="btn btn-sm btn-warning" title="Modifier"><i class="mdi mdi-pencil"></i></a>
+                              <button type="button" class="btn btn-sm btn-danger delete-btn" 
+                                      data-id="${seance.id}" 
+                                      data-title="Seance #${seance.id}"
+                                      data-token="${seance.csrfToken}"
+                                      title="Supprimer">
+                                  <i class="mdi mdi-delete"></i>
+                              </button>
+                          </div>
+                      </td>
+                  </tr>
+              `;
+          }).join('');
+          
+          attachDeleteHandlers();
+      }
+
+      // Event Listeners
+      if (applyFiltersBtn) applyFiltersBtn.addEventListener('click', fetchResults);
+      
+      if (searchInput) {
+          searchInput.addEventListener('input', function() {
+               clearTimeout(this.searchTimeout);
+               this.searchTimeout = setTimeout(fetchResults, 400);
+          });
+      }
+
+      const navSearchInput = document.getElementById('searchInput'); // Navbar search
+      if (navSearchInput) {
+          navSearchInput.addEventListener('input', function() {
+               if (searchInput) {
+                   searchInput.value = this.value; // Sync the filter box
+                   clearTimeout(searchInput.searchTimeout);
+                   searchInput.searchTimeout = setTimeout(fetchResults, 400);
+               }
+          });
+      }
+      
+      [jourFilter, typeFilter, modeFilter, sortSelect].forEach(el => {
+          if (el) el.addEventListener('change', fetchResults);
+      });
+
+      if (resetFiltersBtn) {
+          resetFiltersBtn.addEventListener('click', () => {
+              window.location.href = "{{ path('app_seance_index') }}";
+          });
+      }
+  });
 </script>
 {% endblock %}
