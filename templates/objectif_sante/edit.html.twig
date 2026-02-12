@@ -980,7 +980,13 @@
                                 <h4>Formulaire de modification</h4>
                             </div>
                             <div class="card-body p-4">
-                                {{ form_start(form, {'attr': {'class': 'form-sample', 'id': 'objectif-edit-form'}}) }}
+                               {{ form_start(form, {
+  'attr': {
+    'class': 'form-sample',
+    'id': 'objectif-edit-form',
+    'novalidate': 'novalidate'
+  }
+}) }}
 
                                 
                                 <!-- Section 1: Informations Générales -->
@@ -996,16 +1002,19 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="form-group">
-                                            <label class="form-label-custom">
-                                                <i class="mdi mdi-format-title label-icon"></i>
-                                                Titre de l'objectif
-                                                <span class="required-star">*</span>
-                                            </label>
-                                            {{ form_widget(form.titre, {'attr': {
-                                                'class': 'form-control',
-                                                'placeholder': 'Ex: Perdre 5 kg en 3 mois'
-                                            }}) }}
-                                        </div>
+    <label class="form-label-custom">
+        <i class="mdi mdi-format-title label-icon"></i>
+        Titre de l'objectif
+        <span class="required-star">*</span>
+    </label>
+
+    {{ form_widget(form.titre, {'attr': {
+        'class': 'form-control',
+        'placeholder': 'Ex: Perdre 5 kg en 3 mois'
+    }}) }}
+
+    {{ form_errors(form.titre) }}
+</div>
                                     </div>
                                 </div>
 
@@ -1020,6 +1029,7 @@
                                             {{ form_widget(form.type, {'attr': {
                                                 'class': 'form-select'
                                             }}) }}
+                                            {{ form_errors(form.type) }}
                                         </div>
                                     </div>
                                     
@@ -1029,10 +1039,62 @@
                                                 <i class="mdi mdi-target label-icon"></i>
                                                 Valeur Cible
                                             </label>
-                                            {{ form_widget(form.valeurCible, {'attr': {
+                                            <div style="display:flex;align-items:center;gap:8px;">
+                                              {{ form_widget(form.valeurCible, {'attr': {
                                                 'class': 'form-control',
-                                                'placeholder': 'Ex: 75 kg, 10000 pas, 8 heures...'
-                                            }}) }}
+                                                'placeholder': 'Ex: 8 (heures), 30 (minutes), 3 (repas)...'}}) }}
+                                                {{ form_errors(form.valeurCible) }}
+                                              <span id="valeurCible-unit" style="font-weight:bold;min-width:80px;">{% if form.vars.data.type is defined %}
+                                                {% if form.vars.data.type == 'SOMMEIL' %}heures{% elseif form.vars.data.type == 'SPORT' %}minutes{% elseif form.vars.data.type == 'ALIMENTATION' %}repas{% else %}{% endif %}
+                                              {% endif %}</span>
+                                            </div>
+                                            <div class="form-help-text">
+                                              <i class="mdi mdi-information-outline"></i>
+                                              <span id="valeurCible-help">
+                                                {% if form.vars.data.type is defined and form.vars.data.type == 'SOMMEIL' %}
+                                                  Heures de sommeil par nuit (1-16 heures)
+                                                {% elseif form.vars.data.type is defined and form.vars.data.type == 'SPORT' %}
+                                                  Minutes d'activité par jour (0-300 minutes)
+                                                {% elseif form.vars.data.type is defined and form.vars.data.type == 'ALIMENTATION' %}
+                                                  Nombre de repas sains par jour (1-6 repas)
+                                                {% else %}
+                                                  La valeur que vous souhaitez atteindre
+                                                {% endif %}
+                                              </span>
+                                            </div>
+                                            <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                              const typeSelect = document.getElementById('objectif_sante_type');
+                                              const targetHelp = document.getElementById('valeurCible-help');
+                                              const targetInput = document.getElementById('objectif_sante_valeurCible');
+                                              const unitSpan = document.getElementById('valeurCible-unit');
+                                              if (!typeSelect || !targetHelp || !targetInput) return;
+                                              const map = {
+                                                'SOMMEIL': {text: 'Heures de sommeil par nuit', min: 1, max: 16, unit: 'heures'},
+                                                'SPORT': {text: 'Minutes d\'activité par jour', min: 0, max: 300, unit: 'minutes'},
+                                                'ALIMENTATION': {text: 'Nombre de repas sains par jour', min: 1, max: 6, unit: 'repas'},
+                                                '': {text: 'La valeur que vous souhaitez atteindre'}
+                                              };
+                                              function updateHelp() {
+                                                const t = typeSelect.value || '';
+                                                const entry = map[t] || map[''];
+                                                if (entry.min !== undefined && entry.max !== undefined && entry.unit) {
+                                                  targetHelp.textContent = `${entry.text} (${entry.min}–${entry.max} ${entry.unit})`;
+                                                  targetInput.setAttribute('min', entry.min);
+                                                  targetInput.setAttribute('max', entry.max);
+                                                  if (unitSpan) unitSpan.textContent = entry.unit;
+                                                } else {
+                                                  targetHelp.textContent = entry.text || map[''].text;
+                                                  targetInput.removeAttribute('min');
+                                                  targetInput.removeAttribute('max');
+                                                  if (unitSpan) unitSpan.textContent = '';
+                                                }
+                                              }
+                                              typeSelect.addEventListener('change', updateHelp);
+                                              targetInput.addEventListener('focus', updateHelp);
+                                              if (document.readyState === 'complete') updateHelp(); else window.addEventListener('load', updateHelp);
+                                            });
+                                            </script>
                                         </div>
                                     </div>
                                 </div>
@@ -1058,6 +1120,7 @@
                                             {{ form_widget(form.dateDebut, {'attr': {
                                                 'class': 'form-control'
                                             }}) }}
+                                            {{ form_errors(form.dateDebut) }}
                                         </div>
                                     </div>
                                     
@@ -1071,6 +1134,7 @@
                                             {{ form_widget(form.dateFin, {'attr': {
                                                 'class': 'form-control'
                                             }}) }}
+                                            {{ form_errors(form.dateFin) }}
                                         </div>
                                     </div>
                                 </div>
@@ -1096,6 +1160,7 @@
                                             {{ form_widget(form.statut, {'attr': {
                                                 'class': 'form-select'
                                             }}) }}
+                                            {{ form_errors(form.statut) }}
                                         </div>
                                     </div>
 
@@ -1109,22 +1174,22 @@
                                             {{ form_widget(form.priorite, {'attr': {
                                                 'class': 'form-select'
                                             }}) }}
+                                            {{ form_errors(form.priorite) }}
                                         </div>
                                     </div>
                                     
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label class="form-label-custom">
-                                                <i class="mdi mdi-progress-check label-icon"></i>
-                                                Progression
+                                                <i class="mdi mdi-chart-line label-icon"></i>
+                                                Score Moyen
                                             </label>
-                                            <div class="input-group">
-                                                {{ form_widget(form.progression, {'attr': {
-                                                    'class': 'form-control',
-                                                    'min': '0',
-                                                    'max': '100'
-                                                }}) }}
-                                                <span class="input-group-text">%</span>
+                                            <div class="form-control" style="background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 8px 12px; border-radius: 4px;">
+                                                <strong>{{ objectif_sante.scoreMoyen }}/100</strong>
+                                            </div>
+                                            <div class="form-help-text">
+                                                <i class="mdi mdi-information-outline"></i>
+                                                <span>Score calculé à partir des suivi</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1150,6 +1215,7 @@
                                             {{ form_widget(form.user, {'attr': {
                                                 'class': 'form-select'
                                             }}) }}
+                                            {{ form_errors(form.user) }}
                                         </div>
                                     </div>
                                 </div>
@@ -1210,7 +1276,7 @@
                                 </li>
                                 <li>
                                     <i class="mdi mdi-chevron-right"></i>
-                                    <span><strong>Progression</strong> : Mettez à jour régulièrement votre avancement</span>
+                                    <span><strong>Score Moyen</strong> : Suivi automatiquement par vos entrées</span>
                                 </li>
                                 <li>
                                     <i class="mdi mdi-chevron-right"></i>

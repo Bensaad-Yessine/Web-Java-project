@@ -791,15 +791,19 @@
                         </div>
 
                         <div class="switch-group">
-                            <div>
-                                <div class="switch-label">{{ form_label(form.isActive) }}</div>
-                                <div class="switch-description">Active ou désactive cette préférence</div>
-                            </div>
-                            <label class="switch">
-                                {{ form_widget(form.isActive) }}
-                                <span class="slider"></span>
-                            </label>
-                        </div>
+    <div>
+        <div class="switch-label">{{ form_label(form.isActive) }}</div>
+        <div class="switch-description">Active ou désactive cette préférence</div>
+    </div>
+    <label class="switch">
+        {{ form_widget(form.isActive) }}
+        <span class="slider"></span>
+    </label>
+    <div class="error-message">
+        {{ form_errors(form.isActive) }}
+    </div>
+</div>
+
                     </div>
 
                     <!-- Notification Channels Section -->
@@ -855,12 +859,9 @@
                             {{ form_label(form.delaiRappelMin) }}
                             {{ form_widget(form.delaiRappelMin, {'attr': {
                                 'class': 'form-control',
-                                'placeholder': 'Ex: 15',
-                                'min': '1',
-                                'max': '1440'
+                                'placeholder': 'Ex: 15'
                             }}) }}
                             {{ form_errors(form.delaiRappelMin) }}
-                            <span class="hint">Temps en minutes avant l'envoi d'un rappel</span>
                         </div>
 
                         <div class="form-group">
@@ -876,7 +877,6 @@
                             </div>
                             {{ form_errors(form.heureSilenceDebut) }}
                             {{ form_errors(form.heureSilenceFin) }}
-                            <span class="hint">Période pendant laquelle aucune notification ne sera envoyée</span>
                         </div>
                     </div>
                 </div>
@@ -916,109 +916,6 @@
         </main>
     </div>
 
-    <script>
-        // Form validation enhancements
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('.preference-form');
-            const inputs = form.querySelectorAll('input, select');
-            
-            inputs.forEach(input => {
-                // Add focus styles
-                input.addEventListener('focus', function() {
-                    this.parentElement.classList.add('focused');
-                });
-                
-                input.addEventListener('blur', function() {
-                    this.parentElement.classList.remove('focused');
-                    validateField(this);
-                });
-                
-                // Add input event for real-time validation
-                input.addEventListener('input', function() {
-                    validateField(this);
-                });
-            });
-            
-            function validateField(field) {
-                const formGroup = field.closest('.form-group');
-                if (!formGroup) return;
-                
-                // Clear previous states
-                formGroup.classList.remove('error', 'success');
-                
-                if (field.value.trim() === '' && field.hasAttribute('required')) {
-                    formGroup.classList.add('error');
-                } else if (field.value.trim() !== '') {
-                    formGroup.classList.add('success');
-                }
-                
-                // Special validation for time fields
-                if (field.type === 'time') {
-                    validateTimeRange();
-                }
-            }
-            
-            // Validate that end time is after start time
-            function validateTimeRange() {
-                const startTime = document.querySelector('#{{ form.heureSilenceDebut.vars.id }}');
-                const endTime = document.querySelector('#{{ form.heureSilenceFin.vars.id }}');
-                
-                if (!startTime || !endTime || !startTime.value || !endTime.value) return;
-                
-                if (endTime.value <= startTime.value) {
-                    endTime.closest('.form-group').classList.add('error');
-                    showError(endTime, "L'heure de fin doit être après l'heure de début");
-                } else {
-                    endTime.closest('.form-group').classList.remove('error');
-                    endTime.closest('.form-group').classList.add('success');
-                }
-            }
-            
-            function showError(field, message) {
-                // Remove existing error message
-                const existingError = field.parentElement.querySelector('.error-message');
-                if (existingError) existingError.remove();
-                
-                // Create and insert error message
-                const error = document.createElement('div');
-                error.className = 'error-message';
-                error.textContent = message;
-                field.parentElement.appendChild(error);
-            }
-            
-            // Handle form submission
-            form.addEventListener('submit', function(e) {
-                let isValid = true;
-                
-                // Validate all required fields
-                inputs.forEach(input => {
-                    if (input.hasAttribute('required') && !input.value.trim()) {
-                        input.closest('.form-group').classList.add('error');
-                        isValid = false;
-                    }
-                });
-                
-                // Validate time range
-                validateTimeRange();
-                const hasTimeError = document.querySelector('.form-group.error');
-                if (hasTimeError) isValid = false;
-                
-                if (!isValid) {
-                    e.preventDefault();
-                    alert('Veuillez corriger les erreurs dans le formulaire.');
-                    return false;
-                }
-                
-                return true;
-            });
-            
-            // Initialize validation on page load
-            inputs.forEach(input => {
-                if (input.value.trim()) {
-                    validateField(input);
-                }
-            });
-        });
-    </script>
+
 </body>
 </html>

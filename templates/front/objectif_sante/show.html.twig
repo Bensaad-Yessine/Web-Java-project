@@ -1019,11 +1019,11 @@
                     <!-- Progress Bar -->
                     <div class="progress-container">
                         <div class="progress-label">
-                            <span>Progression</span>
-                            <span>{{ objectif_sante.progression }}%</span>
+                            <span>Score Moyen</span>
+                            <span>{{ objectif_sante.scoreMoyen }}/100</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: {{ objectif_sante.progression }}%"></div>
+                            <div class="progress-fill" style="width: {{ objectif_sante.scoreMoyen }}%"></div>
                         </div>
                     </div>
 
@@ -1034,8 +1034,6 @@
                             <div class="detail-value">
                                 {% if objectif_sante.type == 'SOMMEIL' %}
                                     <span class="badge badge-info">Sommeil</span>
-                                {% elseif objectif_sante.type == 'STRESS' %}
-                                    <span class="badge badge-danger">Stress</span>
                                 {% elseif objectif_sante.type == 'SPORT' %}
                                     <span class="badge badge-success">Sport</span>
                                 {% elseif objectif_sante.type == 'ALIMENTATION' %}
@@ -1048,7 +1046,7 @@
 
                         <div class="detail-item">
                             <div class="detail-label">Valeur Cible</div>
-                            <p class="detail-value">{{ objectif_sante.valeurCible }}</p>
+                            <p class="detail-value">{{ objectif_sante.getValeurCibleAvecUnite() }}</p>
                         </div>
 
                         <div class="detail-item">
@@ -1182,22 +1180,6 @@
                                 </p>
                             </div>
                             
-                        {% elseif objectif_sante.type == 'STRESS' %}
-                            <div style="padding: 20px; background: linear-gradient(135deg, var(--purple-50) 0%, var(--purple-100) 100%); border-radius: var(--radius);">
-                                <div style="font-size: 32px; margin-bottom: 12px;">🧘‍♀️</div>
-                                <h3 style="margin: 0 0 8px; font-size: 16px; color: var(--purple-800);">Méditation</h3>
-                                <p style="margin: 0; font-size: 14px; color: var(--purple-600);">
-                                    10 minutes de méditation par jour peuvent réduire significativement le stress.
-                                </p>
-                            </div>
-                            
-                            <div style="padding: 20px; background: linear-gradient(135deg, var(--purple-50) 0%, var(--purple-100) 100%); border-radius: var(--radius);">
-                                <div style="font-size: 32px; margin-bottom: 12px;">📝</div>
-                                <h3 style="margin: 0 0 8px; font-size: 16px; color: var(--purple-800);">Journal</h3>
-                                <p style="margin: 0; font-size: 14px; color: var(--purple-600);">
-                                    Tenir un journal des situations stressantes aide à mieux les gérer.
-                                </p>
-                            </div>
                         {% endif %}
                     </div>
                 </div>

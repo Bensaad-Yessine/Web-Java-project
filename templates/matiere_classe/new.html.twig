@@ -606,6 +606,46 @@
                   <div class="card-body">
                     {{ form_start(form, {'attr': {'class': 'form-sample', 'novalidate': 'novalidate'}}) }}
                     
+                    <!-- Nom et Description -->
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="required-field">Nom de la matière</label>
+                          {{ form_widget(form.nom, {'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'Ex: Algorithmique'
+                          }}) }}
+                          <small class="form-text text-muted">
+                            <i class="mdi mdi-format-title me-1"></i>
+                            Le nom officiel de la matière
+                          </small>
+                          {% if form_errors(form.nom) %}
+                            <div class="text-danger mt-1">
+                              {{ form_errors(form.nom) }}
+                            </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label class="required-field">Description</label>
+                          {{ form_widget(form.description, {'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'Ex: Introduction aux algorithmes...'
+                          }}) }}
+                          <small class="form-text text-muted">
+                            <i class="mdi mdi-text me-1"></i>
+                            Brève description du contenu
+                          </small>
+                          {% if form_errors(form.description) %}
+                            <div class="text-danger mt-1">
+                              {{ form_errors(form.description) }}
+                            </div>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+
                     <!-- Coefficient -->
                     <div class="row mb-3">
                       <div class="col-md-6">
@@ -695,7 +735,7 @@
                           </div>
                           <div class="card-body">
                             <div class="form-group">
-                              {{ form_widget(form.Classe, {'attr': {
+                              {{ form_widget(form.classes, {'attr': {
                                 'class': 'form-control',
                                 'size': '5'
                               }}) }}
@@ -857,15 +897,44 @@
               complexityInput.classList.remove('is-invalid');
             }
             
+            const nomInput = document.getElementById('{{ form.nom.vars.id }}');
+            const descriptionInput = document.getElementById('{{ form.description.vars.id }}');
+            
+            // Validate Nom
+            if (!nomInput.value || nomInput.value.length < 3) {
+              isValid = false;
+              nomInput.classList.add('is-invalid');
+            } else {
+              nomInput.classList.remove('is-invalid');
+            }
+
+            // Validate Description
+            if (!descriptionInput.value || descriptionInput.value.length < 10) {
+              isValid = false;
+              descriptionInput.classList.add('is-invalid');
+            } else {
+              descriptionInput.classList.remove('is-invalid');
+            }
+
             if (!isValid) {
               e.preventDefault();
               
+              // Clear previous alerts
+              const existingAlert = document.querySelector('.card-body .alert-danger');
+              if (existingAlert) existingAlert.remove();
+
               // Show error message
               const errorDiv = document.createElement('div');
               errorDiv.className = 'alert alert-danger alert-dismissible fade show mt-3';
               errorDiv.innerHTML = `
                 <i class="mdi mdi-alert-circle me-2"></i>
                 Veuillez corriger les erreurs dans le formulaire.
+                <ul class="mb-0 mt-2">
+                   ${(!nomInput.value || nomInput.value.length < 3) ? '<li>Le nom doit contenir au moins 3 caractères.</li>' : ''}
+                   ${(!descriptionInput.value || descriptionInput.value.length < 10) ? '<li>La description doit contenir au moins 10 caractères.</li>' : ''}
+                   ${(!coefficientInput.value || parseFloat(coefficientInput.value) <= 0) ? '<li>Le coefficient doit être valide.</li>' : ''}
+                   ${(!chargeInput.value || parseInt(chargeInput.value) <= 0) ? '<li>La charge horaire doit être valide.</li>' : ''}
+                </ul>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               `;
               
@@ -887,7 +956,7 @@
         }
         
         // Add visual feedback for selected classes
-        const classesSelect = document.getElementById('{{ form.Classe.vars.id }}');
+        const classesSelect = document.getElementById('{{ form.classes.vars.id }}');
         if (classesSelect) {
           classesSelect.addEventListener('change', function() {
             const selectedCount = Array.from(this.selectedOptions).length;

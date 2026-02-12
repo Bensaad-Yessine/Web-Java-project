@@ -9,16 +9,87 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/salle')]
 final class SalleController extends AbstractController
 {
     #[Route(name: 'app_salle_index', methods: ['GET'])]
-    public function index(SalleRepository $salleRepository): Response
+    public function index(Request $request, SalleRepository $salleRepository): Response
     {
+        $search = $request->query->get('search', '');
+        $block = $request->query->get('block', '');
+        $minCapacite = $request->query->get('minCapacite', '');
+        $maxCapacite = $request->query->get('maxCapacite', '');
+        $sort = $request->query->get('sort', 'id');
+        $direction = $request->query->get('direction', 'asc');
+
+        $salles = $salleRepository->findWithFilters(
+            $search ?: null,
+            $block ?: null,
+            $minCapacite ? (int)$minCapacite : null,
+            $maxCapacite ? (int)$maxCapacite : null,
+            $sort,
+            $direction
+        );
+
+        $blocks = $salleRepository->getDistinctBlocks();
+
         return $this->render('salle/index.html.twig', [
-            'salles' => $salleRepository->findAll(),
+            'salles' => $salles,
+            'blocks' => $blocks,
+            'search' => $search,
+            'blockFilter' => $block, // Rename to avoid conflict if any
+            'minCapacite' => $minCapacite,
+            'maxCapacite' => $maxCapacite,
+            'sort' => $sort,
+            'direction' => $direction,
+        ]);
+    }
+
+    #[Route('/ajax/filter', name: 'app_salle_ajax_filter', methods: ['GET'])]
+    public function ajaxFilter(
+        Request $request,
+        SalleRepository $salleRepository,
+        \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface $csrfTokenManager
+    ): JsonResponse {
+        $search = $request->query->get('search', '');
+        $block = $request->query->get('block', '');
+        $minCapacite = $request->query->get('minCapacite', '');
+        $maxCapacite = $request->query->get('maxCapacite', '');
+        $sort = $request->query->get('sort', 'id');
+        $direction = $request->query->get('direction', 'asc');
+
+        $salles = $salleRepository->findWithFilters(
+            $search ?: null,
+            $block ?: null,
+            $minCapacite ? (int)$minCapacite : null,
+            $maxCapacite ? (int)$maxCapacite : null,
+            $sort,
+            $direction
+        );
+
+        $data = [];
+        foreach ($salles as $salle) {
+            $data[] = [
+                'id' => $salle->getId(),
+                'name' => $salle->getName(),
+                'block' => $salle->getBlock(),
+                'number' => $salle->getNumber(),
+                'capacite' => $salle->getCapacite(),
+                'etage' => $salle->getEtage(),
+                'disponibilite' => $salle->isDisponibilite(),
+                'url' => $this->generateUrl('app_salle_show', ['id' => $salle->getId()]),
+                'editUrl' => $this->generateUrl('app_salle_edit', ['id' => $salle->getId()]),
+                'csrfToken' => $csrfTokenManager->getToken('delete' . $salle->getId())->getValue(),
+            ];
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'count' => count($salles),
+            'data' => $data,
         ]);
     }
 

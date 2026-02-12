@@ -1008,8 +1008,8 @@
                                 </span>
                             </div>
                             <div class="info-row">
-                                <span class="info-label">Progression:</span>
-                                <span class="info-value">{{ objectif_sante.progression }}%</span>
+                                <span class="info-label">Score Moyen:</span>
+                                <span class="info-value">{{ objectif_sante.scoreMoyen }}/100</span>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -1112,14 +1112,62 @@
                                                 <i class="mdi mdi-target label-icon"></i>
                                                 Valeur Cible
                                             </label>
-                                            {{ form_widget(form.valeurCible, {'attr': {
+                                            <div style="display:flex;align-items:center;gap:8px;">
+                                              {{ form_widget(form.valeurCible, {'attr': {
                                                 'class': 'form-control',
-                                                'placeholder': 'Ex: 75 kg, 10000 pas, 8 heures...'
-                                            }}) }}
-                                            <div class="form-help-text">
-                                                <i class="mdi mdi-information-outline"></i>
-                                                <span>La valeur que vous souhaitez atteindre</span>
+                                                'placeholder': 'Ex: 8 (heures), 30 (minutes), 3 (repas)...'
+                                              }}) }}
+                                              <span id="valeurCible-unit" style="font-weight:bold;min-width:80px;">{% if form.vars.data.type is defined %}
+                                                {% if form.vars.data.type == 'SOMMEIL' %}heures{% elseif form.vars.data.type == 'SPORT' %}minutes{% elseif form.vars.data.type == 'ALIMENTATION' %}repas{% else %}{% endif %}
+                                              {% endif %}</span>
                                             </div>
+                                            <div class="form-help-text">
+                                              <i class="mdi mdi-information-outline"></i>
+                                              <span id="valeurCible-help">
+                                                {% if form.vars.data.type is defined and form.vars.data.type == 'SOMMEIL' %}
+                                                  Heures de sommeil par nuit (1-16 heures)
+                                                {% elseif form.vars.data.type is defined and form.vars.data.type == 'SPORT' %}
+                                                  Minutes d'activité par jour (0-300 minutes)
+                                                {% elseif form.vars.data.type is defined and form.vars.data.type == 'ALIMENTATION' %}
+                                                  Nombre de repas sains par jour (1-6 repas)
+                                                {% else %}
+                                                  La valeur que vous souhaitez atteindre
+                                                {% endif %}
+                                              </span>
+                                            </div>
+                                            <script>
+                                            document.addEventListener('DOMContentLoaded', function() {
+                                              const typeSelect = document.getElementById('objectif_sante_type');
+                                              const targetHelp = document.getElementById('valeurCible-help');
+                                              const targetInput = document.getElementById('objectif_sante_valeurCible');
+                                              const unitSpan = document.getElementById('valeurCible-unit');
+                                              if (!typeSelect || !targetHelp || !targetInput) return;
+                                              const map = {
+                                                'SOMMEIL': {text: 'Heures de sommeil par nuit', min: 1, max: 16, unit: 'heures'},
+                                                'SPORT': {text: 'Minutes d\'activité par jour', min: 0, max: 300, unit: 'minutes'},
+                                                'ALIMENTATION': {text: 'Nombre de repas sains par jour', min: 1, max: 6, unit: 'repas'},
+                                                '': {text: 'La valeur que vous souhaitez atteindre'}
+                                              };
+                                              function updateHelp() {
+                                                const t = typeSelect.value || '';
+                                                const entry = map[t] || map[''];
+                                                if (entry.min !== undefined && entry.max !== undefined && entry.unit) {
+                                                  targetHelp.textContent = `${entry.text} (${entry.min}–${entry.max} ${entry.unit})`;
+                                                  targetInput.setAttribute('min', entry.min);
+                                                  targetInput.setAttribute('max', entry.max);
+                                                  if (unitSpan) unitSpan.textContent = entry.unit;
+                                                } else {
+                                                  targetHelp.textContent = entry.text || map[''].text;
+                                                  targetInput.removeAttribute('min');
+                                                  targetInput.removeAttribute('max');
+                                                  if (unitSpan) unitSpan.textContent = '';
+                                                }
+                                              }
+                                              typeSelect.addEventListener('change', updateHelp);
+                                              targetInput.addEventListener('focus', updateHelp);
+                                              if (document.readyState === 'complete') updateHelp(); else window.addEventListener('load', updateHelp);
+                                            });
+                                            </script>
                                             <div id="target-preview"></div>
                                             {{ form_errors(form.valeurCible) }}
                                         </div>
@@ -1222,29 +1270,6 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <label class="form-label-custom">
-                                                <i class="mdi mdi-progress-check label-icon"></i>
-                                                Progression
-                                            </label>
-                                            <div class="input-group">
-                                                {{ form_widget(form.progression, {'attr': {
-                                                    'class': 'form-control',
-                                                    'min': '0',
-                                                    'max': '100',
-                                                    'value': '0'
-                                                }}) }}
-                                                <span class="input-group-text">%</span>
-                                            </div>
-                                            <div class="form-help-text">
-                                                <i class="mdi mdi-information-outline"></i>
-                                                <span>Pourcentage d'accomplissement (0-100%)</span>
-                                            </div>
-                                            <div id="progress-preview" class="mt-3"></div>
-                                            {{ form_errors(form.progression) }}
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <!-- Section 4: Attribution -->
@@ -1330,7 +1355,7 @@
                                 </li>
                                 <li>
                                     <i class="mdi mdi-chevron-right"></i>
-                                    <span><strong>Progression</strong> : Mettez à jour régulièrement votre avancement</span>
+                                    <span><strong>Score Moyen</strong> : Suivi automatiquement par vos entrées</span>
                                 </li>
                                 <li>
                                     <i class="mdi mdi-chevron-right"></i>
@@ -1390,62 +1415,6 @@
 <!-- JavaScript for form enhancements -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Progress bar enhancement
-        const progressionInput = document.querySelector('#objectif_sante_progression');
-        const progressPreview = document.getElementById('progress-preview');
-        
-        if (progressionInput && progressPreview) {
-            function updateProgress() {
-                const value = progressionInput.value || 0;
-                let emoji = '🎯';
-                let message = '';
-                
-                if (value == 0) {
-                    emoji = '🏁';
-                    message = 'Prêt à commencer!';
-                } else if (value < 25) {
-                    emoji = '🌱';
-                    message = 'Premier pas accompli!';
-                } else if (value < 50) {
-                    emoji = '🚀';
-                    message = 'Bon départ, continuez!';
-                } else if (value < 75) {
-                    emoji = '💪';
-                    message = 'Plus de la moitié, excellent!';
-                } else if (value < 100) {
-                    emoji = '🔥';
-                    message = 'Presque là, ne lâchez rien!';
-                } else {
-                    emoji = '🏆';
-                    message = 'Objectif atteint, félicitations!';
-                }
-                
-                progressPreview.innerHTML = `
-                    <div class="progress-custom">
-                        <div class="progress-bar" role="progressbar" 
-                             style="width: ${value}%" 
-                             aria-valuenow="${value}" 
-                             aria-valuemin="0" 
-                             aria-valuemax="100">
-                        </div>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mt-2">
-                        <small class="text-muted">
-                            <i class="mdi mdi-information-outline"></i>
-                            Progression: ${value}%
-                        </small>
-                        <small>
-                            <span style="font-size: 1.2rem;">${emoji}</span>
-                            <strong>${message}</strong>
-                        </small>
-                    </div>
-                `;
-            }
-            
-            progressionInput.addEventListener('input', updateProgress);
-            updateProgress(); // Initial update
-        }
-
         // Target value preview
         const valeurCibleInput = document.querySelector('#objectif_sante_valeurCible');
         const targetPreview = document.getElementById('target-preview');
@@ -1552,15 +1521,6 @@
                     }
                 }
 
-                // Validate progression
-                if (progressionInput) {
-                    const prog = parseInt(progressionInput.value);
-                    if (prog < 0 || prog > 100) {
-                        alert('⚠️ La progression doit être entre 0 et 100% !');
-                        progressionInput.classList.add('is-invalid');
-                        isValid = false;
-                    }
-                }
                 
                 if (!isValid) {
                     e.preventDefault();

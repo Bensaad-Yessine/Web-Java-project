@@ -66,6 +66,7 @@ final class FrontSuiviBienEtreController extends AbstractController
             $em->persist($suivi);
             $em->flush();
 
+            // ✅ Le score moyen est calculé automatiquement via getScoreMoyen()
             $this->addFlash('success', 'Suivi ajouté ✅');
 
             return $this->redirectToRoute('front_objectif_suivis', [
@@ -78,4 +79,27 @@ final class FrontSuiviBienEtreController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+    #[Route('/{id}/suivis/filter', name: 'front_suivi_filter', methods: ['GET'])]
+public function filter(
+    Request $request,
+    ObjectifSante $objectif,
+    SuiviBienEtreRepository $repo
+): Response {
+    $this->denyAccessUnlessGranted('ROLE_USER');
+
+    if ($objectif->getUser() !== $this->getUser()) {
+        throw $this->createAccessDeniedException();
+    }
+
+    $q       = $request->query->get('q');
+    $humeur  = $request->query->get('humeur');
+    $sortDir = $request->query->get('sortDir', 'DESC'); // ASC/DESC
+
+    // ✅ استعمل QueryBuilder فـ repo (غادي نعطيك تحت)
+    $suivis = $repo->searchFrontSuivis($objectif->getId(), $q, $humeur, $sortDir);
+
+    return $this->render('front/suivi_bien_etre/_rows.html.twig', [
+        'suivis' => $suivis
+    ]);
+}
 }

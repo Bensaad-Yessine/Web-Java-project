@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class SeanceType extends AbstractType
@@ -54,22 +55,22 @@ class SeanceType extends AbstractType
                 'placeholder' => 'Sélectionnez un jour',
                 'required' => true,
             ])
-            ->add('typeSeance', ChoiceType::class, [
+            ->add('typeSeance', TextType::class, [
                 'label' => 'Type de séance',
-                'choices' => [
-                    'MATINALE' => 'MATINALE',
-                    'APRES_MIDI' => 'APRES_MIDI',
+                'attr' => [
+                    'placeholder' => 'Ex: Cours, TD, TP',
+                    'class' => 'form-control'
                 ],
-                'placeholder' => 'Sélectionnez un type',
+                'help' => "Type d'enseignement (Cours, TD, TP)",
                 'required' => true,
             ])
-            ->add('mode', ChoiceType::class, [
+            ->add('mode', TextType::class, [
                 'label' => 'Mode',
-                'choices' => [
-                    'PRESENTIEL' => 'PRESENTIEL',
-                    'EN_LIGNE' => 'EN_LIGNE',
+                'attr' => [
+                    'placeholder' => 'Ex: Présentiel, Distanciel, Hybride',
+                    'class' => 'form-control'
                 ],
-                'placeholder' => 'Sélectionnez un mode',
+                'help' => "Mode d'enseignement (Présentiel, Distanciel, Hybride)",
                 'required' => true,
             ])
             ->add('classe', EntityType::class, [
@@ -93,16 +94,14 @@ class SeanceType extends AbstractType
             ->add('heureDebut', DateTimeType::class, [
                 'label' => 'Heure de début',
                 'widget' => 'single_text',
-                'html5' => false,
-                'attr' => ['class' => 'datetime-picker'],
-                'required' => false,
+                'attr' => ['class' => 'form-control'],
+                'required' => true,
             ])
             ->add('heureFin', DateTimeType::class, [
                 'label' => 'Heure de fin',
                 'widget' => 'single_text',
-                'html5' => false,
-                'attr' => ['class' => 'datetime-picker'],
-                'required' => false,
+                'attr' => ['class' => 'form-control'],
+                'required' => true,
             ])
             ->add('salle', EntityType::class, [
                 'class' => Salle::class,

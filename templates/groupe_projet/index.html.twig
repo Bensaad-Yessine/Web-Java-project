@@ -401,7 +401,7 @@
             <ul class="navbar-nav w-100">
               <li class="nav-item w-100">
                 <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                  <input type="text" class="form-control" placeholder="Rechercher un groupe..." id="searchInput">
+                  <input type="text" class="form-control" placeholder="Rechercher un groupe..." id="navbarSearchInput">
                 </form>
               </li>
             </ul>
@@ -667,122 +667,162 @@
               </div>
             </div>
             
+            <!-- Filter Panel -->
+            <div class="row">
+              <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <h4 class="card-title mb-4 text-primary"><i class="mdi mdi-filter-variant me-2"></i>Filtrer et Rechercher</h4>
+                    <div class="row g-3">
+                      <!-- Search -->
+                      <div class="col-md-4">
+                        <label class="fw-bold mb-1">Recherche</label>
+                        <div class="search-box">
+                          <i class="mdi mdi-magnify search-icon"></i>
+                          <input type="text" id="searchInput" class="form-control form-control-lg border-primary" 
+                                 placeholder="Nom, description..." value="{{ search }}">
+                        </div>
+                      </div>
+                      
+                      <!-- Matiere -->
+                      <div class="col-md-3">
+                        <label class="fw-bold mb-1">Matière</label>
+                        <input type="text" id="matiereFilter" class="form-control form-control-lg border-primary" 
+                               placeholder="Ex: Web, Mobile..." value="{{ matiere }}">
+                      </div>
+
+                      <!-- Statut -->
+                      <div class="col-md-3">
+                        <label class="fw-bold mb-1">Statut</label>
+                        <select id="statutFilter" class="form-select form-select-lg border-primary">
+                          <option value="">Tous les statuts</option>
+                          <option value="Actif" {{ statut == 'Actif' ? 'selected' : '' }}>Actif</option>
+                          <option value="Terminé" {{ statut == 'Terminé' ? 'selected' : '' }}>Terminé</option>
+                          <option value="En attente" {{ statut == 'En attente' ? 'selected' : '' }}>En attente</option>
+                        </select>
+                      </div>
+
+                      <!-- Actions -->
+                      <div class="col-md-2 d-flex align-items-end">
+                        <button id="applyFiltersBtn" class="btn btn-primary btn-lg text-white me-2 w-100">
+                           <i class="mdi mdi-filter me-1"></i>Filtrer
+                        </button>
+                        <button id="resetFiltersBtn" class="btn btn-light btn-lg btn-icon" title="Réinitialiser">
+                           <i class="mdi mdi-refresh"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Groups Table -->
             <div class="row">
               <div class="col-12 grid-margin">
-                <div class="card">
+                <div class="card table-card">
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                       <h4 class="card-title">👥 Liste des Groupes Projet</h4>
-                      <div class="d-flex">
-                        <div class="search-box me-3">
-                          <input type="text" class="form-control" placeholder="Rechercher..." id="tableSearchInput">
-                        </div>
-                        <a href="{{ path('app_groupe_projet_new') }}" class="btn btn-gradient-primary btn-icon-text">
-                          <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
-                          Créer un groupe
-                        </a>
+                      <div class="d-flex align-items-center">
+                         <div class="me-3">
+                            <select id="sortSelect" class="form-select form-select-sm">
+                                <option value="id" {{ sort == 'id' ? 'selected' : '' }}>Trier par ID</option>
+                                <option value="nomProjet" {{ sort == 'nomProjet' ? 'selected' : '' }}>Trier par Nom</option>
+                                <option value="nbrMembre" {{ sort == 'nbrMembre' ? 'selected' : '' }}>Trier par Membres</option>
+                                <option value="CreatedAt" {{ sort == 'CreatedAt' ? 'selected' : '' }}>Trier par Date</option>
+                            </select>
+                         </div>
+                         <a href="{{ path('app_groupe_projet_new') }}" class="btn btn-gradient-primary btn-icon-text">
+                            <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
+                            Nouveau groupe
+                         </a>
                       </div>
                     </div>
 
-                    {% if groupe_projets is empty %}
-                      <div class="empty-state">
-                        <i class="mdi mdi-account-group-off"></i>
-                        <h4 class="text-muted">Aucun groupe trouvé</h4>
-                        <p class="text-muted mb-4">Commencez par créer un nouveau groupe</p>
-                        <a href="{{ path('app_groupe_projet_new') }}" class="btn btn-gradient-primary">
-                          <i class="mdi mdi-plus-circle"></i>
-                          Créer le premier groupe
-                        </a>
-                      </div>
-                    {% else %}
-                      <div class="table-responsive">
-                        <table class="table table-hover" id="groupsTable">
-                          <thead>
+                    <div class="table-responsive">
+                      <table class="table table-hover" id="groupesTable">
+                        <thead>
+                          <tr>
+                            <th>ID</th>
+                            <th>Groupe</th>
+                            <th>Matière</th>
+                            <th>Membres</th>
+                            <th>Description</th>
+                            <th>Créé le</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for groupe_projet in groupe_projets %}
                             <tr>
-                              <th>ID</th>
-                              <th>Groupe</th>
-                              <th>Nom du Projet</th>
-                              <th>Matière</th>
-                              <th>Membres</th>
-                              <th>Description</th>
-                              <th>Créé le</th>
-                              <th>Statut</th>
-                              <th>Actions</th>
+                              <td>{{ groupe_projet.id }}</td>
+                              <td>
+                                <div class="d-flex align-items-center">
+                                  <div class="group-avatar me-3">GP{{ groupe_projet.id }}</div>
+                                  <div>
+                                    <h6 class="mb-0 fw-bold">{{ groupe_projet.nomProjet }}</h6>
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <span class="badge badge-info">{{ groupe_projet.matiere }}</span>
+                              </td>
+                              <td>
+                                <div class="d-flex align-items-center">
+                                  <span class="badge badge-light me-2">{{ groupe_projet.nbrMembre }} membre(s)</span>
+                                </div>
+                              </td>
+                              <td class="description-cell">
+                                <small class="text-muted">{{ groupe_projet.description|slice(0, 50) }}{{ groupe_projet.description|length > 50 ? '...' : '' }}</small>
+                              </td>
+                              <td>
+                                {{ groupe_projet.CreatedAt ? groupe_projet.CreatedAt|date('d/m/Y H:i') : '—' }}
+                              </td>
+                              <td>
+                                {% if groupe_projet.statut == 'Actif' %}
+                                  <span class="badge badge-active">Actif</span>
+                                {% elseif groupe_projet.statut == 'Terminé' %}
+                                  <span class="badge badge-completed">Terminé</span>
+                                {% else %}
+                                  <span class="badge badge-inactive">{{ groupe_projet.statut }}</span>
+                                {% endif %}
+                              </td>
+                              <td>
+                                <div class="action-buttons">
+                                  <a href="{{ path('app_groupe_projet_show', { id: groupe_projet.id }) }}" 
+                                     class="btn btn-info btn-sm btn-icon" title="Voir">
+                                    <i class="mdi mdi-eye"></i>
+                                  </a>
+                                  <a href="{{ path('app_groupe_projet_edit', { id: groupe_projet.id }) }}" 
+                                     class="btn btn-warning btn-sm btn-icon" title="Modifier">
+                                    <i class="mdi mdi-pencil"></i>
+                                  </a>
+                                  <button type="button" class="btn btn-danger btn-sm btn-icon delete-btn"
+                                          data-id="{{ groupe_projet.id }}"
+                                          data-name="{{ groupe_projet.nomProjet }}"
+                                          data-token="{{ csrf_token('delete' ~ groupe_projet.id) }}"
+                                          title="Supprimer">
+                                    <i class="mdi mdi-delete"></i>
+                                  </button>
+                                </div>
+                              </td>
                             </tr>
-                          </thead>
-                          <tbody>
-                            {% for groupe_projet in groupe_projets %}
-                              <tr>
-                                <td>{{ groupe_projet.id }}</td>
-                                <td>
-                                  <div class="d-flex align-items-center">
-                                    <div class="group-avatar me-3">
-                                      GP{{ groupe_projet.id }}
+                          {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="mdi mdi-account-group-off display-1 text-muted mb-3"></i>
+                                        <h4>Aucun groupe trouvé</h4>
+                                        <p class="text-muted">Essayez de modifier vos filtres</p>
                                     </div>
-                                    <div>
-                                      <h6 class="mb-0">Groupe {{ groupe_projet.id }}</h6>
-                                      <small class="text-muted">ID: {{ groupe_projet.id }}</small>
-                                    </div>
-                                  </div>
                                 </td>
-                                <td>
-                                  <strong>{{ groupe_projet.nomProjet }}</strong>
-                                </td>
-                                <td>
-                                  <span class="badge badge-info">{{ groupe_projet.matiere }}</span>
-                                </td>
-                                <td>
-                                  <div class="d-flex align-items-center">
-                                    <span class="badge badge-light me-2">{{ groupe_projet.nbrMembre }} membre(s)</span>
-                                    {% if groupe_projet.nbrMembre > 4 %}
-                                      <span class="badge badge-warning">Grand groupe</span>
-                                    {% endif %}
-                                  </div>
-                                </td>
-                                <td class="description-cell">
-                                  {{ groupe_projet.description|slice(0, 50) }}{% if groupe_projet.description|length > 50 %}...{% endif %}
-                                </td>
-                                <td>
-                                  {{ groupe_projet.CreatedAt ? groupe_projet.CreatedAt|date('d/m/Y H:i') : '—' }}
-                                </td>
-                                <td>
-                                  {% if groupe_projet.statut == 'Actif' %}
-                                    <span class="badge badge-active">{{ groupe_projet.statut }}</span>
-                                  {% elseif groupe_projet.statut == 'Terminé' %}
-                                    <span class="badge badge-completed">{{ groupe_projet.statut }}</span>
-                                  {% else %}
-                                    <span class="badge badge-inactive">{{ groupe_projet.statut }}</span>
-                                  {% endif %}
-                                </td>
-                                <td>
-                                  <div class="action-buttons">
-                                    <a href="{{ path('app_groupe_projet_show', { id: groupe_projet.id }) }}" 
-                                       class="btn btn-info btn-sm btn-icon"
-                                       title="Voir">
-                                      <i class="mdi mdi-eye"></i>
-                                    </a>
-                                    <a href="{{ path('app_groupe_projet_edit', { id: groupe_projet.id }) }}" 
-                                       class="btn btn-warning btn-sm btn-icon"
-                                       title="Modifier">
-                                      <i class="mdi mdi-pencil"></i>
-                                    </a>
-                                    <form method="POST" action="{{ path('app_groupe_projet_delete', { id: groupe_projet.id }) }}" 
-                                          class="d-inline"
-                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce groupe ?');">
-                                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ groupe_projet.id) }}">
-                                      <button type="submit" class="btn btn-danger btn-sm btn-icon" title="Supprimer">
-                                        <i class="mdi mdi-delete"></i>
-                                      </button>
-                                    </form>
-                                  </div>
-                                </td>
-                              </tr>
-                            {% endfor %}
-                          </tbody>
-                        </table>
-                      </div>
-                    {% endif %}
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -796,17 +836,34 @@
                 </span>
                 <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
                   Gestion des Groupes Projet - {{ groupe_projets|length }} groupe{{ groupe_projets|length > 1 ? 's' : '' }}
-                  {% set totalMembers = 0 %}
-                  {% for groupe in groupe_projets %}
-                    {% set totalMembers = totalMembers + groupe.nbrMembre %}
-                  {% endfor %}
-                  ({{ totalMembers }} membre{{ totalMembers > 1 ? 's' : '' }})
-                  {% if app.user %}
-                    | Connecté: {{ app.user.prenom|slice(0, 10) }}...
-                  {% endif %}
                 </span>
               </div>
             </footer>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="deleteModalLabel">
+                <i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Êtes-vous sûr de vouloir supprimer le groupe <strong id="deleteItemName"></strong> ?</p>
+            <p class="text-danger mb-0"><small>Cette action est irréversible.</small></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <form id="deleteForm" method="POST" style="display: inline;">
+                <input type="hidden" name="_token" id="csrfToken" value="">
+                <button type="submit" class="btn btn-danger">Supprimer</button>
+            </form>
           </div>
         </div>
       </div>
@@ -819,55 +876,155 @@
     
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality for navbar
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-          searchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#groupsTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
+          const searchInput = document.getElementById('searchInput');
+          const navbarSearchInput = document.getElementById('navbarSearchInput');
+          const matiereFilter = document.getElementById('matiereFilter');
+          const statutFilter = document.getElementById('statutFilter');
+          const sortSelect = document.getElementById('sortSelect');
+          const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+          const resetFiltersBtn = document.getElementById('resetFiltersBtn');
+          const tableBody = document.querySelector('#groupesTable tbody');
+
+          // Fetch Results Function
+            async function fetchResults() {
+              const params = new URLSearchParams({
+                  search: searchInput.value,
+                  matiere: matiereFilter.value,
+                  statut: statutFilter.value,
+                  sort: sortSelect.value,
+                  direction: 'asc' // OR dynamic
+              });
+
+              // Add loading state
+              tableBody.style.opacity = '0.5';
+
+              try {
+                // Cancel previous request
+                if (window.__groupeSearchController) {
+                  try { window.__groupeSearchController.abort(); } catch (e) {}
+                }
+                window.__groupeSearchController = new AbortController();
+
+                const response = await fetch(`{{ path('app_groupe_projet_ajax_filter') }}?${params.toString()}`, { signal: window.__groupeSearchController.signal });
+                const result = await response.json();
+
+                if (result.success) {
+                  updateTable(result.data);
+                }
+              } catch (error) {
+                if (error.name === 'AbortError') return;
+                console.error('Error:', error);
+              } finally {
+                  tableBody.style.opacity = '1';
+              }
+          }
+
+          // Update Table Function
+          function updateTable(data) {
+              if (data.length === 0) {
+                  tableBody.innerHTML = `
+                      <tr>
+                          <td colspan="8" class="text-center py-5">
+                              <div class="empty-state">
+                                  <i class="mdi mdi-account-group-off display-1 text-muted mb-3"></i>
+                                  <h4>Aucun groupe trouvé</h4>
+                              </div>
+                          </td>
+                      </tr>
+                  `;
+                  return;
+              }
+
+              tableBody.innerHTML = data.map(item => {
+                  let statusBadge = '';
+                  if (item.statut === 'Actif') statusBadge = '<span class="badge badge-active">Actif</span>';
+                  else if (item.statut === 'Terminé') statusBadge = '<span class="badge badge-completed">Terminé</span>';
+                  else statusBadge = `<span class="badge badge-inactive">${item.statut}</span>`;
+
+                  return `
+                      <tr>
+                          <td>${item.id}</td>
+                          <td>
+                              <div class="d-flex align-items-center">
+                                  <div class="group-avatar me-3">GP${item.id}</div>
+                                  <div>
+                                      <h6 class="mb-0 fw-bold">${item.nomProjet}</h6>
+                                  </div>
+                              </div>
+                          </td>
+                          <td><span class="badge badge-info">${item.matiere}</span></td>
+                          <td>
+                              <span class="badge badge-light me-2">${item.nbrMembre} membre(s)</span>
+                          </td>
+                          <td class="description-cell">
+                              <small class="text-muted">${item.description ? (item.description.length > 50 ? item.description.substring(0, 50) + '...' : item.description) : ''}</small>
+                          </td>
+                          <td>${item.createdAt}</td>
+                          <td>${statusBadge}</td>
+                          <td>
+                              <div class="action-buttons">
+                                  <a href="${item.url}" class="btn btn-info btn-sm btn-icon"><i class="mdi mdi-eye"></i></a>
+                                  <a href="${item.editUrl}" class="btn btn-warning btn-sm btn-icon"><i class="mdi mdi-pencil"></i></a>
+                                  <button type="button" class="btn btn-danger btn-sm btn-icon delete-btn"
+                                          data-id="${item.id}"
+                                          data-name="${item.nomProjet}"
+                                          data-token="${item.csrfToken}">
+                                      <i class="mdi mdi-delete"></i>
+                                  </button>
+                              </div>
+                          </td>
+                      </tr>
+                  `;
+              }).join('');
+              
+              attachDeleteHandlers();
+          }
+
+          // Delete Modal Handlers
+          function attachDeleteHandlers() {
+              document.querySelectorAll('.delete-btn').forEach(btn => {
+                  btn.addEventListener('click', function() {
+                      const id = this.dataset.id;
+                      const name = this.dataset.name;
+                      const token = this.dataset.token;
+                      
+                      document.getElementById('deleteItemName').textContent = name;
+                      document.getElementById('deleteForm').action = `/groupe/projet/${id}`;
+                      document.getElementById('csrfToken').value = token;
+                      
+                      new bootstrap.Modal(document.getElementById('deleteModal')).show();
+                  });
+              });
+          }
+
+            // Initial Attach
+          attachDeleteHandlers();
+
+          // Event Listeners
+            applyFiltersBtn.addEventListener('click', fetchResults);
+            resetFiltersBtn.addEventListener('click', () => {
+              searchInput.value = '';
+              matiereFilter.value = '';
+              statutFilter.value = '';
+              fetchResults();
             });
-          });
-        }
-        
-        // Search functionality for table
-        const tableSearchInput = document.getElementById('tableSearchInput');
-        if (tableSearchInput) {
-          tableSearchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#groupsTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
-            });
-          });
-        }
-        
-        // Auto-hide alerts after 5 seconds
-        setTimeout(() => {
-          const alerts = document.querySelectorAll('.alert');
-          alerts.forEach(alert => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-          });
-        }, 5000);
-        
-        // Add confirmation for delete buttons in forms
-        const deleteForms = document.querySelectorAll('form[onsubmit]');
-        deleteForms.forEach(form => {
-          const originalOnsubmit = form.onsubmit;
-          form.onsubmit = function(e) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer ce groupe ? Cette action est irréversible.')) {
-              e.preventDefault();
-              return false;
+
+            // Debounced live search and sync with navbar
+            function scheduleFetch(value) {
+              clearTimeout(window.__groupeSearchTimeout);
+              window.__groupeSearchTimeout = setTimeout(() => { searchInput.value = value; fetchResults(); }, 350);
             }
-            return originalOnsubmit.call(this, e);
-          };
-        });
+
+            if (navbarSearchInput) {
+              navbarSearchInput.addEventListener('input', function() { scheduleFetch(this.value); });
+            }
+
+            if (searchInput) {
+              searchInput.addEventListener('input', function() { scheduleFetch(this.value); });
+              searchInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') fetchResults(); });
+            }
+
+            sortSelect.addEventListener('change', fetchResults);
       });
     </script>
   </body>

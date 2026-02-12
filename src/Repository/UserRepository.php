@@ -58,13 +58,51 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     //            ->getOneOrNullResult()
     //        ;
     //    }
-   public function findUsersByClasse(Classe $classe): array
-{
-    return $this->createQueryBuilder('u')
-        ->andWhere('u.classe = :classe')
-        ->setParameter('classe', $classe)
-        ->getQuery()
-        ->getResult();
-}
+    public function findUsersByClasse(Classe $classe): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.classe = :classe')
+            ->setParameter('classe', $classe)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findWithFilters(
+        ?string $search = null,
+        ?string $role = null,
+        ?bool $isVerified = null,
+        string $sort = 'id',
+        string $direction = 'ASC'
+    ): array {
+        $qb = $this->createQueryBuilder('u')
+            ->leftJoin('u.classe', 'c');
+
+        if ($search) {
+                $qb->andWhere('u.nom LIKE :search OR u.prenom LIKE :search OR u.email LIKE :search OR u.numTel LIKE :search OR c.nom LIKE :search')
+                    ->setParameter('search', '%' . $search . '%');
+        }
+
+        if ($role) {
+            if ($role === 'admin') {
+                $qb->andWhere('u.roles LIKE :role')
+                   ->setParameter('role', '%ROLE_ADMIN%');
+            } elseif ($role === 'user') {
+                $qb->andWhere('u.roles NOT LIKE :adminRole')
+                   ->setParameter('adminRole', '%ROLE_ADMIN%');
+            }
+        }
+
+        if ($isVerified !== null) {
+            $qb->andWhere('u.isVerified = :verified')
+               ->setParameter('verified', $isVerified);
+        }
+
+        $allowedSorts = ['id', 'nom', 'prenom', 'email', 'DateDeNaissance', 'sexe'];
+        if (in_array($sort, $allowedSorts)) {
+            $qb->orderBy('u.' . $sort, strtoupper($direction));
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 
 }

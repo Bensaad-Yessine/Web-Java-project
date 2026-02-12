@@ -41,7 +41,7 @@ private ?string $anneeuniversitaire = "2025/2026";
     /**
      * @var Collection<int, Seance>
      */
-    #[ORM\OneToMany(targetEntity: Seance::class, mappedBy: 'classe')]
+    #[ORM\OneToMany(targetEntity: Seance::class, mappedBy: 'classe', cascade: ['remove'])]
     private Collection $seances;
 
     #[ORM\Column(length: 255, nullable: true)]

@@ -52,6 +52,41 @@ class ObjectifSanteRepository extends ServiceEntityRepository
 
     return $qb->getQuery()->getResult();
 }
+public function searchFrontAjax($user, ?string $q, ?string $type, ?string $priorite, ?string $statut, string $sortBy, string $sortDir): array
+{
+    $qb = $this->createQueryBuilder('o')
+        ->andWhere('o.user = :user')
+        ->setParameter('user', $user);
+
+    if ($q) {
+        $qb->andWhere('LOWER(o.titre) LIKE LOWER(:q)')
+           ->setParameter('q', '%'.$q.'%');
+    }
+
+    if ($type) {
+        $qb->andWhere('o.type = :type')->setParameter('type', $type);
+    }
+
+    if ($priorite) {
+        $qb->andWhere('o.priorite = :priorite')->setParameter('priorite', $priorite);
+    }
+
+    if ($statut) {
+        $qb->andWhere('o.statut = :statut')->setParameter('statut', $statut);
+    }
+
+    // حماية sortBy باش ما يدوزش أي حاجة (security)
+    $allowedSort = ['dateDebut','dateFin','priorite','statut','titre'];
+    if (!in_array($sortBy, $allowedSort, true)) {
+        $sortBy = 'dateDebut';
+    }
+
+    $sortDir = strtoupper($sortDir) === 'ASC' ? 'ASC' : 'DESC';
+
+    $qb->orderBy('o.'.$sortBy, $sortDir);
+
+    return $qb->getQuery()->getResult();
+}
 
 
 }

@@ -17,10 +17,50 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PreferenceAlerteController extends AbstractController
 {
     #[Route(name: 'app_preference_alerte_index', methods: ['GET'])]
-    public function index(PreferenceAlerteRepository $preferenceAlerteRepository): Response
+    public function index(Request $request, PreferenceAlerteRepository $preferenceAlerteRepository): Response
     {
+        // Read filters from query. Accept both English and French param names used by templates.
+        $title = $request->query->get('title') ?? $request->query->get('titre');
+        $sort  = $request->query->get('sort');
+
+        // statut (FR) or isActive (EN)
+        $isActive = null;
+        if ($request->query->has('isActive')) {
+            $isActive = filter_var($request->query->get('isActive'), FILTER_VALIDATE_BOOL);
+        } elseif ($request->query->has('statut')) {
+            $val = $request->query->get('statut');
+            if ($val === '1' || $val === '0') {
+                $isActive = $val === '1';
+            }
+        }
+
+        // isDefault may come as '1'/'0' or true/false
+        $isDefault = null;
+        if ($request->query->has('isDefault')) {
+            $v = $request->query->get('isDefault');
+            if ($v === '1' || $v === '0') {
+                $isDefault = $v === '1';
+            } else {
+                $isDefault = filter_var($v, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
+            }
+        }
+
+        $preferences = $preferenceAlerteRepository->searchAdmin($title, $sort, $isActive, $isDefault);
+
+        // If this is an AJAX request, return only the rows partial (so the frontend can inject tbody HTML)
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('preference_alerte/_rows.html.twig', [
+                'preference_alertes' => $preferences,
+            ]);
+        }
+
         return $this->render('preference_alerte/index.html.twig', [
-            'preference_alertes' => $preferenceAlerteRepository->findAll(),
+            'preference_alertes' => $preferences,
+            'title' => $title,
+            'sort' => $sort,
+            'isActive' => $isActive,
+            'isDefault' => $isDefault,
+            'statut' => $isActive !== null ? ($isActive ? '1' : '0') : '',
         ]);
     }
 
@@ -111,12 +151,26 @@ final class PreferenceAlerteController extends AbstractController
     #[Route('/FrontOffice/show/{id}', name: 'front_preference_alerte_show', methods: ['GET'])]
 public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAlerteRepository, UserRepository $userRepository, int $id): Response
 {   
+    $currentUser = $this->getUser();
+
+    if (!$currentUser) {
+        $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
+        return $this->redirectToRoute('app_login');
+    }
+
+    // Ensure the route id matches the logged in user; redirect if not
+    if ($currentUser->getId() !== $id) {
+        return $this->redirectToRoute('front_preference_alerte_show', ['id' => $currentUser->getId()]);
+    }
+
     $preferenceAlerte = $preferenceAlerteRepository->findBy([
-        'etudiant' => $this->getUser()
+        'etudiant' => $currentUser
     ]);
 
     return $this->render('preference_alerte/showAlertFO.html.twig', [
-        'preference_alertes' => $preferenceAlerte
+        'preference_alertes' => $preferenceAlerte,
+        'userId' => $currentUser->getId(),
+        'user' => $currentUser,
     ]);
 }
    #[Route('/FrontOffice/edit/{id}', name: 'front_preference_alerte_edit', methods: ['GET', 'POST'])]
@@ -163,5 +217,77 @@ public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAler
         return $this->render('preference_alerte/addPreferencesAlertFO.html.twig', [
             'form' => $form,
         ]);
+    }
+    #[Route('/FrontOffice/detail/{userId}/{preferenceId}', name: "front_preference_alerte_detail", methods: ['GET'])]
+    public function detail(
+        int $userId, 
+        int $preferenceId, 
+        PreferenceAlerteRepository $preferenceRepository
+    ): Response {
+        // Vérifier que l'utilisateur est connecté
+        $currentUser = $this->getUser();
+        
+        if (!$currentUser) {
+            $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Vérifier que l'ID dans l'URL correspond à l'utilisateur connecté
+        if ($currentUser->getId() !== $userId) 
+            {
+            $this->addFlash('error', 'Vous ne pouvez pas accéder aux préférences d\'un autre utilisateur.');
+            return $this->redirectToRoute('front_preference_alerte_show', [
+                'id' => $currentUser->getId()
+            ]);
+        }
+
+        // Récupérer la préférence qui appartient à l'utilisateur connecté
+        $preference = $preferenceRepository->findOneBy([
+            'id' => $preferenceId,
+            'etudiant' => $currentUser  // Note: c'est 'etudiant' et non 'user' d'après votre contrôleur
+        ]);
+
+        // Vérifier si la préférence existe
+        if (!$preference) {
+            $this->addFlash('error', 'Cette préférence d\'alerte n\'existe pas ou ne vous appartient pas.');
+            return $this->redirectToRoute('front_preference_alerte_show', [
+                'id' => $userId
+            ]);
+        }
+
+        return $this->render('preference_alerte/showAlerteDetailFO.html.twig', [
+            'preference' => $preference,
+            'user' => $currentUser
+        ]);
+    }
+
+    #[Route('/preference/{id}/set-active', name: 'app_preference_set_active', methods: ['POST'])]
+    public function setActive(
+        int $id,
+        PreferenceAlerteRepository $preferenceAlerteRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        // 1. Get the preference to activate
+        $preference = $preferenceAlerteRepository->find($id);
+        if (!$preference) {
+            throw $this->createNotFoundException('Preference not found');
+        }
+
+        $user = $preference->getEtudiant(); // Assuming Preference has a relation to User
+
+        // 2. Set all preferences of this user to false
+        $userPreferences = $preferenceAlerteRepository->findBy(['etudiant' => $user]);
+        foreach ($userPreferences as $pref) {
+            $pref->setIsActive(false);
+        }
+
+        // 3. Activate the selected preference
+        $preference->setIsActive(true);
+
+        // 4. Persist changes
+        $entityManager->flush();
+
+        // 5. Optional: redirect or return JSON
+        return $this->redirectToRoute('front_preference_alerte_show', ['id' => $user->getId()]); 
     }
 }

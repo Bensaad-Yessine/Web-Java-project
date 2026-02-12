@@ -1,0 +1,98 @@
+{% for proposition in proposition_reunions %}
+    <div class="card proposition-item" data-status="{{ proposition.status }}" data-title="{{ proposition.titre|lower }}" data-groupe="{{ proposition.idGroupe.nomProjet|lower }}" style="border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); transition: all var(--transition); border-left: 4px solid {% if proposition.status == 'Confirmée' %}var(--green-500){% elseif proposition.status == 'Annulée' %}var(--red-500){% elseif proposition.status == 'Reportée' %}var(--orange-500){% else %}var(--blue-500){% endif %};">
+        <div style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: start; gap: 16px; flex-wrap: wrap; margin-bottom: 16px;">
+                <div style="flex: 1;">
+                    <h3 style="font-size: 18px; font-weight: 700; color: var(--gray-900); margin: 0 0 8px 0;">
+                        {{ proposition.titre|default('Sans titre') }}
+                    </h3>
+                    <p style="color: var(--gray-600); margin: 0 0 12px 0; font-size: 14px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        {{ proposition.idGroupe.nomProjet }} · {{ proposition.idGroupe.matiere }}
+                    </p>
+                </div>
+                <span style="padding: 6px 14px; border-radius: var(--radius); font-size: 13px; font-weight: 600; background: {% if proposition.status == 'Confirmée' %}var(--green-100){% elseif proposition.status == 'Annulée' %}var(--red-100){% elseif proposition.status == 'Reportée' %}var(--orange-100){% else %}var(--blue-100){% endif %}; color: {% if proposition.status == 'Confirmée' %}var(--green-900){% elseif proposition.status == 'Annulée' %}var(--red-900){% elseif proposition.status == 'Reportée' %}var(--orange-900){% else %}var(--blue-900){% endif %};">
+                    {{ proposition.status|default('En attente') }}
+                </span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 40px; height: 40px; border-radius: var(--radius); background: var(--blue-100); display: flex; align-items: center; justify-content: center;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue-600)" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-500); margin-bottom: 2px;">Date</div>
+                        <div style="font-size: 14px; font-weight: 600; color: var(--gray-900);">
+                            {{ proposition.dateReunion ? proposition.dateReunion|date('d/m/Y') : 'Non définie' }}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 40px; height: 40px; border-radius: var(--radius); background: var(--purple-100); display: flex; align-items: center; justify-content: center;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-500); margin-bottom: 2px;">Horaire</div>
+                        <div style="font-size: 14px; font-weight: 600; color: var(--gray-900);">
+                            {{ proposition.heureDebut ? proposition.heureDebut|date('H:i') : '-' }} - {{ proposition.heureFin ? proposition.heureFin|date('H:i') : '-' }}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 40px; height: 40px; border-radius: var(--radius); background: var(--orange-100); display: flex; align-items: center; justify-content: center;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--orange-600)" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: var(--gray-500); margin-bottom: 2px;">Lieu</div>
+                        <div style="font-size: 14px; font-weight: 600; color: var(--gray-900);">
+                            {{ proposition.lieu|default('Non défini') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if proposition.description %}
+                <p style="color: var(--gray-600); font-size: 14px; line-height: 1.6; margin: 0 0 16px 0; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+                    {{ proposition.description|length > 120 ? proposition.description|slice(0, 120) ~ '...' : proposition.description }}
+                </p>
+            {% endif %}
+
+            <div style="display: flex; gap: 12px; padding-top: 16px; border-top: 1px solid var(--gray-200);">
+                <a href="{{ path('front_proposition_reunion_show', {'id': proposition.id}) }}" style="flex: 1; padding: 12px; background: linear-gradient(135deg, var(--red-500), var(--orange-500)); color: white; text-decoration: none; border-radius: var(--radius); font-weight: 600; font-size: 14px; text-align: center; transition: all var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    Voir les détails
+                </a>
+                <a href="{{ path('front_proposition_reunion_edit', {'id': proposition.id}) }}" style="padding: 12px 20px; background: white; color: var(--orange-600); text-decoration: none; border: 1px solid var(--orange-300); border-radius: var(--radius); font-weight: 600; font-size: 14px; transition: all var(--transition); display: inline-flex; align-items: center; gap: 8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Modifier
+                </a>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="card" style="text-align: center; padding: 60px 20px;">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--gray-300)" stroke-width="1.5" style="margin: 0 auto 20px;">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <h3 style="font-size: 20px; color: var(--gray-600); margin-bottom: 8px;">Aucune proposition</h3>
+        <p style="color: var(--gray-400); margin-bottom: 24px;">Il n'y a aucune proposition de réunion dans vos groupes pour le moment.</p>
+        <a href="{{ path('front_groupe_projet_index') }}" class="btn btn-primary">Retour aux groupes</a>
+    </div>
+{% endfor %}

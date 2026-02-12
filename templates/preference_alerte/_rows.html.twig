@@ -1,0 +1,89 @@
+{# preference_alerte/_rows.html.twig #}
+{% for preference_alerte in preference_alertes %}
+<tr>
+    <td>{{ preference_alerte.id }}</td>
+    <td>
+        <strong>{{ preference_alerte.titre }}</strong>
+    </td>
+    <td>
+        <div class="d-flex align-items-center">
+            <div class="avatar-container">
+                {% if preference_alerte.etudiant %}
+                    {% if preference_alerte.etudiant.profilePic %}
+                        <img src="{{ asset('uploads/profile_pics/' ~ preference_alerte.etudiant.profilePic) }}" 
+                             alt="{{ preference_alerte.etudiant.prenom }}" 
+                             class="user-avatar-img me-2">
+                    {% else %}
+                        <div class="user-avatar me-2">
+                            {{ preference_alerte.etudiant.prenom|first|upper }}{{ preference_alerte.etudiant.nom|first|upper }}
+                        </div>
+                    {% endif %}
+                    <span>
+                        {{ preference_alerte.etudiant.prenom }} {{ preference_alerte.etudiant.nom }}
+                        <br>
+                        <small class="text-muted">ID: {{ preference_alerte.etudiant.id }}</small>
+                    </span>
+                {% else %}
+                    <span class="text-muted">Non assigné</span>
+                {% endif %}
+            </div>
+        </div>
+    </td>
+    <td>{{ preference_alerte.dateCreation ? preference_alerte.dateCreation|date('d/m/Y H:i') : '-' }}</td>
+    <td>
+        {% if preference_alerte.isActive %}
+            <span class="badge badge-success">
+                <i class="mdi mdi-check-circle me-1"></i>Active
+            </span>
+        {% else %}
+            <span class="badge badge-secondary">
+                <i class="mdi mdi-close-circle me-1"></i>Inactive
+            </span>
+        {% endif %}
+    </td>
+    <td>
+        {% if preference_alerte.isDefault %}
+            <span class="badge badge-primary">
+                <i class="mdi mdi-star me-1"></i>Défaut
+            </span>
+        {% else %}
+            <span class="badge badge-secondary">
+                <i class="mdi mdi-star-outline me-1"></i>Non défaut
+            </span>
+        {% endif %}
+    </td>
+    <td>
+        <div class="action-buttons">
+            <a href="{{ path('app_preference_alerte_show', {'id': preference_alerte.id}) }}" 
+               class="btn-icon btn-info" 
+               title="Voir">
+                <i class="mdi mdi-eye"></i>
+            </a>
+            <a href="{{ path('app_preference_alerte_edit', {'id': preference_alerte.id}) }}" 
+               class="btn-icon btn-warning" 
+               title="Modifier">
+                <i class="mdi mdi-pencil"></i>
+            </a>
+            <button type="button" 
+                    class="btn-icon btn-danger" 
+                    title="Supprimer"
+                    onclick="openDeleteModal({{ preference_alerte.id }}, '{{ preference_alerte.titre|e('js') }}')">
+                <i class="mdi mdi-delete"></i>
+            </button>
+        </div>
+    </td>
+</tr>
+{% else %}
+<tr>
+    <td colspan="7" class="text-center py-5">
+        <div class="empty-state">
+            <i class="mdi mdi-bell-off-outline"></i>
+            <h4 class="mt-3 mb-2">Aucune préférence d'alerte trouvée</h4>
+            <p class="text-muted mb-4">Commencez par créer votre première préférence d'alerte</p>
+            <a href="{{ path('app_preference_alerte_new') }}" class="btn btn-gradient-primary">
+                <i class="mdi mdi-plus-circle me-2"></i>Créer une préférence
+            </a>
+        </div>
+    </td>
+</tr>
+{% endfor %}

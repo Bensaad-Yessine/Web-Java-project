@@ -20,80 +20,54 @@ class FrontOfficeTacheType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('titre', TextType::class, [
-                'label' => 'Task Title',
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => 'e.g., Complete homework assignment'
-                ],
-                'required' => true,
-            ])
             ->add('description', TextareaType::class, [
-                'label' => 'Description',
-                'required' => false,
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => 'Add more details about this task...',
-                    'rows' => 4
-                ],
+                    'label' => 'Description',
+                    'required' => false,
+                    'attr' => [
+                        'class' => 'form-control',
+                        'placeholder' => 'Add more details about this task...',
+                        'rows' => 4
+                    ],
+                ])
+
+            ->add('titre', TextType::class, [
+                'label' => 'Titre de la tâche',
+                'attr' => ['class' => 'form-control'],
             ])
+
             ->add('type', ChoiceType::class, [
-                'label' => 'Task Type',
+                'label' => 'Type de tâche',
                 'choices' => [
-                    'Manual' => 'MANUEL',
-                    'Meeting' => 'REUNION',
-                    'Revision' => 'REVISION',
-                    'Health' => 'SANTE',
-                    'Schedule' => 'EMPLOI',
+                    'Manuel' => 'MANUEL',
+                    'Réunion' => 'REUNION',
+                    'Révision' => 'REVISION',
+                    'Santé' => 'SANTE',
+                    'Emploi du temps' => 'EMPLOI',
                 ],
-                'attr' => ['class' => 'form-control'],
-                'placeholder' => 'Select type...',
-                'required' => true,
+                'attr' => ['class' => 'form-select'],
             ])
-            ->add('priorite', ChoiceType::class, [
-                'label' => 'Priority',
-                'choices' => [
-                    'Low' => 'FAIBLE',
-                    'Medium' => 'MOYEN',
-                    'High' => 'ELEVEE',
-                ],
-                'attr' => ['class' => 'form-control'],
-                'placeholder' => 'Select priority...',
-                'required' => true,
-            ])
+
             ->add('dateDebut', DateTimeType::class, [
-                'label' => 'Start Date',
+                'label' => 'Début',
                 'widget' => 'single_text',
-                'attr' => ['class' => 'form-control'],
-                'required' => true,
-            ])
-            ->add('dateFin', DateTimeType::class, [
-                'label' => 'End Date',
-                'widget' => 'single_text',
-                'attr' => ['class' => 'form-control'],
-                'required' => true,
-            ])
-            ->add('dateEcheance', DateType::class, [
-                'label' => 'Due Date',
-                'widget' => 'single_text',
-                'attr' => ['class' => 'form-control'],
-                'required' => false,
-            ])
-            ->add('statut', ChoiceType::class, [
-                'label' => 'Status',
-                'choices' => [
-                    'To Do' => 'A_FAIRE',
-                    'In Progress' => 'EN_COURS',
-                    'Completed' => 'TERMINEE',
-                    'Overdue' => 'EN_RETARD',
-                    'Paused' => 'PAUSED',
+                'attr' => [
+                    'class' => 'form-control'
                 ],
-                'attr' => ['class' => 'form-control'],
-                'required' => true,
             ])
-            ->add('dureeEstimee', IntegerType::class, [
-                'label' => 'Estimated Duration (minutes)',
-                'required' => false,
+
+            ->add('dateFin', DateTimeType::class, [
+                'label' => 'Fin',
+                'widget' => 'single_text',
+                'attr' => ['class' => 'form-control'],
+            ])
+
+            ->add('priorite', TextType::class, [
+                'label' => 'Priorité (FAIBLE, MOYEN, ELEVEE)',
+                'attr' => ['class' => 'form-control'],
+            ])
+
+            ->add('statut', TextType::class, [
+                'label' => 'Statut (A_FAIRE, EN_COURS, TERMINEE, EN_RETARD)',
                 'attr' => ['class' => 'form-control'],
             ]);
     }

@@ -1043,7 +1043,46 @@
 
             <!-- Objectifs Table -->
             {% if objectif_santes is not empty %}
-                <div class="table-container">
+                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
+      <input id="qInput" type="text" placeholder="Rechercher..."
+             style="padding:12px;border-radius:12px;border:1px solid #e5e7eb;min-width:220px;">
+
+      <select id="typeFilter" style="padding:12px;border-radius:12px;border:1px solid #e5e7eb;">
+        <option value="">Tous types</option>
+        <option value="SOMMEIL">Sommeil</option>
+        <option value="SPORT">Sport</option>
+        <option value="ALIMENTATION">Alimentation</option>
+      </select>
+
+      <select id="prioriteFilter" style="padding:12px;border-radius:12px;border:1px solid #e5e7eb;">
+        <option value="">Toutes priorités</option>
+        <option value="HAUTE">Haute</option>
+        <option value="MOYENNE">Moyenne</option>
+        <option value="BASSE">Basse</option>
+      </select>
+
+      <select id="statutFilter" style="padding:12px;border-radius:12px;border:1px solid #e5e7eb;">
+        <option value="">Tous statuts</option>
+        <option value="EN_COURS">En cours</option>
+        <option value="ATTEINT">Atteint</option>
+        <option value="ABANDONNE">Abandonné</option>
+      </select>
+
+      <select id="sortBy" style="padding:12px;border-radius:12px;border:1px solid #e5e7eb;">
+        <option value="dateDebut">Trier: Date début</option>
+        <option value="dateFin">Date fin</option>
+        <option value="priorite">Priorité</option>
+        <option value="statut">Statut</option>
+        <option value="titre">Titre</option>
+      </select>
+
+      <select id="sortDir" style="padding:12px;border-radius:12px;border:1px solid #e5e7eb;">
+        <option value="DESC">DESC</option>
+        <option value="ASC">ASC</option>
+      </select>
+    </div>
+
+    <div class="table-container">
                     <table class="table">
                         <thead>
                             <tr>
@@ -1056,9 +1095,10 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {{ include('front/objectif_sante/_rows.html.twig', { objectif_santes: objectif_santes }) }}
-                        </tbody>
+                        <tbody id="objectifTbody" data-url="{{ path('front_objectif_sante_filter') }}">
+    {{ include('front/objectif_sante/_rows.html.twig', { objectif_santes: objectif_santes }) }}
+</tbody>
+
                     </table>
                 </div>
             {% else %}
@@ -1246,5 +1286,65 @@
             }, 5000);
         }
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const tbody = document.getElementById('objectifTbody');
+  if (!tbody) return;
+
+  const baseUrl = tbody.dataset.url;
+
+  const qEl = document.getElementById('qInput');
+  const typeEl = document.getElementById('typeFilter');
+  const prioriteEl = document.getElementById('prioriteFilter');
+  const statutEl = document.getElementById('statutFilter');
+  const sortByEl = document.getElementById('sortBy');
+  const sortDirEl = document.getElementById('sortDir');
+
+  let timer = null;
+
+  function buildUrl() {
+    const params = new URLSearchParams();
+
+    if (qEl && qEl.value.trim()) params.set('q', qEl.value.trim());
+    if (typeEl && typeEl.value) params.set('type', typeEl.value);
+    if (prioriteEl && prioriteEl.value) params.set('priorite', prioriteEl.value);
+    if (statutEl && statutEl.value) params.set('statut', statutEl.value);
+
+    params.set('sortBy', sortByEl?.value || 'dateDebut');
+    params.set('sortDir', sortDirEl?.value || 'DESC');
+
+    return `${baseUrl}?${params.toString()}`;
+  }
+
+  async function loadRows() {
+    try {
+      tbody.style.opacity = '0.6';
+
+      const res = await fetch(buildUrl(), {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      });
+
+      tbody.innerHTML = await res.text();
+      tbody.style.opacity = '1';
+    } catch (e) {
+      tbody.style.opacity = '1';
+      console.error(e);
+    }
+  }
+
+  function debouncedLoad() {
+    clearTimeout(timer);
+    timer = setTimeout(loadRows, 250);
+  }
+
+  qEl?.addEventListener('input', debouncedLoad);
+  typeEl?.addEventListener('change', loadRows);
+  prioriteEl?.addEventListener('change', loadRows);
+  statutEl?.addEventListener('change', loadRows);
+  sortByEl?.addEventListener('change', loadRows);
+  sortDirEl?.addEventListener('change', loadRows);
+});
+</script>
+
 </body>
 </html>

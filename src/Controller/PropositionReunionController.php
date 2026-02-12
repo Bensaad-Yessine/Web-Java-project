@@ -32,6 +32,30 @@ class PropositionReunionController extends AbstractController
         ]);
     }
 
+    #[Route('/ajax/filter', name: 'app_proposition_reunion_ajax_filter', methods: ['GET'])]
+    public function ajaxFilter(Request $request, int $groupeId, PropositionReunionRepository $propositionReunionRepository): Response
+    {
+        $search = $request->query->get('search');
+        $status = $request->query->get('status');
+        $sort   = $request->query->get('sort', 'dateCreation');
+        $direction = $request->query->get('direction', 'DESC');
+
+        $propositions = $propositionReunionRepository->findWithFilters(
+            $groupeId,
+            $search ? trim($search) : null,
+            $status ? trim($status) : null,
+            $sort,
+            $direction
+        );
+
+        $html = $this->renderView('proposition_reunion/_list.html.twig', [
+            'proposition_reunions' => $propositions,
+            'groupe_projet' => null,
+        ]);
+
+        return $this->json(['html' => $html]);
+    }
+
     #[Route('/new', name: 'app_proposition_reunion_new', methods: ['GET', 'POST'])]
 public function new(Request $request, int $groupeId, EntityManagerInterface $entityManager): Response
 {

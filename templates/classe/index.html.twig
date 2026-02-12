@@ -603,7 +603,7 @@
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
                           {% set niveau1 = classes|filter(c => c.niveau == '1ère année')|length %}
-                          <h3 class="mb-0 stat-count">{{ niveau1 }}</h3>
+                          <h3 class="mb-0 stat-count text-dark">{{ niveau1 }}</h3>
                           <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(5, 15) }}%</p>
                         </div>
                       </div>
@@ -668,22 +668,68 @@
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                       <h4 class="card-title">🏫 Liste des Classes</h4>
-                      <div class="d-flex">
-                        <form method="GET" class="d-flex gap-2">
-                          <input type="text" class="form-control" placeholder="Rechercher par nom..." name="nom" value="{{ app.request.query.get('nom') }}">
-                          <button type="submit" class="btn btn-gradient-primary">
-                            <i class="mdi mdi-magnify"></i> Rechercher
-                          </button>
-                          {% if app.request.query.get('nom') %}
-                            <a href="{{ path('app_classe_index') }}" class="btn btn-secondary">
-                              <i class="mdi mdi-close"></i> Réinitialiser
-                            </a>
-                          {% endif %}
-                        </form>
-                        <a href="{{ path('app_classe_new') }}" class="btn btn-gradient-primary btn-icon-text ms-2">
-                          <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
-                          Nouvelle Classe
-                        </a>
+                      <a href="{{ path('app_classe_new') }}" class="btn btn-gradient-primary btn-icon-text">
+                        <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
+                        Nouvelle Classe
+                      </a>
+                    </div>
+
+                    <!-- Filters Panel -->
+                    <div class="card mb-3" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border: none; border-radius: 10px;">
+                      <div class="card-body">
+                        <h6 class="card-title mb-3"><i class="mdi mdi-filter me-2"></i>Filtres et Recherche</h6>
+                        <div class="row g-2">
+                          <div class="col-md-3">
+                            <label class="small text-muted">Rechercher</label>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Nom, niveau, filière..."
+                                   value="{{ search }}">
+                          </div>
+                          <div class="col-md-3">
+                            <label class="small text-muted">Niveau</label>
+                            <select id="niveauFilter" class="form-control" style="cursor: pointer;">
+                              <option value="">-- Tous les niveaux --</option>
+                              {% for niveau in niveaux %}
+                                <option value="{{ niveau.niveau }}" {% if niveau.niveau == filiere %}selected{% endif %}>
+                                  {{ niveau.niveau }}
+                                </option>
+                              {% endfor %}
+                            </select>
+                          </div>
+                          <div class="col-md-3">
+                            <label class="small text-muted">Filière</label>
+                            <select id="filiereFilter" class="form-control" style="cursor: pointer;">
+                              <option value="">-- Toutes les filières --</option>
+                              {% for fil in filieres %}
+                                <option value="{{ fil.filiere }}" {% if fil.filiere == filiere %}selected{% endif %}>
+                                  {{ fil.filiere }}
+                                </option>
+                              {% endfor %}
+                            </select>
+                          </div>
+                          <div class="col-md-3">
+                            <label class="small text-muted">Tri</label>
+                            <select id="sortSelect" class="form-control" style="cursor: pointer;">
+                              <option value="id-asc" {% if sort == 'id' and direction == 'asc' %}selected{% endif %}>ID (croissant)</option>
+                              <option value="id-desc" {% if sort == 'id' and direction == 'desc' %}selected{% endif %}>ID (décroissant)</option>
+                              <option value="nom-asc" {% if sort == 'nom' and direction == 'asc' %}selected{% endif %}>Nom (A-Z)</option>
+                              <option value="nom-desc" {% if sort == 'nom' and direction == 'desc' %}selected{% endif %}>Nom (Z-A)</option>
+                              <option value="niveau-asc" {% if sort == 'niveau' and direction == 'asc' %}selected{% endif %}>Niveau (croissant)</option>
+                              <option value="niveau-desc" {% if sort == 'niveau' and direction == 'desc' %}selected{% endif %}>Niveau (décroissant)</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="row g-2 mt-2">
+                          <div class="col-12">
+                           <button id="applyFilters" class="btn btn-sm btn-gradient-primary text-dark">
+  <i class="mdi mdi-magnify me-1 text-dark"></i>Appliquer les filtres
+</button>
+
+                            <button id="resetFilters" class="btn btn-sm btn-outline-secondary">
+                              <i class="mdi mdi-close me-1"></i>Réinitialiser
+                            </button>
+                            <small class="text-muted ms-2" id="resultCount">Résultats: {{ classes|length }}</small>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -921,43 +967,157 @@
     
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality for navbar
         const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-          searchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#classesTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
+        const niveauFilter = document.getElementById('niveauFilter');
+        const filiereFilter = document.getElementById('filiereFilter');
+        const sortSelect = document.getElementById('sortSelect');
+        const applyFiltersBtn = document.getElementById('applyFilters');
+        const resetFiltersBtn = document.getElementById('resetFilters');
+        const resultCountSpan = document.getElementById('resultCount');
+        const classesTable = document.getElementById('classesTable');
+
+        // Apply filters with AJAX
+        // Use AbortController to cancel previous requests and debounce on typing
+        function applyFilters() {
+          const search = searchInput.value.trim();
+          const niveau = niveauFilter.value;
+          const filiere = filiereFilter.value;
+          const [sort, direction] = sortSelect.value.split('-');
+
+          const params = new URLSearchParams();
+          if (search) params.append('search', search);
+          if (niveau) params.append('niveau', niveau);
+          if (filiere) params.append('filiere', filiere);
+          if (sort) params.append('sort', sort);
+          if (direction) params.append('direction', direction);
+
+          // Cancel previous request
+          if (window.__classeSearchController) {
+            try { window.__classeSearchController.abort(); } catch (e) {}
+          }
+          window.__classeSearchController = new AbortController();
+
+          fetch('{{ path("app_classe_ajax_filter") }}?' + params.toString(), { signal: window.__classeSearchController.signal })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                updateTable(data.data);
+                resultCountSpan.textContent = 'Résultats: ' + data.count;
+              }
+            })
+            .catch(error => {
+              if (error.name === 'AbortError') return;
+              console.error('Erreur AJAX:', error);
+            });
+        }
+
+        // Update table with new data
+        function updateTable(data) {
+          const tbody = classesTable.querySelector('tbody');
+          tbody.innerHTML = '';
+
+          if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4">Aucun résultat trouvé</td></tr>';
+            return;
+          }
+
+          data.forEach(classe => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td><span class="text-muted">#${classe.id}</span></td>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="class-avatar me-3">
+                    ${classe.nom.substring(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <h6 class="mb-0 font-weight-bold">${classe.nom}</h6>
+                    <small class="text-muted">ID: ${classe.id}</small>
+                  </div>
+                </div>
+              </td>
+              <td><strong>${classe.nom}</strong></td>
+              <td>
+                <span class="class-badge badge-niveau">
+                  <i class="mdi mdi-account-group me-1"></i>
+                  ${classe.niveau || '—'}
+                </span>
+              </td>
+              <td>
+                <span class="class-badge badge-annee">
+                  <i class="mdi mdi-calendar me-1"></i>
+                  ${classe.anneeuniversitaire || '—'}
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <a href="${classe.url}" class="btn btn-info btn-sm btn-icon" title="Voir détails">
+                    <i class="mdi mdi-eye"></i>
+                  </a>
+                  <a href="${classe.editUrl}" class="btn btn-warning btn-sm btn-icon" title="Modifier">
+                    <i class="mdi mdi-pencil"></i>
+                  </a>
+                  <button type="button" class="btn btn-danger btn-sm btn-icon delete-btn"
+                          data-classe-id="${classe.id}" data-classe-name="${classe.nom}"
+                          data-csrf-token="${classe.csrfToken}"
+                          title="Supprimer">
+                    <i class="mdi mdi-delete"></i>
+                  </button>
+                </div>
+              </td>
+            `;
+            tbody.appendChild(row);
+          });
+
+          // Re-attach delete handlers
+          attachDeleteHandlers();
+        }
+
+        // Event listeners
+        applyFiltersBtn.addEventListener('click', applyFilters);
+
+        resetFiltersBtn.addEventListener('click', function() {
+          searchInput.value = '';
+          niveauFilter.value = '';
+          filiereFilter.value = '';
+          sortSelect.value = 'id-asc';
+          window.location.href = '{{ path("app_classe_index") }}';
+        });
+
+        // Real-time search with debounce and cancellation
+        let searchTimeout;
+        function scheduleApplyFromInput(value) {
+          clearTimeout(searchTimeout);
+          searchTimeout = setTimeout(() => { searchInput.value = value; applyFilters(); }, 350);
+        }
+        searchInput.addEventListener('keyup', function() { scheduleApplyFromInput(this.value); });
+
+        niveauFilter.addEventListener('change', applyFilters);
+        filiereFilter.addEventListener('change', applyFilters);
+        sortSelect.addEventListener('change', applyFilters);
+
+        // Delete confirmation modal
+        function attachDeleteHandlers() {
+          const deleteButtons = document.querySelectorAll('.delete-btn');
+          deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+              const classeId = this.getAttribute('data-classe-id');
+              const classeName = this.getAttribute('data-classe-name');
+              const csrfToken = this.getAttribute('data-csrf-token');
+              
+              document.getElementById('classeNameDisplay').textContent = classeName;
+              const deleteForm = document.getElementById('deleteForm');
+              deleteForm.action = '/classe/' + classeId;
+              
+              document.getElementById('csrfToken').value = csrfToken;
+              
+              const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+              modal.show();
             });
           });
         }
-        
-        // Delete confirmation modal for classes
-        const deleteButtons = document.querySelectorAll('.delete-btn');
-        deleteButtons.forEach(button => {
-          button.addEventListener('click', function() {
-            const classeId = this.getAttribute('data-classe-id');
-            const classeName = this.getAttribute('data-classe-name');
-            const csrfToken = this.getAttribute('data-csrf-token');
-            
-            // Update modal content
-            document.getElementById('classeNameDisplay').textContent = classeName;
-            
-            // Set the form action - Build the URL dynamically
-            const deleteForm = document.getElementById('deleteForm');
-            deleteForm.action = '/classe/' + classeId + '/delete';
-            
-            // Set CSRF token
-            document.getElementById('csrfToken').value = csrfToken;
-            
-            // Show modal using Bootstrap 5
-            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-            modal.show();
-          });
-        });
+
+        attachDeleteHandlers();
         
         // Auto-hide alerts after 5 seconds
         setTimeout(() => {

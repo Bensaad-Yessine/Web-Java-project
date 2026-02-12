@@ -1344,9 +1344,9 @@
                 
                 let display = '';
                 if (hours > 0) {
-                    display = `${hours}h ${remainingMinutes}min`;
+                    display = ${hours}h ${remainingMinutes}min;
                 } else {
-                    display = `${minutes} minutes`;
+                    display = ${minutes} minutes;
                 }
                 
                 let emoji = '⏱️';
@@ -1483,3 +1483,4 @@
     });
 </script>
 {% endblock %}
+

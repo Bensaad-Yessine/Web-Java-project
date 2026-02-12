@@ -26,16 +26,16 @@ class Seance
     #[ORM\Column(length: 15)]
     #[Assert\NotBlank(message: "Le type de séance est obligatoire.")]
     #[Assert\Choice(
-        choices: ["MATINALE","APRES_MIDI"],
-        message: "Type invalide."
+        choices: ["Cours", "TD", "TP"],
+        message: "Veuillez écrire Cours, TD ou TP."
     )]
     private ?string $typeSeance = null;
 
-    #[ORM\Column(length: 15)]
+    #[ORM\Column(length: 25)]
     #[Assert\NotBlank(message: "Le mode est obligatoire.")]
     #[Assert\Choice(
-        choices: ["PRESENTIEL","EN_LIGNE"],
-        message: "Mode invalide."
+        choices: ["Présentiel", "Distanciel", "Hybride"],
+        message: "Veuillez écrire Présentiel, Distanciel ou Hybride."
     )]
     private ?string $mode = null;
 
@@ -45,18 +45,22 @@ class Seance
     private ?Salle $salle = null;
 
     // CHANGE THESE FROM DATE_MUTABLE TO DATETIME_MUTABLE
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull(message: "L'heure de début est obligatoire.")]
     private ?\DateTimeInterface $heureDebut = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull(message: "L'heure de fin est obligatoire.")]
     private ?\DateTimeInterface $heureFin = null;
 
     #[ORM\ManyToOne(inversedBy: 'seances')]
-    #[ORM\JoinColumn(nullable: false)] // Add this if matiere is required
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "La matière est obligatoire.")]
     private ?MatiereClasse $matiere = null;
 
     #[ORM\ManyToOne(inversedBy: 'seances')]
-    #[ORM\JoinColumn(nullable: false)] // Add this if classe is required
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "La classe est obligatoire.")]
     private ?Classe $classe = null;
 
     #[ORM\Column(nullable: true)]

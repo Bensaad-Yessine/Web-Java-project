@@ -1,0 +1,155 @@
+{% for s in suivis %}
+<tr>
+  <td>
+    <strong>{{ s.dateSaisie ? s.dateSaisie|date('d/m/Y') : '' }}</strong>
+    <div style="font-size: 12px; color: var(--gray-500);">
+      {{ s.dateSaisie ? s.dateSaisie|date('l')|trans({}, 'messages') : '' }}
+    </div>
+  </td>
+
+  {# ✅ HUMEUR (نفس الكود ديالك) #}
+  <td>
+    {% set humeur_value = s.humeur %}
+    {% set humeur_text = humeur_value|replace({'😄': '', '😊': '', '😐': '', '😔': '', '😢': ''})|trim %}
+
+    {% if humeur_text == 'Excellente' %}
+      {% set card_color = '#dcfce7' %}
+      {% set text_color = '#166534' %}
+    {% elseif humeur_text == 'Bonne' %}
+      {% set card_color = '#dbeafe' %}
+      {% set text_color = '#1e40af' %}
+    {% elseif humeur_text == 'Neutre' %}
+      {% set card_color = '#fef3c7' %}
+      {% set text_color = '#92400e' %}
+    {% elseif humeur_text == 'Mauvaise' %}
+      {% set card_color = '#fee2e2' %}
+      {% set text_color = '#991b1b' %}
+    {% elseif humeur_text == 'Très mauvaise' %}
+      {% set card_color = '#fecaca' %}
+      {% set text_color = '#7f1d1d' %}
+    {% else %}
+      {% set card_color = '#f3f4f6' %}
+      {% set text_color = '#374151' %}
+    {% endif %}
+
+    <div style="display:flex;align-items:center;justify-content:center;height:100%;">
+      <div style="
+        padding: 14px 24px;
+        background: {{ card_color }};
+        color: {{ text_color }};
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 14px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border: 1px solid rgba(255,255,255,0.5);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: transform 0.2s ease;
+      ">
+        {{ humeur_text }}
+      </div>
+    </div>
+  </td>
+
+  {# ✅ SOMMEIL #}
+  <td>
+    {% set sleep_class = '' %}
+    {% if s.qualiteSommeil >= 8 %}
+      {% set sleep_class = 'score-excellent' %}
+    {% elseif s.qualiteSommeil >= 6 %}
+      {% set sleep_class = 'score-good' %}
+    {% elseif s.qualiteSommeil >= 4 %}
+      {% set sleep_class = 'score-average' %}
+    {% else %}
+      {% set sleep_class = 'score-poor' %}
+    {% endif %}
+
+    <div class="score-indicator {{ sleep_class }}">
+      {{ s.qualiteSommeil }}
+    </div>
+    <div style="margin-top:4px;font-size:12px;color:var(--gray-500);">/10</div>
+  </td>
+
+  {# ✅ ENERGIE #}
+  <td>
+    {% set energy_class = '' %}
+    {% if s.niveauEnergie >= 8 %}
+      {% set energy_class = 'score-excellent' %}
+    {% elseif s.niveauEnergie >= 6 %}
+      {% set energy_class = 'score-good' %}
+    {% elseif s.niveauEnergie >= 4 %}
+      {% set energy_class = 'score-average' %}
+    {% else %}
+      {% set energy_class = 'score-poor' %}
+    {% endif %}
+
+    <div class="score-indicator {{ energy_class }}">
+      {{ s.niveauEnergie }}
+    </div>
+    <div style="margin-top:4px;font-size:12px;color:var(--gray-500);">/10</div>
+  </td>
+
+  {# ✅ STRESS (عندك inverse) #}
+  <td>
+    {% set stress_class = '' %}
+    {% if s.niveauStress <= 3 %}
+      {% set stress_class = 'score-excellent' %}
+    {% elseif s.niveauStress <= 5 %}
+      {% set stress_class = 'score-good' %}
+    {% elseif s.niveauStress <= 7 %}
+      {% set stress_class = 'score-average' %}
+    {% else %}
+      {% set stress_class = 'score-poor' %}
+    {% endif %}
+
+    <div class="score-indicator {{ stress_class }}">
+      {{ s.niveauStress }}
+    </div>
+    <div style="margin-top:4px;font-size:12px;color:var(--gray-500);">/10</div>
+  </td>
+
+  {# ✅ ALIMENTATION #}
+  <td>
+    {% set food_class = '' %}
+    {% if s.qualiteAlimentation >= 8 %}
+      {% set food_class = 'score-excellent' %}
+    {% elseif s.qualiteAlimentation >= 6 %}
+      {% set food_class = 'score-good' %}
+    {% elseif s.qualiteAlimentation >= 4 %}
+      {% set food_class = 'score-average' %}
+    {% else %}
+      {% set food_class = 'score-poor' %}
+    {% endif %}
+
+    <div class="score-indicator {{ food_class }}">
+      {{ s.qualiteAlimentation }}
+    </div>
+    <div style="margin-top:4px;font-size:12px;color:var(--gray-500);">/10</div>
+  </td>
+
+  {# ✅ SCORE /100 #}
+  <td>
+    {% set overall_class = '' %}
+    {% if s.score >= 80 %}
+      {% set overall_class = 'score-excellent' %}
+    {% elseif s.score >= 60 %}
+      {% set overall_class = 'score-good' %}
+    {% elseif s.score >= 40 %}
+      {% set overall_class = 'score-average' %}
+    {% else %}
+      {% set overall_class = 'score-poor' %}
+    {% endif %}
+
+    <div class="score-indicator {{ overall_class }}" style="width:48px;height:48px;font-size:16px;">
+      {{ s.score }}
+    </div>
+    <div style="margin-top:4px;font-size:12px;color:var(--gray-500);">/100</div>
+  </td>
+</tr>
+{% else %}
+<tr>
+  <td colspan="7" style="text-align:center; padding:24px; color:#6b7280;">
+    Aucun résultat.
+  </td>
+</tr>
+{% endfor %}

@@ -83,8 +83,13 @@ final class ObjectifSuiviBienEtreController extends AbstractController
             $suivi->setScore($suivi->calculerScore());
             $em->flush();
 
+            // ✅ Le score moyen est calculé automatiquement via getScoreMoyen()
+
             return $this->redirectToRoute('app_objectif_suivis', ['id' => $objectif->getId()]);
         }
+        if ($form->isSubmitted() && !$form->isValid()) {
+    $this->addFlash('error', 'Veuillez corriger les erreurs dans le formulaire.');
+}
 
         return $this->render('suivi_bien_etre/edit_for_objectif.html.twig', [
             'objectif' => $objectif,
@@ -111,6 +116,8 @@ final class ObjectifSuiviBienEtreController extends AbstractController
         if ($this->isCsrfTokenValid('delete_suivi'.$suivi->getId(), $request->request->get('_token'))) {
             $em->remove($suivi);
             $em->flush();
+
+            // ✅ Le score moyen est calculé automatiquement via getScoreMoyen()
         }
 
         return $this->redirectToRoute('app_objectif_suivis', ['id' => $objectif->getId()]);
@@ -138,11 +145,13 @@ public function filter(
         ->orderBy($orderField, $sortDir);
 
     // humeur filter
-    if ($humeur !== null && $humeur !== '' && ctype_digit((string)$humeur)) {
+  if ($humeur !== null) {
+    $humeur = trim((string) $humeur);
+    if ($humeur !== '') {
         $qb->andWhere('s.humeur = :h')
-           ->setParameter('h', (int) $humeur);
+           ->setParameter('h', $humeur);
     }
-
+}
     // search filter (notes + ممكن تزيد حقول أخرى)
     if ($q !== '') {
         $qb->andWhere('LOWER(s.notesLibres) LIKE :q')

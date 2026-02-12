@@ -920,8 +920,8 @@
                         <span>{{ objectif.priorite }}</span>
                     </div>
                     <div class="objectif-detail-item">
-                        <strong>Progression</strong>
-                        <span>{{ objectif.progression }}%</span>
+                        <strong>Score Moyen</strong>
+                        <span>{{ objectif.scoreMoyen }}/100</span>
                     </div>
                 </div>
             </div>
@@ -945,7 +945,17 @@
                 <div class="card-header">
                     <h2 class="card-title">Indicateurs de santé</h2>
                 </div>
+                
                 <div class="card-content">
+                {# Alerte globale si le formulaire est soumis et invalide #}
+{% if form.vars.submitted and not form.vars.valid %}
+  <div class="flash-message flash-error">
+    ✗ Veuillez corriger les erreurs dans le formulaire.
+  </div>
+{% endif %}
+
+{# Erreurs globales Symfony (important pour Callback / contraintes globales) #}
+{{ form_errors(form) }}
                     {{ form_start(form, {'attr': {'class': 'suivi-form', 'novalidate': 'novalidate'}}) }}
                     
                         <!-- Date Field -->
@@ -1085,94 +1095,30 @@
         </main>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Nouveau suivi page loaded');
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('.suivi-form');
+  if (!form) return;
 
-            // Auto-hide flash messages
-            const flashMessages = document.querySelectorAll('.flash-message');
-            flashMessages.forEach(message => {
-                setTimeout(() => {
-                    message.style.transition = 'opacity 0.3s ease';
-                    message.style.opacity = '0';
-                    setTimeout(() => {
-                        if (message.parentNode) {
-                            message.parentNode.removeChild(message);
-                        }
-                    }, 300);
-                }, 5000);
-            });
+  form.addEventListener('submit', function() {
+    // Juste un feedback visuel, sans empêcher Symfony
+    const requiredFields = form.querySelectorAll('[required]');
+    requiredFields.forEach(field => {
+      if (!field.value.trim()) {
+        field.style.borderColor = 'var(--red-500)';
+        field.style.backgroundColor = 'var(--red-50)';
+      }
+    });
 
-            // Form validation
-            const form = document.querySelector('.suivi-form');
-            if (form) {
-                form.addEventListener('submit', function(e) {
-                    const requiredFields = form.querySelectorAll('[required]');
-                    let isValid = true;
-                    
-                    requiredFields.forEach(field => {
-                        if (!field.value.trim()) {
-                            isValid = false;
-                            field.style.borderColor = 'var(--red-500)';
-                            field.style.backgroundColor = 'var(--red-50)';
-                        } else {
-                            field.style.borderColor = '';
-                            field.style.backgroundColor = '';
-                        }
-                    });
-                    
-                    // Validate number fields (0-10)
-                    const numberFields = form.querySelectorAll('input[type="number"]');
-                    numberFields.forEach(field => {
-                        const value = parseInt(field.value);
-                        if (value < 0 || value > 10) {
-                            isValid = false;
-                            field.style.borderColor = 'var(--red-500)';
-                            field.style.backgroundColor = 'var(--red-50)';
-                        }
-                    });
-                    
-                    if (!isValid) {
-                        e.preventDefault();
-                        showErrorMsg('Veuillez remplir correctement tous les champs obligatoires (0-10)');
-                    } else {
-                        // Show loading state
-                        const submitBtn = form.querySelector('button[type="submit"]');
-                        submitBtn.disabled = true;
-                        submitBtn.innerHTML = '⏳ Enregistrement...';
-                    }
-                });
-            }
-        });
+    // Loading state
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '⏳ Enregistrement...';
+    }
+  });
+});
+</script>
 
-        function showErrorMsg(message) {
-            const errorMsg = document.createElement('div');
-            errorMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 16px 24px; border-radius: 10px; box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3); z-index: 9999; font-weight: 600; animation: slideIn 0.3s ease;';
-            errorMsg.innerHTML = '✗ ' + message;
-            document.body.appendChild(errorMsg);
-            
-            setTimeout(() => {
-                errorMsg.style.transition = 'opacity 0.3s ease';
-                errorMsg.style.opacity = '0';
-                setTimeout(() => errorMsg.remove(), 300);
-            }, 4000);
-        }
-
-        // Add animation styles
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(400px);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
 </body>
 </html>

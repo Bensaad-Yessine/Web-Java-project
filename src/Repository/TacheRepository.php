@@ -99,54 +99,79 @@ class TacheRepository extends ServiceEntityRepository
     // SEARCH : 
     public function searchByTitre(?string $titre): array
     {
+        // If no title provided, return all tasks (more user-friendly)
         if (!$titre) {
-            // Return empty array if nothing is searched
-            return [];
+            return $this->findAll();
         }
 
         $qb = $this->createQueryBuilder('t')
-            ->where('t.titre LIKE :titre')
-            ->setParameter('titre', '%' . $titre . '%');
+            ->where('LOWER(t.titre) LIKE :titre')
+            ->setParameter('titre', '%' . mb_strtolower($titre) . '%')
+            ->orderBy('t.dateDebut', 'ASC');
+
         return $qb->getQuery()->getResult();
     }
 
     //filter by user email
     public function searchByUserEmail(?string $email): array
     {
+        // If empty email, return all tasks
         if (!$email) {
-            // If empty input, return empty array to prevent showing all tasks
-            return [];
+            return $this->findAll();
         }
 
         $qb = $this->createQueryBuilder('t')
-            ->join('t.user', 'u')                 // join tasks to user
-            ->where('LOWER(u.email) LIKE :email') // make search case-insensitive
-            ->setParameter('email', '%' . strtolower($email) . '%')
+            ->join('t.user', 'u')
+            ->where('LOWER(u.email) LIKE :email')
+            ->setParameter('email', '%' . mb_strtolower($email) . '%')
             ->orderBy('t.dateDebut', 'ASC');
 
         return $qb->getQuery()->getResult();
     }
 
     // src/Repository/TacheRepository.php
-    public function searchAjax(?string $titre, ?string $email, string $sort = 'desc'): array
+    public function searchAjax(?string $titre, ?string $email, string $sortField = 'dateDebut', string $direction = 'DESC', ?string $type = null, ?string $statut = null, ?string $priorite = null): array
     {
         $qb = $this->createQueryBuilder('t')
             ->leftJoin('t.user', 'u')
             ->addSelect('u');
 
         if ($titre) {
-            $qb->andWhere('t.titre LIKE :titre')
-            ->setParameter('titre', '%' . $titre . '%');
+            $qb->andWhere('LOWER(t.titre) LIKE :titre')
+                ->setParameter('titre', '%' . mb_strtolower($titre) . '%');
         }
 
         if ($email) {
             $qb->andWhere('LOWER(u.email) LIKE :email')
-            ->setParameter('email', '%' . mb_strtolower($email) . '%');
+                ->setParameter('email', '%' . mb_strtolower($email) . '%');
         }
 
-        // Tri sécurisé
-        $sort = strtolower($sort) === 'asc' ? 'ASC' : 'DESC';
-        $qb->orderBy('t.dateDebut', $sort);
+        if ($type && $type !== '') {
+            $qb->andWhere('t.type = :type')
+                ->setParameter('type', $type);
+        }
+
+        if ($statut && $statut !== '') {
+            $qb->andWhere('t.statut = :statut')
+                ->setParameter('statut', $statut);
+        }
+
+        if ($priorite && $priorite !== '') {
+            $qb->andWhere('t.priorite = :priorite')
+                ->setParameter('priorite', $priorite);
+        }
+
+        // Secure sort field mapping
+        $allowed = [
+            'dateDebut' => 't.dateDebut',
+            'dateFin'   => 't.dateFin',
+            'priorite'  => 't.priorite',
+            'id'        => 't.id'
+        ];
+
+        $field = $allowed[$sortField] ?? $allowed['dateDebut'];
+        $dir = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
+        $qb->orderBy($field, $dir);
 
         return $qb->getQuery()->getResult();
     }

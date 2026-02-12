@@ -45,15 +45,29 @@ class MatiereClasse
     private Collection $classes;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotNull(message: "Le nom de la matière est obligatoire.")]
+    #[Assert\NotBlank(message: "Le nom de la matière ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 3,
+        max: 50,
+        minMessage: "Le nom de la matière doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le nom de la matière ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotNull(message: "La description est obligatoire.")]
+    #[Assert\NotBlank(message: "La description ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 10,
+        minMessage: "La description doit contenir au moins {{ limit }} caractères."
+    )]
     private ?string $description = null;
 
     /**
      * @var Collection<int, Seance>
      */
-    #[ORM\OneToMany(targetEntity: Seance::class, mappedBy: 'matiere')]
+    #[ORM\OneToMany(targetEntity: Seance::class, mappedBy: 'matiere', cascade: ['remove'])]
     private Collection $seances;
 
     public function __construct()

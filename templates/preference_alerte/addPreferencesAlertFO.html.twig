@@ -1139,12 +1139,9 @@
                             {{ form_label(form.delaiRappelMin) }}
                             {{ form_widget(form.delaiRappelMin, {'attr': {
                                 'class': 'form-control',
-                                'placeholder': 'Ex: 15, 30, 60...',
-                                'min': '1',
-                                'max': '1440'
+                                'placeholder': 'Ex: 15, 30, 60...'
                             }}) }}
                             {{ form_errors(form.delaiRappelMin) }}
-                            <span class="hint">Temps en minutes avant l'envoi d'un rappel automatique</span>
                         </div>
                     </div>
 
@@ -1161,7 +1158,6 @@
                         </div>
                         {{ form_errors(form.heureSilenceDebut) }}
                         {{ form_errors(form.heureSilenceFin) }}
-                        <span class="hint">Définissez une période où vous ne souhaitez pas recevoir de notifications (optionnel)</span>
                     </div>
 
                     <!-- Recommended Settings -->
@@ -1210,204 +1206,128 @@
         </main>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Wizard progress animation
-            const progressSteps = document.querySelectorAll('.progress-step');
-            const sections = document.querySelectorAll('.form-section');
-            
-            function updateProgress() {
-                let activeIndex = 0;
-                
-                // Find which section is in view
-                sections.forEach((section, index) => {
-                    const rect = section.getBoundingClientRect();
-                    if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
-                        activeIndex = index;
-                    }
-                });
-                
-                // Update progress steps
-                progressSteps.forEach((step, index) => {
-                    step.classList.remove('active', 'completed');
-                    if (index < activeIndex) {
-                        step.classList.add('completed');
-                    } else if (index === activeIndex) {
-                        step.classList.add('active');
-                    }
-                });
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Wizard progress animation
+    const progressSteps = document.querySelectorAll('.progress-step');
+    const sections = document.querySelectorAll('.form-section');
+    
+    function updateProgress() {
+        let activeIndex = 0;
+        
+        // Find which section is in view
+        sections.forEach((section, index) => {
+            const rect = section.getBoundingClientRect();
+            if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+                activeIndex = index;
             }
-            
-            // Checkbox card selection
-            const checkboxCards = document.querySelectorAll('.checkbox-card');
-            checkboxCards.forEach(card => {
-                const checkbox = card.querySelector('input[type="checkbox"]');
-                
-                card.addEventListener('click', () => {
-                    checkbox.checked = !checkbox.checked;
-                    card.classList.toggle('selected', checkbox.checked);
-                });
-                
-                // Initialize selected state
-                card.classList.toggle('selected', checkbox.checked);
-            });
-            
-            // Recommended settings selection
-            const settingOptions = document.querySelectorAll('.setting-option');
-            settingOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    // Remove selection from all options
-                    settingOptions.forEach(opt => opt.classList.remove('selected'));
-                    
-                    // Select this option
-                    option.classList.add('selected');
-                    
-                    // Apply recommended settings
-                    const delayInput = document.querySelector('#{{ form.delaiRappelMin.vars.id }}');
-                    const startTimeInput = document.querySelector('#{{ form.heureSilenceDebut.vars.id }}');
-                    const endTimeInput = document.querySelector('#{{ form.heureSilenceFin.vars.id }}');
-                    
-                    if (option.dataset.delai) {
-                        delayInput.value = option.dataset.delai;
-                    }
-                    
-                    if (option.dataset.start && option.dataset.end) {
-                        startTimeInput.value = option.dataset.start;
-                        endTimeInput.value = option.dataset.end;
-                    } else {
-                        // Clear time inputs if no silence period
-                        startTimeInput.value = '';
-                        endTimeInput.value = '';
-                    }
-                });
-            });
-            
-            // Form validation
-            const form = document.querySelector('.create-preference-form');
-            const nameInput = document.querySelector('#{{ form.nom.vars.id }}');
-            const delayInput = document.querySelector('#{{ form.delaiRappelMin.vars.id }}');
-            
-            form.addEventListener('submit', function(e) {
-                let isValid = true;
-                const errors = [];
-                
-                // Validate name
-                if (!nameInput.value.trim()) {
-                    errors.push('Veuillez donner un nom à votre préférence');
-                    isValid = false;
-                }
-                
-                // Validate delay
-                if (!delayInput.value) {
-                    errors.push('Veuillez spécifier un délai de rappel');
-                    isValid = false;
-                } else if (delayInput.value < 1 || delayInput.value > 1440) {
-                    errors.push('Le délai de rappel doit être entre 1 et 1440 minutes');
-                    isValid = false;
-                }
-                
-                // Validate time range
-                const startTimeInput = document.querySelector('#{{ form.heureSilenceDebut.vars.id }}');
-                const endTimeInput = document.querySelector('#{{ form.heureSilenceFin.vars.id }}');
-                
-                if (startTimeInput.value && endTimeInput.value) {
-                    if (endTimeInput.value <= startTimeInput.value) {
-                        errors.push('L\'heure de fin doit être après l\'heure de début');
-                        isValid = false;
-                    }
-                }
-                
-                // Check at least one notification channel is selected
-                const checkboxes = document.querySelectorAll('.checkbox-card input[type="checkbox"]');
-                const hasSelection = Array.from(checkboxes).some(cb => cb.checked);
-                
-                if (!hasSelection) {
-                    errors.push('Veuillez sélectionner au moins un canal de notification');
-                    isValid = false;
-                }
-                
-                if (!isValid) {
-                    e.preventDefault();
-                    alert('Veuillez corriger les erreurs suivantes :\n\n' + errors.join('\n'));
-                }
-            });
-            
-            // Real-time validation
-            [nameInput, delayInput].forEach(input => {
-                input.addEventListener('input', function() {
-                    validateField(this);
-                });
-                
-                input.addEventListener('blur', function() {
-                    validateField(this);
-                });
-            });
-            
-            function validateField(field) {
-                const formGroup = field.closest('.form-group');
-                if (!formGroup) return;
-                
-                formGroup.classList.remove('error');
-                
-                if (field === nameInput && !field.value.trim()) {
-                    formGroup.classList.add('error');
-                } else if (field === delayInput && field.value) {
-                    const value = parseInt(field.value);
-                    if (value < 1 || value > 1440) {
-                        formGroup.classList.add('error');
-                    }
-                }
-            }
-            
-            // Scroll-based progress update
-            window.addEventListener('scroll', updateProgress);
-            updateProgress(); // Initial update
-            
-            // Smooth scroll to sections
-            document.querySelectorAll('label').forEach(label => {
-                label.addEventListener('click', function() {
-                    const input = this.querySelector('input');
-                    if (input && input.type === 'checkbox') {
-                        setTimeout(() => {
-                            const nextSection = this.closest('.form-section').nextElementSibling;
-                            if (nextSection) {
-                                nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }
-                        }, 100);
-                    }
-                });
-            });
-            
-            // Add animation to form sections on scroll
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            }, observerOptions);
-            
-            sections.forEach(section => {
-                section.style.opacity = '0';
-                section.style.transform = 'translateY(20px)';
-                section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                observer.observe(section);
-            });
-            
-            // Initialize with some settings
-            setTimeout(() => {
-                const firstOption = document.querySelector('.setting-option');
-                if (firstOption) {
-                    firstOption.click();
-                }
-            }, 500);
         });
-    </script>
+        
+        // Update progress steps
+        progressSteps.forEach((step, index) => {
+            step.classList.remove('active', 'completed');
+            if (index < activeIndex) {
+                step.classList.add('completed');
+            } else if (index === activeIndex) {
+                step.classList.add('active');
+            }
+        });
+    }
+    
+    // Checkbox card selection
+    const checkboxCards = document.querySelectorAll('.checkbox-card');
+    checkboxCards.forEach(card => {
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        
+        card.addEventListener('click', () => {
+            checkbox.checked = !checkbox.checked;
+            card.classList.toggle('selected', checkbox.checked);
+        });
+        
+        // Initialize selected state
+        card.classList.toggle('selected', checkbox.checked);
+    });
+    
+    // Recommended settings selection
+    const settingOptions = document.querySelectorAll('.setting-option');
+    settingOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            // Remove selection from all options
+            settingOptions.forEach(opt => opt.classList.remove('selected'));
+            
+            // Select this option
+            option.classList.add('selected');
+            
+            // Apply recommended settings
+            const delayInput = document.querySelector('#{{ form.delaiRappelMin.vars.id }}');
+            const startTimeInput = document.querySelector('#{{ form.heureSilenceDebut.vars.id }}');
+            const endTimeInput = document.querySelector('#{{ form.heureSilenceFin.vars.id }}');
+            
+            if (option.dataset.delai) {
+                delayInput.value = option.dataset.delai;
+            }
+            
+            if (option.dataset.start && option.dataset.end) {
+                startTimeInput.value = option.dataset.start;
+                endTimeInput.value = option.dataset.end;
+            } else {
+                // Clear time inputs if no silence period
+                startTimeInput.value = '';
+                endTimeInput.value = '';
+            }
+        });
+    });
+    
+    // Scroll-based progress update
+    window.addEventListener('scroll', updateProgress);
+    updateProgress(); // Initial update
+    
+    // Smooth scroll to sections when clicking labels
+    document.querySelectorAll('label').forEach(label => {
+        label.addEventListener('click', function() {
+            const input = this.querySelector('input');
+            if (input && input.type === 'checkbox') {
+                setTimeout(() => {
+                    const nextSection = this.closest('.form-section').nextElementSibling;
+                    if (nextSection) {
+                        nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }, 100);
+            }
+        });
+    });
+    
+    // Add animation to form sections on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    sections.forEach(section => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        section.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(section);
+    });
+    
+    // Initialize with first recommended setting
+    setTimeout(() => {
+        const firstOption = document.querySelector('.setting-option');
+        if (firstOption) {
+            firstOption.click();
+        }
+    }, 500);
+});
+</script>
+
 </body>
 </html>

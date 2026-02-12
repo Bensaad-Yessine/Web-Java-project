@@ -678,14 +678,64 @@
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                       <h4 class="card-title">🏢 Liste des Salles</h4>
-                      <div class="d-flex">
-                        <div class="search-box me-3">
-                          <input type="text" class="form-control" placeholder="Rechercher..." id="tableSearchInput">
+                      <a href="{{ path('app_salle_new') }}" class="btn btn-gradient-primary btn-icon-text">
+                        <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
+                        Ajouter une salle
+                      </a>
+                    </div>
+
+                    <!-- Filters Panel -->
+                    <div class="card mb-3" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border: none; border-radius: 10px;">
+                      <div class="card-body">
+                        <h4 class="card-title mb-4 text-primary"><i class="mdi mdi-filter-variant me-2"></i>Filtrer et Rechercher</h4>
+                        <div class="row g-3">
+                          <div class="col-md-3">
+                            <label class="fw-bold mb-1">Recherche</label>
+                            <input type="text" id="searchInput" class="form-control form-control-lg border-primary" 
+                                   placeholder="🔍 Nom de salle..." value="{{ search }}" style="border-width: 2px;">
+                          </div>
+                          <div class="col-md-3">
+                            <label class="fw-bold mb-1">Bloc</label>
+                            <select id="blockFilter" class="form-control form-control-lg border-secondary" style="cursor: pointer;">
+                              <option value="">-- Tous les blocs --</option>
+                              {% for b in blocks %}
+                                <option value="{{ b.block }}" {% if b.block == blockFilter %}selected{% endif %}>
+                                  Bloc {{ b.block }}
+                                </option>
+                              {% endfor %}
+                            </select>
+                          </div>
+                          <!-- Optional: Capacity Filters if needed, can add later -->
+                          <div class="col-md-3">
+                            <label class="fw-bold mb-1">Capacité Max</label>
+                             <input type="number" id="maxCapaciteInput" class="form-control form-control-lg border-secondary" placeholder="Ex: 50" value="{{ maxCapacite }}">
+                          </div>
+
+                          <div class="col-md-3">
+                            <label class="fw-bold mb-1">Trier par</label>
+                            <select id="sortSelect" class="form-control form-control-lg border-secondary" style="cursor: pointer;">
+                              <option value="id-asc" {% if sort == 'id' and direction == 'asc' %}selected{% endif %}>ID (croissant)</option>
+                              <option value="id-desc" {% if sort == 'id' and direction == 'desc' %}selected{% endif %}>ID (décroissant)</option>
+                              <option value="name-asc" {% if sort == 'name' and direction == 'asc' %}selected{% endif %}>Nom (A-Z)</option>
+                              <option value="name-desc" {% if sort == 'name' and direction == 'desc' %}selected{% endif %}>Nom (Z-A)</option>
+                              <option value="capacite-asc" {% if sort == 'capacite' and direction == 'asc' %}selected{% endif %}>Capacité (croissant)</option>
+                              <option value="capacite-desc" {% if sort == 'capacite' and direction == 'desc' %}selected{% endif %}>Capacité (décroissant)</option>
+                            </select>
+                          </div>
                         </div>
-                        <a href="{{ path('app_salle_new') }}" class="btn btn-gradient-primary btn-icon-text">
-                          <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
-                          Ajouter une salle
-                        </a>
+                        <div class="row mt-3">
+                          <div class="col-md-12 d-flex align-items-center">
+                            <button id="applyFilters" class="btn btn-gradient-primary btn-lg text-white me-3 px-4 shadow">
+                              <i class="mdi mdi-filter me-2"></i>FILTRER
+                            </button>
+                            <button id="resetFilters" class="btn btn-outline-secondary btn-lg px-4">
+                              <i class="mdi mdi-refresh me-2"></i>Réinitialiser
+                            </button>
+                            <span class="text-muted ms-auto" id="resultCount" style="font-size: 1.1em; font-weight: 500;">
+                              <i class="mdi mdi-format-list-bulleted me-1"></i>Résultats: {{ salles|length }}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -693,10 +743,10 @@
                       <div class="empty-state">
                         <i class="mdi mdi-office-building"></i>
                         <h4 class="text-muted">Aucune salle trouvée</h4>
-                        <p class="text-muted mb-4">Commencez par ajouter une nouvelle salle</p>
+                        <p class="text-muted mb-4">Essayez de modifier vos filtres ou ajoutez une nouvelle salle</p>
                         <a href="{{ path('app_salle_new') }}" class="btn btn-gradient-primary">
                           <i class="mdi mdi-plus-circle"></i>
-                          Ajouter la première salle
+                          Ajouter une salle
                         </a>
                       </div>
                     {% else %}
@@ -707,9 +757,9 @@
                               <th>ID</th>
                               <th>Salle</th>
                               <th>Bloc</th>
-                              <th>Numéro</th>
-                              <th>Nom</th>
-                              <th>Statut</th>
+                              <th>Étage</th>
+                              <th>Capacité</th>
+                              <th>Disponibilité</th>
                               <th>Actions</th>
                             </tr>
                           </thead>
@@ -723,50 +773,38 @@
                                       <i class="mdi mdi-door-closed"></i>
                                     </div>
                                     <div>
-                                      <h6 class="mb-0">Salle {{ salle.block }}-{{ salle.number }}</h6>
+                                      <h6 class="mb-0">Salle {{ salle.name }}</h6>
                                       <small class="text-muted">ID: {{ salle.id }}</small>
                                     </div>
                                   </div>
                                 </td>
                                 <td>
-                                  <span class="block-badge 
-                                    {% if salle.block == 'A' %}badge-block-a
-                                    {% elseif salle.block == 'B' %}badge-block-b
-                                    {% elseif salle.block == 'C' %}badge-block-c
-                                    {% elseif salle.block == 'D' %}badge-block-d
-                                    {% elseif salle.block == 'E' %}badge-block-e
-                                    {% else %}badge-block-f{% endif %}">
-                                    <i class="mdi mdi-domain me-1"></i>
-                                    Bloc {{ salle.block }}
+                                  <span class="block-badge badge-block-{{ salle.block|lower }} text-white">
+                                    <i class="mdi mdi-domain me-1"></i> Block {{ salle.block }}
                                   </span>
                                 </td>
                                 <td>
-                                  <span class="badge badge-light">
-                                    <i class="mdi mdi-numeric me-1"></i>
-                                    {{ salle.number }}
+                                  <span class="badge badge-outline-primary">
+                                    Étage {{ salle.etage }}
                                   </span>
                                 </td>
                                 <td>
-                                  <h6 class="mb-0">{{ salle.name }}</h6>
-                                  <small class="text-muted">Salle {{ salle.block }}-{{ salle.number }}</small>
-                                </td>
-                                <td>
-                                  <!-- Example status - you might want to add a status field to your Salle entity -->
-                                  {% set randomStatus = random(['available', 'occupied', 'maintenance']) %}
-                                  {% if randomStatus == 'available' %}
-                                    <span class="badge badge-success">
-                                      <span class="room-status room-available"></span>
-                                      Disponible
+                                   {% if salle.capacite %}
+                                    <span class="badge badge-info">
+                                        <i class="mdi mdi-account-group me-1"></i> {{ salle.capacite }}
                                     </span>
-                                  {% elseif randomStatus == 'occupied' %}
-                                    <span class="badge badge-danger">
-                                      <span class="room-status room-occupied"></span>
-                                      Occupée
+                                   {% else %}
+                                    <span class="text-muted">-</span>
+                                   {% endif %}
+                                </td>
+                                <td>
+                                  {% if salle.disponibilite %}
+                                    <span class="badge badge-success">
+                                      <i class="mdi mdi-check-circle me-1"></i> Disponible
                                     </span>
                                   {% else %}
-                                    <span class="badge badge-warning">
-                                      <span class="room-status room-maintenance"></span>
-                                      Maintenance
+                                    <span class="badge badge-danger">
+                                      <i class="mdi mdi-close-circle me-1"></i> Occupé
                                     </span>
                                   {% endif %}
                                 </td>
@@ -782,15 +820,13 @@
                                        title="Modifier">
                                       <i class="mdi mdi-pencil"></i>
                                     </a>
-                                    <form action="{{ path('app_salle_delete', { id: salle.id }) }}" 
-                                          method="POST" 
-                                          style="display: inline;"
-                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette salle ?');">
-                                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ salle.id) }}">
-                                      <button type="submit" class="btn btn-danger btn-sm btn-icon" title="Supprimer">
-                                        <i class="mdi mdi-delete"></i>
-                                      </button>
-                                    </form>
+                                    <button type="button" class="btn btn-danger btn-sm btn-icon delete-btn"
+                                            data-salle-id="{{ salle.id }}" 
+                                            data-salle-name="{{ salle.name }}"
+                                            data-csrf-token="{{ csrf_token('delete' ~ salle.id) }}"
+                                            title="Supprimer">
+                                      <i class="mdi mdi-delete"></i>
+                                    </button>
                                   </div>
                                 </td>
                               </tr>
@@ -803,6 +839,210 @@
                 </div>
               </div>
             </div>
+
+            <!-- Delete Confirmation Modal -->
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalLabel">
+                      <i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir supprimer la salle <strong id="salleNameDisplay"></strong> ?</p>
+                    <p class="text-danger mb-0">
+                      <i class="mdi mdi-alert me-1"></i>
+                      <small>Cette action est irréversible.</small>
+                    </p>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                      <i class="mdi mdi-close me-1"></i>Annuler
+                    </button>
+                    <form id="deleteForm" method="POST" style="display: inline;">
+                      <input type="hidden" name="_token" id="csrfToken" value="">
+                      <button type="submit" class="btn btn-danger">
+                        <i class="mdi mdi-delete me-1"></i>Supprimer
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('searchInput');
+                const blockFilter = document.getElementById('blockFilter');
+                const maxCapaciteInput = document.getElementById('maxCapaciteInput');
+                const sortSelect = document.getElementById('sortSelect');
+                const applyFiltersBtn = document.getElementById('applyFilters');
+                const resetFiltersBtn = document.getElementById('resetFilters');
+                const resultCountSpan = document.getElementById('resultCount');
+                const sallesTable = document.getElementById('sallesTable');
+
+                function applyFilters() {
+                    const search = searchInput ? searchInput.value.trim() : '';
+                    const block = blockFilter ? blockFilter.value : '';
+                    const maxCapacite = maxCapaciteInput ? maxCapaciteInput.value : '';
+                    const [sort, direction] = sortSelect ? sortSelect.value.split('-') : ['id', 'asc'];
+
+                    const params = new URLSearchParams();
+                    if (search) params.append('search', search);
+                    if (block) params.append('block', block);
+                    if (maxCapacite) params.append('maxCapacite', maxCapacite);
+                    if (sort) params.append('sort', sort);
+                    if (direction) params.append('direction', direction);
+
+                    // Show loading
+                    if(applyFiltersBtn) {
+                        applyFiltersBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin me-1"></i>Chargement...';
+                        applyFiltersBtn.disabled = true;
+                    }
+                    if(sallesTable) sallesTable.style.opacity = '0.5';
+
+                    // Cancel previous request if any
+                    if (window.__salleSearchController) {
+                      try { window.__salleSearchController.abort(); } catch (e) {}
+                    }
+                    window.__salleSearchController = new AbortController();
+
+                    fetch('{{ path("app_salle_ajax_filter") }}?' + params.toString(), { signal: window.__salleSearchController.signal })
+                      .then(response => response.json())
+                      .then(data => {
+                        if (data.success) {
+                          updateTable(data.data);
+                          if(resultCountSpan) resultCountSpan.innerHTML = '<i class="mdi mdi-format-list-bulleted me-1"></i>Résultats: ' + data.count;
+                        }
+                      })
+                      .catch(error => {
+                        if (error.name === 'AbortError') return;
+                        console.error('Error:', error);
+                      })
+                      .finally(() => {
+                         if(applyFiltersBtn) {
+                          applyFiltersBtn.innerHTML = '<i class="mdi mdi-filter me-2"></i>FILTRER';
+                          applyFiltersBtn.disabled = false;
+                        }
+                        if(sallesTable) sallesTable.style.opacity = '1';
+                      });
+                }
+
+                function updateTable(data) {
+                    const tbody = sallesTable.querySelector('tbody');
+                    if(!tbody) return;
+                    tbody.innerHTML = '';
+
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-5"><i class="mdi mdi-office-building display-4 mb-3 d-block"></i><h4>Aucune salle trouvée</h4></td></tr>';
+                        return;
+                    }
+
+                    data.forEach(salle => {
+                        const blockBadgeClass = 'badge-block-' + salle.block.toLowerCase();
+                        
+                        const row = `
+                            <tr>
+                                <td>${salle.id}</td>
+                                <td>
+                                  <div class="d-flex align-items-center">
+                                    <div class="room-icon me-3">
+                                      <i class="mdi mdi-door-closed"></i>
+                                    </div>
+                                    <div>
+                                      <h6 class="mb-0">Salle ${salle.name}</h6>
+                                      <small class="text-muted">ID: ${salle.id}</small>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td>
+                                  <span class="block-badge ${blockBadgeClass} text-white">
+                                    <i class="mdi mdi-domain me-1"></i> Block ${salle.block}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span class="badge badge-outline-primary">
+                                    Étage ${salle.etage}
+                                  </span>
+                                </td>
+                                <td>
+                                   ${ salle.capacite ? 
+                                    '<span class="badge badge-info"><i class="mdi mdi-account-group me-1"></i> ' + salle.capacite + '</span>' 
+                                    : '<span class="text-muted">-</span>' }
+                                </td>
+                                <td>
+                                  ${ salle.disponibilite ? 
+                                    '<span class="badge badge-success"><i class="mdi mdi-check-circle me-1"></i> Disponible</span>' : 
+                                    '<span class="badge badge-danger"><i class="mdi mdi-close-circle me-1"></i> Occupé</span>' }
+                                </td>
+                                <td>
+                                  <div class="action-buttons">
+                                    <a href="${salle.url}" class="btn btn-info btn-sm btn-icon" title="Voir"><i class="mdi mdi-eye"></i></a>
+                                    <a href="${salle.editUrl}" class="btn btn-warning btn-sm btn-icon" title="Modifier"><i class="mdi mdi-pencil"></i></a>
+                                    <button type="button" class="btn btn-danger btn-sm btn-icon delete-btn"
+                                            data-salle-id="${salle.id}" 
+                                            data-salle-name="${salle.name}"
+                                            data-csrf-token="${salle.csrfToken}"
+                                            title="Supprimer">
+                                      <i class="mdi mdi-delete"></i>
+                                    </button>
+                                  </div>
+                                </td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += row;
+                    });
+                    
+                    attachDeleteHandlers();
+                }
+
+                function attachDeleteHandlers() {
+                    document.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.getAttribute('data-salle-id');
+                            const name = this.getAttribute('data-salle-name');
+                            const token = this.getAttribute('data-csrf-token');
+                            
+                            document.getElementById('salleNameDisplay').textContent = name;
+                            document.getElementById('deleteForm').action = '/salle/' + id;
+                            document.getElementById('csrfToken').value = token;
+                            
+                            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+                        });
+                    });
+                }
+                
+                // Init
+                attachDeleteHandlers();
+                
+                if(applyFiltersBtn) applyFiltersBtn.addEventListener('click', applyFilters);
+                // Debounced live search with cancellation
+                function scheduleApplyFromInput(value) {
+                  clearTimeout(window.__salleSearchTimeout);
+                  window.__salleSearchTimeout = setTimeout(() => { if (searchInput) searchInput.value = value; applyFilters(); }, 350);
+                }
+                if(searchInput) {
+                  searchInput.addEventListener('input', function() {
+                     scheduleApplyFromInput(this.value);
+                  });
+                }
+                if(blockFilter) blockFilter.addEventListener('change', applyFilters);
+                if(maxCapaciteInput) maxCapaciteInput.addEventListener('change', applyFilters);
+                if(sortSelect) sortSelect.addEventListener('change', applyFilters);
+                
+                if(resetFiltersBtn) {
+                    resetFiltersBtn.addEventListener('click', function() {
+                        window.location.href = '{{ path("app_salle_index") }}';
+                    });
+                }
+            });
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
           
             <!-- Footer -->
             <footer class="footer">
@@ -818,115 +1058,5 @@
                 </span>
               </div>
             </footer>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header bg-danger text-white">
-            <h5 class="modal-title" id="deleteModalLabel">
-              <i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression
-            </h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <p>Êtes-vous sûr de vouloir supprimer cette salle ?</p>
-            <p class="text-danger mb-0">
-              <i class="mdi mdi-alert me-1"></i>
-              <small>Cette action est irréversible.</small>
-            </p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              <i class="mdi mdi-close me-1"></i>Annuler
-            </button>
-            <button type="button" class="btn btn-danger" id="confirmDelete">
-              <i class="mdi mdi-delete me-1"></i>Supprimer
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-   <!-- Scripts -->
-    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
-    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
-    <script src="{{ asset('assets/js/misc.js') }}"></script>
-    
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality for navbar
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-          searchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#sallesTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
-            });
-          });
-        }
-        
-        // Search functionality for table
-        const tableSearchInput = document.getElementById('tableSearchInput');
-        if (tableSearchInput) {
-          tableSearchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#sallesTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
-            });
-          });
-        }
-        
-        // Auto-hide alerts after 5 seconds
-        setTimeout(() => {
-          const alerts = document.querySelectorAll('.alert');
-          alerts.forEach(alert => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-          });
-        }, 5000);
-        
-        // Filter rooms by block
-        function filterRooms(block) {
-          const rows = document.querySelectorAll('#sallesTable tbody tr');
-          
-          rows.forEach(row => {
-            if (block === 'all') {
-              row.style.display = '';
-            } else {
-              const blockBadge = row.querySelector('.block-badge').textContent.trim();
-              row.style.display = blockBadge.includes(block) ? '' : 'none';
-            }
-          });
-        }
-        
-        // Add filter buttons functionality
-        const filterButtons = document.querySelectorAll('.filter-btn');
-        filterButtons.forEach(button => {
-          button.addEventListener('click', function() {
-            const block = this.getAttribute('data-block');
-            filterRooms(block);
-          });
-        });
-        
-        // Reset filter
-        const resetFilterBtn = document.getElementById('resetFilter');
-        if (resetFilterBtn) {
-          resetFilterBtn.addEventListener('click', function() {
-            filterRooms('all');
-          });
-        }
-      });
-    </script>
   </body>
 </html>

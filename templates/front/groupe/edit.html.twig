@@ -1,0 +1,88 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Modifier Groupe - {{ groupe_projet.nomProjet }}{% endblock %}
+
+{% set current_page = 'groupes' %}
+
+{% block content %}
+<main class="main">
+<header class="header">
+    <div>
+        <h1 class="h1">Modifier le groupe</h1>
+        <p class="muted">Ajustez les informations de votre groupe de projet</p>
+    </div>
+    <a href="{{ path('front_groupe_projet_index') }}" style="padding: 12px 24px; background: white; color: var(--gray-700); text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; border: 1px solid var(--gray-300); display: inline-flex; align-items: center; gap: 8px;">
+        ← Retour
+    </a>
+</header>
+
+<div class="profile-container">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <div class="card">
+            <div class="card-content">
+                {{ form_start(form, {'attr': {'id': 'groupForm'}}) }}
+
+                <div class="form-group">
+                    {{ form_label(form.nomProjet, 'Nom du Projet', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
+                    {{ form_widget(form.nomProjet, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px; transition: all var(--transition); background: white;', 'placeholder': 'Ex: Application Mobile ESPRIT'}}) }}
+                    {{ form_errors(form.nomProjet) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.description, 'Description', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px; transition: all var(--transition); background: white; min-height: 120px; resize: vertical;', 'placeholder': 'Décrivez votre projet...', 'rows': 5}}) }}
+                    {{ form_errors(form.description) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.nbrMembre, 'Nombre de Membres', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
+                    {{ form_widget(form.nbrMembre, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px; transition: all var(--transition); background: white;', 'min': '1', 'max': '10'}}) }}
+                    {{ form_errors(form.nbrMembre) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.matiere, 'Matière', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
+                    {{ form_widget(form.matiere, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px; transition: all var(--transition); background: white;', 'placeholder': 'Ex: Math, Informatique...'}}) }}
+                    {{ form_errors(form.matiere) }}
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.CreatedAt, 'Créé le', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
+                    {{ form_widget(form.CreatedAt, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px; transition: all var(--transition); background: white;'}}) }}
+                    {{ form_errors(form.CreatedAt) }}
+                </div>
+
+                <div class="form-group" style="padding: 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); background: var(--gray-50);">
+                    {{ form_label(form.statut, 'Statut du groupe', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
+                    <div class="d-flex flex-wrap gap-3">
+                        {{ form_widget(form.statut) }}
+                    </div>
+                    {{ form_errors(form.statut) }}
+                </div>
+
+                {% if form.idUser is defined %}
+                <div class="form-group" style="padding: 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); background: var(--gray-50);">
+                    {{ form_label(form.idUser, 'Membres du Groupe', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
+                    <div class="d-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;">
+                        {{ form_widget(form.idUser) }}
+                    </div>
+                    {{ form_errors(form.idUser) }}
+                </div>
+                {% endif %}
+
+                <div style="display: flex; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--gray-200);">
+                    <button type="submit" style="flex: 1; padding: 16px; background: linear-gradient(135deg, var(--green-500), var(--green-600)); color: white; border: none; border-radius: var(--radius-lg); font-weight: 700; font-size: 16px; cursor: pointer; transition: all var(--transition); box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        Enregistrer les modifications
+                    </button>
+                    <a href="{{ path('front_groupe_projet_index') }}" style="flex: 0.4; padding: 16px; background: white; color: var(--gray-700); text-decoration: none; border: 1px solid var(--gray-300); border-radius: var(--radius-lg); font-weight: 600; font-size: 16px; transition: all var(--transition); display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        Annuler
+                    </a>
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+</main>
+{% endblock %}
