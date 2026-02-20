@@ -11,15 +11,15 @@ use App\Repository\TacheRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\Json;   
 use Symfony\Component\HttpFoundation\JsonResponse;
-
-
+use App\Service\BehaviorAnalysisService;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 #[Route('/user')]
 class UserController extends AbstractController
@@ -294,150 +294,150 @@ class UserController extends AbstractController
             ], 400);
         }
     }
-#[Route('/dashboard/task/add', name: 'app_task_add', methods: ['GET', 'POST'])]
-public function addTask(Request $request, EntityManagerInterface $em): Response
-{
-    $user = $this->getUser();
-    
-    if (!$user) {
-        throw $this->createAccessDeniedException();
-    }
-
-    $tache = new Tache();
-    $tache->setUser($user); // Automatically set current user
-    
-    $form = $this->createForm(FrontOfficeTacheType::class, $tache);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        // Map frontend values to entity values
-        $typeMap = [
-            'course' => 'MANUEL',
-            'exam' => 'REVISION',
-            'meeting' => 'REUNION',
-            'personal' => 'MANUEL',
-            'project' => 'MANUEL',
-            'assignment' => 'MANUEL'
-        ];
-
-        $priorityMap = [
-            'low' => 'FAIBLE',
-            'medium' => 'MOYEN',
-            'high' => 'ELEVEE'
-        ];
-
-        $statusMap = [
-            'pending' => 'A_FAIRE',
-            'in_progress' => 'EN_COURS',
-            'completed' => 'TERMINEE'
-        ];
-
-        // Map the values
-        $formType = $tache->getType();
-        $entityType = $typeMap[$formType] ?? 'MANUEL';
-        $tache->setType($entityType);
-
-        $formPriority = $tache->getPriorite();
-        $entityPriority = $priorityMap[$formPriority] ?? 'MOYEN';
-        $tache->setPriorite($entityPriority);
-
-        $formStatus = $tache->getStatut();
-        $entityStatus = $statusMap[$formStatus] ?? 'A_FAIRE';
-        $tache->setStatut($entityStatus);
-
-        // Ensure required fields are set
-        if (!$tache->getDateDebut()) {
-            $tache->setDateDebut(new \DateTime());
-        }
-        if (!$tache->getDateFin()) {
-            $tache->setDateFin((new \DateTime())->modify('+1 hour'));
-        }
-        if (!$tache->getDureeEstimee()) {
-            $tache->setDureeEstimee(60);
-        }
+    #[Route('/dashboard/task/add', name: 'app_task_add', methods: ['GET', 'POST'])]
+    public function addTask(Request $request, EntityManagerInterface $em): Response
+    {
+        $user = $this->getUser();
         
-        if (!$tache->getCreatedAt()) {
-            $tache->setCreatedAt(new \DateTimeImmutable());
+        if (!$user) {
+            throw $this->createAccessDeniedException();
         }
 
-        $em->persist($tache);
-        $em->flush();
+        $tache = new Tache();
+        $tache->setUser($user); // Automatically set current user
+        
+        $form = $this->createForm(FrontOfficeTacheType::class, $tache);
+        $form->handleRequest($request);
 
-        $this->addFlash('success', 'Task created successfully!');
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Map frontend values to entity values
+            $typeMap = [
+                'course' => 'MANUEL',
+                'exam' => 'REVISION',
+                'meeting' => 'REUNION',
+                'personal' => 'MANUEL',
+                'project' => 'MANUEL',
+                'assignment' => 'MANUEL'
+            ];
+
+            $priorityMap = [
+                'low' => 'FAIBLE',
+                'medium' => 'MOYEN',
+                'high' => 'ELEVEE'
+            ];
+
+            $statusMap = [
+                'pending' => 'A_FAIRE',
+                'in_progress' => 'EN_COURS',
+                'completed' => 'TERMINEE'
+            ];
+
+            // Map the values
+            $formType = $tache->getType();
+            $entityType = $typeMap[$formType] ?? 'MANUEL';
+            $tache->setType($entityType);
+
+            $formPriority = $tache->getPriorite();
+            $entityPriority = $priorityMap[$formPriority] ?? 'MOYEN';
+            $tache->setPriorite($entityPriority);
+
+            $formStatus = $tache->getStatut();
+            $entityStatus = $statusMap[$formStatus] ?? 'A_FAIRE';
+            $tache->setStatut($entityStatus);
+
+            // Ensure required fields are set
+            if (!$tache->getDateDebut()) {
+                $tache->setDateDebut(new \DateTime());
+            }
+            if (!$tache->getDateFin()) {
+                $tache->setDateFin((new \DateTime())->modify('+1 hour'));
+            }
+            if (!$tache->getDureeEstimee()) {
+                $tache->setDureeEstimee(60);
+            }
+            
+            if (!$tache->getCreatedAt()) {
+                $tache->setCreatedAt(new \DateTimeImmutable());
+            }
+
+            $em->persist($tache);
+            $em->flush();
+
+            $this->addFlash('success', 'Task created successfully!');
+            return $this->redirectToRoute('app_my_tasks');
+        }
+
+        return $this->render('user/add_task.html.twig', [
+            'form' => $form->createView(),
+            'is_edit' => false,
+        ]);
+    }
+
+    #[Route('/dashboard/task/{id}/edit', name: 'app_task_edit', methods: ['GET', 'POST'])]
+    public function editTask(Request $request, Tache $tache, EntityManagerInterface $em): Response
+    {
+        // If legacy GET route, forward to dashboard edit logic
+        if ($request->getMethod() === 'GET' && $request->get('_route') === 'legacy_task_edit') {
+            return $this->redirectToRoute('app_task_edit', ['id' => $tache->getId()]);
+        }
+        $user = $this->getUser();
+        
+        if (!$user || $tache->getUser() !== $user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $form = $this->createForm(FrontOfficeTacheType::class, $tache);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // The form uses the entity's choice values (e.g. 'MANUEL','MOYEN','A_FAIRE'),
+            // so no remapping is required here.
+            $em->flush();
+
+            $this->addFlash('success', 'Task updated successfully!');
+            return $this->redirectToRoute('app_my_tasks');
+        }
+
+        return $this->render('user/edit_task.html.twig', [
+            'form' => $form->createView(),
+            'task' => $tache,
+            'is_edit' => true,
+        ]);
+    }
+
+    #[Route('/dashboard/task/{id}/show', name: 'app_task_show', methods: ['GET'])]
+    public function showTask(Tache $tache): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user || $tache->getUser() !== $user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        return $this->render('user/show_task.html.twig', [
+            'task' => $tache,
+        ]);
+    }
+
+
+    #[Route('/dashboard/task/{id}/delete', name: 'app_task_delete', methods: ['POST'])]
+    public function deleteTask(Request $request, Tache $tache, EntityManagerInterface $em): Response
+    {
+        $user = $this->getUser();
+        
+        if (!$user || $tache->getUser() !== $user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if ($this->isCsrfTokenValid('delete'.$tache->getId(), $request->request->get('_token'))) {
+            $em->remove($tache);
+            $em->flush();
+
+            $this->addFlash('success', 'Task deleted successfully!');
+        }
+
         return $this->redirectToRoute('app_my_tasks');
     }
-
-    return $this->render('user/add_task.html.twig', [
-        'form' => $form->createView(),
-        'is_edit' => false,
-    ]);
-}
-
-#[Route('/dashboard/task/{id}/edit', name: 'app_task_edit', methods: ['GET', 'POST'])]
-public function editTask(Request $request, Tache $tache, EntityManagerInterface $em): Response
-{
-    // If legacy GET route, forward to dashboard edit logic
-    if ($request->getMethod() === 'GET' && $request->get('_route') === 'legacy_task_edit') {
-        return $this->redirectToRoute('app_task_edit', ['id' => $tache->getId()]);
-    }
-    $user = $this->getUser();
-    
-    if (!$user || $tache->getUser() !== $user) {
-        throw $this->createAccessDeniedException();
-    }
-
-    $form = $this->createForm(FrontOfficeTacheType::class, $tache);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        // The form uses the entity's choice values (e.g. 'MANUEL','MOYEN','A_FAIRE'),
-        // so no remapping is required here.
-        $em->flush();
-
-        $this->addFlash('success', 'Task updated successfully!');
-        return $this->redirectToRoute('app_my_tasks');
-    }
-
-    return $this->render('user/edit_task.html.twig', [
-        'form' => $form->createView(),
-        'task' => $tache,
-        'is_edit' => true,
-    ]);
-}
-
-#[Route('/dashboard/task/{id}/show', name: 'app_task_show', methods: ['GET'])]
-public function showTask(Tache $tache): Response
-{
-    $user = $this->getUser();
-
-    if (!$user || $tache->getUser() !== $user) {
-        throw $this->createAccessDeniedException();
-    }
-
-    return $this->render('user/show_task.html.twig', [
-        'task' => $tache,
-    ]);
-}
-
-
-#[Route('/dashboard/task/{id}/delete', name: 'app_task_delete', methods: ['POST'])]
-public function deleteTask(Request $request, Tache $tache, EntityManagerInterface $em): Response
-{
-    $user = $this->getUser();
-    
-    if (!$user || $tache->getUser() !== $user) {
-        throw $this->createAccessDeniedException();
-    }
-
-    if ($this->isCsrfTokenValid('delete'.$tache->getId(), $request->request->get('_token'))) {
-        $em->remove($tache);
-        $em->flush();
-
-        $this->addFlash('success', 'Task deleted successfully!');
-    }
-
-    return $this->redirectToRoute('app_my_tasks');
-}
 
     #[Route('/tasks/{id}/toggle', name: 'app_task_toggle', methods: ['POST'])]
     public function toggleTask(Request $request, Tache $tache, EntityManagerInterface $em): JsonResponse
@@ -462,4 +462,51 @@ public function deleteTask(Request $request, Tache $tache, EntityManagerInterfac
             'statut' => $tache->getStatut(),
         ]);
     }
+    
+    #[Route('/dashboard/my-tasks/insights', name: 'user_tasks_insights', methods: ['GET'])]
+    public function myTasksInsights(BehaviorAnalysisService $behaviorService): JsonResponse
+    {
+        $user = $this->getUser();
+
+        try {
+            $profile = $behaviorService->getOrComputeProfile($user);
+
+            return new JsonResponse([
+                'metrics' => [
+                    'completionRate'           => $profile->getCompletionRate(),
+                    'abandonmentRate'          => $profile->getAbandonmentRate(),
+                    'averageStartDelayMinutes' => $profile->getAverageStartDelayMinutes(),
+                    'pauseFrequency'           => $profile->getPauseFrequency(),
+                    'mostProductiveHour'       => $profile->getMostProductiveHour(),
+                    'mostProductiveDayOfWeek'  => $profile->getMostProductiveDayOfWeek(),
+                ],
+                'aiInsights' => [
+                    'weeklyProductivitySummary' => $profile->getWeeklyProductivitySummary(),
+                    'behavioralAdvice'          => $profile->getBehavioralAdvice(),
+                ],
+                'lastUpdated' => $profile->getAnalyzedAt()->format('Y-m-d H:i:s'),
+            ]);
+
+        } catch (\TypeError $e) {
+            return new JsonResponse([
+                'error_type' => 'TypeError',
+                'message'    => $e->getMessage(),
+                'file'       => $e->getFile() . ':' . $e->getLine(),
+            ], 500);
+        } catch (\Error $e) {
+            return new JsonResponse([
+                'error_type' => 'Error',
+                'message'    => $e->getMessage(),
+                'file'       => $e->getFile() . ':' . $e->getLine(),
+            ], 500);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'error_type' => 'Exception',
+                'message'    => $e->getMessage(),
+                'file'       => $e->getFile() . ':' . $e->getLine(),
+            ], 500);
+        }
+    }
+
+
 }

@@ -839,9 +839,22 @@
             </div>
 
             <div class="tasks-container">
-                <div class="tasks-header">
-                    <h2 class="tasks-title">Toutes les tâches ({{ totalTasks }})</h2>
+                <div class="tasks-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; width: 100%;">
+                    <h2 class="tasks-title" style="font-size: 1.8rem; font-weight: 600; color: #1e293b; margin: 0; padding: 0;">Toutes les tâches ({{ totalTasks }})</h2>
+                    
+                    <div class="tasks-actions">
+                        <a href="#" id="btnInsights" class="btn btn-insights" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.2rem; background-color: rgba(139, 92, 246, 0.85); color: white; border-radius: 8px; text-decoration: none; font-weight: 500; transition: background-color 0.2s; border: none; cursor: pointer;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;">
+                                <path d="M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2"/>
+                                <path d="M3 12h4l2 3 3-6 2 3 3-3 2 3 2-3"/>
+                                <path d="M3 12v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
+                            </svg>
+                            Analyse & Insights
+                        </a>
+                    </div>
                 </div>
+
+                
 
                 <div class="task-grid" id="taskList">
                     {% if tasks is not empty %}
@@ -969,6 +982,203 @@
         </main>
     </div>
 
+<!-- Modal Overlay -->
+<div id="insightsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; 
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index:9999; justify-content:center; align-items:center;">
+    
+    <div style="background: white; border-radius: var(--radius-xl); max-width: 650px; width: 90%; 
+        max-height: 85%; overflow-y: auto; position: relative; box-shadow: var(--shadow-xl); 
+        animation: modalFadeIn 0.3s ease-out;">
+        
+        <!-- Modal Header with Gradient -->
+        <div style="background: var(--primary-gradient); padding: 1.5rem 2rem; border-radius: var(--radius-xl) var(--radius-xl) 0 0; position: relative;">
+            <h2 style="color: white; font-size: 1.8rem; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 0.75rem;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2"/>
+                    <path d="M3 12h4l2 3 3-6 2 3 3-3 2 3 2-3"/>
+                    <path d="M3 12v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
+                </svg>
+                Analyse & Insights
+            </h2>
+            
+            <!-- Close button -->
+            <button id="closeInsights" style="position:absolute; top:1.5rem; right:1.5rem; background: rgba(255,255,255,0.2); 
+                border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; 
+                justify-content: center; cursor: pointer; color: white; font-size: 1.2rem; 
+                transition: all var(--transition);" onmouseover="this.style.background='rgba(255,255,255,0.3)'" 
+                onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                ✕
+            </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div style="padding: 2rem;" id="insightsContainer">
+            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                <!-- Summary Section -->
+                <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 1.5rem; border-radius: var(--radius-lg); border-left: 4px solid var(--primary-red);">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                        <div style="background: var(--primary-red-light); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-red)" stroke-width="2">
+                                <path d="M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2"/>
+                                <path d="M3 12h4l2 3 3-6 2 3 3-3 2 3 2-3"/>
+                                <path d="M3 12v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
+                            </svg>
+                        </div>
+                        <h3 style="color: var(--gray-800); font-size: 1.2rem; font-weight: 600; margin: 0;">Résumé de la semaine</h3>
+                    </div>
+                    <p style="color: var(--gray-700); line-height: 1.6; margin: 0; font-size: 0.95rem;">
+                        <span id="weeklySummary">Chargement des insights...</span>
+                    </p>
+                </div>
+
+                <!-- Advice Section -->
+                <div style="background: white; padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm);">
+                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                        <div style="background: #FEF3C7; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                            </svg>
+                        </div>
+                        <h3 style="color: var(--gray-800); font-size: 1.2rem; font-weight: 600; margin: 0;">Conseils personnalisés</h3>
+                    </div>
+                    <p style="color: var(--gray-700); line-height: 1.6; margin: 0; font-size: 0.95rem;">
+                        <span id="behavioralAdvice">Chargement des conseils...</span>
+                    </p>
+                </div>
+
+                <!-- Key Metrics (will be populated dynamically) -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;" id="keyMetrics">
+                    <!-- Will be filled by JS -->
+                </div>
+
+                <!-- Last Updated -->
+                <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span style="color: var(--gray-500); font-size: 0.8rem;" id="lastUpdated">Dernière mise à jour</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add animation keyframes -->
+<style>
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script>
+    const btnInsights = document.getElementById('btnInsights');
+    const modal = document.getElementById('insightsModal');
+    const closeBtn = document.getElementById('closeInsights');
+    const weeklySummary = document.getElementById('weeklySummary');
+    const behavioralAdvice = document.getElementById('behavioralAdvice');
+    const lastUpdated = document.getElementById('lastUpdated');
+    const keyMetrics = document.getElementById('keyMetrics');
+
+    btnInsights.addEventListener('click', async (e) => {
+        e.preventDefault();
+        
+        // Reset content with loading state
+        weeklySummary.innerHTML = '<span style="display: flex; align-items: center; gap: 0.5rem;"><span class="loading-spinner" style="display: inline-block; width: 16px; height: 16px; border: 2px solid var(--primary-red-light); border-top-color: var(--primary-red); border-radius: 50%; animation: spin 1s linear infinite;"></span> Analyse en cours...</span>';
+        behavioralAdvice.innerHTML = '<span style="display: flex; align-items: center; gap: 0.5rem;"><span class="loading-spinner" style="display: inline-block; width: 16px; height: 16px; border: 2px solid var(--primary-red-light); border-top-color: var(--primary-red); border-radius: 50%; animation: spin 1s linear infinite;"></span> Génération des conseils...</span>';
+        
+        // Show metrics skeleton
+        keyMetrics.innerHTML = `
+            <div style="background: var(--gray-50); padding: 1rem; border-radius: var(--radius-lg); text-align: center;">
+                <div style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">Productivité</div>
+                <div style="height: 24px; background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-300) 50%, var(--gray-200) 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 4px;"></div>
+            </div>
+            <div style="background: var(--gray-50); padding: 1rem; border-radius: var(--radius-lg); text-align: center;">
+                <div style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">Tâches complétées</div>
+                <div style="height: 24px; background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-300) 50%, var(--gray-200) 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 4px;"></div>
+            </div>
+            <div style="background: var(--gray-50); padding: 1rem; border-radius: var(--radius-lg); text-align: center;">
+                <div style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">Taux de réussite</div>
+                <div style="height: 24px; background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-300) 50%, var(--gray-200) 75%); background-size: 200% 100%; animation: loading 1.5s infinite; border-radius: 4px;"></div>
+            </div>
+        `;
+
+        modal.style.display = 'flex';
+
+        try {
+            const response = await fetch('{{ path("user_tasks_insights") }}');
+            const data = await response.json();
+
+            // Update content with actual data
+            weeklySummary.innerHTML = data.aiInsights.weeklyProductivitySummary || 'Aucune donnée disponible pour cette semaine.';
+            behavioralAdvice.innerHTML = data.aiInsights.behavioralAdvice || 'Continuez votre bon travail ! Pas de conseils spécifiques pour le moment.';
+            
+            // Update metrics if available
+            if (data.metrics) {
+                keyMetrics.innerHTML = `
+                    <div style="background: var(--gray-50); padding: 1rem; border-radius: var(--radius-lg); text-align: center;">
+                        <div style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">Productivité</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-red);">${data.metrics.productivity || '85%'}</div>
+                    </div>
+                    <div style="background: var(--gray-50); padding: 1rem; border-radius: var(--radius-lg); text-align: center;">
+                        <div style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">Tâches complétées</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--secondary);">${data.metrics.completed || '0'}</div>
+                    </div>
+                    <div style="background: var(--gray-50); padding: 1rem; border-radius: var(--radius-lg); text-align: center;">
+                        <div style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">Taux de réussite</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning);">${data.metrics.successRate || '0%'}</div>
+                    </div>
+                `;
+            }
+
+            lastUpdated.innerHTML = `Dernière mise à jour: ${new Date().toLocaleString('fr-FR', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            })}`;
+
+        } catch (error) {
+            weeklySummary.innerHTML = 'Erreur lors du chargement des insights. Veuillez réessayer.';
+            behavioralAdvice.innerHTML = 'Impossible de charger les conseils pour le moment.';
+            console.error(error);
+        }
+    });
+
+    // Close modal functionality
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    // Add loading animation style
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+
     <script>
         function toggleTask(taskId) {
             fetch(`/tasks/${taskId}/toggle`, {
@@ -995,6 +1205,51 @@
                     link.classList.add('active');
                 }
             });
+        });
+    </script>
+    <script>
+        const btnInsights = document.getElementById('btnInsights');
+        const modal = document.getElementById('insightsModal');
+        const closeBtn = document.getElementById('closeInsights');
+        const container = document.getElementById('insightsContainer');
+
+        btnInsights.addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            container.innerHTML = '<p>Chargement des insights...</p>';
+            modal.style.display = 'flex'; // show modal
+
+            try {
+                const response = await fetch('{{ path("user_tasks_insights") }}');
+                const data = await response.json();
+
+                container.innerHTML = `
+                    <h2>Résumé de la semaine</h2>
+                    <p>${data.aiInsights.weeklyProductivitySummary || 'Aucune donnée disponible.'}</p>
+
+                    <h2>Conseils comportementaux</h2>
+                    <p>${data.aiInsights.behavioralAdvice || 'Aucun conseil disponible.'}</p>
+
+                    <p style="margin-top:1rem; font-size:0.9rem; color:#555;">
+                        Dernière mise à jour: ${data.lastUpdated}
+                    </p>
+                `;
+            } catch (error) {
+                container.innerHTML = '<p>Erreur lors du chargement des insights. Veuillez réessayer.</p>';
+                console.error(error);
+            }
+        });
+
+        // Close the modal
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        // Optional: close modal if user clicks outside the content box
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
         });
     </script>
 </body>

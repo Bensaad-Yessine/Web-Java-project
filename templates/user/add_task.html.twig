@@ -611,16 +611,6 @@
 
                         {# Due Date and Status #}
                         <div class="form-row">
-                            <div class="form-group">
-                                {{ form_label(form.dateEcheance, 'Due Date') }}
-                                {{ form_widget(form.dateEcheance, {
-                                    'attr': {'class': 'form-control'}
-                                }) }}
-                                <small class="form-text">Optional: Official deadline date</small>
-                                <div class="form-error">
-                                    {{ form_errors(form.dateEcheance) }}
-                                </div>
-                            </div>
 
                             <div class="form-group">
                                 {{ form_label(form.statut, 'Status *') }}
@@ -633,21 +623,7 @@
                             </div>
                         </div>
 
-                        {# Estimated Duration #}
-                        <div class="form-group">
-                            {{ form_label(form.dureeEstimee, 'Estimated Duration (minutes)') }}
-                            {{ form_widget(form.dureeEstimee, {
-                                'attr': {
-                                    'class': 'form-control',
-                                    'placeholder': 'e.g., 60',
-                                    'type': 'number'
-                                }
-                            }) }}
-                            <small class="form-text">How many minutes do you estimate this task will take?</small>
-                            <div class="form-error">
-                                {{ form_errors(form.dureeEstimee) }}
-                            </div>
-                        </div>
+
                     </div>
 
                     <div class="btn-group">
@@ -817,12 +793,7 @@
                         }
                     }
                     break;
-                case '{{ form.dureeEstimee.vars.id }}':
-                    if (value && (parseInt(value) < 1 || parseInt(value) > 1440)) {
-                        showFieldError(field, 'Duration must be between 1 and 1440 minutes');
-                        return false;
-                    }
-                    break;
+
             }
             
             return true;

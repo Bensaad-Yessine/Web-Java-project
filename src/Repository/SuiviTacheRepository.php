@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Entity\SuiviTache;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-
+use App\Entity\User;
 /**
  * @extends ServiceEntityRepository<SuiviTache>
  */
@@ -16,28 +16,19 @@ class SuiviTacheRepository extends ServiceEntityRepository
         parent::__construct($registry, SuiviTache::class);
     }
 
-//    /**
-//     * @return SuiviTache[] Returns an array of SuiviTache objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('s.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    // =================================================================
+    public function findByUserSince(User $user, ?\DateTimeInterface $since = null): array
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->join('s.tache', 't')
+            ->andWhere('t.user = :user')
+            ->setParameter('user', $user);
 
-//    public function findOneBySomeField($value): ?SuiviTache
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($since !== null) {
+            $qb->andWhere('s.dateAction >= :since')
+            ->setParameter('since', $since);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

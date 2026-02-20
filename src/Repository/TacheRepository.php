@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Entity\Tache;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-
+use App\Entity\User;
 /**
  * @extends ServiceEntityRepository<Tache>
  *
@@ -162,6 +162,21 @@ class TacheRepository extends ServiceEntityRepository
         // Tri sécurisé
         $sort = strtolower($sort) === 'asc' ? 'ASC' : 'DESC';
         $qb->orderBy('t.dateDebut', $sort);
+
+        return $qb->getQuery()->getResult();
+    }
+    ##############################################################################################
+
+    public function findByUserSince(User $user, ?\DateTimeInterface $since = null): array
+    {
+        $qb = $this->createQueryBuilder('t')
+            ->andWhere('t.user = :user')
+            ->setParameter('user', $user);
+
+        if ($since !== null) {
+            $qb->andWhere('t.dateDebut >= :since OR t.dateFin >= :since')
+            ->setParameter('since', $since);
+        }
 
         return $qb->getQuery()->getResult();
     }
