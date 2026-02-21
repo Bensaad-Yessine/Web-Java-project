@@ -214,7 +214,7 @@ final class TacheController extends AbstractController
     }
 
     //suivi tache history
-    #[Route('/{id}/action', name: 'app_tache_action_user', methods: ['POST'])]
+    #[Route('/{id}/action-user', name: 'app_tache_action_user', methods: ['POST'])]
     public function actionUser(Request $request, Tache $tache, EntityManagerInterface $em): Response
     {
         $newStatus = $request->request->get('action');

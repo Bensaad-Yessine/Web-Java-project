@@ -195,12 +195,24 @@ class UserController extends AbstractController
         if (!$user) {
             throw $this->createAccessDeniedException();
         }
-    
+
+        // Match what's actually in your database
+        $activeStatuses = ['A_FAIRE', 'EN_COURS', 'EN_RETARD', 'PAUSED'];
+        $archivedStatuses = ['TERMINE', 'ABANDON']; // Remove the final E to match DB
+
+        $activeTasks = $tacheRepository->findBy(
+            ['user' => $user, 'statut' => $activeStatuses],
+            ['id' => 'DESC']
+        );
+
+        $archivedTasks = $tacheRepository->findBy(
+            ['user' => $user, 'statut' => $archivedStatuses],
+            ['id' => 'DESC']
+        );
+
         return $this->render('user/FrontOffice.html.twig', [
-            'tasks' => $tacheRepository->findBy(
-                ['user' => $this->getUser()],
-                ['id' => 'DESC']
-            ),
+            'activeTasks' => $activeTasks,
+            'archivedTasks' => $archivedTasks,
         ]);
     }
 

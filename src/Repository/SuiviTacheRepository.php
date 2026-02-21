@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Tache;
 use App\Entity\SuiviTache;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -30,5 +31,16 @@ class SuiviTacheRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function findLastByTask(Tache $task)
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.tache = :task')
+            ->setParameter('task', $task)
+            ->orderBy('s.dateAction', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 }

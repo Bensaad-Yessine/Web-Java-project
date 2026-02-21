@@ -150,13 +150,13 @@ class BehaviorAnalysisService
 
         // Abandonment rate
         $abandonedTasks = array_filter($tasks, fn($t) =>
-            $t->getStatut() === 'ABANDONNEE' || 
-            ($t->getDateFin() < new \DateTime() && $t->getStatut() !== 'TERMINEE')
+            $t->getStatut() === 'ABANDON' || 
+            ($t->getDateFin() < new \DateTime() && $t->getStatut() !== 'TERMINE')
         );
         $abandonmentRate = count($abandonedTasks) / $totalTasks;
 
         // Completion rate
-        $completedTasks = array_filter($tasks, fn($t) => $t->getStatut() === 'TERMINEE');
+        $completedTasks = array_filter($tasks, fn($t) => $t->getStatut() === 'TERMINE');
         $completionRate = count($completedTasks) / $totalTasks;
 
         // Average start delay (minutes)
@@ -183,7 +183,7 @@ class BehaviorAnalysisService
         $hourCounts = [];
         $dayCounts = [];
         foreach ($suivis as $s) {
-            if (in_array($s->getNouveauStatut(), ['EN_COURS', 'TERMINEE'])) {
+            if (in_array($s->getNouveauStatut(), ['EN_COURS', 'TERMINE'])) {
                 $hour = (int)$s->getDateAction()->format('H');
                 $day = (int)$s->getDateAction()->format('N');
                 $hourCounts[$hour] = ($hourCounts[$hour] ?? 0) + 1;
@@ -211,12 +211,12 @@ class BehaviorAnalysisService
             }
 
             $abandonedOfType = array_filter($tasksOfType, fn($t) =>
-                $t->getStatut() === 'ABANDONNEE' || 
-                ($t->getDateFin() < new \DateTime() && $t->getStatut() !== 'TERMINEE')
+                $t->getStatut() === 'ABANDON' || 
+                ($t->getDateFin() < new \DateTime() && $t->getStatut() !== 'TERMINE')
             );
             $abandonmentRateByType[$type] = count($abandonedOfType) / $countType;
 
-            $completedOfType = array_filter($tasksOfType, fn($t) => $t->getStatut() === 'TERMINEE');
+            $completedOfType = array_filter($tasksOfType, fn($t) => $t->getStatut() === 'TERMINE');
             $completionRateByType[$type] = count($completedOfType) / $countType;
 
             $typeDelays = [];
@@ -390,19 +390,33 @@ class BehaviorAnalysisService
         $profile = new StudentIntelligenceProfile();
 
         $profile->setUser($user);
+
         $profile->setCompletionRate($metrics['completionRate']);
         $profile->setAbandonmentRate($metrics['abandonmentRate']);
         $profile->setAverageStartDelayMinutes($metrics['averageStartDelayMinutes']);
         $profile->setPauseFrequency($metrics['pauseFrequency']);
+
         $profile->setMostProductiveHour($metrics['mostProductiveHour']);
         $profile->setMostProductiveDayOfWeek($metrics['mostProductiveDayOfWeek']);
-        $profile->setWeeklyProductivitySummary($aiInsights['weeklyProductivitySummary'] ?? null);
-        $profile->setBehavioralAdvice($aiInsights['behavioralAdvice'] ?? null);
+
+        // ✅ ADD THESE
+        $profile->setAbandonmentRateByType($metrics['abandonmentRateByType']);
+        $profile->setCompletionRateByType($metrics['completionRateByType']);
+        $profile->setAverageStartDelayByType($metrics['averageStartDelayByType']);
+
+        $profile->setWeeklyProductivitySummary(
+            $aiInsights['weeklyProductivitySummary'] ?? null
+        );
+
+        $profile->setBehavioralAdvice(
+            $aiInsights['behavioralAdvice'] ?? null
+        );
+
         $profile->setAnalyzedAt(new \DateTime());
 
         $this->em->persist($profile);
         $this->em->flush();
 
-        return $profile; // <-- ADD THIS
+        return $profile;
     }
 }

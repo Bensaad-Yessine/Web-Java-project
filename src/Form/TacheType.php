@@ -63,7 +63,7 @@ class TacheType extends AbstractType
             ])
 
             ->add('statut', TextType::class, [
-                'label' => 'Statut (A_FAIRE, EN_COURS, TERMINEE, EN_RETARD)',
+                'label' => 'Statut (A_FAIRE, EN_COURS)',
                 'attr' => ['class' => 'form-control'],
             ]);
     }
