@@ -19,7 +19,7 @@
     {% if objectif_sante.valeurCible %}
       <span class="target-value">
         <i class="mdi mdi-target"></i>
-        {{ objectif_sante.valeurCible }}
+        {{ objectif_sante.getValeurCibleAvecUnite() }}
       </span>
     {% else %}
       <span class="text-muted">—</span>
@@ -36,15 +36,15 @@
   </td>
 
   <td>
-    {% if objectif_sante.progression is not null %}
+    {% if objectif_sante.scoreMoyen is not null %}
       <div class="d-flex align-items-center">
         <div class="progress me-2" style="width: 100px;">
-          {% set prog = objectif_sante.progression %}
+          {% set prog = objectif_sante.scoreMoyen %}
           <div class="progress-bar bg-health" role="progressbar"
                style="width: {{ prog > 100 ? 100 : prog }}%"
                aria-valuenow="{{ prog }}" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
-        <small class="fw-bold">{{ objectif_sante.progression }}%</small>
+        <small class="fw-bold">{{ objectif_sante.scoreMoyen }}%</small>
       </div>
     {% else %}
       <span class="text-muted">—</span>

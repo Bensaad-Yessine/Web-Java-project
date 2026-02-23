@@ -11,7 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
+use App\Service\CoachingSummaryService;
+use App\Service\DashboardAnalyticsService;
 #[Route('/front/objectif/sante')]
 final class FrontObjectifSanteController extends AbstractController
 {
@@ -134,6 +135,31 @@ public function show(ObjectifSante $objectif): Response
         'objectif_sante' => $objectif,
     ]);
 }
+#[Route('/{id}/coaching-summary', name: 'front_objectif_coaching_summary', methods: ['GET'])]
+public function coachingSummary(
+    ObjectifSante $objectif,
+    CoachingSummaryService $service
+): JsonResponse {
+    $this->denyAccessUnlessGranted('ROLE_USER');
 
+    if ($objectif->getUser() !== $this->getUser()) {
+        throw $this->createAccessDeniedException();
+    }
+
+    return $this->json($service->build($objectif));
+}
+#[Route('/{id}/dashboard-analytics', name: 'front_objectif_dashboard_analytics', methods: ['GET'])]
+public function dashboardAnalytics(
+    ObjectifSante $objectif,
+    DashboardAnalyticsService $service
+): JsonResponse {
+    $this->denyAccessUnlessGranted('ROLE_USER');
+
+    if ($objectif->getUser() !== $this->getUser()) {
+        throw $this->createAccessDeniedException();
+    }
+
+    return $this->json($service->build($objectif));
+}
 }
 

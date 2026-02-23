@@ -25,7 +25,6 @@ class ObjectifSante2Type extends AbstractType
                 'attr' => ['class' => 'form-control'],
                 'choices' => [
                     'Sommeil' => 'SOMMEIL',
-                    'Stress' => 'STRESS',
                     'Sport' => 'SPORT',
                     'Alimentation' => 'ALIMENTATION',
                 ],
@@ -67,7 +66,6 @@ class ObjectifSante2Type extends AbstractType
                     'Haute' => 'HAUTE',
                 ],
             ])
-            ->add('progression')
             ->add('titre' ,TextType::class, [
                 'label' => 'Titre',
                 'attr' => [

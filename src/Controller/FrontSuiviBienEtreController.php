@@ -66,6 +66,7 @@ final class FrontSuiviBienEtreController extends AbstractController
             $em->persist($suivi);
             $em->flush();
 
+            // ✅ Le score moyen est calculé automatiquement via getScoreMoyen()
             $this->addFlash('success', 'Suivi ajouté ✅');
 
             return $this->redirectToRoute('front_objectif_suivis', [
