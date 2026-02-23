@@ -70,6 +70,9 @@ class MatiereClasse
     #[ORM\OneToMany(targetEntity: Seance::class, mappedBy: 'matiere', cascade: ['remove'])]
     private Collection $seances;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $progression = null;
+
     public function __construct()
     {
         $this->classes = new ArrayCollection();
@@ -197,6 +200,18 @@ class MatiereClasse
 {
     return $this->nom ?? 'Matière';
 }
+
+  public function getProgression(): ?string
+  {
+      return $this->progression;
+  }
+
+  public function setProgression(?string $progression): static
+  {
+      $this->progression = $progression;
+
+      return $this;
+  }
 
     
 }

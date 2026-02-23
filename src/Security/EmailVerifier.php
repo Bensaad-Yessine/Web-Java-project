@@ -28,7 +28,9 @@ class EmailVerifier
         );
 
         $context = $email->getContext();
-        $context['signedUrl'] = $signatureComponents->getSignedUrl();
+        // Add the user ID and email to the signed URL
+        $signedUrl = $signatureComponents->getSignedUrl() . '&id=' . $user->getId() . '&email=' . urlencode($user->getEmail());
+        $context['signedUrl'] = $signedUrl;
         $context['expiresAtMessageKey'] = $signatureComponents->getExpirationMessageKey();
         $context['expiresAtMessageData'] = $signatureComponents->getExpirationMessageData();
 

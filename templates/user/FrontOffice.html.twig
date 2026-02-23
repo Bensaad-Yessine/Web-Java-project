@@ -716,7 +716,7 @@
                         </svg>
                         Mes Tâches
                     </a>
-                    <a href="{{path('front')}}">
+                    <a href="#">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
                             <circle cx="12" cy="12" r="10"/>
@@ -761,7 +761,7 @@
 
                 <div class="nav-section">
                     <div class="nav-section-title">Cours & Groupes</div>
-                    <a href="#">
+                    <a href="{{path('app_seance_by_classe',{'id': app.user.classe.id})}}">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"/>
                             <polyline points="12 6 12 12 16 14"/>
@@ -769,7 +769,7 @@
                         </svg>
                         Séances
                     </a>
-                    <a href="#">
+                    <a href="{{path('front_groupe_projet_index')}}">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                             <circle cx="9" cy="7" r="4"/>
@@ -919,7 +919,7 @@
                                 
                                 <div class="task-footer">
                                     <div class="task-actions">
-                                        <a class="action-btn primary" href="{{ path('app_tache_show', {'id': task.id}) }}">
+                                        <a class="action-btn primary" href="{{ path('app_task_show', {'id': task.id}) }}">
                                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <circle cx="12" cy="12" r="10"/>
                                                 <path d="M12 16v-4"/>
