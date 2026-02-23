@@ -420,7 +420,7 @@
             <ul class="navbar-nav w-100">
               <li class="nav-item w-100">
                 <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                  <input type="text" class="form-control" placeholder="Rechercher une classe..." id="searchInput">
+                  <input type="text" class="form-control" placeholder="Rechercher une classe..." id="searchInput" name="nom" value="{{ nom|default('') }}">
                 </form>
               </li>
             </ul>
@@ -698,6 +698,20 @@
                       </div>
                     </div>
 
+                    <div class="row mb-4">
+                      <div class="col-md-4">
+                        <div class="form-group mb-0">
+                          <label for="niveauFilter"><i class="mdi mdi-filter-variant me-1"></i> Filtrer par Niveau</label>
+                          <select class="form-control" id="niveauFilter" name="niveau">
+                            <option value="">Tous les niveaux</option>
+                            {% for n in niveaux %}
+                              <option value="{{ n }}" {{ n == niveau ? 'selected' : '' }}>Niveau {{ n }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
                     {% if classes is empty %}
                       <div class="empty-state">
                         <i class="mdi mdi-school-outline"></i>
@@ -709,26 +723,26 @@
                         </a>
                       </div>
                     {% else %}
-                      <div class="table-responsive">
+                      <div class="table-responsive" id="classeTableContainer">
                         <table class="table table-hover" id="classesTable">
                           <thead>
                             <tr>
                               <th>ID</th>
                               <th>
-                                <a href="{{ path('app_classe_index', {sort: sort == 'nom_asc' ? 'nom_desc' : 'nom_asc'}) }}" class="text-decoration-none">
+                                <a href="{{ path('app_classe_index', {sort: sort == 'nom_asc' ? 'nom_desc' : 'nom_asc'}) }}" class="text-decoration-none sort-link" data-sort="{{ sort == 'nom_asc' ? 'nom_desc' : 'nom_asc' }}">
                                   Classe
                                   {% if sort == 'nom_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'nom_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
                                 </a>
                               </th>
                               <th>Nom Complet</th>
                               <th>
-                                <a href="{{ path('app_classe_index', {sort: sort == 'niveau_asc' ? 'niveau_desc' : 'niveau_asc'}) }}" class="text-decoration-none">
+                                <a href="{{ path('app_classe_index', {sort: sort == 'niveau_asc' ? 'niveau_desc' : 'niveau_asc'}) }}" class="text-decoration-none sort-link" data-sort="{{ sort == 'niveau_asc' ? 'niveau_desc' : 'niveau_asc' }}">
                                   Niveau
                                   {% if sort == 'niveau_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'niveau_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
                                 </a>
                               </th>
                               <th>
-                                <a href="{{ path('app_classe_index', {sort: sort == 'anneeuniversitaire_asc' ? 'anneeuniversitaire_desc' : 'anneeuniversitaire_asc'}) }}" class="text-decoration-none">
+                                <a href="{{ path('app_classe_index', {sort: sort == 'anneeuniversitaire_asc' ? 'anneeuniversitaire_desc' : 'anneeuniversitaire_asc'}) }}" class="text-decoration-none sort-link" data-sort="{{ sort == 'anneeuniversitaire_asc' ? 'anneeuniversitaire_desc' : 'anneeuniversitaire_asc' }}">
                                   Année Universitaire
                                   {% if sort == 'anneeuniversitaire_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'anneeuniversitaire_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
                                 </a>
@@ -932,18 +946,89 @@
     
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality for navbar
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-          searchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#classesTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
+        const searchInputs = document.querySelectorAll('input[name="nom"]');
+        const niveauFilter = document.getElementById('niveauFilter');
+        const tableContainer = document.getElementById('classeTableContainer');
+
+        function updateTable(url) {
+          const searchTerm = searchInputs[0] ? searchInputs[0].value : '';
+          const selectedNiveau = niveauFilter ? niveauFilter.value : '';
+          
+          url.searchParams.set('nom', searchTerm);
+          url.searchParams.set('niveau', selectedNiveau);
+
+          fetch(url.toString(), {
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          })
+          .then(response => response.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newContainer = doc.getElementById('classeTableContainer');
+            if (newContainer && tableContainer) {
+              tableContainer.innerHTML = newContainer.innerHTML;
+              attachSortListeners();
+              attachDeleteListeners();
+            }
+          })
+          .catch(error => console.error('Error:', error));
+          
+          window.history.pushState({}, '', url);
+        }
+
+        function attachSortListeners() {
+          document.querySelectorAll('.sort-link').forEach(link => {
+            link.onclick = function(e) {
+              e.preventDefault();
+              updateTable(new URL(this.href));
+            };
+          });
+        }
+
+        function attachDeleteListeners() {
+          const deleteButtons = document.querySelectorAll('.delete-btn');
+          deleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+              const classeId = this.getAttribute('data-classe-id');
+              const classeName = this.getAttribute('data-classe-name');
+              const csrfToken = this.getAttribute('data-csrf-token');
+              document.getElementById('classeNameDisplay').textContent = classeName;
+              const deleteForm = document.getElementById('deleteForm');
+              deleteForm.action = '/classe/' + classeId + '/delete';
+              document.getElementById('csrfToken').value = csrfToken;
+              const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+              modal.show();
             });
           });
+        }
+
+        if (tableContainer) {
+          attachSortListeners();
+          attachDeleteListeners();
+
+          if (searchInputs.length > 0) {
+            searchInputs.forEach(input => {
+              input.addEventListener('input', function() {
+                const searchTerm = this.value;
+                searchInputs.forEach(otherInput => {
+                    if (otherInput !== input) otherInput.value = searchTerm;
+                });
+                updateTable(new URL(window.location.href));
+              });
+              
+              if (input.form) {
+                  input.form.addEventListener('submit', e => e.preventDefault());
+              }
+            });
+          }
+
+          if (niveauFilter) {
+            niveauFilter.addEventListener('change', function() {
+              updateTable(new URL(window.location.href));
+            });
+          }
         }
         
         // Delete confirmation modal for classes

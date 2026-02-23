@@ -15,10 +15,13 @@ use Symfony\Component\Routing\Attribute\Route;
 final class MatiereClasseController extends AbstractController
 {
     #[Route(name: 'app_matiere_classe_index', methods: ['GET'])]
-    public function index(Request $request, MatiereClasseRepository $matiereClasseRepository): Response
+    public function index(Request $request, MatiereClasseRepository $matiereClasseRepository, \App\Repository\ClasseRepository $classeRepository): Response
     {
         // 🔍 Recherche
         $search = $request->query->get('search');
+        
+        // 🏫 Filtrage par classe
+        $classeId = $request->query->get('classeId');
 
         // 🔃 Tri
         $sortParam = $request->query->get('sort'); // ex: coefficient_asc
@@ -29,11 +32,13 @@ final class MatiereClasseController extends AbstractController
         }
 
         // 📦 Récupération des matières de classe
-        $matiereClasses = $matiereClasseRepository->searchAndSort($search, $sortField, $sortOrder);
+        $matiereClasses = $matiereClasseRepository->searchAndSort($search, $classeId ? (int)$classeId : null, $sortField, $sortOrder);
 
         return $this->render('matiere_classe/index.html.twig', [
             'matiere_classes' => $matiereClasses,
             'search' => $search,
+            'classeId' => $classeId,
+            'classes' => $classeRepository->findAll(),
             'sort' => $sortParam
         ]);
     }

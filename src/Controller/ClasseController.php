@@ -22,6 +22,9 @@ class ClasseController extends AbstractController
     {
         // 🔍 Recherche
         $search = $request->query->get('nom');
+        
+        // 🏷️ Filtrage par niveau
+        $niveau = $request->query->get('niveau');
 
         // 🔃 Tri
         $sortParam = $request->query->get('sort'); // ex: nom_asc
@@ -32,11 +35,20 @@ class ClasseController extends AbstractController
         }
 
         // 📦 Récupération des classes
-        $classes = $classeRepository->searchAndSort($search, $sortField, $sortOrder);
+        $classes = $classeRepository->searchAndSort($search, $niveau, $sortField, $sortOrder);
+
+        // Récupération des niveaux pour le filtre
+        $niveaux = $classeRepository->createQueryBuilder('c')
+            ->select('DISTINCT c.niveau')
+            ->where('c.niveau IS NOT NULL')
+            ->getQuery()
+            ->getResult();
 
         return $this->render('classe/index.html.twig', [
             'classes' => $classes,
             'nom'     => $search,
+            'niveau'  => $niveau,
+            'niveaux' => array_column($niveaux, 'niveau'),
             'sort'    => $sortParam
         ]);
     }

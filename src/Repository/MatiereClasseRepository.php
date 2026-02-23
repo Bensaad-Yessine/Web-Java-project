@@ -24,7 +24,7 @@ class MatiereClasseRepository extends ServiceEntityRepository
      * @param string|null $sortOrder (asc | desc)
      * @return MatiereClasse[]
      */
-    public function searchAndSort(?string $search, ?string $sortField, ?string $sortOrder): array
+    public function searchAndSort(?string $search, ?int $classeId, ?string $sortField, ?string $sortOrder): array
     {
         $qb = $this->createQueryBuilder('m')
             ->leftJoin('m.classe', 'c')
@@ -41,6 +41,12 @@ class MatiereClasseRepository extends ServiceEntityRepository
                 )
             )
             ->setParameter('search', '%'.$search.'%');
+        }
+
+        // 🏫 Filtrage par classe spécifique
+        if ($classeId) {
+            $qb->andWhere('c.id = :classeId')
+               ->setParameter('classeId', $classeId);
         }
 
         // 🔃 Tri dynamique

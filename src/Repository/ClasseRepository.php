@@ -24,7 +24,7 @@ class ClasseRepository extends ServiceEntityRepository
      * @param string|null $sortOrder (asc | desc)
      * @return Classe[]
      */
-    public function searchAndSort(?string $nom, ?string $sortField, ?string $sortOrder): array
+    public function searchAndSort(?string $nom, ?string $niveau, ?string $sortField, ?string $sortOrder): array
     {
         $qb = $this->createQueryBuilder('c');
 
@@ -32,6 +32,12 @@ class ClasseRepository extends ServiceEntityRepository
         if ($nom) {
             $qb->andWhere('c.nom LIKE :nom')
                ->setParameter('nom', '%'.$nom.'%');
+        }
+
+        // 🏷️ Filtrage par niveau
+        if ($niveau && $niveau !== 'all') {
+            $qb->andWhere('c.niveau = :niveau')
+               ->setParameter('niveau', $niveau);
         }
 
         // 🔃 Tri dynamique
