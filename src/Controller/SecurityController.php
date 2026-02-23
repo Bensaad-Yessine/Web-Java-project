@@ -20,7 +20,7 @@ class SecurityController extends AbstractController
                 return $this->redirectToRoute('app_user_index'); // back-office
             }
 
-            if (in_array('ROLE_USER', $roles)) {
+            if (in_array('ROLE_USER', $roles) ) {
                 return $this->redirectToRoute('app_dashboard'); // user dashboard
             }
         }

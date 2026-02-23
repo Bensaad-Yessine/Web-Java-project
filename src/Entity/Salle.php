@@ -130,19 +130,23 @@ class Salle
         }
     }
 
-    // ✅ Assure que name est toujours correct avant INSERT/UPDATE
+    // ✅ Assure que name est toujours correct avant INSERT/UPDATE et gère les timestamps
     #[ORM\PrePersist]
     #[ORM\PreUpdate]
     public function onSave(): void
     {
         $this->updateName();
+        if ($this->createdAt === null) {
+            $this->createdAt = new \DateTimeImmutable();
+        }
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
     }
-    #[ORM\PrePersist]
+
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
@@ -154,7 +158,7 @@ class Salle
     {
         return $this->updatedAt;
     }
-     #[ORM\PreUpdate]
+
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
