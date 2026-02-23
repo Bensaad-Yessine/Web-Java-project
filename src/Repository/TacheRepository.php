@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Tache;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Entity\User;
 
 /**
  * @extends ServiceEntityRepository<Tache>
@@ -34,20 +33,25 @@ class TacheRepository extends ServiceEntityRepository
      * @param int|null $excludeId Optional: exclude a task ID (useful for edit)
      * @return Tache[] Returns an array of overlapping Tache objects
      */
-    public function findOverlappingTasks(\DateTime $start, \DateTime $end, ?int $excludeId = null): array
+    
+    public function findOverlappingTasks(\DateTime $start, \DateTime $end, int $userId, ?int $excludeId = null): array 
     {
         $qb = $this->createQueryBuilder('t');
 
-        // Basic overlap condition
+        // Overlap condition
         $qb->where('t.dateDebut < :end')
-           ->andWhere('t.dateFin > :start')
-           ->setParameter('start', $start)
-           ->setParameter('end', $end);
+        ->andWhere('t.dateFin > :start')
+        ->setParameter('start', $start)
+        ->setParameter('end', $end);
 
-        // If editing an existing task, exclude it from the check
-        if ($excludeId) {
+        // Filter by user
+        $qb->andWhere('t.user = :userId')
+        ->setParameter('userId', $userId);
+
+        // Exclude current task if editing
+        if ($excludeId !== null) {
             $qb->andWhere('t.id != :excludeId')
-               ->setParameter('excludeId', $excludeId);
+            ->setParameter('excludeId', $excludeId);
         }
 
         return $qb->getQuery()->getResult();
@@ -79,23 +83,6 @@ class TacheRepository extends ServiceEntityRepository
      */
 
 
-    // SEARCH : 
-    public function searchByTitre(?string $titre)
-    {
-        $qb = $this->createQueryBuilder('t');
-
-        //search by titre if provided
-        if ($titre) {
-            $qb->andWhere('t.titre Like :titre')
-            ->setParameter('titre', '%'.$titre.'%'); //partial match
-        }
-
-        // order by dateDebut ascending
-        $qb->orderBy('t.dateDebut', 'ASC');
-
-        return $qb->getQuery()->getResult();
-    }
-
 
     public function findTasksInInterval(\DateTime $start, \DateTime $end): array
     {
@@ -108,14 +95,86 @@ class TacheRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
-   public function findTaskByUser(User $user): array
-{
-    return $this->createQueryBuilder('t')
-        ->andWhere('t.user = :user')
-        ->setParameter('user', $user)
-        ->orderBy('t.dateDebut', 'DESC')
-        ->getQuery()
-        ->getResult();
-}
+
+    // SEARCH : 
+    public function searchByTitre(?string $titre): array
+    {
+        // If no title provided, return all tasks (more user-friendly)
+        if (!$titre) {
+            return $this->findAll();
+        }
+
+        $qb = $this->createQueryBuilder('t')
+            ->where('LOWER(t.titre) LIKE :titre')
+            ->setParameter('titre', '%' . mb_strtolower($titre) . '%')
+            ->orderBy('t.dateDebut', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    //filter by user email
+    public function searchByUserEmail(?string $email): array
+    {
+        // If empty email, return all tasks
+        if (!$email) {
+            return $this->findAll();
+        }
+
+        $qb = $this->createQueryBuilder('t')
+            ->join('t.user', 'u')
+            ->where('LOWER(u.email) LIKE :email')
+            ->setParameter('email', '%' . mb_strtolower($email) . '%')
+            ->orderBy('t.dateDebut', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
+
+    // src/Repository/TacheRepository.php
+    public function searchAjax(?string $titre, ?string $email, string $sortField = 'dateDebut', string $direction = 'DESC', ?string $type = null, ?string $statut = null, ?string $priorite = null): array
+    {
+        $qb = $this->createQueryBuilder('t')
+            ->leftJoin('t.user', 'u')
+            ->addSelect('u');
+
+        if ($titre) {
+            $qb->andWhere('LOWER(t.titre) LIKE :titre')
+                ->setParameter('titre', '%' . mb_strtolower($titre) . '%');
+        }
+
+        if ($email) {
+            $qb->andWhere('LOWER(u.email) LIKE :email')
+                ->setParameter('email', '%' . mb_strtolower($email) . '%');
+        }
+
+        if ($type && $type !== '') {
+            $qb->andWhere('t.type = :type')
+                ->setParameter('type', $type);
+        }
+
+        if ($statut && $statut !== '') {
+            $qb->andWhere('t.statut = :statut')
+                ->setParameter('statut', $statut);
+        }
+
+        if ($priorite && $priorite !== '') {
+            $qb->andWhere('t.priorite = :priorite')
+                ->setParameter('priorite', $priorite);
+        }
+
+        // Secure sort field mapping
+        $allowed = [
+            'dateDebut' => 't.dateDebut',
+            'dateFin'   => 't.dateFin',
+            'priorite'  => 't.priorite',
+            'id'        => 't.id'
+        ];
+
+        $field = $allowed[$sortField] ?? $allowed['dateDebut'];
+        $dir = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
+        $qb->orderBy($field, $dir);
+
+        return $qb->getQuery()->getResult();
+    }
+
 
 }

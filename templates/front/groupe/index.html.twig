@@ -1,0 +1,201 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Gestion de Groupe - ESPRIT{% endblock %}
+
+{% set current_page = 'groupes' %}
+
+{% block content %}
+<main class="main">
+<header class="header">
+    <div>
+        <h1 class="h1">Gestion de Groupe</h1>
+        <p class="muted">Gérez vos groupes de projet et collaborez avec vos camarades</p>
+    </div>
+    <a href="{{ path('front_groupe_projet_new') }}" class="btn" style="display: inline-flex; align-items: center; gap: 8px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Nouveau Groupe
+    </a>
+</header>
+
+<!-- Flash Messages -->
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ label }}" style="margin-bottom: 20px; padding: 16px 20px; border-radius: 12px; background: {% if label == 'success' %}#D1FAE5{% elseif label == 'error' %}#FEE2E2{% else %}#DBEAFE{% endif %}; border: 1px solid {% if label == 'success' %}#6EE7B7{% elseif label == 'error' %}#FCA5A5{% else %}#93C5FD{% endif %}; color: {% if label == 'success' %}#065F46{% elseif label == 'error' %}#7F1D1D{% else %}#1E40AF{% endif %}; border-radius: var(--radius-lg);">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
+
+<!-- Toolbar -->
+<div class="toolbar-section" style="margin-bottom: 32px; background: white; padding: 24px; border-radius: var(--radius-xl); border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm);">
+    <div style="display: flex; gap: 12px; margin-bottom: 16px; align-items: center;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--gray-500);">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <span style="font-size: 14px; font-weight: 600; color: var(--gray-700);">Filtres et Recherche</span>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+        <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="Rechercher un groupe..." 
+            style="padding: 12px 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 14px; transition: all var(--transition); background: var(--gray-50);"
+            onkeyup="filterGroups()"
+            aria-label="Rechercher un groupe"
+            onfocus="this.style.borderColor='var(--primary-red)'; this.style.background='white';"
+            onblur="this.style.borderColor='var(--gray-200)'; this.style.background='var(--gray-50)';"
+        >
+        
+        <select 
+            id="statusFilter" 
+            onchange="filterGroups()" 
+            style="padding: 12px 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 14px; background: var(--gray-50); cursor: pointer; transition: all var(--transition);"
+            aria-label="Filtrer par statut"
+        >
+            <option value="">Tous les statuts</option>
+            <option value="Actif">Actif</option>
+            <option value="Non actif">Non actif</option>
+            <option value="En pause">En pause</option>
+            <option value="Terminé">Terminé</option>
+        </select>
+
+        {% set matieres = [] %}
+        {% for g in groupe_projets %}
+            {% if g.matiere is not null and g.matiere not in matieres %}
+                {% set matieres = matieres|merge([g.matiere]) %}
+            {% endif %}
+        {% endfor %}
+        <select 
+            id="matiereFilter" 
+            onchange="filterGroups()" 
+            style="padding: 12px 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 14px; background: var(--gray-50); cursor: pointer; transition: all var(--transition);"
+            aria-label="Filtrer par matière"
+        >
+            <option value="">Toutes les matières</option>
+            {% for mat in matieres %}
+                <option value="{{ mat|lower }}">{{ mat }}</option>
+            {% endfor %}
+        </select>
+
+        <select 
+            id="sortBy" 
+            onchange="sortGroups()" 
+            style="padding: 12px 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 14px; background: var(--gray-50); cursor: pointer; transition: all var(--transition);"
+            aria-label="Trier par"
+        >
+            <option value="createdAt">Trier par date</option>
+            <option value="id">Trier par ID</option>
+            <option value="members">Trier par membres</option>
+        </select>
+    </div>
+</div>
+
+<!-- Groups Grid -->
+<div id="groupsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+    {% for groupe in groupe_projets %}
+        {% include 'front/groupe/_group_card.html.twig' with {'groupe': groupe} %}
+    {% else %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 80px 20px; background: white; border-radius: var(--radius-xl); border: 2px dashed var(--gray-200);">
+            <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="var(--gray-300)" stroke-width="1.5" style="margin: 0 auto 20px;">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <h3 style="font-size: 24px; color: var(--gray-600); margin-bottom: 12px; font-weight: 700;">Aucun groupe pour le moment</h3>
+            <p style="color: var(--gray-500); margin-bottom: 28px; font-size: 15px; line-height: 1.6;">Vous ne faites partie d'aucun groupe. Créez votre premier groupe ou attendez qu'un autre membre vous y ajoute.</p>
+            <a href="{{ path('front_groupe_projet_new') }}" class="btn" style="display: inline-flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Créer un groupe
+            </a>
+        </div>
+    {% endfor %}
+</div>
+</main>
+
+<script>
+function filterGroups() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const statusFilter = document.getElementById('statusFilter').value;
+    const matiereFilter = document.getElementById('matiereFilter').value;
+    const cards = document.querySelectorAll('.group-card');
+    
+    cards.forEach(card => {
+        const title = card.querySelector('.card-title')?.textContent.toLowerCase() || '';
+        const status = (card.dataset.status || '').toLowerCase();
+        const matiere = (card.dataset.matiere || '').toLowerCase();
+
+        let show = true;
+        if (search && !title.includes(search)) show = false;
+        if (statusFilter && status !== statusFilter.toLowerCase()) show = false;
+        if (matiereFilter && matiere !== matiereFilter) show = false;
+
+        card.style.display = show ? 'block' : 'none';
+    });
+}
+
+function sortGroups() {
+    const sortBy = document.getElementById('sortBy').value;
+    const container = document.getElementById('groupsContainer');
+    const cards = Array.from(container.querySelectorAll('.group-card'));
+    
+    cards.sort((a, b) => {
+        let aVal, bVal;
+        
+        if (sortBy === 'id') {
+            aVal = parseInt(a.dataset.id);
+            bVal = parseInt(b.dataset.id);
+        } else if (sortBy === 'members') {
+            aVal = parseInt(a.dataset.members);
+            bVal = parseInt(b.dataset.members);
+        } else {
+            aVal = new Date(a.dataset.created);
+            bVal = new Date(b.dataset.created);
+        }
+        
+        return bVal - aVal;
+    });
+    
+    cards.forEach(card => container.appendChild(card));
+}
+</script>
+
+<style>
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: var(--radius-lg);
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--transition);
+    cursor: pointer;
+    border: none;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+select, input {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+select:focus, input:focus {
+    outline: none;
+    border-color: var(--primary-red) !important;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+</style>
+{% endblock %}

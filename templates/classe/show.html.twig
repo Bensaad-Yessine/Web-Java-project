@@ -589,6 +589,27 @@
                         <i class="mdi mdi-delete me-1"></i>Supprimer
                       </button>
                     </div>
+                    <!-- ✅ Boutons Fonctionnalités Avancées -->
+                    <div class="text-center mt-2 d-flex flex-wrap justify-content-center gap-2">
+                      <a href="{{ path('app_classe_audit', {id: classe.id}) }}" class="btn btn-outline-primary btn-sm">
+                        ⚖️ Audit de charge
+                      </a>
+                      <a href="{{ path('app_classe_suggestions', {id: classe.id}) }}" class="btn btn-outline-info btn-sm">
+                        🤖 Suggestions
+                      </a>
+                      <a href="{{ path('app_classe_archive', {id: classe.id}) }}" class="btn btn-outline-secondary btn-sm">
+                        📦 Archiver
+                      </a>
+                      <a href="{{ path('app_classe_export_csv', {id: classe.id}) }}" class="btn btn-outline-success btn-sm">
+                        📊 Export CSV
+                      </a>
+                      <a href="{{ path('app_classe_export_pdf', {id: classe.id}) }}" class="btn btn-outline-dark btn-sm" target="_blank">
+                        🖨️ Export PDF
+                      </a>
+                      <a href="{{ path('app_classe_stats', {id: classe.id}) }}" class="btn btn-outline-warning btn-sm" target="_blank">
+                        📈 Stats JSON
+                      </a>
+                    </div>
                   </div>
                   <div class="card-body">
                     <div class="detail-item">

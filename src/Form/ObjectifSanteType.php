@@ -25,7 +25,6 @@ class ObjectifSanteType extends AbstractType
                 'attr' => ['class' => 'form-control'],
                 'choices' => [
                     'Sommeil' => 'SOMMEIL',
-                    'Stress' => 'STRESS',
                     'Sport' => 'SPORT',
                     'Alimentation' => 'ALIMENTATION',
                 ],
@@ -67,7 +66,6 @@ class ObjectifSanteType extends AbstractType
                     'Haute' => 'HAUTE',
                 ],
             ])
-            ->add('progression')
             ->add('titre' ,TextType::class, [
                 'label' => 'Titre',
                 'attr' => [
@@ -86,12 +84,15 @@ class ObjectifSanteType extends AbstractType
         ;
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $resolver->setDefaults([
-            'data_class' => ObjectifSante::class,
-        ]);
-    }
+  public function configureOptions(OptionsResolver $resolver): void
+{
+    $resolver->setDefaults([
+        'data_class' => ObjectifSante::class,
+        'is_front' => false, // ✅ default
+    ]);
+
+    $resolver->setAllowedTypes('is_front', 'bool');
+}
 }
 
 

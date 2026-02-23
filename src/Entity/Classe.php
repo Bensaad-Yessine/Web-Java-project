@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Entity;
-
+use App\Entity\MatiereClasse;
 use App\Repository\ClasseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -30,20 +30,36 @@ class Classe
     #[Assert\NotBlank(message: "Le niveau est obligatoire.")]
     private ?string $niveau = null;
 
-    #[ORM\Column(length: 20)]
-    #[Assert\NotBlank(message: "L'année universitaire est obligatoire.")]
-    #[Assert\Regex(
-        pattern: "/^\d{4}-\d{4}$/",
-        message: "Le format doit être AAAA-AAAA (ex: 2024-2025)."
-    )]
-    private ?string $anneeuniversitaire = null;
-
-    #[ORM\OneToMany(mappedBy: 'classe', targetEntity: MatiereClasse::class)]
+    /**
+     * @var Collection<int, MatiereClasse>
+     */
+    #[ORM\ManyToMany(targetEntity: MatiereClasse::class, mappedBy: 'classes')]
     private Collection $matiereClasses;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+#[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+private ?User $user = null;
+
+
+    #[ORM\Column(length: 255)]
+private ?string $anneeuniversitaire = "2025/2026";
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $description = null;
+
+    /**
+     * @var Collection<int, Seance>
+     */
+    #[ORM\OneToMany(targetEntity: Seance::class, mappedBy: 'classe', cascade: ['remove'])]
+    private Collection $seances;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $filiere = null;
 
     public function __construct()
     {
         $this->matiereClasses = new ArrayCollection();
+        $this->seances = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -146,29 +162,69 @@ class Classe
     {
         return $this->matiereClasses->count();
     }
+    public function getUser(): ?User
+{
+    return $this->user;
+}
 
-    public function getChargeHoraireTotale(): int
-    {
-        $total = 0;
-        foreach ($this->matiereClasses as $matiereClasse) {
-            $total += $matiereClasse->getChargehoraire();
-        }
-        return $total;
+public function setUser(?User $user): static
+{
+    $this->user = $user;
+    return $this;
+}
+
+public function getDescription(): ?string
+{
+    return $this->description;
+}
+
+public function setDescription(?string $description): static
+{
+    $this->description = $description;
+
+    return $this;
+}
+
+/**
+ * @return Collection<int, Seance>
+ */
+public function getSeances(): Collection
+{
+    return $this->seances;
+}
+
+public function addSeance(Seance $seance): static
+{
+    if (!$this->seances->contains($seance)) {
+        $this->seances->add($seance);
+        $seance->setClasse($this);
     }
 
-    public function getCoefficientMoyen(): float
-    {
-        $total = 0;
-        $count = $this->matiereClasses->count();
-        
-        if ($count === 0) {
-            return 0;
-        }
+    return $this;
+}
 
-        foreach ($this->matiereClasses as $matiereClasse) {
-            $total += $matiereClasse->getCoefficient();
+public function removeSeance(Seance $seance): static
+{
+    if ($this->seances->removeElement($seance)) {
+        // set the owning side to null (unless already changed)
+        if ($seance->getClasse() === $this) {
+            $seance->setClasse(null);
         }
-
-        return round($total / $count, 2);
     }
+
+    return $this;
+}
+
+    public function getFiliere(): ?string
+{
+    return $this->filiere;
+}
+
+public function setFiliere(?string $filiere): static
+{
+    $this->filiere = $filiere;
+
+    return $this;
+}
+
 }

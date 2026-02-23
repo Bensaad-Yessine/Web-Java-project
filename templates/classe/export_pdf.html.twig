@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Programme — {{ classe.nom }} ({{ classe.anneeuniversitaire }})</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; color: #333; }
+        h1 { font-size: 20px; color: #2c3e50; margin-bottom: 4px; }
+        .subtitle { font-size: 13px; color: #666; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { background: #2c3e50; color: white; padding: 10px 12px; text-align: left; }
+        td { padding: 9px 12px; border-bottom: 1px solid #eee; }
+        tr:nth-child(even) td { background: #f8f9fa; }
+        .badge-faible { background:#28a745; color:white; padding:2px 8px; border-radius:12px; font-size:11px; }
+        .badge-moyen { background:#ffc107; color:#333; padding:2px 8px; border-radius:12px; font-size:11px; }
+        .badge-eleve { background:#dc3545; color:white; padding:2px 8px; border-radius:12px; font-size:11px; }
+        .footer { margin-top: 30px; font-size: 11px; color:#999; border-top: 1px solid #eee; padding-top:10px; }
+        @media print { button { display: none; } }
+    </style>
+</head>
+<body>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+            <h1>📚 Programme — {{ classe.nom }}</h1>
+            <p class="subtitle">
+                Niveau : {{ classe.niveau }}
+                {% if classe.filiere %} | Filière : {{ classe.filiere }}{% endif %}
+                | Année : {{ classe.anneeuniversitaire }}
+            </p>
+        </div>
+        <div style="text-align:right">
+            <button onclick="window.print()" style="padding:8px 16px; background:#2c3e50; color:white; border:none; border-radius:4px; cursor:pointer;">
+                🖨️ Imprimer / PDF
+            </button>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Matière</th>
+                <th>Coefficient</th>
+                <th>Heures</th>
+                <th>Complexité</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for matiere in classe.matiereClasses %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td><strong>{{ matiere.nom }}</strong></td>
+                <td>{{ matiere.coefficient }}</td>
+                <td>{{ matiere.chargehoraire }}h</td>
+                <td>
+                    {% set score = matiere.scorecomplexite %}
+                    <span class="{% if score >= 7 %}badge-eleve{% elseif score >= 4 %}badge-moyen{% else %}badge-faible{% endif %}">
+                        {{ score }}/10
+                    </span>
+                </td>
+                <td>{{ matiere.description|default('—') }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" style="text-align:center; color:#999; padding:20px;">Aucune matière associée.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Total : {{ classe.matiereClasses|length }} matière(s) |
+        Généré le {{ "now"|date("d/m/Y à H:i") }}
+    </div>
+</body>
+</html>

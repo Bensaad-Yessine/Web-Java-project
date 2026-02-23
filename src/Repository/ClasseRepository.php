@@ -17,44 +17,75 @@ class ClasseRepository extends ServiceEntityRepository
     }
 
     /**
-     * Recherche et tri dynamique
-     *
-     * @param string|null $nom
-     * @param string|null $sortField (nom | niveau | anneeuniversitaire)
-     * @param string|null $sortOrder (asc | desc)
-     * @return Classe[]
+     * Find classes with search, filter, and sort
      */
-    public function searchAndSort(?string $nom, ?string $niveau, ?string $sortField, ?string $sortOrder): array
-    {
+    public function findWithFilters(
+        ?string $search = null,
+        ?string $niveau = null,
+        ?string $filiere = null,
+        string $sort = 'id',
+        string $direction = 'asc'
+    ): array {
         $qb = $this->createQueryBuilder('c');
 
-        // 🔍 Recherche par nom
-        if ($nom) {
-            $qb->andWhere('c.nom LIKE :nom')
-               ->setParameter('nom', '%'.$nom.'%');
+        // Search in nom, niveau, description, filiere
+        if ($search) {
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->like('LOWER(c.nom)', ':search'),
+                    $qb->expr()->like('LOWER(c.niveau)', ':search'),
+                    $qb->expr()->like('LOWER(c.description)', ':search'),
+                    $qb->expr()->like('LOWER(c.filiere)', ':search')
+                )
+            )->setParameter('search', '%' . strtolower($search) . '%');
         }
 
-        // 🏷️ Filtrage par niveau
-        if ($niveau && $niveau !== 'all') {
+        // Filter by niveau
+        if ($niveau) {
             $qb->andWhere('c.niveau = :niveau')
-               ->setParameter('niveau', $niveau);
+                ->setParameter('niveau', $niveau);
         }
 
-        // 🔃 Tri dynamique
-        $allowedFields = [
-            'nom' => 'c.nom',
-            'niveau' => 'c.niveau',
-            'anneeuniversitaire' => 'c.anneeuniversitaire' // <-- met ici exactement le nom de ton attribut dans l'entité
-        ];
-
-        $allowedOrder = ['asc', 'desc'];
-
-        if (isset($allowedFields[$sortField]) && in_array(strtolower($sortOrder), $allowedOrder)) {
-            $qb->orderBy($allowedFields[$sortField], strtoupper($sortOrder));
-        } else {
-            $qb->orderBy('c.id', 'DESC'); // tri par défaut
+        // Filter by filiere
+        if ($filiere) {
+            $qb->andWhere('c.filiere = :filiere')
+                ->setParameter('filiere', $filiere);
         }
+
+        // Sort
+        $allowedSorts = ['id', 'nom', 'niveau', 'filiere', 'anneeuniversitaire'];
+        if (!in_array($sort, $allowedSorts, true)) {
+            $sort = 'id';
+        }
+        
+        $direction = strtoupper($direction) === 'DESC' ? 'DESC' : 'ASC';
+        $qb->orderBy('c.' . $sort, $direction);
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Get distinct niveaux
+     */
+    public function getDistinctNiveaux(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('DISTINCT c.niveau')
+            ->orderBy('c.niveau', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Get distinct filieres
+     */
+    public function getDistinctFilieres(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->select('DISTINCT c.filiere')
+            ->where('c.filiere IS NOT NULL')
+            ->orderBy('c.filiere', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

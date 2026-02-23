@@ -44,11 +44,8 @@ security:
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/verify, roles: PUBLIC_ACCESS }
         - { path: ^/user/dashboard, roles: ROLE_USER }
-        - { path: ^/user/profile, roles: ROLE_USER }
-        - { path: ^/user/(add|edit|delete|show|$), roles: ROLE_ADMIN }
-        - { path: ^/classe, roles: ROLE_USER }
-        - { path: ^/matiereclasse, roles: ROLE_USER }
-    
+        - { path: ^/user, roles: ROLE_ADMIN }
+        
 when@test:
     security:
         password_hashers:

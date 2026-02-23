@@ -40,15 +40,91 @@
         color: #6c757d;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-    }
-    .card-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-    .card-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-    .card-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-    .card-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-    .card-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-    
-    .badge-custom {
+      }
+      .card-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+      .card-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+      .card-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+      .card-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+      
+      .matiere-badge {
         display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+      
+      .badge-coefficient {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+      }
+      
+      .badge-charge {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+      }
+      
+      .badge-complexite {
+        background: linear-gradient(135deg, #ffa502 0%, #ffb81c 100%);
+        color: white;
+      }
+
+      .complexity-bar {
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 3px;
+        margin-top: 6px;
+        overflow: hidden;
+        width: 100px;
+      }
+
+      .complexity-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      }
+      
+      .action-buttons .btn {
+        padding: 5px 10px;
+        margin: 0 2px;
+      }
+      
+      .table-hover tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+      }
+      
+      .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+      }
+      
+      .empty-state i {
+        font-size: 60px;
+        color: #dee2e6;
+        margin-bottom: 20px;
+      }
+      
+      .matiere-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+      }
+      
+      /* Profile styles */
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
         align-items: center;
         padding: 4px 12px;
         border-radius: 20px;
@@ -98,71 +174,13 @@
         font-size: 60px;
         color: #dee2e6;
         margin-bottom: 20px;
-    }
-    
-    .entity-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 16px;
-    }
-    
-    .complexity-bar {
-        height: 8px;
-        background: #e9ecef;
-        border-radius: 4px;
-        overflow: hidden;
-        margin-top: 5px;
-    }
-    
-    .complexity-fill {
-        height: 100%;
-        border-radius: 4px;
-        transition: width 0.3s ease;
-    }
-    
-    .complexity-low { background: #43e97b; }
-    .complexity-medium { background: #4facfe; }
-    .complexity-high { background: #f093fb; }
-    .complexity-very-high { background: #f5576c; }
-    
-    .charge-indicator {
-        display: inline-flex;
-        align-items: center;
-    }
-    
-    .charge-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        margin-right: 8px;
-    }
-    
-    .charge-light { background: #43e97b; }
-    .charge-medium { background: #4facfe; }
-    .charge-heavy { background: #f5576c; }
-    
-    .filter-buttons {
-        margin-bottom: 20px;
-    }
-    
-    .filter-btn {
-        margin-right: 10px;
-        margin-bottom: 10px;
-    }
-</style>
-{% endblock %}
-
-{% block body %}
-<div class="container-scroller">
-    <!-- Sidebar -->
-    <nav class="sidebar sidebar-offcanvas" id="sidebar">
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-scroller">
+      <!-- Sidebar -->
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
             <a class="sidebar-brand brand-logo" href="{{ path('app_matiere_classe_index') }}">
                 <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
@@ -172,154 +190,157 @@
             </a>
         </div>
         <ul class="nav">
-            <li class="nav-item profile">
-                <div class="profile-desc">
-                    <div class="profile-pic">
-                        <div class="count-indicator">
-                            <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
-                            <span class="count bg-success"></span>
-                        </div>
-                        <div class="profile-name">
-                            <h5 class="mb-0 font-weight-normal">Administrateur</h5>
-                            <span>ESPRIT</span>
-                        </div>
-                    </div>
+          <li class="nav-item profile">
+            <div class="profile-desc">
+              <div class="profile-pic">
+                <div class="count-indicator">
+                  {% if app.user %}
+                    {% if app.user.profilePic %}
+                      <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                           alt="{{ app.user.prenom }}" 
+                           class="profile-avatar-img">
+                    {% else %}
+                      <div class="profile-avatar">
+                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                      </div>
+                    {% endif %}
+                  {% else %}
+                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                  {% endif %}
+                  <span class="count bg-success"></span>
                 </div>
-            </li>
-            <li class="nav-item nav-category">
-                <span class="nav-link">Navigation</span>
-            </li>
-            
-            <!-- Dashboard -->
-            <li class="nav-item menu-items">
-                <a class="nav-link" href="{{ path('app_user_index') }}">
-                    <span class="menu-icon">
-                        <i class="mdi mdi-speedometer"></i>
-                    </span>
-                    <span class="menu-title">Dashboard</span>
-                </a>
-            </li>
-            
-            <!-- Utilisateurs -->
-            {% if is_granted('ROLE_ADMIN') %}
-            <li class="nav-item menu-items">
-                <a class="nav-link" href="{{ path('app_user_index') }}">
-                    <span class="menu-icon">
-                        <i class="mdi mdi-account-group"></i>
-                    </span>
-                    <span class="menu-title">Utilisateurs</span>
-                </a>
-            </li>
-            {% else %}
-            <li class="nav-item menu-items">
-                <a class="nav-link" href="{{ path('app_user_profile') }}">
-                    <span class="menu-icon">
-                        <i class="mdi mdi-account-circle"></i>
-                    </span>
-                    <span class="menu-title">Mon Profil</span>
-                </a>
-            </li>
-            {% endif %}
-            
-            <!-- Matières -->
-            <li class="nav-item menu-items">
-                <a class="nav-link" href="#">
-                    <span class="menu-icon">
-                        <i class="mdi mdi-book-open-page-variant"></i>
-                    </span>
-                    <span class="menu-title">Matieres</span>
-                </a>
-            </li>
-            
-            <!-- Classes -->
-            <li class="nav-item menu-items">
-                <a class="nav-link" href="{{ path('app_classe_index') }}">
-                    <span class="menu-icon">
-                        <i class="mdi mdi-school"></i>
-                    </span>
-                    <span class="menu-title">Classes</span>
-                </a>
-            </li>
-            
-            <!-- Matières-Classes -->
-            <li class="nav-item menu-items active">
-                <a class="nav-link" href="{{ path('app_matiere_classe_index') }}">
-                    <span class="menu-icon">
-                        <i class="mdi mdi-book-multiple"></i>
-                    </span>
-                    <span class="menu-title">Matieres-Classes</span>
-                </a>
-            </li>
-            
-            <!-- Salles -->
-            <li class="nav-item menu-items">
-                <a class="nav-link" href="#">
-                    <span class="menu-icon">
-                        <i class="mdi mdi-office-building"></i>
-                    </span>
-                    <span class="menu-title">Salles</span>
-                </a>
-            </li>
-            
-            <!-- Séances -->
-            <li class="nav-item menu-items">
-                <a class="nav-link" href="#">
-                    <span class="menu-icon">
-                        <i class="mdi mdi-calendar-clock"></i>
-                    </span>
-                    <span class="menu-title">Séances</span>
-                </a>
-            </li>
-            
-            <!-- Groupes -->
-            <li class="nav-item menu-items">
-                <a class="nav-link" href="#">
-                    <span class="menu-icon">
-                        <i class="mdi mdi-account-multiple"></i>
-                    </span>
-                    <span class="menu-title">Groupes</span>
-                </a>
-            </li>
-            
-            <!-- Tâches -->
-            <li class="nav-item menu-items">
-                <a class="nav-link" href="#">
-                    <span class="menu-icon">
-                        <i class="mdi mdi-checkbox-marked-circle-outline"></i>
-                    </span>
-                    <span class="menu-title">Tâches</span>
-                </a>
-            </li>
-            
-            <!-- Alertes -->
-            <li class="nav-item menu-items">
-                <a class="nav-link" href="#">
-                    <span class="menu-icon">
-                        <i class="mdi mdi-alert-circle-outline"></i>
-                    </span>
-                    <span class="menu-title">Alertes</span>
-                </a>
-            </li>
-            
-            <!-- Exercices de santé -->
-            <li class="nav-item menu-items">
-                <a class="nav-link" href="#">
-                    <span class="menu-icon">
-                        <i class="mdi mdi-heart-pulse"></i>
-                    </span>
-                    <span class="menu-title">Exercices de santé</span>
-                </a>
-            </li>
-            
-            <!-- Logout -->
-            <li class="nav-item menu-items">
-                <a class="nav-link" href="#">
-                    <span class="menu-icon">
-                        <i class="mdi mdi-logout text-danger"></i>
-                    </span>
-                    <span class="menu-title text-danger">Déconnexion</span>
-                </a>
-            </li>
+                <div class="profile-name">
+                  {% if app.user %}
+                    <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                    <span class="text-muted">{{ app.user.email }}</span>
+                    <div class="mt-1">
+                      {% if 'ROLE_ADMIN' in app.user.roles %}
+                        <span class="user-role-badge badge-admin">Administrateur</span>
+                      {% else %}
+                        <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                    <span>Veuillez vous connecter</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </li>
+          <li class="nav-item nav-category">
+            <span class="nav-link">Navigation</span>
+          </li>
+          
+          <!-- Dashboard -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-speedometer"></i>
+              </span>
+              <span class="menu-title">Dashboard</span>
+            </a>
+          </li>
+          
+          <!-- Utilisateurs -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_user_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-group"></i>
+              </span>
+              <span class="menu-title">Utilisateurs</span>
+            </a>
+          </li>
+          
+          <!-- Matières -->
+          <li class="nav-item menu-items active">
+            <a class="nav-link" href="{{ path('app_matiere_classe_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-book-open-page-variant"></i>
+              </span>
+              <span class="menu-title">Matières</span>
+            </a>
+          </li>
+          
+          <!-- Classes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_classe_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-school"></i>
+              </span>
+              <span class="menu-title">Classes</span>
+            </a>
+          </li>
+          
+          <!-- Salles -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_salle_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-office-building"></i>
+              </span>
+              <span class="menu-title">Salles</span>
+            </a>
+          </li>
+          
+          <!-- Séances -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-calendar-clock"></i>
+              </span>
+              <span class="menu-title">Séances</span>
+            </a>
+          </li>
+          
+          <!-- Groupes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-multiple"></i>
+              </span>
+              <span class="menu-title">Groupes</span>
+            </a>
+          </li>
+          
+          <!-- Tâches -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_tache_index') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+              </span>
+              <span class="menu-title">Tâches</span>
+            </a>
+          </li>
+          
+          <!-- Alertes -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-alert-circle-outline"></i>
+              </span>
+              <span class="menu-title">Alertes</span>
+            </a>
+          </li>
+          
+          <!-- Exercices de santé -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-heart-pulse"></i>
+              </span>
+              <span class="menu-title">Exercices de santé</span>
+            </a>
+          </li>
+          
+          <!-- Logout -->
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_logout') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-logout text-danger"></i>
+              </span>
+              <span class="menu-title text-danger">Déconnexion</span>
+            </a>
+          </li>
         </ul>
     </nav>
 
@@ -327,573 +348,618 @@
     <div class="container-fluid page-body-wrapper">
         <!-- Navbar -->
         <nav class="navbar p-0 fixed-top d-flex flex-row">
-            <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
-                <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
-            </div>
-            <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
-                <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
-                    <span class="mdi mdi-menu"></span>
-                </button>
-                <ul class="navbar-nav w-100">
-                    <li class="nav-item w-100">
-                        <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                            <input type="text" class="form-control" placeholder="Rechercher une matière-classe..." name="search">
-                        </form>
-                    </li>
-                </ul>
-                <ul class="navbar-nav navbar-nav-right">
-                    <li class="nav-item dropdown border-left">
-                        <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
-                            <i class="mdi mdi-bell"></i>
-                            <span class="count bg-danger">3</span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
-                            <h6 class="p-3 mb-0">Notifications</h6>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item preview-item">
-                                <div class="preview-thumbnail">
-                                    <div class="preview-icon bg-warning rounded-circle">
-                                        <i class="mdi mdi-book-multiple"></i>
-                                    </div>
-                                </div>
-                                <div class="preview-item-content">
-                                    <p class="preview-subject mb-1">Nouvelle affectation</p>
-                                    <p class="text-muted ellipsis mb-0">Matière affectée à une classe</p>
-                                </div>
-                            </a>
+          <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+          </div>
+          <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+            <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+              <span class="mdi mdi-menu"></span>
+            </button>
+            <ul class="navbar-nav w-100">
+              <li class="nav-item w-100">
+                <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                  <input type="text" class="form-control" placeholder="Rechercher une matière..." id="navbarSearchInput">
+                </form>
+              </li>
+            </ul>
+            <ul class="navbar-nav navbar-nav-right">
+              <li class="nav-item dropdown border-left">
+                <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                  <i class="mdi mdi-bell"></i>
+                  <span class="count bg-danger">1</span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                  <h6 class="p-3 mb-0">Notifications</h6>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item preview-item">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-info rounded-circle">
+                        <i class="mdi mdi-book-open-page-variant"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Nouvelle matière</p>
+                      <p class="text-muted ellipsis mb-0">Action récente</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+              
+              <li class="nav-item dropdown">
+                <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                  <div class="navbar-profile">
+                    {% if app.user %}
+                      <div class="avatar-container">
+                        {% if app.user.profilePic %}
+                          <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                               alt="{{ app.user.prenom }}" 
+                               class="user-avatar-img">
+                        {% else %}
+                          <div class="user-avatar">
+                            {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                          </div>
+                        {% endif %}
+                        <div class="text-start ms-2">
+                          <p class="mb-0 d-none d-sm-block navbar-profile-name">
+                            {{ app.user.prenom }} {{ app.user.nom }}
+                          </p>
+                          <small class="text-muted d-none d-sm-block">
+                            {% if 'ROLE_ADMIN' in app.user.roles %}
+                              <span class="badge badge-admin">Admin</span>
+                            {% else %}
+                              <span class="badge badge-etudiant">Utilisateur</span>
+                            {% endif %}
+                          </small>
                         </div>
-                    </li>
-                    
-                    <li class="nav-item dropdown">
-                        <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
-                            <div class="navbar-profile">
-                                <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
-                                <p class="mb-0 d-none d-sm-block navbar-profile-name">Admin ESPRIT</p>
-                                <i class="mdi mdi-menu-down d-none d-sm-block"></i>
-                            </div>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
-                            <h6 class="p-3 mb-0">Profil Administrateur</h6>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item preview-item" href="#">
-                                <div class="preview-thumbnail">
-                                    <div class="preview-icon bg-dark rounded-circle">
-                                        <i class="mdi mdi-logout text-danger"></i>
-                                    </div>
-                                </div>
-                                <div class="preview-item-content">
-                                    <p class="preview-subject mb-1">Déconnexion</p>
-                                </div>
-                            </a>
+                      </div>
+                    {% else %}
+                      <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                      <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                    {% endif %}
+                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                  </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                  <div class="dropdown-header p-3">
+                    {% if app.user %}
+                      <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                      <p class="text-muted mb-0">{{ app.user.email }}</p>
+                      <small class="text-muted">
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                          <span class="badge badge-admin">Administrateur</span>
+                        {% else %}
+                          <span class="badge badge-etudiant">Utilisateur</span>
+                        {% endif %}
+                      </small>
+                    {% else %}
+                      <h6 class="mb-0">Non connecté</h6>
+                      <p class="text-muted mb-0">Veuillez vous connecter</p>
+                    {% endif %}
+                  </div>
+                  <div class="dropdown-divider"></div>
+                  {% if app.user %}
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-primary rounded-circle">
+                          <i class="mdi mdi-account"></i>
                         </div>
-                    </li>
-                </ul>
-            </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Mon profil</p>
+                      </div>
+                    </a>
+                    <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                      <div class="preview-thumbnail">
+                        <div class="preview-icon bg-warning rounded-circle">
+                          <i class="mdi mdi-account-edit"></i>
+                        </div>
+                      </div>
+                      <div class="preview-item-content">
+                        <p class="preview-subject mb-1">Modifier mon profil</p>
+                      </div>
+                    </a>
+                    <div class="dropdown-divider"></div>
+                  {% endif %}
+                  <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-dark rounded-circle">
+                        <i class="mdi mdi-logout text-danger"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Déconnexion</p>
+                    </div>
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
         </nav>
 
         <!-- Content -->
         <div class="main-panel">
-            <div class="content-wrapper">
-                <!-- Header -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="page-header">
-                            <h3 class="page-title">
-                                <span class="page-title-icon bg-gradient-primary text-white me-2">
-                                    <i class="mdi mdi-book-multiple"></i>
-                                </span> 
-                                Gestion des Matières-Classes
-                            </h3>
-                            <nav aria-label="breadcrumb">
-                                <ul class="breadcrumb">
-                                    <li class="breadcrumb-item active" aria-current="page">
-                                        <span></span>Affectation des matières aux classes
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
-                    </div>
+          <div class="content-wrapper">
+            {# Flash Messages #}
+            {% for label, messages in app.flashes %}
+              {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                  <i class="mdi mdi-{{ label == 'success' ? 'check-circle' : 'alert-circle' }} me-2"></i>
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                
-                <!-- Statistics -->
-                <div class="row">
-                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                        <div class="card stat-card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-9">
-                                        <div class="d-flex align-items-center align-self-start">
-                                            <h3 class="mb-0 stat-count">{{ matiere_classes|length }}</h3>
-                                            <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(2, 10) }}%</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="stat-icon card-1">
-                                            <i class="mdi mdi-book-multiple"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h6 class="stat-label">Total Affectations</h6>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                        <div class="card stat-card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-9">
-                                        <div class="d-flex align-items-center align-self-start">
-                                            {% set highComplexity = matiere_classes|filter(mc => mc.scorecomplexite > 7)|length %}
-                                            <h3 class="mb-0 stat-count">{{ highComplexity }}</h3>
-                                            <p class="text-warning ms-2 mb-0 font-weight-medium">Haute</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="stat-icon card-2">
-                                            <i class="mdi mdi-chart-line"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h6 class="stat-label">Haute Complexité</h6>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                        <div class="card stat-card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-9">
-                                        <div class="d-flex align-items-center align-self-start">
-                                            {% set totalHours = matiere_classes|reduce((sum, mc) => sum + mc.chargehoraire, 0) %}
-                                            <h3 class="mb-0 stat-count">{{ totalHours }}</h3>
-                                            <p class="text-info ms-2 mb-0 font-weight-medium">heures</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="stat-icon card-3">
-                                            <i class="mdi mdi-clock-outline"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h6 class="stat-label">Charge Totale (h)</h6>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
-                        <div class="card stat-card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-9">
-                                        <div class="d-flex align-items-center align-self-start">
-                                            {% set avgCoefficient = matiere_classes|length > 0 ? (matiere_classes|reduce((sum, mc) => sum + mc.coefficient, 0) / matiere_classes|length)|number_format(1) : 0 %}
-                                            <h3 class="mb-0 stat-count">{{ avgCoefficient }}</h3>
-                                            <p class="text-success ms-2 mb-0 font-weight-medium">moyenne</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="stat-icon card-4">
-                                            <i class="mdi mdi-weight"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <h6 class="stat-label">Coefficient Moyen</h6>
-                            </div>
-                        </div>
-                    </div>
+              {% endfor %}
+            {% endfor %}
+
+            <!-- Header -->
+            <div class="row">
+              <div class="col-12">
+                <div class="page-header">
+                  <h3 class="page-title">
+                    <span class="page-title-icon bg-gradient-primary text-white me-2">
+                      <i class="mdi mdi-book-open-page-variant"></i>
+                    </span> 
+                    Gestion des Matières
+                  </h3>
+                  <nav aria-label="breadcrumb">
+                    <ul class="breadcrumb">
+                      <li class="breadcrumb-item active" aria-current="page">
+                        <span></span>Liste des matières ESPRIT
+                      </li>
+                    </ul>
+                  </nav>
                 </div>
-                
-                <!-- MatiereClasses Table -->
-                <div class="row">
-                    <div class="col-12 grid-margin">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-                                    <h4 class="card-title">📚 Liste des Affectations Matières-Classes</h4>
-                                    <div class="d-flex">
-                                        <form method="GET" class="d-flex gap-2">
-                                            <input type="text" class="form-control" placeholder="Rechercher..." name="search" value="{{ search }}">
-                                            <button type="submit" class="btn btn-gradient-primary">
-                                                <i class="mdi mdi-magnify"></i> Rechercher
-                                            </button>
-                                            {% if search %}
-                                                <a href="{{ path('app_matiere_classe_index') }}" class="btn btn-secondary">
-                                                    <i class="mdi mdi-close"></i> Réinitialiser
-                                                </a>
-                                            {% endif %}
-                                        </form>
-                                        <a href="{{ path('app_matiere_classe_new') }}" class="btn btn-gradient-primary btn-icon-text">
-                                            <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
-                                            Nouvelle Affectation
-                                        </a>
-                                    </div>
-                                </div>
+              </div>
+            </div>
+            
+            <!-- Statistics -->
+            <div class="row">
+              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          <h3 class="mb-0 stat-count">{{ matiere_classes|length }}</h3>
+                          <p class="text-success ms-2 mb-0 font-weight-medium">Total</p>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-icon card-1">
+                          <i class="mdi mdi-book-open-page-variant"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="stat-label">Matières Enseignées</h6>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          <h3 class="mb-0 stat-count">{{ matiere_classes|filter(m => m.coefficient > 2.0)|length }}</h3>
+                          <p class="text-danger ms-2 mb-0 font-weight-medium">Importantes</p>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-icon card-2">
+                          <i class="mdi mdi-weight"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="stat-label">Coef > 2</h6>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          <h3 class="mb-0 stat-count">{{ matiere_classes|length > 0 ? (matiere_classes|reduce((sum, m) => sum + m.scorecomplexite, 0) / matiere_classes|length)|round(1) : 0 }}</h3>
+                          <p class="text-warning ms-2 mb-0 font-weight-medium">Moyenne</p>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-icon card-3">
+                          <i class="mdi mdi-chart-line"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="stat-label">Complexité Global</h6>
+                  </div>
+                </div>
+              </div>
+              <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                <div class="card stat-card">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-9">
+                        <div class="d-flex align-items-center align-self-start">
+                          <h3 class="mb-0 stat-count">{{ matiere_classes|filter(m => m.chargehoraire > 30)|length }}</h3>
+                          <p class="text-info ms-2 mb-0 font-weight-medium">Intensives</p>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <div class="stat-icon card-4">
+                          <i class="mdi mdi-clock-outline"></i>
+                        </div>
+                      </div>
+                    </div>
+                    <h6 class="stat-label">Charge > 30h</h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Matieres Table -->
+            <div class="row">
+              <div class="col-12 grid-margin">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                      <h4 class="card-title">📖 Liste des Matières</h4>
+                      <a href="{{ path('app_matiere_classe_new') }}" class="btn btn-gradient-primary btn-icon-text">
+                        <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
+                        Nouvelle Matière
+                      </a>
+                    </div>
 
-                                <div class="btn-group mb-4" role="group">
-                                    <button class="btn btn-outline-primary filter-btn active" data-filter="all">Tout</button>
-                                    <button class="btn btn-outline-success filter-btn" data-filter="complexity-low">Complexité Faible</button>
-                                    <button class="btn btn-outline-warning filter-btn" data-filter="complexity-medium">Complexité Moyenne</button>
-                                    <button class="btn btn-outline-danger filter-btn" data-filter="complexity-high">Complexité Élevée</button>
-                                </div>
+                    <!-- Filters Panel -->
+                    <div class="card mb-3" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border: none; border-radius: 10px;">
+                      <div class="card-body">
+                        <h4 class="card-title mb-4 text-primary"><i class="mdi mdi-filter-variant me-2"></i>Filtrer et Rechercher</h4>
+                        <div class="row g-3">
+                          <div class="col-md-4">
+                            <label class="fw-bold mb-1">Recherche</label>
+                            <input type="text" id="searchInput" class="form-control form-control-lg border-primary" placeholder="🔍 Nom, description..." value="{{ search }}" style="border-width: 2px;">
+                          </div>
+                          <div class="col-md-4">
+                            <label class="fw-bold mb-1">Complexité Max: <span id="scoreLabel" class="text-primary fw-bold" style="font-size: 1.1em;">{{ minScore }}</span></label>
+                            <input type="range" id="scoreMinRange" class="form-range" min="{{ minScore }}" max="{{ maxScore }}" value="{{ scoreMin ? scoreMin : minScore }}" style="cursor: pointer; width: 100%; height: 10px;">
+                          </div>
+                          <div class="col-md-4">
+                            <label class="fw-bold mb-1">Trier par</label>
+                            <select id="sortSelect" class="form-control form-control-lg border-secondary" style="cursor: pointer;">
+                              <option value="id-asc" {% if sort == 'id' and direction == 'asc' %}selected{% endif %}>ID (croissant)</option>
+                              <option value="id-desc" {% if sort == 'id' and direction == 'desc' %}selected{% endif %}>ID (décroissant)</option>
+                              <option value="nom-asc" {% if sort == 'nom' and direction == 'asc' %}selected{% endif %}>Nom (A-Z)</option>
+                              <option value="nom-desc" {% if sort == 'nom' and direction == 'desc' %}selected{% endif %}>Nom (Z-A)</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="row mt-3">
+                          <div class="col-md-12 d-flex align-items-center">
+                            <button id="applyFilters" class="btn btn-gradient-primary btn-lg text-white me-3 px-4 shadow">
+                              <i class="mdi mdi-filter me-2"></i>FILTRER
+                            </button>
+                            <button id="resetFilters" class="btn btn-outline-secondary btn-lg px-4">
+                              <i class="mdi mdi-refresh me-2"></i>Réinitialiser
+                            </button>
+                            <span class="text-muted ms-auto" id="resultCount" style="font-size: 1.1em; font-weight: 500;">
+                              <i class="mdi mdi-format-list-bulleted me-1"></i>Résultats: {{ matiere_classes|length }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
-                                <div class="row mb-4">
-                                    <div class="col-md-4">
-                                        <div class="form-group mb-0">
-                                            <label for="classeFilter"><i class="mdi mdi-school me-1"></i> Filtrer par Classe</label>
-                                            <select class="form-control" id="classeFilter" name="classeId">
-                                                <option value="">Toutes les classes</option>
-                                                {% for c in classes %}
-                                                    <option value="{{ c.id }}" {{ c.id == (classeId|default(null)) ? 'selected' : '' }}>{{ c.nom }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
+                    {% if matiere_classes is empty %}
+                      <div class="empty-state">
+                        <i class="mdi mdi-book-open-page-variant-outline"></i>
+                        <h4 class="text-muted">Aucune matière trouvée</h4>
+                        <p class="text-muted mb-4">Commencez par créer une nouvelle matière</p>
+                        <a href="{{ path('app_matiere_classe_new') }}" class="btn btn-gradient-primary">
+                          <i class="mdi mdi-plus-circle"></i>
+                          Créer la première matière
+                        </a>
+                      </div>
+                    {% else %}
+                      <div class="table-responsive">
+                        <table class="table table-hover" id="matieresTable">
+                          <thead>
+                            <tr>
+                              <th>ID</th>
+                              <th>Matière</th>
+                              <th>Coefficient</th>
+                              <th>Charge</th>
+                              <th>Complexité</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for matiere_classe in matiere_classes %}
+                              <tr>
+                                <td>
+                                  <span class="text-muted">#{{ matiere_classe.id }}</span>
+                                </td>
+                                <td>
+                                  <div class="d-flex align-items-center">
+                                    <div class="matiere-avatar me-3">
+                                      <i class="mdi mdi-book-open-page-variant"></i>
                                     </div>
-                                </div>
-
-                                {% if matiere_classes is empty %}
-                                    <div class="empty-state">
-                                        <i class="mdi mdi-book-multiple-outline"></i>
-                                        <h4 class="text-muted">Aucune affectation trouvée</h4>
-                                        <p class="text-muted mb-4">Commencez par affecter une matière à une classe</p>
-                                        <a href="{{ path('app_matiere_classe_new') }}" class="btn btn-gradient-primary">
-                                            <i class="mdi mdi-plus-circle"></i>
-                                            Créer la première affectation
-                                        </a>
+                                    <div>
+                                      <h6 class="mb-0 font-weight-bold">{{ matiere_classe.nom }}</h6>
+                                      <small class="text-muted">ID: {{ matiere_classe.id }}</small>
                                     </div>
-                                {% else %}
-                                    <div class="table-responsive" id="matiereClasseTableContainer">
-                                        <table class="table table-hover" id="matiereClassesTable">
-                                          <thead>
-                                            <tr>
-                                              <th>ID</th>
-                                              <th>
-                                                <a href="{{ path('app_matiere_classe_index', {sort: sort == 'classe_asc' ? 'classe_desc' : 'classe_asc', search: search}) }}" class="text-decoration-none sort-link" data-sort="{{ sort == 'classe_asc' ? 'classe_desc' : 'classe_asc' }}">
-                                                  Classe
-                                                  {% if sort == 'classe_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'classe_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
-                                                </a>
-                                              </th>
-                                              <th>
-                                                <a href="{{ path('app_matiere_classe_index', {sort: sort == 'coefficient_asc' ? 'coefficient_desc' : 'coefficient_asc', search: search}) }}" class="text-decoration-none sort-link" data-sort="{{ sort == 'coefficient_asc' ? 'coefficient_desc' : 'coefficient_asc' }}">
-                                                  Coefficient
-                                                  {% if sort == 'coefficient_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'coefficient_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
-                                                </a>
-                                              </th>
-                                              <th>
-                                                <a href="{{ path('app_matiere_classe_index', {sort: sort == 'chargehoraire_asc' ? 'chargehoraire_desc' : 'chargehoraire_asc', search: search}) }}" class="text-decoration-none sort-link" data-sort="{{ sort == 'chargehoraire_asc' ? 'chargehoraire_desc' : 'chargehoraire_asc' }}">
-                                                  Charge Horaire
-                                                  {% if sort == 'chargehoraire_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'chargehoraire_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
-                                                </a>
-                                              </th>
-                                              <th>
-                                                <a href="{{ path('app_matiere_classe_index', {sort: sort == 'scorecomplexite_asc' ? 'scorecomplexite_desc' : 'scorecomplexite_asc', search: search}) }}" class="text-decoration-none sort-link" data-sort="{{ sort == 'scorecomplexite_asc' ? 'scorecomplexite_desc' : 'scorecomplexite_asc' }}">
-                                                  Score Complexité
-                                                  {% if sort == 'scorecomplexite_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'scorecomplexite_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
-                                                </a>
-                                              </th>
-                                              <th>Actions</th>
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                            {% for matiere_classe in matiere_classes %}
-                                              {% set complexityClass = '' %}
-                                              {% set complexityWidth = 0 %}
-                                              {% if matiere_classe.scorecomplexite <= 3 %}
-                                                {% set complexityClass = 'complexity-low' %}
-                                                {% set complexityWidth = matiere_classe.scorecomplexite * 33.33 %}
-                                              {% elseif matiere_classe.scorecomplexite <= 6 %}
-                                                {% set complexityClass = 'complexity-medium' %}
-                                                {% set complexityWidth = matiere_classe.scorecomplexite * 16.67 %}
-                                              {% elseif matiere_classe.scorecomplexite <= 8 %}
-                                                {% set complexityClass = 'complexity-high' %}
-                                                {% set complexityWidth = matiere_classe.scorecomplexite * 12.5 %}
-                                              {% else %}
-                                                {% set complexityClass = 'complexity-very-high' %}
-                                                {% set complexityWidth = matiere_classe.scorecomplexite * 10 %}
-                                              {% endif %}
-                                              
-                                              {% set chargeClass = '' %}
-                                              {% if matiere_classe.chargehoraire <= 20 %}
-                                                {% set chargeClass = 'charge-light' %}
-                                              {% elseif matiere_classe.chargehoraire <= 40 %}
-                                                {% set chargeClass = 'charge-medium' %}
-                                              {% else %}
-                                                {% set chargeClass = 'charge-heavy' %}
-                                              {% endif %}
-                                              
-                                              <tr class="matiere-class-row" 
-                                                  data-complexity="{{ matiere_classe.scorecomplexite }}"
-                                                  data-charge="{{ matiere_classe.chargehoraire }}">
-                                                <td>
-                                                  <span class="text-muted">#{{ matiere_classe.id }}</span>
-                                                </td>
-                                                <td>
-                                                  <div class="d-flex align-items-center">
-                                                    <div class="entity-avatar me-3">
-                                                      <i class="mdi mdi-book-open-page-variant"></i>
-                                                    </div>
-                                                    <div>
-                                                      <h6 class="mb-0">Matière #{{ matiere_classe.id }}</h6>
-                                                      <small class="text-muted">ID: {{ matiere_classe.id }}</small>
-                                                    </div>
-                                                  </div>
-                                                </td>
-                                                <td>
-                                                  <span class="badge-custom badge-coefficient">
-                                                    <i class="mdi mdi-weight me-1"></i>
-                                                    {{ matiere_classe.coefficient }}
-                                                  </span>
-                                                </td>
-                                                <td>
-                                                  <div class="charge-indicator">
-                                                    <span class="charge-dot {{ chargeClass }}"></span>
-                                                    <span>{{ matiere_classe.chargehoraire }}h</span>
-                                                  </div>
-                                                </td>
-                                                <td>
-                                                  <div class="complexity-bar">
-                                                    <div class="complexity-fill {{ complexityClass }}" 
-                                                         style="width: {{ complexityWidth }}%"></div>
-                                                  </div>
-                                                </td>
-                                                <td>
-                                                  <div class="action-buttons">
-                                                    <a href="{{ path('app_matiere_classe_show', {'id': matiere_classe.id}) }}" 
-                                                       class="btn btn-info btn-sm btn-icon"
-                                                       title="Voir détails">
-                                                      <i class="mdi mdi-eye"></i>
-                                                    </a>
-                                                    <a href="{{ path('app_matiere_classe_edit', {'id': matiere_classe.id}) }}" 
-                                                       class="btn btn-warning btn-sm btn-icon"
-                                                       title="Modifier">
-                                                      <i class="mdi mdi-pencil"></i>
+                                  </div>
+                                </td>
+                                <td>
+                                  <span class="matiere-badge badge-coefficient">
+                                    <i class="mdi mdi-weight me-1"></i>{{ matiere_classe.coefficient }}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span class="matiere-badge badge-charge">
+                                    <i class="mdi mdi-clock-outline me-1"></i>{{ matiere_classe.chargehoraire }}h
+                                  </span>
+                                </td>
+                                <td>
+                                  <div>
+                                    <span class="matiere-badge badge-complexite">{{ matiere_classe.scorecomplexite }}/10</span>
+                                    <div class="complexity-bar">
+                                      <div class="complexity-fill" style="width: {{ (matiere_classe.scorecomplexite / 10 * 100)|round }}%"></div>
+                                    </div>
+                                  </div>
+                                </td>
+                                <td>
+                                  <div class="action-buttons">
+                                    <a href="{{ path('app_matiere_classe_show', {'id': matiere_classe.id}) }}" class="btn btn-info btn-sm btn-icon" title="Voir">
+                                      <i class="mdi mdi-eye"></i>
                                     </a>
-                                    <form method="post" action="{{ path('app_matiere_classe_delete', {'id': matiere_classe.id}) }}" 
-                                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette affectation ?');"
-                                          style="display: inline;">
-                                      <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ matiere_classe.id) }}">
-                                      <button type="submit" 
-                                              class="btn btn-danger btn-sm btn-icon"
-                                              title="Supprimer">
-                                        <i class="mdi mdi-delete"></i>
-                                      </button>
-                                    </form>
+                                    <a href="{{ path('app_matiere_classe_edit', {'id': matiere_classe.id}) }}" class="btn btn-warning btn-sm btn-icon" title="Modifier">
+                                      <i class="mdi mdi-pencil"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-danger btn-sm btn-icon delete-btn" 
+                                            data-matiere-id="{{ matiere_classe.id }}" 
+                                            data-matiere-name="{{ matiere_classe.nom }}" 
+                                            data-csrf-token="{{ csrf_token('delete' ~ matiere_classe.id) }}"
+                                            title="Supprimer">
+                                      <i class="mdi mdi-delete"></i>
+                                    </button>
                                   </div>
                                 </td>
                               </tr>
                             {% endfor %}
                           </tbody>
                         </table>
-                                    </div>
-                                    
-                                    <!-- Quick Stats -->
-                                    <div class="row mt-4">
-                                        <div class="col-md-12">
-                                            <div class="card">
-                                                <div class="card-body">
-                                                    <h5 class="card-title">📊 Vue d'ensemble des affectations</h5>
-                                                    <div class="row">
-                                                        <div class="col-md-3">
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="me-3">
-                                                                    <span class="badge-custom badge-coefficient">
-                                                                        Total
-                                                                    </span>
-                                                                </div>
-                                                                <div>
-                                                                    <h6 class="mb-0">{{ matiere_classes|length }} affectations</h6>
-                                                                    <small class="text-muted">Actives</small>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="me-3">
-                                                                    <span class="badge-custom" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
-                                                                        Heures
-                                                                    </span>
-                                                                </div>
-                                                                <div>
-                                                                    {% set totalHours = matiere_classes|reduce((sum, mc) => sum + mc.chargehoraire, 0) %}
-                                                                    <h6 class="mb-0">{{ totalHours }}h</h6>
-                                                                    <small class="text-muted">Charge totale</small>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="me-3">
-                                                                    <span class="badge-custom" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
-                                                                        Moyenne
-                                                                    </span>
-                                                                </div>
-                                                                <div>
-                                                                    {% set avgCoefficient = matiere_classes|length > 0 ? (matiere_classes|reduce((sum, mc) => sum + mc.coefficient, 0) / matiere_classes|length)|number_format(1) : 0 %}
-                                                                    <h6 class="mb-0">{{ avgCoefficient }}</h6>
-                                                                    <small class="text-muted">Coefficient moyen</small>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-3">
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="me-3">
-                                                                    <span class="badge-custom" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
-                                                                        Complexe
-                                                                    </span>
-                                                                </div>
-                                                                <div>
-                                                                    {% set highComplexity = matiere_classes|filter(mc => mc.scorecomplexite > 7)|length %}
-                                                                    <h6 class="mb-0">{{ highComplexity }}</h6>
-                                                                    <small class="text-muted">Matières complexes</small>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
+                      </div>
+                    {% endif %}
+                  </div>
                 </div>
+              </div>
             </div>
-            
+
             <!-- Footer -->
             <footer class="footer">
-                <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                    <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
-                        © 2024 ESPRIT École d'Ingénieurs. Tous droits réservés.
-                    </span>
-                    <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
-                        Gestion Matières-Classes - {{ matiere_classes|length }} affectations actives
-                    </span>
-                </div>
+              <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                  © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
+                </span>
+                <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                  Gestion des Matières - {{ matiere_classes|length }} matières
+                </span>
+              </div>
             </footer>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title"><i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <p>Êtes-vous sûr de vouloir supprimer <strong id="matiereNameDisplay"></strong> ?</p>
+            <p class="text-danger"><i class="mdi mdi-alert me-1"></i><small>Cette action est irréversible.</small></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <form id="deleteForm" method="POST" style="display: inline;">
+              <input type="hidden" name="_token" id="csrfToken" value="">
+              <button type="submit" class="btn btn-danger">Supprimer</button>
+            </form>
+          </div>
         </div>
     </div>
 </div>
 
-<!-- Scripts -->
-<script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
-<script src="{{ asset('assets/js/off-canvas.js') }}"></script>
-<script src="{{ asset('assets/js/misc.js') }}"></script>
+    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('assets/js/misc.js') }}"></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const searchInputs = document.querySelectorAll('input[name="search"]');
-        const classeFilter = document.getElementById('classeFilter');
-        const tableContainer = document.getElementById('matiereClasseTableContainer');
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const navbarSearchInput = document.getElementById('navbarSearchInput');
+        const scoreMinRange = document.getElementById('scoreMinRange');
+        const scoreLabel = document.getElementById('scoreLabel');
+        const sortSelect = document.getElementById('sortSelect');
+        const applyFiltersBtn = document.getElementById('applyFilters');
+        const resetFiltersBtn = document.getElementById('resetFilters');
+        const matieresTable = document.getElementById('matieresTable');
+        const resultCountSpan = document.getElementById('resultCount');
+
+        // Update score label
+        if (scoreMinRange && scoreLabel) {
+            scoreMinRange.addEventListener('input', function() {
+                scoreLabel.textContent = this.value;
+                // Live update for slider with debounce
+                clearTimeout(scoreMinRange.searchTimeout);
+                scoreMinRange.searchTimeout = setTimeout(applyFilters, 300);
+            });
+        }
         
-        function updateTable(url) {
-            // Re-sync all filter params from current DOM state
-            const searchTerm = searchInputs[0] ? searchInputs[0].value : '';
-            const selectedClasseId = classeFilter ? classeFilter.value : '';
-            
-            url.searchParams.set('search', searchTerm);
-            url.searchParams.set('classeId', selectedClasseId);
-            
-            fetch(url.toString(), {
-              headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+        // Sync navbar search with filter search (debounced) and use AbortController for cancellation
+        let __matiereSearchController = null;
+        function scheduleApplyFromInput(value) {
+          clearTimeout(window.__matiereSearchTimeout);
+          window.__matiereSearchTimeout = setTimeout(() => {
+            if (searchInput) searchInput.value = value;
+            applyFilters();
+          }, 400);
+        }
+
+        if (navbarSearchInput) {
+          navbarSearchInput.addEventListener('input', function() {
+            if(searchInput) {
+              scheduleApplyFromInput(this.value);
+            }
+          });
+        }
+
+        function applyFilters() {
+          const search = searchInput ? searchInput.value.trim() : '';
+          const scoreMin = scoreMinRange ? scoreMinRange.value : '';
+          const [sort, direction] = sortSelect ? sortSelect.value.split('-') : ['id', 'asc'];
+          
+          // Show loading state
+          if(applyFiltersBtn) {
+            const originalText = applyFiltersBtn.innerHTML;
+            applyFiltersBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin me-1"></i>Chargement...';
+            applyFiltersBtn.disabled = true;
+          }
+          if(matieresTable) matieresTable.style.opacity = '0.5';
+
+          const params = new URLSearchParams();
+          if (search) params.append('search', search);
+          if (scoreMin) params.append('scoreMin', scoreMin);
+          if (sort) params.append('sort', sort);
+          if (direction) params.append('direction', direction);
+
+          console.log('Date:', new Date().toISOString());
+          console.log('Filtering with params:', params.toString());
+
+          // Cancel previous request if any
+          if (window.__matiereSearchController) {
+              try { window.__matiereSearchController.abort(); } catch (e) {}
+          }
+          window.__matiereSearchController = new AbortController();
+
+          fetch('{{ path("app_matiere_classe_ajax_filter") }}?' + params.toString(), { signal: window.__matiereSearchController.signal })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+              console.log('Data received:', data);
+              if (data.success) {
+                if (resultCountSpan) resultCountSpan.textContent = 'Résultats: ' + data.count;
+                
+                const tbody = matieresTable.querySelector('tbody');
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    if (data.count === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-5"><i class="mdi mdi-alert-circle-outline display-4 mb-3 d-block"></i><h4>Aucune matière trouvée</h4><p>Essayez de modifier vos critères de recherche</p></td></tr>';
+                    } else {
+                        data.data.forEach(matiere => {
+                        const complexityPercent = (matiere.scorecomplexite / 10 * 100).toFixed(0);
+                        const row = `<tr>
+                            <td><span class="text-muted">#${matiere.id}</span></td>
+                            <td>
+                            <div class="d-flex align-items-center">
+                                <div class="matiere-avatar me-3"><i class="mdi mdi-book-open-page-variant"></i></div>
+                                <div>
+                                <h6 class="mb-0 fw-bold">${matiere.nom}</h6>
+                                <small class="text-muted">ID: ${matiere.id}</small>
+                                </div>
+                            </div>
+                            </td>
+                            <td><span class="matiere-badge badge-coefficient"><i class="mdi mdi-weight me-1"></i>${matiere.coefficient}</span></td>
+                            <td><span class="matiere-badge badge-charge"><i class="mdi mdi-clock-outline me-1"></i>${matiere.chargehoraire}h</span></td>
+                            <td>
+                            <div>
+                                <span class="matiere-badge badge-complexite">${matiere.scorecomplexite}/10</span>
+                                <div class="complexity-bar">
+                                <div class="complexity-fill" style="width: ${complexityPercent}%"></div>
+                                </div>
+                            </div>
+                            </td>
+                            <td>
+                            <div class="action-buttons">
+                                <a href="${matiere.url}" class="btn btn-info btn-sm btn-icon" title="Voir"><i class="mdi mdi-eye"></i></a>
+                                <a href="${matiere.editUrl}" class="btn btn-warning btn-sm btn-icon" title="Modifier"><i class="mdi mdi-pencil"></i></a>
+                                <button class="btn btn-danger btn-sm btn-icon delete-btn" data-matiere-id="${matiere.id}" data-matiere-name="${matiere.nom}" data-csrf-token="${matiere.csrfToken}" title="Supprimer"><i class="mdi mdi-delete"></i></button>
+                            </div>
+                            </td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                        });
+                        attachDeleteHandlers();
+                    }
+                }
               }
             })
-            .then(response => response.text())
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const newContainer = doc.getElementById('matiereClasseTableContainer');
-                if (newContainer && tableContainer) {
-                    tableContainer.innerHTML = newContainer.innerHTML;
-                    attachSortListeners();
-                }
+            .catch(error => {
+              if (error.name === 'AbortError') return;
+              console.error('Erreur AJAX:', error);
+              alert('Une erreur est survenue lors du filtrage.');
             })
-            .catch(error => console.error('Error:', error));
-            
-            window.history.pushState({}, '', url);
-        }
-
-        function attachSortListeners() {
-            document.querySelectorAll('.sort-link').forEach(link => {
-                link.onclick = function(e) {
-                    e.preventDefault();
-                    updateTable(new URL(this.href));
-                };
+            .finally(() => {
+                // Restore loading state
+                if(applyFiltersBtn) {
+                    applyFiltersBtn.innerHTML = '<i class="mdi mdi-magnify me-1"></i>Appliquer';
+                    applyFiltersBtn.disabled = false;
+                }
+                if(matieresTable) matieresTable.style.opacity = '1';
             });
         }
 
-        if (tableContainer) {
-            attachSortListeners();
-            
-            if (searchInputs.length > 0) {
-                searchInputs.forEach(input => {
-                    input.addEventListener('input', function() {
-                        const searchTerm = this.value;
-                        searchInputs.forEach(otherInput => {
-                            if (otherInput !== input) otherInput.value = searchTerm;
-                        });
-                        updateTable(new URL(window.location.href));
-                    });
-                    
-                    if (input.form) {
-                        input.form.addEventListener('submit', e => e.preventDefault());
-                    }
-                });
-            }
-
-            if (classeFilter) {
-                classeFilter.addEventListener('change', function() {
-                    updateTable(new URL(window.location.href));
-                });
-            }
+        if(applyFiltersBtn) applyFiltersBtn.addEventListener('click', applyFilters);
+        
+        if(searchInput) {
+            searchInput.addEventListener('input', function() {
+            clearTimeout(searchInput.searchTimeout);
+            searchInput.searchTimeout = setTimeout(applyFilters, 300);
+            });
         }
         
-        // Filter functionality (client-side specific for badges, might want to move to server-side later but keeping client-side logic for now if it works on the table)
-        document.querySelectorAll('.filter-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                // Remove active class from all buttons
-                document.querySelectorAll('.filter-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                
-                // Add active class to clicked button
-                this.classList.add('active');
-                
-                const filter = this.getAttribute('data-filter');
-                const rows = document.querySelectorAll('.matiere-class-row');
-                
-                rows.forEach(row => {
-                    const complexity = parseInt(row.getAttribute('data-complexity'));
-                    let show = false;
-                    
-                    switch(filter) {
-                        case 'all':
-                            show = true;
-                            break;
-                        case 'complexity-low':
-                            show = complexity <= 3;
-                            break;
-                        case 'complexity-medium':
-                            show = complexity > 3 && complexity <= 6;
-                            break;
-                        case 'complexity-high':
-                            show = complexity > 6;
-                            break;
-                        default:
-                            show = true;
-                    }
-                    
-                    row.style.display = show ? '' : 'none';
-                });
+        if(sortSelect) sortSelect.addEventListener('change', applyFilters);
+
+        if(resetFiltersBtn) {
+            resetFiltersBtn.addEventListener('click', function() {
+            window.location.href = '{{ path("app_matiere_classe_index") }}';
             });
-        });
+        }
+
+        function attachDeleteHandlers() {
+          document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.onclick = function() {
+              const matiereId = this.getAttribute('data-matiere-id');
+              const matiereName = this.getAttribute('data-matiere-name');
+              const csrfToken = this.getAttribute('data-csrf-token');
+              const display = document.getElementById('matiereNameDisplay');
+              if(display) display.textContent = matiereName;
+              
+              const form = document.getElementById('deleteForm');
+              if(form) {
+                  form.action = '/matiere/classe/' + matiereId;
+                  const tokenInput = document.getElementById('csrfToken');
+                  if(tokenInput) tokenInput.value = csrfToken;
+              }
+              
+              const modalEl = document.getElementById('deleteModal');
+              if(modalEl) new bootstrap.Modal(modalEl).show();
+            };
+          });
+        }
+
+        // Attach handlers initially
+        attachDeleteHandlers();
         
-        // Auto-hide alerts after 5 seconds
+        // Auto-close alerts
         setTimeout(() => {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                const closeBtn = alert.querySelector('.btn-close');
-                if (closeBtn) closeBtn.click();
-            });
+          document.querySelectorAll('.alert').forEach(alert => {
+            new bootstrap.Alert(alert).close();
+          });
         }, 5000);
     });
 </script>

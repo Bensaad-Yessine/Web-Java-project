@@ -2,11 +2,14 @@
 
 namespace App\Controller;
 
+use App\Repository\PreferenceAlerteRepository;
 use App\Entity\User;
 use App\Entity\Tache;
 use App\Entity\Classe;
 use App\Entity\MatiereClasse;
 use App\Form\UserType;
+use App\Form\FrontOfficeTacheType;
+use App\Repository\UserRepository;
 use App\Repository\TacheRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,24 +18,75 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Constraints\Json;   
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 #[Route('/user')]
 final class UserController extends AbstractController
 {
-    // ✅ READ ALL
-    #[Route('/', name: 'app_user_index')]
-    public function index(EntityManagerInterface $em): Response
+    #[Route('/', name: 'app_user_index', methods: ['GET'])]
+    public function index(UserRepository $userRepository): Response
     {
-        $users = $em->getRepository(User::class)->findAll();
-
         return $this->render('user/index.html.twig', [
-            'users' => $users,
+            'users' => $userRepository->findAll(),
+            'current_user' => $this->getUser(),
         ]);
     }
-    // ✅ CREATE
-    #[Route('/add', name: 'app_user_add')]
-    public function add(Request $request, EntityManagerInterface $em): Response
+
+    #[Route('/ajax/filter', name: 'app_user_ajax_filter', methods: ['GET'])]
+    public function ajaxFilter(
+        Request $request, 
+        UserRepository $userRepository,
+        CsrfTokenManagerInterface $csrfTokenManager
+    ): JsonResponse {
+        $search = $request->query->get('q');
+        $role = $request->query->get('role');
+        $verifiedParam = $request->query->get('verified');
+        $sort = $request->query->get('sortBy', 'id');
+        $direction = $request->query->get('sortOrder', 'ASC');
+
+        // Convert verified param to boolean or null
+        $isVerified = null;
+        if ($verifiedParam !== '' && $verifiedParam !== null) {
+            $isVerified = $verifiedParam === '1';
+        }
+
+        $users = $userRepository->findWithFilters(
+            $search, $role, $isVerified, $sort, $direction
+        );
+
+        // Transform users to array for JSON response
+        $usersData = [];
+        foreach ($users as $user) {
+            $usersData[] = [
+                'id' => $user->getId(),
+                'nom' => $user->getNom(),
+                'prenom' => $user->getPrenom(),
+                'email' => $user->getEmail(),
+                'dateDeNaissance' => $user->getDateDeNaissance() ? $user->getDateDeNaissance()->format('d/m/Y') : '—',
+                'classe' => $user->getClasse() ? $user->getClasse()->getNom() : null,
+                'numTel' => $user->getNumTel(),
+                'sexe' => $user->getSexe(),
+                'roles' => $user->getRoles(),
+                'isAdmin' => in_array('ROLE_ADMIN', $user->getRoles()),
+                'isVerified' => $user->isVerified(),
+                'profilePic' => $user->getProfilePic(),
+                'initials' => strtoupper(substr($user->getPrenom(), 0, 1) . substr($user->getNom(), 0, 1)),
+                'isCurrentUser' => $this->getUser() && $user->getId() === $this->getUser()->getId(),
+                'csrfToken' => $csrfTokenManager->getToken('delete' . $user->getId())->getValue(),
+            ];
+        }
+
+        return $this->json([
+            'success' => true,
+            'users' => $usersData,
+            'count' => count($usersData)
+        ]);
+    }
+
+    #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher, SluggerInterface $slugger): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
@@ -97,6 +151,16 @@ final class UserController extends AbstractController
         EntityManagerInterface $em
     ): Response {
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
+            $userName = $user->getNom() . ' ' . $user->getPrenom();
+            
+            // Delete profile picture if exists
+            if ($user->getProfilePic()) {
+                $profilePicPath = $this->getParameter('profile_pics_directory').'/'.$user->getProfilePic();
+                if (file_exists($profilePicPath)) {
+                    unlink($profilePicPath);
+                }
+            }
+            
             $em->remove($user);
             $em->flush();
 
@@ -106,76 +170,385 @@ final class UserController extends AbstractController
         return $this->redirectToRoute('app_user_index');
     }
 
-    // ✅ PROFILE
-    #[Route('/profile', name: 'app_user_profile')]
-    public function profile(TacheRepository $tacheRepo, EntityManagerInterface $em): Response
+    #[Route('/dashboard', name: 'app_dashboard', methods: ['GET'])]
+public function dashboard(TacheRepository $tacheRepository): Response
+{
+    $user = $this->getUser();
+
+    if (!$user) {
+        throw $this->createAccessDeniedException('Vous devez être connecté pour accéder au tableau de bord.');
+    }
+
+    $tasks = $tacheRepository->findBy(
+        ['user' => $user],
+        ['id' => 'DESC']
+    );
+
+    return $this->render('user/FrontOffice.html.twig', [
+        'tasks' => $tasks,
+    ]);
+}
+ #[Route('/dashboard', name: 'app_my_tasks', methods: ['GET'])]
+public function mytasks(TacheRepository $tacheRepository): Response
+{
+    $user = $this->getUser();
+
+    if (!$user) {
+        throw $this->createAccessDeniedException('Vous devez être connecté pour accéder au tableau de bord.');
+    }
+
+    $tasks = $tacheRepository->findBy(
+        ['user' => $user],
+        ['id' => 'DESC']
+    );
+
+    return $this->render('user/FrontOffice.html.twig', [
+        'tasks' => $tasks,
+    ]);
+}
+
+
+
+    #[Route('/dashboard/profile', name: 'app_profile', methods: ['GET'])]
+    public function profile(): Response
     {
         $user = $this->getUser();
-        if (!$user instanceof User) {
+        
+        if (!$user) {
+            throw $this->createAccessDeniedException();
+        }
+    
+        return $this->render('user/profile.html.twig');
+    }
+
+    #[Route('/dashboard/profile/update', name: 'app_profile_update', methods: ['POST'])]
+    public function updateProfile(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $this->getUser();
+        
+        if (!$user) {
+            return $this->json(['success' => false, 'message' => 'User not authenticated'], 401);
+        }
+
+        try {
+            // Get data from request
+            $content = $request->getContent();
+            $data = json_decode($content, true);
+            
+            if (!$data) {
+                return $this->json(['success' => false, 'message' => 'Invalid JSON data'], 400);
+            }
+            
+            // Update email if provided
+            if (isset($data['email']) && !empty($data['email'])) {
+                $email = trim($data['email']);
+                
+                // Validate email format
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    return $this->json(['success' => false, 'message' => 'Invalid email format'], 400);
+                }
+                
+                $user->setEmail($email);
+            }
+
+            // Update phone if provided
+            if (isset($data['phone'])) {
+                $phone = trim($data['phone']);
+                $user->setNumTel($phone ?: null);
+            }
+
+            // Update nom (last name) if provided
+            if (isset($data['nom']) && !empty($data['nom'])) {
+                $nom = trim($data['nom']);
+                
+                if (strlen($nom) < 2) {
+                    return $this->json(['success' => false, 'message' => 'Last name must be at least 2 characters'], 400);
+                }
+                
+                $user->setNom($nom);
+            }
+
+            // Update prenom (first name) if provided
+            if (isset($data['prenom']) && !empty($data['prenom'])) {
+                $prenom = trim($data['prenom']);
+                
+                if (strlen($prenom) < 2) {
+                    return $this->json(['success' => false, 'message' => 'First name must be at least 2 characters'], 400);
+                }
+                
+                $user->setPrenom($prenom);
+            }
+
+            // Flush changes to database
+            $em->flush();
+            
+            return $this->json([
+                'success' => true, 
+                'message' => 'Profile updated successfully!',
+                'user' => [
+                    'nom' => $user->getNom(),
+                    'prenom' => $user->getPrenom(),
+                    'email' => $user->getEmail(),
+                    'phone' => $user->getNumTel(),
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false, 
+                'message' => 'Error updating profile: ' . $e->getMessage()
+            ], 400);
+        }
+    }
+#[Route('/dashboard/task/add', name: 'app_task_add', methods: ['GET', 'POST'])]
+public function addTask(Request $request, EntityManagerInterface $em): Response
+{
+    $user = $this->getUser();
+    
+    if (!$user) {
+        throw $this->createAccessDeniedException();
+    }
+
+    $tache = new Tache();
+    $tache->setUser($user); // Automatically set current user
+    
+    $form = $this->createForm(FrontOfficeTacheType::class, $tache);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Map frontend values to entity values
+        $typeMap = [
+            'course' => 'MANUEL',
+            'exam' => 'REVISION',
+            'meeting' => 'REUNION',
+            'personal' => 'MANUEL',
+            'project' => 'MANUEL',
+            'assignment' => 'MANUEL'
+        ];
+
+        $priorityMap = [
+            'low' => 'FAIBLE',
+            'medium' => 'MOYEN',
+            'high' => 'ELEVEE'
+        ];
+
+        $statusMap = [
+            'pending' => 'A_FAIRE',
+            'in_progress' => 'EN_COURS',
+            'completed' => 'TERMINEE'
+        ];
+
+        // Map the values
+        $formType = $tache->getType();
+        $entityType = $typeMap[$formType] ?? 'MANUEL';
+        $tache->setType($entityType);
+
+        $formPriority = $tache->getPriorite();
+        $entityPriority = $priorityMap[$formPriority] ?? 'MOYEN';
+        $tache->setPriorite($entityPriority);
+
+        $formStatus = $tache->getStatut();
+        $entityStatus = $statusMap[$formStatus] ?? 'A_FAIRE';
+        $tache->setStatut($entityStatus);
+
+        // Ensure required fields are set
+        if (!$tache->getDateDebut()) {
+            $tache->setDateDebut(new \DateTime());
+        }
+        if (!$tache->getDateFin()) {
+            $tache->setDateFin((new \DateTime())->modify('+1 hour'));
+        }
+        if (!$tache->getDureeEstimee()) {
+            $tache->setDureeEstimee(60);
+        }
+        
+        if (!$tache->getCreatedAt()) {
+            $tache->setCreatedAt(new \DateTimeImmutable());
+        }
+
+        $em->persist($tache);
+        $em->flush();
+
+        $this->addFlash('success', 'Task created successfully!');
+        return $this->redirectToRoute('app_my_tasks');
+    }
+
+    return $this->render('user/add_task.html.twig', [
+        'form' => $form->createView(),
+        'is_edit' => false,
+    ]);
+}
+
+#[Route('/dashboard/task/{id}/edit', name: 'app_task_edit', methods: ['GET', 'POST'])]
+public function editTask(Request $request, Tache $tache, EntityManagerInterface $em): Response
+{
+    // If legacy GET route, forward to dashboard edit logic
+    if ($request->getMethod() === 'GET' && $request->get('_route') === 'legacy_task_edit') {
+        return $this->redirectToRoute('app_task_edit', ['id' => $tache->getId()]);
+    }
+    $user = $this->getUser();
+    
+    if (!$user || $tache->getUser() !== $user) {
+        throw $this->createAccessDeniedException();
+    }
+
+    $form = $this->createForm(FrontOfficeTacheType::class, $tache);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        // The form uses the entity's choice values (e.g. 'MANUEL','MOYEN','A_FAIRE'),
+        // so no remapping is required here.
+        $em->flush();
+
+        $this->addFlash('success', 'Task updated successfully!');
+        return $this->redirectToRoute('app_my_tasks');
+    }
+
+    return $this->render('user/edit_task.html.twig', [
+        'form' => $form->createView(),
+        'task' => $tache,
+        'is_edit' => true,
+    ]);
+}
+
+#[Route('/dashboard/task/{id}/show', name: 'app_task_show', methods: ['GET', 'POST'])]
+public function showTask(Tache $tache): Response
+{
+    $user = $this->getUser();
+
+    if (!$user || $tache->getUser() !== $user) {
+        throw $this->createAccessDeniedException();
+    }
+
+    return $this->render('user/show_task.html.twig',['task'=>$tache]);
+    } /**
+        * Show preferences for the logged-in user
+        */
+    #[Route('/FrontOffice/show/{id}', name: 'front_preference_alerte_show', methods: ['GET'])]
+public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAlerteRepository, UserRepository $userRepository, int $id): Response
+{   
+    $preferenceAlerte = $preferenceAlerteRepository->findBy([
+        'etudiant' => $this->getUser()
+    ]);
+
+    return $this->render('preference_alerte/showAlertFO.html.twig', [
+        'preference_alertes' => $preferenceAlerte
+    ]);
+}
+   #[Route('/FrontOffice/edit/{id}', name: 'front_preference_alerte_edit', methods: ['GET', 'POST'])]
+    public function editPreferencesbyUser(Request $request, PreferenceAlerteRepository $preferenceAlerteRepository, UserRepository $userRepository, int $id, EntityManagerInterface $entityManager): Response
+    {
+        $preferenceAlerte = $preferenceAlerteRepository->find($id);
+        if (!$preferenceAlerte || $preferenceAlerte->getEtudiant()->getId() !== $this->getUser()->getId()) {
+            throw $this->createNotFoundException('Préférence d\'alerte non trouvée ou accès non autorisé.');
+        }
+
+        $form = $this->createForm(PreferencesOFAlertsType::class, $preferenceAlerte);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('front_preference_alerte_show', ['id' => $this->getUser()->getId()]);
+        }
+
+        return $this->render('preference_alerte/editAlertFO.html.twig', [
+            'form' => $form,
+            'preference_alerte' => $preferenceAlerte
+        ]);
+    }
+    #[Route('/FrontOffice/add/{id}', name: 'front_preference_alerte_add', methods: ['GET', 'POST'])]
+    public function addPreferencesbyUser(Request $request, PreferenceAlerteRepository $preferenceAlerteRepository, UserRepository $userRepository, int $id, EntityManagerInterface $entityManager): Response
+    {
+        $preferenceAlerte = new PreferenceAlerte();
+        $preferenceAlerte->setEtudiant($this->getUser());
+        $form = $this->createForm(PreferencesOFAlertsType::class, $preferenceAlerte);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Force template logic
+            $preferenceAlerte->setIsDefault(false);
+            $preferenceAlerte->setIsActive(true);
+
+            $entityManager->persist($preferenceAlerte);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('front_preference_alerte_show', ['id' => $this->getUser()->getId()]);
+        }
+
+        return $this->render('preference_alerte/addPreferencesAlertFO.html.twig', [
+            'form' => $form,
+        ]);
+    }
+    #[Route('/FrontOffice/detail/{userId}/{preferenceId}', name: "front_preference_alerte_detail", methods: ['GET'])]
+    public function detail(
+        int $userId, 
+        int $preferenceId, 
+        PreferenceAlerteRepository $preferenceRepository
+    ): Response {
+        // Vérifier que l'utilisateur est connecté
+        $currentUser = $this->getUser();
+        
+        if (!$currentUser) {
+            $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
             return $this->redirectToRoute('app_login');
         }
 
-        $tasks = $tacheRepo->findTaskByUser($user);
-        
-        // Get user's classe and its matieres
-        $classe = $user->getClasse();
-        $matieres = [];
-        if ($classe) {
-            $matieres = $em->getRepository(MatiereClasse::class)->findBy(['classe' => $classe]);
+        // Vérifier que l'ID dans l'URL correspond à l'utilisateur connecté
+        if ($currentUser->getId() !== $userId) 
+            {
+            $this->addFlash('error', 'Vous ne pouvez pas accéder aux préférences d\'un autre utilisateur.');
+            return $this->redirectToRoute('front_preference_alerte_show', [
+                'id' => $currentUser->getId()
+            ]);
         }
-        
-        // Get all classes for admin/listing
-        $allClasses = $em->getRepository(Classe::class)->findAll();
 
-        return $this->render('user/FrontOffice.html.twig', [
-            'user' => $user,
-            'tasks' => $tasks,
-            'userClasse' => $classe,
-            'matieres' => $matieres,
-            'allClasses' => $allClasses,
+        // Récupérer la préférence qui appartient à l'utilisateur connecté
+        $preference = $preferenceRepository->findOneBy([
+            'id' => $preferenceId,
+            'etudiant' => $currentUser  // Note: c'est 'etudiant' et non 'user' d'après votre contrôleur
+        ]);
+
+        // Vérifier si la préférence existe
+        if (!$preference) {
+            $this->addFlash('error', 'Cette préférence d\'alerte n\'existe pas ou ne vous appartient pas.');
+            return $this->redirectToRoute('front_preference_alerte_show', [
+                'id' => $userId
+            ]);
+        }
+
+        return $this->render('preference_alerte/showAlerteDetailFO.html.twig', [
+            'preference' => $preference,
+            'user' => $currentUser
         ]);
     }
 
-    #[Route('/profile/update', name: 'app_profile_update', methods: ['POST'])]
-    public function profileUpdate(Request $request, EntityManagerInterface $em): JsonResponse
-    {
-        $user = $this->getUser();
-        if (!$user instanceof User) {
-            return new JsonResponse(['success' => false, 'message' => 'Unauthorized'], 401);
+    #[Route('/preference/{id}/set-active', name: 'app_preference_set_active', methods: ['POST'])]
+    public function setActive(
+        int $id,
+        PreferenceAlerteRepository $preferenceAlerteRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        // 1. Get the preference to activate
+        $preference = $preferenceAlerteRepository->find($id);
+        if (!$preference) {
+            throw $this->createNotFoundException('Preference not found');
         }
 
-        $data = json_decode($request->getContent(), true) ?? [];
-        $fullName = isset($data['fullName']) ? trim($data['fullName']) : null;
-        $email = $data['email'] ?? null;
-        $phone = $data['phone'] ?? null;
+        $user = $preference->getEtudiant(); // Assuming Preference has a relation to User
 
-        if ($fullName) {
-            $parts = preg_split('/\s+/', $fullName);
-            $prenom = array_shift($parts);
-            $nom = count($parts) ? implode(' ', $parts) : '';
-            $user->setPrenom($prenom);
-            $user->setNom($nom);
+        // 2. Set all preferences of this user to false
+        $userPreferences = $preferenceAlerteRepository->findBy(['etudiant' => $user]);
+        foreach ($userPreferences as $pref) {
+            $pref->setIsActive(false);
         }
 
-        if ($email) {
-            $user->setEmail($email);
-        }
+        // 3. Activate the selected preference
+        $preference->setIsActive(true);
 
-        if ($phone) {
-            $user->setNumTel($phone);
-        }
+        // 4. Persist changes
+        $entityManager->flush();
 
-        $em->persist($user);
-        $em->flush();
-
-        return new JsonResponse([
-            'success' => true,
-            'message' => 'Profile updated successfully',
-            'user' => [
-                'fullName' => trim($user->getPrenom() . ' ' . $user->getNom()),
-                'email' => $user->getEmail(),
-                'phone' => $user->getNumTel(),
-            ],
-        ]);
+        // 5. Optional: redirect or return JSON
+        return $this->redirectToRoute('front_preference_alerte_show', ['id' => $user->getId()]); 
     }
 }

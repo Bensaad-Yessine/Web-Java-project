@@ -1,97 +1,37 @@
-{# templates/user/profile.html.twig #}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESPRIT — User Profile</title>
+    <title>ESPRIT — Mes Tâches</title>
     <style>
         :root {
             --font-size: 16px;
-            --bg: #ffffff;
-            --fg: #111827;
-            
-            --red-50: #fef2f2;
-            --red-100: #fee2e2;
-            --red-200: #fecaca;
-            --red-300: #fca5a5;
-            --red-400: #f87171;
-            --red-500: #ef4444;
-            --red-600: #dc2626;
-            --red-700: #b91c1c;
-            --red-800: #991b1b;
-            --red-900: #7f1d1d;
-            
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
+            --primary-red: #DC2626;
+            --primary-red-dark: #B91C1C;
+            --primary-red-light: #FEE2E2;
+            --primary-gradient: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+            --secondary: #10B981;
+            --secondary-dark: #059669;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
             --gray-700: #374151;
-            --gray-800: #1f2937;
+            --gray-800: #1F2937;
             --gray-900: #111827;
-            
-            --blue-50: #eff6ff;
-            --blue-100: #dbeafe;
-            --blue-200: #bfdbfe;
-            --blue-300: #93c5fd;
-            --blue-400: #60a5fa;
-            --blue-500: #3b82f6;
-            --blue-600: #2563eb;
-            --blue-700: #1d4ed8;
-            --blue-800: #1e40af;
-            --blue-900: #1e3a8a;
-            
-            --purple-50: #faf5ff;
-            --purple-100: #f3e8ff;
-            --purple-200: #e9d5ff;
-            --purple-300: #d8b4fe;
-            --purple-400: #c084fc;
-            --purple-500: #a855f7;
-            --purple-600: #9333ea;
-            --purple-700: #7e22ce;
-            --purple-800: #6b21a8;
-            --purple-900: #581c87;
-            
-            --green-50: #f0fdf4;
-            --green-100: #dcfce7;
-            --green-200: #bbf7d0;
-            --green-300: #86efac;
-            --green-400: #4ade80;
-            --green-500: #22c55e;
-            --green-600: #16a34a;
-            --green-700: #15803d;
-            --green-800: #166534;
-            --green-900: #14532d;
-            
-            --orange-50: #fff7ed;
-            --orange-100: #ffedd5;
-            --orange-200: #fed7aa;
-            --orange-300: #fdba74;
-            --orange-400: #fb923c;
-            --orange-500: #f97316;
-            --orange-600: #ea580c;
-            --orange-700: #c2410c;
-            --orange-800: #9a3412;
-            --orange-900: #7c2d12;
-            
-            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
-            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
-            
-            --radius-sm: 8px;
-            --radius: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
-            --radius-2xl: 24px;
-            
-            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+            --radius-lg: 12px;
+            --radius-xl: 16px;
             --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * { 
@@ -107,120 +47,98 @@
         
         body {
             margin: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
-            background: linear-gradient(135deg, var(--gray-50) 0%, #ffffff 30%, var(--gray-50) 100%);
-            color: var(--fg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+            color: var(--gray-900);
             min-height: 100vh;
             line-height: 1.6;
-            font-feature-settings: 'ss01', 'ss02', 'cv01', 'cv02';
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Main Layout with Glassmorphism */
         .app-shell {
             display: flex;
             min-height: 100vh;
-            background: linear-gradient(135deg, 
-                rgba(249, 250, 251, 0.95) 0%, 
-                rgba(255, 255, 255, 0.97) 50%, 
-                rgba(249, 250, 251, 0.95) 100%);
-            backdrop-filter: blur(20px);
         }
 
-        /* Premium Sidebar with Glass Effect */
         .sidebar {
-            width: 300px;
-            background: linear-gradient(165deg, 
-                rgba(255, 255, 255, 0.92) 0%, 
-                rgba(249, 250, 251, 0.88) 100%);
-            border-right: 1px solid rgba(229, 231, 235, 0.6);
-            padding: 28px 24px;
+            width: 280px;
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            padding: 24px;
             display: flex;
             flex-direction: column;
             position: sticky;
             top: 0;
             height: 100vh;
             overflow-y: auto;
-            box-shadow: var(--shadow-md);
-            backdrop-filter: blur(10px);
-            z-index: 10;
+            box-shadow: 2px 0 20px rgba(220, 38, 38, 0.05);
         }
 
-        /* Premium Brand Section */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
         .brand {
-            margin-bottom: 36px;
-            padding-bottom: 28px;
-            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
-            position: relative;
-        }
-
-        .brand::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 60px;
-            height: 2px;
-            background: linear-gradient(90deg, var(--red-500), var(--red-300));
-            border-radius: 2px;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--gray-200);
+            flex-shrink: 0;
         }
 
         .brand-row {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
         }
 
         .brand-icon {
-            background: linear-gradient(135deg, var(--red-500) 0%, var(--red-700) 100%);
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius-lg);
+            background: var(--primary-gradient);
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 800;
-            font-size: 20px;
+            font-size: 18px;
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
-            transition: all var(--transition);
-        }
-
-        .brand-icon:hover {
-            transform: rotate(-5deg) scale(1.05);
-            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.35);
         }
 
         .brand-title {
             font-weight: 800;
             font-size: 20px;
-            line-height: 1;
-            color: var(--gray-900);
-            letter-spacing: -0.5px;
+            color: var(--primary-red);
         }
 
         .brand-sub {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--gray-500);
-            margin-top: 6px;
-            font-weight: 500;
-            letter-spacing: 0.3px;
+            margin-top: 2px;
         }
 
-        /* Premium User Session Card */
         .user-session {
-            margin-top: 28px;
-            padding: 24px;
-            background: linear-gradient(145deg, 
-                rgba(255, 255, 255, 0.95) 0%, 
-                rgba(249, 250, 251, 0.9) 100%);
-            border-radius: var(--radius-xl);
-            border: 1px solid rgba(229, 231, 235, 0.5);
-            box-shadow: var(--shadow-sm);
+            margin-top: 24px;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
             position: relative;
-            overflow: hidden;
-            transition: all var(--transition);
+            flex-shrink: 0;
         }
 
         .user-session::before {
@@ -229,794 +147,491 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
-            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-        }
-
-        .user-session:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-            border-color: rgba(229, 231, 235, 0.8);
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 16px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .avatar {
-            width: 56px;
-            height: 56px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
+            background: var(--primary-gradient);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
-            font-size: 20px;
-            flex-shrink: 0;
-            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.2);
+            font-weight: 600;
+            font-size: 18px;
             border: 3px solid white;
-            transition: all var(--transition);
-        }
-
-        .avatar:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
         }
 
         .user-details h3 {
-            margin: 0;
             font-size: 16px;
-            font-weight: 700;
-            color: #1f2937;
-            line-height: 1.4;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 2px;
         }
 
         .user-details p {
-            margin: 6px 0 0;
-            font-size: 14px;
-            color: #4b5563;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .user-details p::before {
-            content: '📚';
-            font-size: 12px;
+            margin: 0;
+            font-size: 13px;
+            color: var(--gray-600);
         }
 
         .session-info {
-            font-size: 13px;
-            color: #4b5563;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
-            font-weight: 500;
+            font-size: 12px;
+            color: var(--gray-600);
+            padding-top: 16px;
+            border-top: 1px solid var(--gray-200);
         }
 
         .session-info div {
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-            transition: all var(--transition-fast);
-        }
-
-        .session-info div:hover {
-            background: rgba(249, 250, 251, 0.5);
-            border-radius: var(--radius-sm);
-            padding: 6px 8px;
         }
 
         .session-info strong {
-            color: #1f2937;
+            color: var(--gray-800);
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
 
-        /* Premium Navigation */
         .nav {
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            margin-top: 32px;
+            gap: 4px;
+            margin-top: 24px;
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .nav::-webkit-scrollbar {
+            width: 4px;
         }
 
         .nav a {
             display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 16px 20px;
+            gap: 12px;
+            padding: 14px 16px;
             border-radius: var(--radius-lg);
-            color: #374151;
+            color: var(--gray-700);
             text-decoration: none;
             transition: all var(--transition);
             font-weight: 500;
-            position: relative;
-            overflow: hidden;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .nav a:hover {
-            background: linear-gradient(90deg, 
-                rgba(254, 242, 242, 0.7) 0%, 
-                rgba(254, 242, 242, 0.4) 100%);
-            color: var(--red-600);
-            transform: translateX(8px);
-            box-shadow: var(--shadow-xs);
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            transform: translateX(4px);
         }
 
         .nav a.active {
-            background: linear-gradient(90deg, 
-                rgba(254, 242, 242, 0.9) 0%, 
-                rgba(254, 242, 242, 0.6) 100%);
-            color: var(--red-600);
+            background: var(--primary-red-light);
+            color: var(--primary-red);
             font-weight: 600;
-            border-left: 4px solid var(--red-500);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .nav a.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 4px;
-            background: linear-gradient(180deg, var(--red-500), var(--orange-500));
-            border-radius: 0 var(--radius) var(--radius) 0;
+            border-left: 3px solid var(--primary-red);
         }
 
         .nav a .icon {
-            width: 20px;
-            height: 20px;
-            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
             stroke-width: 2;
-            transition: all var(--transition);
+            flex-shrink: 0;
         }
 
-        .nav a:hover .icon {
-            transform: scale(1.1);
+        .nav-section {
+            margin-top: 24px;
+            margin-bottom: 8px;
+            padding-left: 16px;
         }
 
-        /* Premium Main Content */
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
         .main {
             flex: 1;
-            padding: 40px;
+            padding: 32px;
             max-width: 1400px;
             margin: 0 auto;
             width: 100%;
+            overflow-y: auto;
         }
 
-        /* Premium Header */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 48px;
-            padding-bottom: 28px;
-            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
-            position: relative;
+            margin-bottom: 40px;
         }
 
-        .header::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 120px;
-            height: 2px;
-            background: linear-gradient(90deg, var(--red-500), transparent);
-            border-radius: 2px;
-        }
-
-        .h1 {
-            font-size: 42px;
+        .header-content h1 {
+            font-size: 36px;
             font-weight: 800;
             margin: 0;
-            color: #111827;
-            letter-spacing: -0.5px;
-            line-height: 1.2;
+            color: var(--gray-900);
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .muted {
-            color: #6b7280;
-            margin-top: 10px;
-            font-size: 16px;
-            font-weight: 500;
-            max-width: 600px;
-            line-height: 1.6;
-        }
-
-        .session-display {
-            text-align: right;
-            padding: 16px 24px;
-            background: linear-gradient(135deg, 
-                rgba(255, 255, 255, 0.9) 0%, 
-                rgba(249, 250, 251, 0.8) 100%);
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(229, 231, 235, 0.6);
-            box-shadow: var(--shadow-sm);
-            transition: all var(--transition);
-        }
-
-        .session-display:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .session-display div:first-child {
-            font-size: 12px;
+        .header-content p {
             color: var(--gray-500);
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-            text-transform: uppercase;
+            margin-top: 8px;
+            font-size: 16px;
         }
 
-        .session-display div:last-child {
-            font-weight: 700;
-            font-size: 15px;
-            color: #1f2937;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 8px;
-        }
-
-        .session-display div:last-child::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: var(--green-500);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Premium Profile Container */
-        .profile-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .profile-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 36px;
-        }
-
-        @media (max-width: 1200px) {
-            .profile-grid {
-                gap: 28px;
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .profile-grid {
-                grid-template-columns: 1fr;
-                gap: 32px;
-            }
-        }
-
-        /* Premium Card Design */
-        .card {
-            background: linear-gradient(145deg, 
-                rgba(255, 255, 255, 0.95) 0%, 
-                rgba(249, 250, 251, 0.9) 100%);
-            border: 1px solid rgba(229, 231, 235, 0.6);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-md);
-            margin-bottom: 28px;
-            overflow: hidden;
-            transition: all var(--transition);
-            position: relative;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
-            opacity: 0;
-            transition: opacity var(--transition);
-        }
-
-        .card:hover::before {
-            opacity: 1;
-        }
-
-        .card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-xl);
-            border-color: rgba(229, 231, 235, 0.8);
-        }
-
-        .card-header {
-            padding: 28px 28px 0;
-        }
-
-        .card-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin: 0;
-            color: #111827;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .card-title::before {
-            content: '';
-            width: 6px;
-            height: 24px;
-            background: linear-gradient(180deg, var(--red-500), var(--orange-500));
-            border-radius: 3px;
-            flex-shrink: 0;
-        }
-
-        .card-content {
-            padding: 28px;
-        }
-
-        /* Premium Form Design */
-        .form-group {
-            margin-bottom: 24px;
-            position: relative;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #374151;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .form-group label::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            background: var(--red-400);
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid #d1d5db;
-            border-radius: var(--radius-lg);
-            background: #ffffff;
-            color: #111827;
-            font-size: 15px;
-            font-weight: 500;
-            transition: all var(--transition);
-            font-family: inherit;
-        }
-
-        .form-control:hover {
-            border-color: #9ca3af;
-            background: #ffffff;
-        }
-
-        .form-control:focus {
-            border-color: var(--red-500);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
-            outline: none;
-            transform: translateY(-1px);
-        }
-
-        /* Premium Buttons */
         .btn {
-            appearance: none;
-            border: 2px solid transparent;
-            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
-            color: white;
+            padding: 12px 24px;
             border-radius: var(--radius-lg);
-            padding: 16px 28px;
+            border: none;
+            background: var(--primary-gradient);
+            color: white;
             font-weight: 600;
+            font-size: 14px;
             cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
             transition: all var(--transition);
-            font-size: 15px;
-            letter-spacing: 0.3px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.2), 
-                transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
         }
 
         .btn:hover {
-            background: linear-gradient(135deg, var(--red-600) 0%, var(--orange-600) 100%);
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
         }
 
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: #374151;
-            border-color: #d1d5db;
-            font-weight: 500;
-            box-shadow: none;
-        }
-
-        .btn-outline:hover {
-            background: #f3f4f6;
-            color: #111827;
-            border-color: #9ca3af;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .btn-profile {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-profile:hover {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-            box-shadow: 0 8px 28px rgba(102, 126, 234, 0.4);
-            transform: translateY(-3px);
-        }
-
-        .btn-profile:active {
-            transform: translateY(-1px);
-        }
-
-        .quick-actions .btn-green {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
-        }
-
-        .quick-actions .btn-green:hover {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-            box-shadow: 0 8px 28px rgba(16, 185, 129, 0.4);
-            transform: translateY(-3px);
-        }
-
-        .btn-blue {
-            background: linear-gradient(135deg, var(--blue-500) 0%, var(--blue-700) 100%);
-            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.2);
-        }
-
-        .btn-blue:hover {
-            background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-800) 100%);
-            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
-            transform: translateY(-3px);
-        }
-
-        .btn-green {
-            background: linear-gradient(135deg, var(--green-500) 0%, var(--green-700) 100%);
-            box-shadow: 0 4px 16px rgba(22, 163, 74, 0.2);
-        }
-
-        .btn-green:hover {
-            background: linear-gradient(135deg, var(--green-600) 0%, var(--green-800) 100%);
-            box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3);
-        }
-
-        /* Premium Task List */
-        .task-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .task-item {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            padding: 20px;
-            background: linear-gradient(145deg, 
-                rgba(255, 255, 255, 0.9) 0%, 
-                rgba(249, 250, 251, 0.8) 100%);
-            border: 1px solid rgba(229, 231, 235, 0.6);
-            border-radius: var(--radius-lg);
-            transition: all var(--transition);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .task-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(180deg, var(--red-500), transparent);
-            opacity: 0;
-            transition: opacity var(--transition);
-        }
-
-        .task-item:hover::before {
-            opacity: 1;
-        }
-
-        .task-item:hover {
-            border-color: rgba(229, 231, 235, 0.8);
-            box-shadow: var(--shadow-lg);
-            transform: translateX(8px) translateY(-2px);
-        }
-
-        .task-item.completed {
-            opacity: 0.85;
-            background: linear-gradient(145deg, 
-                rgba(243, 244, 246, 0.8) 0%, 
-                rgba(249, 250, 251, 0.7) 100%);
-        }
-
-        .task-checkbox {
-            width: 22px;
-            height: 22px;
-            border: 2px solid var(--gray-300);
-            border-radius: 8px;
-            cursor: pointer;
-            flex-shrink: 0;
-            transition: all var(--transition);
-            position: relative;
-            background: white;
-        }
-
-        .task-checkbox:hover {
-            border-color: var(--green-500);
-            transform: scale(1.1);
-        }
-
-        .task-checkbox.checked {
-            background: linear-gradient(135deg, var(--green-500) 0%, var(--green-700) 100%);
-            border-color: var(--green-600);
-            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
-        }
-
-        .task-checkbox.checked::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .task-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .task-title {
-            font-weight: 600;
-            font-size: 16px;
-            margin: 0 0 8px 0;
-            color: #111827;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 1.4;
-        }
-
-        .task-title.completed {
-            text-decoration: line-through;
-            color: var(--gray-500);
-        }
-
-        .task-meta {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 13px;
-            color: #6b7280;
-            flex-wrap: wrap;
-        }
-
-        /* Premium Badge Design */
-        .task-type {
-            padding: 6px 12px;
-            border-radius: 24px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            box-shadow: var(--shadow-xs);
-            border: 1px solid transparent;
-            transition: all var(--transition-fast);
-        }
-
-        .task-type:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .type-course { 
-            background: linear-gradient(135deg, var(--blue-100) 0%, var(--blue-50) 100%); 
-            color: var(--blue-700); 
-            border-color: var(--blue-200);
-        }
-        .type-exam { 
-            background: linear-gradient(135deg, var(--red-100) 0%, var(--red-50) 100%); 
-            color: var(--red-700); 
-            border-color: var(--red-200);
-        }
-        .type-meeting { 
-            background: linear-gradient(135deg, var(--orange-100) 0%, var(--orange-50) 100%); 
-            color: var(--orange-700); 
-            border-color: var(--orange-200);
-        }
-        .type-personal { 
-            background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-50) 100%); 
-            color: var(--gray-700); 
-            border-color: var(--gray-200);
-        }
-
-        .task-priority {
-            padding: 6px 12px;
-            border-radius: 24px;
-            font-size: 11px;
-            font-weight: 700;
-            color: white;
-            box-shadow: var(--shadow-xs);
-            letter-spacing: 0.4px;
-            transition: all var(--transition-fast);
-        }
-
-        .task-priority:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .priority-high { 
-            background: linear-gradient(135deg, var(--red-500) 0%, var(--red-700) 100%); 
-        }
-        .priority-medium { 
-            background: linear-gradient(135deg, var(--orange-500) 0%, var(--orange-700) 100%); 
-        }
-        .priority-low { 
-            background: linear-gradient(135deg, var(--green-500) 0%, var(--green-700) 100%); 
-        }
-
-        /* Premium User Stats */
-        .user-stats {
+        .task-stats {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
-            margin-top: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
         }
 
-        .stat-box {
-            text-align: center;
-            padding: 24px 18px;
-            background: linear-gradient(145deg, 
-                rgba(255, 255, 255, 0.95) 0%, 
-                rgba(249, 250, 251, 0.9) 100%);
+        .stat-card {
+            padding: 20px;
+            background: white;
             border-radius: var(--radius-lg);
-            border: 1px solid rgba(229, 231, 235, 0.6);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
             transition: all var(--transition);
             position: relative;
             overflow: hidden;
         }
 
-        .stat-box::before {
+        .stat-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
-            opacity: 0;
-            transition: opacity var(--transition);
+            height: 3px;
+            background: var(--primary-gradient);
         }
 
-        .stat-box:hover::before {
-            opacity: 1;
-        }
-
-        .stat-box:hover {
+        .stat-card:hover {
             transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-            border-color: rgba(229, 231, 235, 0.8);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-red-light);
         }
 
         .stat-value {
             font-size: 32px;
             font-weight: 800;
-            margin-bottom: 8px;
-            color: #111827;
-            line-height: 1;
+            color: var(--gray-900);
+            margin-bottom: 4px;
         }
 
         .stat-label {
-            font-size: 13px;
-            color: #6b7280;
+            font-size: 14px;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .tasks-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .tasks-header {
+            padding: 24px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .tasks-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 24px;
+        }
+
+        .task-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-red-light);
+        }
+
+        .task-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--gray-300);
+        }
+
+        .task-card.high-priority::before {
+            background: var(--primary-red);
+        }
+
+        .task-card.medium-priority::before {
+            background: var(--warning);
+        }
+
+        .task-card.low-priority::before {
+            background: var(--secondary);
+        }
+
+        .task-card.completed::before {
+            background: var(--secondary);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .task-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .task-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        /* Quick Actions Enhancement */
-        .quick-actions {
+        .status-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-in-progress {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .status-completed {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .task-description {
+            color: var(--gray-600);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .task-details {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
-        .quick-actions .btn {
-            width: 100%;
-            justify-content: flex-start;
-            padding: 18px 24px;
-            border-radius: var(--radius-lg);
-            text-align: left;
-            font-size: 15px;
-        }
-
-        /* Account Settings Enhancement */
-        .account-settings {
+        .detail-item {
             display: flex;
-            flex-direction: column;
-            gap: 14px;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--gray-700);
         }
 
-        .account-settings .btn-outline {
-            width: 100%;
-            justify-content: flex-start;
-            padding: 16px 24px;
-            border-radius: var(--radius-lg);
+        .detail-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--gray-500);
+        }
+
+        .task-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .task-tag {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .tag-type-cours {
+            background: rgba(59, 130, 246, 0.1);
+            color: #2563EB;
+        }
+
+        .tag-type-examen {
+            background: rgba(239, 68, 68, 0.1);
+            color: #DC2626;
+        }
+
+        .tag-type-reunion {
+            background: rgba(245, 158, 11, 0.1);
+            color: #D97706;
+        }
+
+        .tag-type-personnel {
+            background: rgba(156, 163, 175, 0.1);
+            color: #4B5563;
+        }
+
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--gray-100);
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--gray-300);
+            background: white;
+            color: var(--gray-700);
+            font-size: 12px;
             font-weight: 500;
-            text-align: left;
-            font-size: 15px;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
         }
 
-        /* Responsive Design */
-        @media (max-width: 1024px) {
+        .action-btn:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .action-btn.primary {
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            border-color: var(--primary-red);
+        }
+
+        .action-btn.primary:hover {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        .task-date {
+            font-size: 12px;
+            color: var(--gray-500);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-500);
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray-500);
+            font-size: 12px;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 1200px) {
             .app-shell {
                 flex-direction: column;
             }
@@ -1025,503 +640,337 @@
                 width: 100%;
                 height: auto;
                 position: relative;
-                padding: 24px;
-                border-right: none;
-                border-bottom: 1px solid rgba(229, 231, 235, 0.6);
+                padding: 16px;
+                max-height: 80vh;
             }
             
             .main {
-                padding: 32px;
-            }
-            
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
-            }
-            
-            .h1 {
-                font-size: 36px;
-            }
-            
-            .session-display {
-                width: 100%;
-                text-align: left;
+                padding: 24px;
             }
         }
 
         @media (max-width: 768px) {
-            .main {
-                padding: 24px;
-            }
-            
-            .card-content {
-                padding: 24px;
-            }
-            
-            .user-stats {
-                grid-template-columns: 1fr;
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
                 gap: 16px;
             }
             
-            .task-meta {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .main {
-                padding: 20px;
+            .header-content h1 {
+                font-size: 28px;
             }
             
-            .card-header,
-            .card-content {
-                padding: 20px;
+            .task-grid {
+                grid-template-columns: 1fr;
+                padding: 16px;
             }
             
-            .form-control {
-                padding: 14px 16px;
-            }
-            
-            .btn {
-                padding: 14px 20px;
-            }
-        }
-
-        /* Loading Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card {
-            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(249, 250, 251, 0.8);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, var(--red-300), var(--orange-300));
-            border-radius: 10px;
-            border: 2px solid rgba(249, 250, 251, 0.8);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, var(--red-400), var(--orange-400));
-        }
-
-        /* Focus States */
-        *:focus-visible {
-            outline: 2px solid var(--red-500);
-            outline-offset: 2px;
-            border-radius: var(--radius-sm);
-        }
-
-        /* Print Styles */
-        @media print {
-            .sidebar,
-            .btn,
-            .session-display {
-                display: none;
-            }
-            
-            .main {
-                width: 100%;
-                padding: 20px;
-            }
-        }
-
-        /* Dark Mode Support (Optional) */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: #0f172a;
-                --fg: #f1f5f9;
-                
-                --gray-50: #1e293b;
-                --gray-100: #334155;
-                --gray-200: #475569;
-                --gray-300: #64748b;
-                --gray-400: #94a3b8;
-                --gray-500: #cbd5e1;
-                --gray-600: #e2e8f0;
-                --gray-700: #f1f5f9;
-                --gray-800: #f8fafc;
-                --gray-900: #ffffff;
+            .task-stats {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
 <body>
     <div class="app-shell">
-        <!-- Sidebar with session info -->
         <aside class="sidebar">
             <div class="brand">
                 <div class="brand-row">
                     <div class="brand-icon">ES</div>
                     <div>
                         <div class="brand-title">ESPRIT</div>
-                        <div class="brand-sub">Student Assistant</div>
+                        <div class="brand-sub">Assistant Étudiant</div>
                     </div>
                 </div>
             </div>
 
-            <!-- User session information -->
             <div class="user-session">
                 <div class="user-info">
                     <div class="avatar">
-                        {{ app.user ? app.user.initials|default(app.user.nom|first ~ app.user.prenom|first) : 'JD' }}
+                        {{ app.user.nom|first }}{{ app.user.prenom|first }}
                     </div>
                     <div class="user-details">
-                        <h3>{{ app.user ? app.user.nom ~ ' ' ~ app.user.prenom : 'John Doe' }}</h3>
-                        <p>{{ app.user ? app.user.classe.nom|default('4SE-G1') : '4SE-G1' }}</p>
+                        <h3>{{ app.user.nom }} {{ app.user.prenom }}</h3>
+                        <p>📚 {{ app.user.classe is not null ? app.user.classe.nom : 'Aucune classe' }}</p>
                     </div>
                 </div>
                 <div class="session-info">
-                    <div><strong>Email:</strong> {{ app.user ? app.user.email : 'student@esprit.tn' }}</div>
-                    <div><strong>Role:</strong> {{ app.user ? app.user.roles|first|replace({'ROLE_': ''})|capitalize : 'Student' }}</div>
-                    <div><strong>Member since:</strong> {{ app.user ? app.user.createdAt|date('M Y') : 'Jan 2024' }}</div>
+                    <div><strong>Email :</strong> {{ app.user.email }}</div>
+                    <div><strong>Rôle :</strong> {{ app.user.roles[0]|replace({'ROLE_': ''})|capitalize }}</div>
                 </div>
             </div>
 
-            <!-- Navigation -->
+            <!-- Updated Navigation Bar -->
             <nav class="nav">
-                <a href="#">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/>
-                    </svg>
-                    Dashboard
-                </a>
-                <a href="#">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-                    </svg>
-                    My Tasks
-                </a>
-                <a href="#" class="active">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                        <circle cx="12" cy="7" r="4"/>
-                    </svg>
-                    Profile
-                </a>
-                <a href="{{ userClasse ? path('app_classe_front_show', {id: userClasse.id}) : '#' }}" {% if not userClasse %}style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 10v6m0 0l-8.5-5-8.5 5V6a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/><path d="M2 10l10-6 10 6"/>
-                    </svg>
-                    My Class
-                </a>
-                <a href="{{ userClasse ? path('app_matiere_classe_front_index', {id: userClasse.id}) : path('app_matiere_classe_front_index') }}">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6.5a2.5 2.5 0 0 0-2 2.5"/><line x1="4" y1="9" x2="20" y2="9"/>
-                    </svg>
-                    Class Subjects
-                </a>
-                <a href="#">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                    </svg>
-                    Settings
-                </a>
-                <a href="{{ path('app_logout') }}">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>
-                    </svg>
-                    Logout
-                </a>
+                <div class="nav-section">
+                    <div class="nav-section-title">Général</div>
+                    <a href="{{ path('app_dashboard') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/>
+                        </svg>
+                        Tableau de bord
+                    </a>
+                    <a href="{{ path('app_my_tasks') }}" >
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                        </svg>
+                        Mes Tâches
+                    </a>
+                    <a href="{{path('front')}}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            <circle cx="12" cy="12" r="10"/>
+                        </svg>
+                        Objectifs
+                    </a>
+                    <a href="{{path('front_objectif_sante_index')}}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="M8 12h8"/>
+                            <path d="M12 8v8"/>
+                        </svg>
+                        Santé
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Académique</div>
+                    <a href="{{ path('app_classe_users',{'id': app.user.classe.id}) }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                        Classes
+                    </a>
+                    <a href="{{ path('app_matiere_classe_by_classe', {'id': app.user.classe.id}) }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        Matières
+                    </a>
+                    <a href="#">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="7" width="18" height="13" rx="2" ry="2"/>
+                            <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            <line x1="12" y1="12" x2="12" y2="12"/>
+                            <line x1="8" y1="17" x2="16" y2="17"/>
+                        </svg>
+                        Salles
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Cours & Groupes</div>
+                    <a href="#">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                            <line x1="12" y1="12" x2="12" y2="12"/>
+                        </svg>
+                        Séances
+                    </a>
+                    <a href="#">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        Groupes
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Compte</div>
+                    <a href="{{ path('app_profile') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Profil
+                    </a>
+                    <a href="{{ path('app_logout') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>
+                        </svg>
+                        Déconnexion
+                    </a>
+                </div>
             </nav>
         </aside>
 
-        <!-- Main content -->
+        <!-- Rest of the content remains the same -->
         <main class="main">
             <header class="header">
-                <div>
-                    <h1 class="h1">My Profile</h1>
-                    <p class="muted">Manage your account and view your tasks</p>
+                <div class="header-content">
+                    <h1>Mes Tâches</h1>
+                    <p>Gérez et suivez toutes vos tâches académiques</p>
                 </div>
-                <div class="session-display">
-                    <div>Current session</div>
-                    <div>{{ app.user ? app.user.email : 'student@esprit.tn' }}</div>
-                </div>
+                <a href="{{ path('app_tache_new') }}" class="btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    Nouvelle Tâche
+                </a>
             </header>
 
-            <div class="profile-container">
-                <div class="profile-grid">
-                    <!-- Left column: Profile info -->
-                    <div>
-                        <!-- Personal Information Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Personal Information</h2>
-                            </div>
-                            <div class="card-content">
-                                <form id="profileForm">
-                                    <div class="form-group">
-                                        <label for="fullName">Full Name</label>
-                                        <input type="text" id="fullName" class="form-control" 
-                                               value="{{ app.user ? app.user.nom ~ ' ' ~ app.user.prenom : 'John Doe' }}">
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="email">Email Address</label>
-                                        <input type="email" id="email" class="form-control" 
-                                               value="{{ app.user ? app.user.email : 'student@esprit.tn' }}">
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="class">Class / Group</label>
-                                        <input type="text" id="class" class="form-control" 
-                                               value="{{ app.user ? app.user.classe.nom|default('4SE-G1') : '4SE-G1' }}">
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <label for="phone">Phone Number</label>
-                                        <input type="tel" id="phone" class="form-control" 
-                                               value="{{ app.user.numTel ?: '' }}"
-                                               placeholder="+216 XX XXX XXX">
-                                    </div>
-                                    
-                                    <button type="submit" class="btn btn-profile">✏️ Update Profile</button>
-                                </form>
-                            </div>
-                        </div>
+            {% set totalTasks = tasks|length %}
+            {% set completedTasks = tasks|filter(t => (t.statut|default('A_FAIRE')) == 'TERMINEE')|length %}
+            {% set pendingTasks = totalTasks - completedTasks %}
+            {% set highPriorityTasks = tasks|filter(t => (t.priorite|default('MOYEN')) == 'ELEVEE')|length %}
 
-                        <!-- Recent Tasks Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">My Recent Tasks</h2>
-                            </div>
-                            <div class="card-content">
-                                <div class="task-list">
-                                    {% if tasks is defined and tasks is not empty %}
-                                        {% for task in tasks|slice(0, 5) %}
-                                            {% set taskType = task.type|default('personal') %}
-                                            {% set taskPriority = task.priority|default('medium') %}
-                                            {% set isCompleted = task.status|default('pending') == 'completed' %}
-                                            
-                                            <div class="task-item {{ isCompleted ? 'completed' : '' }}">
-                                                <div class="task-checkbox {{ isCompleted ? 'checked' : '' }}" 
-                                                     onclick="toggleTask({{ task.id }})"></div>
-                                                <div class="task-content">
-                                                    <div class="task-title {{ isCompleted ? 'completed' : '' }}">
-                                                        {{ task.title|default('Untitled Task') }}
-                                                    </div>
-                                                    <div class="task-meta">
-                                                        <span class="task-type type-{{ taskType }}">
-                                                            {{ taskType|capitalize }}
-                                                        </span>
-                                                        <span class="task-priority priority-{{ taskPriority }}">
-                                                            {{ taskPriority|capitalize }}
-                                                        </span>
-                                                        <span>{{ task.dueDate|default(task.createdAt|date('M d')) }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        {% endfor %}
-                                        
-                                        {% if tasks|length > 5 %}
-                                            <div style="text-align: center; margin-top: 16px;">
-                                                <a href="#" class="btn btn-outline">View All Tasks ({{ tasks|length }})</a>
-                                            </div>
-                                        {% endif %}
-                                    {% else %}
-                                        <div style="text-align: center; padding: 24px; color: var(--gray-500);">
-                                            <p>No tasks found. Create your first task!</p>
-                                            <a href="#" class="btn btn-blue">Create Task</a>
-                                        </div>
+            <div class="task-stats">
+                <div class="stat-card">
+                    <div class="stat-value">{{ totalTasks }}</div>
+                    <div class="stat-label">📋 Tâches totales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ completedTasks }}</div>
+                    <div class="stat-label">✅ Complétées</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ pendingTasks }}</div>
+                    <div class="stat-label">⏳ En attente</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ highPriorityTasks }}</div>
+                    <div class="stat-label">🚨 Haute priorité</div>
+                </div>
+            </div>
+
+            <div class="tasks-container">
+                <div class="tasks-header">
+                    <h2 class="tasks-title">Toutes les tâches ({{ totalTasks }})</h2>
+                </div>
+
+                <div class="task-grid" id="taskList">
+                    {% if tasks is not empty %}
+                        {% for task in tasks %}
+                            {% set taskType = task.type|default('personnel') %}
+                            {% set taskPriority = task.priorite|default('MOYEN') %}
+                            {% set rawStatus = task.statut|default('A_FAIRE') %}
+                            {% set isCompleted = rawStatus == 'TERMINEE' %}
+                            {% set statusLabels = {'A_FAIRE': 'En attente', 'EN_COURS': 'En cours', 'TERMINEE': 'Terminée', 'EN_RETARD': 'En retard', 'PAUSED': 'En pause'} %}
+                            {% set statusSlugMap = {'A_FAIRE':'pending', 'EN_COURS':'in_progress', 'TERMINEE':'completed', 'EN_RETARD':'overdue', 'PAUSED':'paused'} %}
+                            {% set statusSlug = statusSlugMap[rawStatus]|default('pending') %}
+                            {% set priorityMap = {'ELEVEE': 'high', 'MOYEN': 'medium', 'FAIBLE': 'low'} %}
+                            {% set priorityClassMap = {'ELEVEE': 'high', 'MOYEN': 'medium', 'FAIBLE': 'low'} %}
+                            {% set priorityLabelMap = {'ELEVEE': 'Haute', 'MOYEN': 'Moyenne', 'FAIBLE': 'Basse'} %}
+                            {% set priorityClass = priorityClassMap[taskPriority]|default('medium') %}
+                            
+                            <div class="task-card {{ isCompleted ? 'completed' : '' }} {{ priorityClass }}-priority">
+                                <div class="task-header">
+                                    <h3 class="task-title">{{ task.titre|default('Tâche sans titre') }}</h3>
+                                    <span class="task-status status-{{ statusSlug }}">
+                                        {{ statusLabels[rawStatus]|default('En attente') }}
+                                    </span>
+                                </div>
+                                
+                                {% if task.description %}
+                                <div class="task-description">
+                                    {{ task.description }}
+                                </div>
+                                {% endif %}
+                                
+                                <div class="task-details">
+                                    <div class="detail-item">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 8v4l3 3"/>
+                                            <circle cx="12" cy="12" r="10"/>
+                                        </svg>
+                                        <span>Priorité : 
+                                            <strong style="color: 
+                                                {% if priorityClass == 'high' %}var(--primary-red)
+                                                {% elseif priorityClass == 'medium' %}var(--warning)
+                                                {% else %}var(--secondary){% endif %}">
+                                                {{ priorityLabelMap[taskPriority] }}
+                                            </strong>
+                                        </span>
+                                    </div>
+                                    
+                                    {% if task.dateEcheance %}
+                                    <div class="detail-item">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                            <line x1="16" y1="2" x2="16" y2="6"/>
+                                            <line x1="8" y1="2" x2="8" y2="6"/>
+                                            <line x1="3" y1="10" x2="21" y2="10"/>
+                                        </svg>
+                                        <span>Échéance : <strong>{{ task.dateEcheance|date('d/m/Y') }}</strong></span>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if task.createdAt %}
+                                    <div class="detail-item">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                            <circle cx="12" cy="7" r="4"/>
+                                        </svg>
+                                        <span>Créée le : {{ task.createdAt|date('d/m/Y') }}</span>
+                                    </div>
                                     {% endif %}
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- My Class Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">My Class</h2>
-                                {% if is_granted('ROLE_ADMIN') %}
-                                    <a href="{{ path('app_classe_add') }}" class="btn btn-sm btn-green">+ New Class</a>
-                                {% endif %}
-                            </div>
-                            <div class="card-content">
-                                {% if userClasse %}
-                                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 12px; margin-bottom: 16px;">
-                                        <h3 style="margin-bottom: 8px; font-size: 18px; font-weight: 600;">{{ userClasse.nom }}</h3>
-                                        <p style="margin: 4px 0; font-size: 14px; opacity: 0.9;">Année: {{ userClasse.anneeuniversitaire }}</p>
-                                        <!-- Coordonnateur removed as property does not exist -->
+                                
+                                <div class="task-tags">
+                                    <span class="task-tag tag-type-{{ taskType }}">
+                                        {{ taskType|capitalize }}
+                                    </span>
+                                </div>
+                                
+                                <div class="task-footer">
+                                    <div class="task-actions">
+                                        <a class="action-btn primary" href="{{ path('app_tache_show', {'id': task.id}) }}">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10"/>
+                                                <path d="M12 16v-4"/>
+                                                <circle cx="12" cy="8" r="0.5" fill="currentColor" stroke="none"/>
+                                            </svg>
+                                            Voir détails
+                                        </a>
+                                        <a class="action-btn" href="{{ path('app_tache_edit', {'id': task.id}) }}">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                            </svg>
+                                            Modifier
+                                        </a>
                                     </div>
-                                    <div style="display: flex; gap: 8px;">
-                                        {% if is_granted('ROLE_ADMIN') %}
-                                            <a href="{{ path('app_classe_edit', {id: userClasse.id}) }}" class="btn btn-outline" style="flex: 1;">Edit</a>
-                                            <a href="{{ path('app_classe_front_show', {id: userClasse.id}) }}" class="btn btn-outline" style="flex: 1;">View</a>
-                                        {% endif %}
-                                    </div>
-                                {% else %}
-                                    <div style="text-align: center; padding: 24px; color: var(--gray-500);">
-                                        <p>No class assigned yet</p>
-                                        {% if is_granted('ROLE_ADMIN') %}
-                                            <a href="{{ path('app_classe_add') }}" class="btn btn-blue">Create Class</a>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <!-- My Subjects Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Class Subjects</h2>
-                                {% if is_granted('ROLE_ADMIN') and userClasse %}
-                                    <a href="{{ path('app_matiere_classe_new', {classeId: userClasse.id}) }}" class="btn btn-sm btn-green">+ Add Subject</a>
-                                {% endif %}
-                            </div>
-                            <div class="card-content">
-                                {% if matieres is not empty %}
-                                    <div style="display: grid; gap: 12px;">
-                                        {% for matiere in matieres %}
-                                            <div style="background: var(--gray-50); padding: 16px; border-radius: 8px; border-left: 4px solid #667eea;">
-                                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
-                                                    <h4 style="font-weight: 600; color: var(--gray-900);">Matière #{{ matiere.id }}</h4>
-                                                    {% if is_granted('ROLE_ADMIN') %}
-                                                        <div style="display: flex; gap: 4px;">
-                                                            <a href="{{ path('app_matiere_classe_edit', {id: matiere.id}) }}" style="font-size: 12px; color: #667eea; text-decoration: none; cursor: pointer;">Edit</a>
-                                                            <span style="color: var(--gray-300);">|</span>
-                                                            <form method="POST" action="{{ path('app_matiere_classe_delete', {id: matiere.id}) }}" style="display: inline;" onsubmit="return confirm('Delete this subject?');">
-                                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ matiere.id) }}">
-                                                                <button type="submit" style="font-size: 12px; color: #ef4444; background: none; border: none; cursor: pointer; text-decoration: none; padding: 0;">Delete</button>
-                                                            </form>
-                                                        </div>
-                                                    {% endif %}
-                                                </div>
-                                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 12px; color: var(--gray-600);">
-                                                    <div>📊 Coefficient: <strong>{{ matiere.coefficient|default('—') }}</strong></div>
-                                                    <div>⏱️ Hours: <strong>{{ matiere.chargehoraire|default('—') }}</strong></div>
-                                                    <div>📈 Complexity: <strong>{{ matiere.scorecomplexite|default('—') }}/10</strong></div>
-                                                </div>
-                                            </div>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <div style="text-align: center; padding: 24px; color: var(--gray-500);">
-                                        <p>No subjects in your class yet</p>
-                                        {% if is_granted('ROLE_ADMIN') and userClasse %}
-                                            <a href="{{ path('app_matiere_classe_new', {classeId: userClasse.id}) }}" class="btn btn-blue">Add Subject</a>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right column: Stats & Quick Actions -->
-                    <div>
-                        <!-- User Stats Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Your Stats</h2>
-                            </div>
-                            <div class="card-content">
-                                <div class="user-stats">
-                                    {% set totalTasks = tasks|length %}
-                                    {% set completedTasks = tasks|filter(t => t.status|default('pending') == 'completed')|length %}
-                                    {% set pendingTasks = totalTasks - completedTasks %}
-                                    {% set highPriorityTasks = tasks|filter(t => t.priority|default('medium') == 'high')|length %}
-                                    
-                                    <div class="stat-box">
-                                        <div class="stat-value">{{ totalTasks }}</div>
-                                        <div class="stat-label">Total Tasks</div>
-                                    </div>
-                                    <div class="stat-box">
-                                        <div class="stat-value">{{ completedTasks }}</div>
-                                        <div class="stat-label">Completed</div>
-                                    </div>
-                                    <div class="stat-box">
-                                        <div class="stat-value">{{ pendingTasks }}</div>
-                                        <div class="stat-label">Pending</div>
-                                    </div>
-                                    <div class="stat-box">
-                                        <div class="stat-value">{{ highPriorityTasks }}</div>
-                                        <div class="stat-label">High Priority</div>
+                                    <div class="task-date">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <polyline points="12 6 12 12 16 14"/>
+                                        </svg>
+                                        {{ task.updatedAt ? 'Modifiée' : 'Créée' }} le {{ (task.updatedAt ?? task.createdAt ?? "now")|date('d/m/Y') }}
                                     </div>
                                 </div>
                             </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                            </svg>
+                            <h3>Aucune tâche pour le moment</h3>
+                            <p>Créez votre première tâche pour commencer à organiser votre travail</p>
+                            <a href="{{ path('app_tache_new') }}" class="btn" style="margin-top: 20px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 5v14M5 12h14"/>
+                                </svg>
+                                Créer une tâche
+                            </a>
                         </div>
-
-                        <!-- Quick Actions Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Quick Actions</h2>
-                            </div>
-                            <div class="card-content">
-                                <div class="quick-actions">
-                                    <button type="submit" class="btn btn-green" id="createTaskBtn">
-                                        <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M12 5v14"/><path d="M5 12h14"/>
-                                        </svg>
-                                        Create New Task
-                                    </button>
-                                    <a href="#" class="btn btn-outline" id="calendarBtn">
-                                        <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <rect x="3" y="4" width="18" height="18" rx="2"/>
-                                            <path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>
-                                        </svg>
-                                        View Calendar
-                                    </a>
-                                    <a href="#" class="btn btn-outline" id="joinGroupsBtn">
-                                        <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                            <circle cx="9" cy="7" r="4"/>
-                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                                        </svg>
-                                        Join Groups
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Account Settings Card -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h2 class="card-title">Account Settings</h2>
-                            </div>
-                            <div class="card-content">
-                                <div class="account-settings">
-                                    <a href="#" class="btn btn-outline">
-                                        Change Password
-                                    </a>
-                                    <a href="#" class="btn btn-outline">
-                                        Notification Settings
-                                    </a>
-                                    <a href="#" class="btn btn-outline">
-                                        Privacy Settings
-                                    </a>
-                                    <button onclick="exportData()" class="btn btn-outline">
-                                        Export My Data
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    {% endif %}
                 </div>
+            </div>
+
+            <div class="footer">
+                <p>ESPRIT Assistant Étudiant • © {{ "now"|date("Y") }} • Tous droits réservés</p>
             </div>
         </main>
     </div>
 
     <script>
-        // Toggle task completion
         function toggleTask(taskId) {
-            const checkbox = event.target.closest('.task-checkbox');
-            checkbox.classList.toggle('checked');
-            
-            // You would typically make an AJAX call here to update the task status
             fetch(`/tasks/${taskId}/toggle`, {
                 method: 'POST',
                 headers: {
@@ -1530,237 +979,23 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Task updated:', data);
-                // Update task counters if needed
-                updateTaskCounters();
+                console.log('Tâche mise à jour:', data);
+                location.reload();
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => console.error('Erreur:', error));
         }
 
-        // Update task counters
-        function updateTaskCounters() {
-            // This would be implemented based on your actual data structure
-            console.log('Updating task counters...');
-        }
-
-        // Handle profile form submission
-        document.getElementById('profileForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalHTML = submitBtn.innerHTML;
-            
-            const formData = {
-                fullName: document.getElementById('fullName').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                phone: document.getElementById('phone').value.trim()
-            };
-            
-            // Validate inputs
-            if (!formData.email) {
-                showErrorMsg('Please enter an email address');
-                return;
-            }
-
-            // Show loading state
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '⏳ Updating...';
-            
-            console.log('Sending profile update:', formData);
-            
-            // Build request headers
-            const headers = {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-            };
-            
-            // Add CSRF token if available
-            const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
-            if (csrfTokenElement) {
-                headers['X-CSRF-TOKEN'] = csrfTokenElement.content;
-            }
-            
-            fetch('{{ path("app_profile_update") }}', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(formData),
-                credentials: 'same-origin'
-            })
-            .then(response => {
-                console.log('Response status:', response.status);
-                if (!response.ok) {
-                    return response.json().then(data => {
-                        throw new Error(data.message || `HTTP error! status: ${response.status}`);
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Response data:', data);
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalHTML;
-                
-                if (data.success) {
-                    showSuccessMsg(data.message || 'Profile updated successfully!');
-                    // Update form with returned values
-                    if (data.user) {
-                        document.getElementById('fullName').value = data.user.fullName || '';
-                        document.getElementById('email').value = data.user.email || '';
-                        document.getElementById('phone').value = data.user.phone || '';
-                    }
-                } else {
-                    showErrorMsg(data.message || 'Failed to update profile');
-                }
-            })
-            .catch(error => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalHTML;
-                console.error('Fetch error:', error);
-                showErrorMsg('Error: ' + error.message);
-            });
-        });
-
-        function showSuccessMsg(message) {
-            const successMsg = document.createElement('div');
-            successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 16px 24px; border-radius: 10px; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3); z-index: 9999; font-weight: 600; animation: slideIn 0.3s ease;';
-            successMsg.innerHTML = '✓ ' + message;
-            document.body.appendChild(successMsg);
-            
-            setTimeout(() => {
-                successMsg.style.transition = 'opacity 0.3s ease';
-                successMsg.style.opacity = '0';
-                setTimeout(() => successMsg.remove(), 300);
-            }, 4000);
-        }
-
-        function showErrorMsg(message) {
-            const errorMsg = document.createElement('div');
-            errorMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 16px 24px; border-radius: 10px; box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3); z-index: 9999; font-weight: 600; animation: slideIn 0.3s ease;';
-            errorMsg.innerHTML = '✗ ' + message;
-            document.body.appendChild(errorMsg);
-            
-            setTimeout(() => {
-                errorMsg.style.transition = 'opacity 0.3s ease';
-                errorMsg.style.opacity = '0';
-                setTimeout(() => errorMsg.remove(), 300);
-            }, 4000);
-        }
-
-        // Add animation styles
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(400px);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Export data function
-        function exportData() {
-            if (confirm('This will export all your data as a JSON file. Continue?')) {
-                fetch('#')
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'esprit-data-export.json';
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                })
-                .catch(error => {
-                    alert('Error exporting data. Please try again.');
-                    console.error('Error:', error);
-                });
-            }
-        }
-
-        // Initialize
+        // Highlight active section based on current page
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Profile page loaded');
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav a');
             
-            // Prevent default for placeholder buttons
-            document.getElementById('createTaskBtn')?.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Task creation feature coming soon!');
-            });
-            
-            document.getElementById('calendarBtn')?.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Calendar view coming soon!');
-            });
-            
-            document.getElementById('joinGroupsBtn')?.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Groups feature coming soon!');
-            });
-            
-            // Add hover effects to cards
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.addEventListener('mouseenter', () => {
-                    card.style.transform = 'translateY(-8px)';
-                });
-                
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'translateY(0)';
-                });
-            });
-            
-            // Add ripple effect to buttons
-            const buttons = document.querySelectorAll('.btn');
-            buttons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    // Skip ripple for clicks that already have preventDefault
-                    if (e.defaultPrevented) return;
-                    
-                    const ripple = document.createElement('span');
-                    const rect = this.getBoundingClientRect();
-                    const size = Math.max(rect.width, rect.height);
-                    const x = e.clientX - rect.left - size / 2;
-                    const y = e.clientY - rect.top - size / 2;
-                    
-                    ripple.style.cssText = `
-                        position: absolute;
-                        border-radius: 50%;
-                        background: rgba(255, 255, 255, 0.3);
-                        transform: scale(0);
-                        animation: ripple 0.6s linear;
-                        width: ${size}px;
-                        height: ${size}px;
-                        top: ${y}px;
-                        left: ${x}px;
-                    `;
-                    
-                    this.appendChild(ripple);
-                    
-                    setTimeout(() => {
-                        ripple.remove();
-                    }, 600);
-                });
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
             });
         });
-
-        // Add ripple animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes ripple {
-                to {
-                    transform: scale(4);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>

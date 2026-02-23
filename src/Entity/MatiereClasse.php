@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\MatiereClasseRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -35,10 +37,59 @@ class MatiereClasse
         notInRangeMessage: "Le score de complexité doit être compris entre {{ min }} et {{ max }}."
     )]
     private ?int $scorecomplexite = null;
-    #[ORM\ManyToOne(inversedBy: 'matiereClasses')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: "Vous devez sélectionner une classe.")]
-    private ?Classe $classe = null;
+
+    /**
+     * @var Collection<int, Classe>
+     */
+    #[ORM\ManyToMany(targetEntity: Classe::class, inversedBy: 'matiereClasses')]
+    private Collection $classes;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotNull(message: "Le nom de la matière est obligatoire.")]
+    #[Assert\NotBlank(message: "Le nom de la matière ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 3,
+        max: 50,
+        minMessage: "Le nom de la matière doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le nom de la matière ne peut pas dépasser {{ limit }} caractères."
+    )]
+    private ?string $nom = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotNull(message: "La description est obligatoire.")]
+    #[Assert\NotBlank(message: "La description ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 10,
+        minMessage: "La description doit contenir au moins {{ limit }} caractères."
+    )]
+    private ?string $description = null;
+
+    /**
+     * @var Collection<int, Seance>
+     */
+    #[ORM\OneToMany(targetEntity: Seance::class, mappedBy: 'matiere', cascade: ['remove'])]
+    private Collection $seances;
+
+    /**
+     * Matières pré-requises (self-referencing ManyToMany)
+     * @var Collection<int, MatiereClasse>
+     */
+    #[ORM\ManyToMany(targetEntity: self::class)]
+    #[ORM\JoinTable(
+        name: 'matiere_prerequis',
+        joinColumns: [new ORM\JoinColumn(name: 'matiere_id', referencedColumnName: 'id')],
+        inverseJoinColumns: [new ORM\JoinColumn(name: 'prerequis_id', referencedColumnName: 'id')]
+    )]
+    private Collection $prerequis;
+
+    public function __construct()
+    {
+        $this->classes = new ArrayCollection();
+        $this->seances = new ArrayCollection();
+        $this->prerequis = new ArrayCollection();
+    }
+
+   
 
     public function getId(): ?int
     {
@@ -78,15 +129,114 @@ class MatiereClasse
         return $this;
     }
 
-    public function getClasse(): ?Classe
+    /**
+     * @return Collection<int, Classe>
+     */
+    public function getClasses(): Collection
     {
-        return $this->classe;
+        return $this->classes;
     }
 
-    public function setClasse(?Classe $classe): static
+    public function addClass(Classe $classe): static
     {
-        $this->classe = $classe;
+        if (!$this->classes->contains($classe)) {
+            $this->classes->add($classe);
+        }
+
         return $this;
     }
 
+    public function removeClass(Classe $classe): static
+    {
+        $this->classes->removeElement($classe);
+
+        return $this;
+    }
+
+    public function getNom(): ?string
+    {
+        return $this->nom;
+    }
+
+    public function setNom(?string $nom): static
+    {
+        $this->nom = $nom;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Seance>
+     */
+    public function getSeances(): Collection
+    {
+        return $this->seances;
+    }
+
+    public function addSeance(Seance $seance): static
+    {
+        if (!$this->seances->contains($seance)) {
+            $this->seances->add($seance);
+            $seance->setMatiere($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSeance(Seance $seance): static
+    {
+        if ($this->seances->removeElement($seance)) {
+            // set the owning side to null (unless already changed)
+            if ($seance->getMatiere() === $this) {
+                $seance->setMatiere(null);
+            }
+        }
+
+        return $this;
+    }
+    public function __toString(): string
+    {
+        return $this->nom ?? 'Matière';
+    }
+
+    // ===== Prerequis =====
+
+    /**
+     * @return Collection<int, MatiereClasse>
+     */
+    public function getPrerequis(): Collection
+    {
+        return $this->prerequis;
+    }
+
+    public function addPrerequis(self $prerequis): static
+    {
+        if (!$this->prerequis->contains($prerequis) && $prerequis !== $this) {
+            $this->prerequis->add($prerequis);
+        }
+        return $this;
+    }
+
+    public function removePrerequis(self $prerequis): static
+    {
+        $this->prerequis->removeElement($prerequis);
+        return $this;
+    }
+
+    public function hasPrerequis(self $prerequis): bool
+    {
+        return $this->prerequis->contains($prerequis);
+    }
 }
