@@ -718,20 +718,6 @@
                                   </span>
                                 </td>
                               </tr>
-                              <tr>
-                                <th>Disponibilité</th>
-                                <td>
-                                  {% if salle.disponibilite %}
-                                    <span class="badge badge-success" style="font-size: 1rem;">
-                                      <i class="mdi mdi-check-circle me-1"></i> Disponible
-                                    </span>
-                                  {% else %}
-                                    <span class="badge badge-danger" style="font-size: 1rem;">
-                                      <i class="mdi mdi-close-circle me-1"></i> Occupé / Indisponible
-                                    </span>
-                                  {% endif %}
-                                </td>
-                              </tr>
                               <!-- Add more fields if your entity has them -->
                               {% if salle.createdAt %}
                               <tr>
@@ -798,20 +784,6 @@
                         <li><strong>Numéro:</strong> {{ salle.number }}</li>
                         <li><strong>Étage:</strong> {{ salle.etage }}</li>
                         <li><strong>Capacité:</strong> {{ salle.capacite }} personnes</li>
-                        <li><strong>Disponibilité:</strong> 
-                          {% if salle.disponibilite %}
-                            <span class="badge badge-success">Oui</span>
-                          {% else %}
-                            <span class="badge badge-danger">Non</span>
-                          {% endif %}
-                        </li>
-                        <li><strong>Status:</strong> 
-                          {% if salle.disponibilite %}
-                            <span class="badge badge-success">Actif</span>
-                          {% else %}
-                            <span class="badge badge-danger">Inactif</span>
-                          {% endif %}
-                        </li>
                       </ul>
                     </div>
                     

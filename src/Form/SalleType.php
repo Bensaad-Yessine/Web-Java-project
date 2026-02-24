@@ -21,15 +21,16 @@ class SalleType extends AbstractType
                 'label' => 'Bloc',
                 'attr' => ['class' => 'form-select']
             ])
-            ->add('number', TextType::class, [
-                'label' => 'Numéro de salle',
+            ->add('number', IntegerType::class, [
+                'label' => 'Numéro de salle (1–9)',
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Ex: 101, 205, etc.'
+                    'placeholder' => '1 à 9'
                 ]
             ])
             ->add('etage', ChoiceType::class, [
                 'choices' => [
+                    'Rez-de-chaussée (0)' => 0,
                     '1er Étage' => 1,
                     '2ème Étage' => 2,
                     '3ème Étage' => 3,
@@ -38,22 +39,12 @@ class SalleType extends AbstractType
                 'label' => 'Étage',
                 'attr' => ['class' => 'form-select']
             ])
-            ->add('capacite', TextType::class, [
+            ->add('capacite', IntegerType::class, [
                 'label' => 'Capacité',
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Nombre maximum de personnes (1 à 30)'
                 ]
-            ])
-            ->add('disponibilite', ChoiceType::class, [
-                'choices' => [
-                    'Disponible' => true,
-                    'Non Disponible' => false,
-                ],
-                'label' => 'Disponibilité',
-                'expanded' => false,
-                'multiple' => false,
-                'attr' => ['class' => 'form-select']
             ])
         ;
     }

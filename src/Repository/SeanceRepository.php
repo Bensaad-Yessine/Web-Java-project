@@ -49,6 +49,7 @@ class SeanceRepository extends ServiceEntityRepository
         ?string $jour = null,
         ?string $typeSeance = null,
         ?string $mode = null,
+        ?int $salleId = null,
         ?int $classeId = null,
         ?int $matiereId = null,
         string $sort = 'id',
@@ -56,8 +57,13 @@ class SeanceRepository extends ServiceEntityRepository
     ): array {
         $qb = $this->createQueryBuilder('s')
             ->leftJoin('s.matiere', 'm')
+            ->addSelect('m')
             ->leftJoin('s.classe', 'c')
-            ->leftJoin('s.salle', 'sa');
+            ->addSelect('c')
+            ->leftJoin('s.salle', 'sa')
+            ->addSelect('sa')
+            // ensure we don't hydrate invalid proxies (e.g. matiere_id = 0)
+            ->andWhere('m.id > 0');
 
         if ($search) {
             $qb->andWhere('m.nom LIKE :search OR c.nom LIKE :search OR sa.name LIKE :search')
@@ -77,6 +83,11 @@ class SeanceRepository extends ServiceEntityRepository
         if ($mode) {
             $qb->andWhere('s.mode = :mode')
                ->setParameter('mode', $mode);
+        }
+
+        if ($salleId) {
+            $qb->andWhere('s.salle = :salleId')
+               ->setParameter('salleId', $salleId);
         }
 
         if ($classeId) {

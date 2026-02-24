@@ -7,6 +7,7 @@ use App\Entity\Classe;
 use App\Form\SeanceType;
 use App\Repository\SeanceRepository;
 use App\Repository\ClasseRepository;
+use App\Repository\SalleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,16 +23,20 @@ final class SeanceController extends AbstractController
     // INDEX
     // =========================
     #[Route('/', name: 'app_seance_index', methods: ['GET'])]
-    public function index(Request $request, SeanceRepository $repo): Response
+    public function index(Request $request, SeanceRepository $repo, SalleRepository $salleRepo): Response
     {
         $search = $request->query->get('search');
         $jour = $request->query->get('jour');
         $type = $request->query->get('type');
         $mode = $request->query->get('mode');
+        $salleId = $request->query->get('salle');
         $sort = $request->query->get('sort', 'id');
         $direction = $request->query->get('direction', 'asc');
 
-        $seances = $repo->findWithFilters($search, $jour, $type, $mode, null, null, $sort, $direction);
+        $seances = $repo->findWithFilters($search, $jour, $type, $mode, $salleId ? (int)$salleId : null, null, null, $sort, $direction);
+
+        // list of salles for filter dropdown
+        $salles = $salleRepo->findAll();
 
         return $this->render('seance/index.html.twig', [
             'seances' => $seances,
@@ -41,6 +46,8 @@ final class SeanceController extends AbstractController
             'mode' => $mode,
             'sort' => $sort,
             'direction' => $direction,
+            'salles' => $salles,
+            'salleFilter' => $salleId,
         ]);
     }
 
@@ -54,10 +61,11 @@ final class SeanceController extends AbstractController
         $jour = $request->query->get('jour');
         $type = $request->query->get('type');
         $mode = $request->query->get('mode');
+        $salleId = $request->query->get('salle');
         $sort = $request->query->get('sort', 'id');
         $direction = $request->query->get('direction', 'asc');
 
-        $seances = $repo->findWithFilters($search, $jour, $type, $mode, null, null, $sort, $direction);
+        $seances = $repo->findWithFilters($search, $jour, $type, $mode, $salleId ? (int)$salleId : null, null, null, $sort, $direction);
 
         $data = [];
         foreach ($seances as $seance) {

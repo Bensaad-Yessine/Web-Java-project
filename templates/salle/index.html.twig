@@ -759,7 +759,6 @@
                               <th>Bloc</th>
                               <th>Étage</th>
                               <th>Capacité</th>
-                              <th>Disponibilité</th>
                               <th>Actions</th>
                             </tr>
                           </thead>
@@ -796,17 +795,6 @@
                                    {% else %}
                                     <span class="text-muted">-</span>
                                    {% endif %}
-                                </td>
-                                <td>
-                                  {% if salle.disponibilite %}
-                                    <span class="badge badge-success">
-                                      <i class="mdi mdi-check-circle me-1"></i> Disponible
-                                    </span>
-                                  {% else %}
-                                    <span class="badge badge-danger">
-                                      <i class="mdi mdi-close-circle me-1"></i> Occupé
-                                    </span>
-                                  {% endif %}
                                 </td>
                                 <td>
                                   <div class="action-buttons">
@@ -874,7 +862,10 @@
             
             <script>
             document.addEventListener('DOMContentLoaded', function() {
+                // main filter panel input
                 const searchInput = document.getElementById('searchInput');
+                // also try to grab the top navigation search bar (same placeholder)
+                const navSearchInput = document.querySelector('input[placeholder="Rechercher une salle..."]');
                 const blockFilter = document.getElementById('blockFilter');
                 const maxCapaciteInput = document.getElementById('maxCapaciteInput');
                 const sortSelect = document.getElementById('sortSelect');
@@ -973,11 +964,6 @@
                                     : '<span class="text-muted">-</span>' }
                                 </td>
                                 <td>
-                                  ${ salle.disponibilite ? 
-                                    '<span class="badge badge-success"><i class="mdi mdi-check-circle me-1"></i> Disponible</span>' : 
-                                    '<span class="badge badge-danger"><i class="mdi mdi-close-circle me-1"></i> Occupé</span>' }
-                                </td>
-                                <td>
                                   <div class="action-buttons">
                                     <a href="${salle.url}" class="btn btn-info btn-sm btn-icon" title="Voir"><i class="mdi mdi-eye"></i></a>
                                     <a href="${salle.editUrl}" class="btn btn-warning btn-sm btn-icon" title="Modifier"><i class="mdi mdi-pencil"></i></a>
@@ -1016,22 +1002,17 @@
                 
                 // Init
                 attachDeleteHandlers();
-                
+                // automatic filtering: search inputs and selects
+                if (searchInput) searchInput.addEventListener('input', applyFilters);
+                if (navSearchInput && navSearchInput !== searchInput) {
+                    navSearchInput.addEventListener('input', applyFilters);
+                }
+                if (blockFilter) blockFilter.addEventListener('change', applyFilters);
+                if (maxCapaciteInput) maxCapaciteInput.addEventListener('change', applyFilters);
+                if (sortSelect) sortSelect.addEventListener('change', applyFilters);
+
+                // keep button only for manual trigger or show loading
                 if(applyFiltersBtn) applyFiltersBtn.addEventListener('click', applyFilters);
-                // Debounced live search with cancellation
-                function scheduleApplyFromInput(value) {
-                  clearTimeout(window.__salleSearchTimeout);
-                  window.__salleSearchTimeout = setTimeout(() => { if (searchInput) searchInput.value = value; applyFilters(); }, 350);
-                }
-                if(searchInput) {
-                  searchInput.addEventListener('input', function() {
-                     scheduleApplyFromInput(this.value);
-                  });
-                }
-                if(blockFilter) blockFilter.addEventListener('change', applyFilters);
-                if(maxCapaciteInput) maxCapaciteInput.addEventListener('change', applyFilters);
-                if(sortSelect) sortSelect.addEventListener('change', applyFilters);
-                
                 if(resetFiltersBtn) {
                     resetFiltersBtn.addEventListener('click', function() {
                         window.location.href = '{{ path("app_salle_index") }}';

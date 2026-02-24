@@ -79,7 +79,6 @@ final class SalleController extends AbstractController
                 'number' => $salle->getNumber(),
                 'capacite' => $salle->getCapacite(),
                 'etage' => $salle->getEtage(),
-                'disponibilite' => $salle->isDisponibilite(),
                 'url' => $this->generateUrl('app_salle_show', ['id' => $salle->getId()]),
                 'editUrl' => $this->generateUrl('app_salle_edit', ['id' => $salle->getId()]),
                 'csrfToken' => $csrfTokenManager->getToken('delete' . $salle->getId())->getValue(),
