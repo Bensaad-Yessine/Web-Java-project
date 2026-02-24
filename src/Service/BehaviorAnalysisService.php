@@ -7,71 +7,19 @@ use App\Entity\User;
 use App\Repository\StudentIntelligenceProfileRepository;
 use App\Repository\SuiviTacheRepository;
 use App\Repository\TacheRepository;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class BehaviorAnalysisService
 {
-    private EntityManagerInterface $em;
-    private TacheRepository $tacheRepository;
-    private SuiviTacheRepository $suiviRepository;
-    private StudentIntelligenceProfileRepository $profileRepository;
-    private UserRepository $userRepository;
-    private HttpClientInterface $httpClient;
-
     public function __construct(
-        EntityManagerInterface $em,
-        TacheRepository $tacheRepository,
-        SuiviTacheRepository $suiviRepository,
-        StudentIntelligenceProfileRepository $profileRepository,
-        UserRepository $userRepository,
-        HttpClientInterface $httpClient
-    ) {
-        $this->em = $em;
-        $this->tacheRepository = $tacheRepository;
-        $this->suiviRepository = $suiviRepository;
-        $this->profileRepository = $profileRepository;
-        $this->userRepository = $userRepository;
-        $this->httpClient = $httpClient;
-    }
-
-    public function getInsightsForUser(User $user): array
-    {
-        $lastProfile = $this->profileRepository->findLastByUser($user);
-        $now = new \DateTime();
-
-        // Case 1: No previous profile → compute everything
-        if (!$lastProfile) {
-            return $this->computeAndSaveProfile($user);
-        }
-
-        // Case 2: Last profile older than 1 week → compute incremental update
-        $diff = $now->diff($lastProfile->getAnalyzedAt());
-        if ($diff->days >= 7) {
-            return $this->computeAndSaveProfile($user, $lastProfile->getAnalyzedAt());
-        }
-
-        // Case 3: Last profile is recent → return last profile as-is
-        return [
-            'metrics' => [
-                'completionRate' => $lastProfile->getCompletionRate(),
-                'abandonmentRate' => $lastProfile->getAbandonmentRate(),
-                'averageStartDelayMinutes' => $lastProfile->getAverageStartDelayMinutes(),
-                'pauseFrequency' => $lastProfile->getPauseFrequency(),
-                'mostProductiveHour' => $lastProfile->getMostProductiveHour(),
-                'mostProductiveDayOfWeek' => $lastProfile->getMostProductiveDayOfWeek(),
-            ],
-            'aiInsights' => [
-                'weeklyProductivitySummary' => $lastProfile->getWeeklyProductivitySummary(),
-                'behavioralAdvice' => $lastProfile->getBehavioralAdvice(),
-            ],
-            'lastUpdated' => $lastProfile->getAnalyzedAt()->format('Y-m-d H:i:s'),
-        ];
-    }
+        private EntityManagerInterface $em,
+        private TacheRepository $tacheRepository,
+        private SuiviTacheRepository $suiviRepository,
+        private StudentIntelligenceProfileRepository $profileRepository
+    ) {}
 
     /**
-     * Alias for getInsightsForUser - used by controller
+     * Returns a StudentIntelligenceProfile object (used by controller)
      */
     public function getOrComputeProfile(User $user): StudentIntelligenceProfile
     {
@@ -79,56 +27,34 @@ class BehaviorAnalysisService
             $lastProfile = $this->profileRepository->findLastByUser($user);
             $now = new \DateTime();
 
+            // If no profile exists OR profile is older than 7 days, compute new one
             if (!$lastProfile || $now->diff($lastProfile->getAnalyzedAt())->days >= 7) {
-                $tasks = $this->tacheRepository->findByUserSince($user, $lastProfile?->getAnalyzedAt());
-                $suivis = $this->suiviRepository->findByUserSince($user, $lastProfile?->getAnalyzedAt());
-
-                if (!is_array($tasks)) {
-                    throw new \Exception('findByUserSince did not return array for tasks');
-                }
-                if (!is_array($suivis)) {
-                    throw new \Exception('findByUserSince did not return array for suivis');
-                }
-
-                $metrics = $this->computeBehaviorMetrics($tasks, $suivis);
-
-                if (!is_array($metrics)) {
-                    throw new \Exception('computeBehaviorMetrics did not return array');
-                }
-
-                $aiInsights = $this->callAiApi($metrics);
-
-                if (!is_array($aiInsights)) {
-                    throw new \Exception('callAiApi did not return array');
-                }
-
-                return $this->saveProfile($user, $metrics, $aiInsights);
+                return $this->computeAndSaveProfile($user, $lastProfile?->getAnalyzedAt());
             }
 
+            // Return existing profile if it's recent
             return $lastProfile;
 
         } catch (\Throwable $e) {
             error_log('ERROR in getOrComputeProfile: ' . $e->getMessage());
-            error_log('File: ' . $e->getFile() . ':' . $e->getLine());
             throw $e;
         }
     }
 
-    private function computeAndSaveProfile(User $user, ?\DateTime $since = null): array
+    private function computeAndSaveProfile(User $user, ?\DateTime $since = null): StudentIntelligenceProfile
     {
-        $tasks = $this->tacheRepository->findByUserSince($user, $since);
-        $suivis = $this->suiviRepository->findByUserSince($user, $since);
+        // Get tasks and suivis since last analysis
+        $tasks = $this->tacheRepository->findByUserSince($user, $since) ?? [];
+        $suivis = $this->suiviRepository->findByUserSince($user, $since) ?? [];
 
+        // Compute metrics
         $metrics = $this->computeBehaviorMetrics($tasks, $suivis);
+        
+        // Get AI insights
         $aiInsights = $this->callAiApi($metrics);
 
-        $this->saveProfile($user, $metrics, $aiInsights);
-
-        return [
-            'metrics' => $metrics,
-            'aiInsights' => $aiInsights,
-            'lastUpdated' => (new \DateTime())->format('Y-m-d H:i:s'),
-        ];
+        // Save and return profile
+        return $this->saveProfile($user, $metrics, $aiInsights);
     }
 
     private function computeBehaviorMetrics(array $tasks, array $suivis): array
@@ -136,8 +62,8 @@ class BehaviorAnalysisService
         $totalTasks = count($tasks);
         if ($totalTasks === 0) {
             return [
-                'abandonmentRate' => 0,
                 'completionRate' => 0,
+                'abandonmentRate' => 0,
                 'averageStartDelayMinutes' => 0,
                 'pauseFrequency' => 0,
                 'mostProductiveHour' => null,
@@ -235,8 +161,8 @@ class BehaviorAnalysisService
         }
 
         return [
-            'abandonmentRate' => $abandonmentRate,
             'completionRate' => $completionRate,
+            'abandonmentRate' => $abandonmentRate,
             'averageStartDelayMinutes' => $averageStartDelayMinutes,
             'pauseFrequency' => $pauseFrequency,
             'mostProductiveHour' => $mostProductiveHour,
@@ -247,170 +173,190 @@ class BehaviorAnalysisService
         ];
     }
 
-    public function callAiApi(array $metrics): array
+public function callAiApi(array $metrics): array
+{
+    $prompt = "
+    Tu es un analyste de productivité académique.
+
+    Sur la base des métriques comportementales suivantes de l'étudiant, fournis :
+
+    1) Un résumé concis de la productivité hebdomadaire (max 120 mots).
+    2) Des conseils comportementaux clairs et actionnables (max 120 mots).
+
+    Réponds strictement en français dans un format JSON valide comme ceci :
+
     {
-        $prompt = "
-        You are an academic productivity analyst.
-
-        Based on the following student behavior metrics, provide:
-
-        1) A concise weekly productivity summary (max 120 words).
-        2) Clear and actionable behavioral advice (max 120 words).
-
-        Return your response strictly in valid JSON format like this:
-
-        {
-        \"weeklyProductivitySummary\": \"...\",
-        \"behavioralAdvice\": \"...\"
-        }
-
-        Student Metrics:
-        - Completion Rate: {$metrics['completionRate']}
-        - Abandonment Rate: {$metrics['abandonmentRate']}
-        - Average Start Delay (minutes): {$metrics['averageStartDelayMinutes']}
-        - Pause Frequency: {$metrics['pauseFrequency']}
-        - Most Productive Hour: {$metrics['mostProductiveHour']}
-        - Most Productive Day: {$metrics['mostProductiveDayOfWeek']}
-
-        Per-Type Metrics:
-        Abandonment by type: " . json_encode($metrics['abandonmentRateByType']) . "
-        Completion by type: " . json_encode($metrics['completionRateByType']) . "
-        Start delay by type: " . json_encode($metrics['averageStartDelayByType']);
-
-        $apiKey = $_ENV['GROQ_API_KEY'] ?? null;
-
-        if (empty($apiKey)) {
-            return [
-                'weeklyProductivitySummary' => 'AI analysis unavailable: API key not configured.',
-                'behavioralAdvice' => null,
-            ];
-        }
-
-        try {
-            $ch = curl_init('https://api.groq.com/openai/v1/chat/completions');
-            
-            if ($ch === false) {
-                return [
-                    'weeklyProductivitySummary' => 'AI analysis unavailable at the moment.',
-                    'behavioralAdvice' => null,
-                ];
-            }
-            
-            curl_setopt_array($ch, [
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_POST => true,
-                CURLOPT_HTTPHEADER => [
-                    'Authorization: Bearer ' . $apiKey,
-                    'Content-Type: application/json',
-                ],
-                CURLOPT_POSTFIELDS => json_encode([
-                    'model' => 'llama-3.1-8b-instant',
-                    'messages' => [
-                        ['role' => 'system', 'content' => 'You analyze student productivity patterns.'],
-                        ['role' => 'user', 'content' => $prompt],
-                    ],
-                    'temperature' => 0.7,
-                    'max_tokens' => 500,
-                ]),
-                CURLOPT_TIMEOUT => 30,
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_SSL_VERIFYHOST => 0,
-            ]);
-
-            $response = curl_exec($ch);
-            
-            if ($response === false) {
-                $error = curl_error($ch);
-                curl_close($ch);
-                error_log('cURL Error in callAiApi: ' . $error);
-                return [
-                    'weeklyProductivitySummary' => 'AI analysis unavailable at the moment.',
-                    'behavioralAdvice' => null,
-                ];
-            }
-            
-            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-
-            if ($httpCode !== 200) {
-                error_log('Groq API HTTP Error ' . $httpCode . ': ' . substr($response, 0, 500));
-                return [
-                    'weeklyProductivitySummary' => 'AI analysis unavailable at the moment.',
-                    'behavioralAdvice' => null,
-                ];
-            }
-
-            $data = json_decode($response, true);
-            
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                error_log('JSON parse error in API response: ' . json_last_error_msg());
-                return [
-                    'weeklyProductivitySummary' => 'AI analysis unavailable at the moment.',
-                    'behavioralAdvice' => null,
-                ];
-            }
-
-            $messageContent = $data['choices'][0]['message']['content'] ?? '';
-
-            // Remove markdown code blocks if present
-            $messageContent = trim($messageContent);
-            if (strpos($messageContent, '```json') === 0) {
-                $messageContent = preg_replace('/^```json\s*/', '', $messageContent);
-                $messageContent = preg_replace('/\s*```$/', '', $messageContent);
-            } elseif (strpos($messageContent, '```') === 0) {
-                $messageContent = preg_replace('/^```\s*/', '', $messageContent);
-                $messageContent = preg_replace('/\s*```$/', '', $messageContent);
-            }
-
-            $parsed = json_decode($messageContent, true);
-
-            if (json_last_error() === JSON_ERROR_NONE) {
-                return [
-                    'weeklyProductivitySummary' => $parsed['weeklyProductivitySummary'] ?? $parsed['summary'] ?? $messageContent,
-                    'behavioralAdvice' => $parsed['behavioralAdvice'] ?? $parsed['advice'] ?? null,
-                ];
-            }
-
-            return [
-                'weeklyProductivitySummary' => $messageContent,
-                'behavioralAdvice' => null,
-            ];
-
-        } catch (\Exception $e) {
-            error_log('Exception in callAiApi: ' . $e->getMessage());
-            return [
-                'weeklyProductivitySummary' => 'AI analysis unavailable at the moment.',
-                'behavioralAdvice' => null,
-            ];
-        }
+    \"weeklyProductivitySummary\": \"...\",
+    \"behavioralAdvice\": \"...\"
     }
+
+    Métriques de l'étudiant :
+    - Taux de complétion : {$metrics['completionRate']}
+    - Taux d'abandon : {$metrics['abandonmentRate']}
+    - Délai moyen de démarrage (minutes) : {$metrics['averageStartDelayMinutes']}
+    - Fréquence de pause : {$metrics['pauseFrequency']}
+    - Heure la plus productive : {$metrics['mostProductiveHour']}
+    - Jour le plus productif : {$metrics['mostProductiveDayOfWeek']}
+
+    Métriques par type :
+    Abandon par type : " . json_encode($metrics['abandonmentRateByType']) . "
+    Complétion par type : " . json_encode($metrics['completionRateByType']) . "
+    Délai de démarrage par type : " . json_encode($metrics['averageStartDelayByType']);
+
+    $apiKey = $_ENV['GROQ_API_KEY'] ?? null;
+
+    if (empty($apiKey)) {
+        return [
+            'weeklyProductivitySummary' => 'Analyse IA indisponible : clé API non configurée.',
+            'behavioralAdvice' => 'Veuillez configurer une clé API pour utiliser cette fonctionnalité.',
+        ];
+    }
+
+    try {
+        $ch = curl_init('https://api.groq.com/openai/v1/chat/completions');
+        
+        if ($ch === false) {
+            return [
+                'weeklyProductivitySummary' => 'Analyse IA temporairement indisponible.',
+                'behavioralAdvice' => 'Veuillez réessayer plus tard.',
+            ];
+        }
+        
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_HTTPHEADER => [
+                'Authorization: Bearer ' . $apiKey,
+                'Content-Type: application/json',
+            ],
+            CURLOPT_POSTFIELDS => json_encode([
+                'model' => 'llama-3.1-8b-instant',
+                'messages' => [
+                    ['role' => 'system', 'content' => 'Tu analyses les patterns de productivité des étudiants. Réponds toujours en français avec du JSON valide, sans texte supplémentaire.'],
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+                'temperature' => 0.7,
+                'max_tokens' => 500,
+            ]),
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => 0,
+        ]);
+
+        $response = curl_exec($ch);
+        
+        if ($response === false) {
+            $error = curl_error($ch);
+            curl_close($ch);
+            error_log('Erreur cURL dans callAiApi : ' . $error);
+            return [
+                'weeklyProductivitySummary' => 'Analyse IA temporairement indisponible.',
+                'behavioralAdvice' => 'Veuillez réessayer plus tard.',
+            ];
+        }
+        
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200) {
+            error_log('Erreur HTTP Groq API ' . $httpCode . ' : ' . substr($response, 0, 500));
+            return [
+                'weeklyProductivitySummary' => 'Analyse IA temporairement indisponible.',
+                'behavioralAdvice' => 'Veuillez réessayer plus tard.',
+            ];
+        }
+
+        $data = json_decode($response, true);
+        
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            error_log('Erreur de parsing JSON : ' . json_last_error_msg());
+            return [
+                'weeklyProductivitySummary' => 'Analyse IA temporairement indisponible.',
+                'behavioralAdvice' => 'Veuillez réessayer plus tard.',
+            ];
+        }
+
+        $messageContent = $data['choices'][0]['message']['content'] ?? '';
+        
+        // Log the raw response for debugging
+        error_log('Raw AI response: ' . $messageContent);
+
+        // Clean up markdown if present
+        $messageContent = trim($messageContent);
+        
+        // Remove any "Voici l'analyse..." prefix if present
+        if (preg_match('/\{.*\}/s', $messageContent, $matches)) {
+            // Extract just the JSON part
+            $messageContent = $matches[0];
+        }
+        
+        // Remove markdown code blocks
+        if (strpos($messageContent, '```json') === 0) {
+            $messageContent = preg_replace('/^```json\s*/', '', $messageContent);
+            $messageContent = preg_replace('/\s*```$/', '', $messageContent);
+        } elseif (strpos($messageContent, '```') === 0) {
+            $messageContent = preg_replace('/^```\s*/', '', $messageContent);
+            $messageContent = preg_replace('/\s*```$/', '', $messageContent);
+        }
+
+        // Try to parse the JSON
+        $parsed = json_decode($messageContent, true);
+
+        if (json_last_error() === JSON_ERROR_NONE && is_array($parsed)) {
+            // Successfully parsed JSON
+            return [
+                'weeklyProductivitySummary' => $parsed['weeklyProductivitySummary'] ?? 'Analyse disponible.',
+                'behavioralAdvice' => $parsed['behavioralAdvice'] ?? 'Continuez vos efforts !',
+            ];
+        }
+
+        // If parsing failed, try to extract from the text
+        if (preg_match('/weeklyProductivitySummary["\s:]+([^"]+)/', $messageContent, $matches)) {
+            $summary = trim($matches[1]);
+        } else {
+            $summary = 'Analyse de productivité disponible.';
+        }
+
+        if (preg_match('/behavioralAdvice["\s:]+([^"]+)/', $messageContent, $matches)) {
+            $advice = trim($matches[1]);
+        } else {
+            $advice = 'Continuez vos efforts pour améliorer votre productivité.';
+        }
+
+        return [
+            'weeklyProductivitySummary' => $summary,
+            'behavioralAdvice' => $advice,
+        ];
+
+    } catch (\Exception $e) {
+        error_log('Exception dans callAiApi : ' . $e->getMessage());
+        return [
+            'weeklyProductivitySummary' => 'Analyse IA temporairement indisponible.',
+            'behavioralAdvice' => 'Veuillez réessayer plus tard.',
+        ];
+    }
+}
 
     private function saveProfile(User $user, array $metrics, array $aiInsights): StudentIntelligenceProfile
     {
         $profile = new StudentIntelligenceProfile();
 
         $profile->setUser($user);
-
         $profile->setCompletionRate($metrics['completionRate']);
         $profile->setAbandonmentRate($metrics['abandonmentRate']);
         $profile->setAverageStartDelayMinutes($metrics['averageStartDelayMinutes']);
         $profile->setPauseFrequency($metrics['pauseFrequency']);
-
         $profile->setMostProductiveHour($metrics['mostProductiveHour']);
         $profile->setMostProductiveDayOfWeek($metrics['mostProductiveDayOfWeek']);
-
-        // ✅ ADD THESE
+        
+        // Type metrics
         $profile->setAbandonmentRateByType($metrics['abandonmentRateByType']);
         $profile->setCompletionRateByType($metrics['completionRateByType']);
         $profile->setAverageStartDelayByType($metrics['averageStartDelayByType']);
 
-        $profile->setWeeklyProductivitySummary(
-            $aiInsights['weeklyProductivitySummary'] ?? null
-        );
-
-        $profile->setBehavioralAdvice(
-            $aiInsights['behavioralAdvice'] ?? null
-        );
+        // AI insights - these match what your Twig expects!
+        $profile->setWeeklyProductivitySummary($aiInsights['weeklyProductivitySummary'] ?? null);
+        $profile->setBehavioralAdvice($aiInsights['behavioralAdvice'] ?? null);
 
         $profile->setAnalyzedAt(new \DateTime());
 

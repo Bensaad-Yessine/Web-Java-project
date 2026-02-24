@@ -232,6 +232,8 @@ final class TacheController extends AbstractController
 
             // 2️⃣ Update the Tache status
             $tache->setStatut($newStatus);
+            $tache->setUpdatedAt(new \DateTimeImmutable());
+
 
             $em->flush();
 

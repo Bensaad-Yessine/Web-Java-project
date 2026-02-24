@@ -20,6 +20,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Service\BehaviorAnalysisService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use App\Service\StatisticsService;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
+use App\Service\WeatherAIService;
+
 
 #[Route('/user')]
 class UserController extends AbstractController
@@ -187,34 +192,152 @@ class UserController extends AbstractController
             ),        ]);
     }
 
-    #[Route('/dashboard/my-tasks', name: 'app_my_tasks', methods: ['GET'])]
-    public function myTasks(TacheRepository $tacheRepository): Response
-    {
-        $user = $this->getUser();
-        
-        if (!$user) {
-            throw $this->createAccessDeniedException();
-        }
-
-        // Match what's actually in your database
-        $activeStatuses = ['A_FAIRE', 'EN_COURS', 'EN_RETARD', 'PAUSED'];
-        $archivedStatuses = ['TERMINE', 'ABANDON']; // Remove the final E to match DB
-
-        $activeTasks = $tacheRepository->findBy(
-            ['user' => $user, 'statut' => $activeStatuses],
-            ['id' => 'DESC']
-        );
-
-        $archivedTasks = $tacheRepository->findBy(
-            ['user' => $user, 'statut' => $archivedStatuses],
-            ['id' => 'DESC']
-        );
-
-        return $this->render('user/FrontOffice.html.twig', [
-            'activeTasks' => $activeTasks,
-            'archivedTasks' => $archivedTasks,
-        ]);
+#[Route('/dashboard/my-tasks', name: 'app_my_tasks', methods: ['GET'])]
+public function myTasks(
+    TacheRepository $tacheRepository,
+    StatisticsService $statsService,
+    ChartBuilderInterface $chartBuilder
+): Response {
+    $user = $this->getUser();
+    if (!$user) {
+        throw $this->createAccessDeniedException();
     }
+
+    // Get tasks lists
+    $activeStatuses = ['A_FAIRE', 'EN_COURS', 'EN_RETARD', 'PAUSED'];
+    $archivedStatuses = ['TERMINE', 'ABANDON'];
+
+    $activeTasks = $tacheRepository->findBy(
+        ['user' => $user, 'statut' => $activeStatuses],
+        ['id' => 'DESC']
+    );
+
+    $archivedTasks = $tacheRepository->findBy(
+        ['user' => $user, 'statut' => $archivedStatuses],
+        ['id' => 'DESC']
+    );
+
+    // Get all statistics
+    $stats = $statsService->getUserStats($user);
+
+    // ----- Chart 1: Status distribution -----
+    $statusChart = $chartBuilder->createChart(Chart::TYPE_BAR);
+    
+    $todoTasks = $stats['counts']['total'] 
+        - $stats['counts']['completed'] 
+        - $stats['counts']['abandoned']
+        - $stats['counts']['inProgress']
+        - $stats['counts']['overdue']
+        - $stats['counts']['paused'];
+    
+    $statusChart->setData([
+        'labels' => ['À faire', 'En cours', 'Terminées', 'Abandonnées', 'En retard', 'En pause'],
+        'datasets' => [
+            [
+                'label' => 'Tâches',
+                'backgroundColor' => [
+                    '#f59e0b',  // À faire
+                    '#3b82f6',  // En cours
+                    '#10b981',  // Terminées
+                    '#ef4444',  // Abandonnées
+                    '#d97706',  // En retard
+                    '#6b7280'   // En pause
+                ],
+                'data' => [
+                    $todoTasks,
+                    $stats['counts']['inProgress'],
+                    $stats['counts']['completed'],
+                    $stats['counts']['abandoned'],
+                    $stats['counts']['overdue'],
+                    $stats['counts']['paused'],
+                ],
+            ],
+        ],
+    ]);
+
+    // ----- Chart 2: Priority distribution -----
+    $priorityChart = $chartBuilder->createChart(Chart::TYPE_DOUGHNUT);
+    
+    $highPriority = $stats['counts']['highPriority'] ?? 0;
+    $remaining = max(0, $stats['counts']['total'] - $highPriority);
+    $mediumPriority = (int)($remaining * 0.6);
+    $lowPriority = $remaining - $mediumPriority;
+    
+    $priorityChart->setData([
+        'labels' => ['Haute', 'Moyenne', 'Faible'],
+        'datasets' => [
+            [
+                'label' => 'Priorité',
+                'backgroundColor' => ['#ef4444', '#f59e0b', '#10b981'],
+                'data' => [$highPriority, $mediumPriority, $lowPriority],
+            ],
+        ],
+    ]);
+
+    // ----- Chart 3: Progress over time (NEW) -----
+    $progressChart = $chartBuilder->createChart(Chart::TYPE_LINE);
+
+    // Get progress data for the last 30 days
+    $progressData = $tacheRepository->getDailyTaskStats($user, 30);
+    
+    // Format dates for the chart
+    $labels = [];
+    $created = [];
+    $completed = [];
+    $abandoned = [];
+    
+    foreach ($progressData as $date => $data) {
+        $dateObj = new \DateTime($date);
+        $labels[] = $dateObj->format('d/m');
+        $created[] = $data['created'];
+        $completed[] = $data['completed'];
+        $abandoned[] = $data['abandoned'];
+    }
+    
+    $progressChart->setData([
+        'labels' => $labels,
+        'datasets' => [
+            [
+                'label' => 'Tâches créées',
+                'data' => $created,
+                'borderColor' => '#3b82f6',
+                'backgroundColor' => '#3b82f620',
+                'tension' => 0.4,
+                'fill' => true
+            ],
+            [
+                'label' => 'Tâches terminées',
+                'data' => $completed,
+                'borderColor' => '#10b981',
+                'backgroundColor' => '#10b98120',
+                'tension' => 0.4,
+                'fill' => true
+            ],
+            [
+                'label' => 'Tâches abandonnées',
+                'data' => $abandoned,
+                'borderColor' => '#ef4444',
+                'backgroundColor' => '#ef444420',
+                'tension' => 0.4,
+                'fill' => true
+            ]
+        ],
+    ]);
+
+    return $this->render('user/FrontOffice.html.twig', [
+        'activeTasks'     => $activeTasks,
+        'archivedTasks'   => $archivedTasks,
+        'stats'           => $stats,
+        'statusChart'     => $statusChart,
+        'priorityChart'   => $priorityChart,
+        'progressChart'   => $progressChart,
+        // Add these lines:
+        'progressLabels'  => $labels,
+        'progressCreated' => $created,
+        'progressCompleted' => $completed,
+        'progressAbandoned' => $abandoned,
+    ]);
+}
 
     #[Route('/dashboard/profile', name: 'app_profile', methods: ['GET'])]
     public function profile(): Response
@@ -402,6 +525,8 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $tache->setUpdatedAt(new \DateTimeImmutable());
+
             // The form uses the entity's choice values (e.g. 'MANUEL','MOYEN','A_FAIRE'),
             // so no remapping is required here.
             $em->flush();
@@ -519,6 +644,20 @@ class UserController extends AbstractController
             ], 500);
         }
     }
+
+    #[Route('/dashboard/weather-ai', name:'weather_ai')]
+    public function weatherAI(
+        WeatherAIService $service
+    ): JsonResponse
+    {
+
+        $data = $service->getWeatherAndAdvice();
+
+        return $this->json($data);
+
+    }
+
+    
 
 
 }

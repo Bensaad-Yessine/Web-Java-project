@@ -182,4 +182,102 @@ class TacheRepository extends ServiceEntityRepository
     }
 
 
+    public function getTaskCompletionOverTime(User $user, int $days = 30): array
+{
+    $date = new \DateTimeImmutable("-$days days");
+    
+    $qb = $this->createQueryBuilder('t')
+        ->select('DATE(t.updatedAt) as date', 'COUNT(t.id) as count')
+        ->where('t.user = :user')
+        ->andWhere('t.statut = :status')
+        ->andWhere('t.updatedAt >= :date')
+        ->setParameter('user', $user)
+        ->setParameter('status', 'TERMINE')
+        ->setParameter('date', $date)
+        ->groupBy('date')
+        ->orderBy('date', 'ASC');
+    
+    return $qb->getQuery()->getResult();
+}
+
+public function getTaskCreationOverTime(User $user, int $days = 30): array
+{
+    $date = new \DateTimeImmutable("-$days days");
+    
+    $qb = $this->createQueryBuilder('t')
+        ->select('DATE(t.createdAt) as date', 'COUNT(t.id) as count')
+        ->where('t.user = :user')
+        ->andWhere('t.createdAt >= :date')
+        ->setParameter('user', $user)
+        ->setParameter('date', $date)
+        ->groupBy('date')
+        ->orderBy('date', 'ASC');
+    
+    return $qb->getQuery()->getResult();
+}
+
+public function getDailyTaskStats(User $user, int $days = 30): array
+{
+    $endDate = new \DateTimeImmutable('now');
+    $startDate = new \DateTimeImmutable("-$days days");
+    
+    // Initialize stats array for each day
+    $stats = [];
+    $interval = new \DateInterval('P1D');
+    $period = new \DatePeriod($startDate, $interval, $days);
+    
+    foreach ($period as $day) {
+        $dateStr = $day->format('Y-m-d');
+        $stats[$dateStr] = [
+            'created' => 0,
+            'completed' => 0,
+            'abandoned' => 0,
+            'in_progress' => 0
+        ];
+    }
+    
+    // Get ALL tasks
+    $allTasks = $this->createQueryBuilder('t')
+        ->where('t.user = :user')
+        ->setParameter('user', $user)
+        ->getQuery()
+        ->getResult();
+    
+    foreach ($allTasks as $task) {
+        // Count created date if it exists and is within the period
+        $createdAt = $task->getCreatedAt();
+        if ($createdAt) {
+            $createdDate = $createdAt->format('Y-m-d');
+            if (isset($stats[$createdDate])) {
+                $stats[$createdDate]['created']++;
+            }
+        }
+        
+        // Count completion date if task is completed and has updatedAt
+        if ($task->getStatut() === 'TERMINE') {
+            $updatedAt = $task->getUpdatedAt();
+            if ($updatedAt) {
+                $completedDate = $updatedAt->format('Y-m-d');
+                if (isset($stats[$completedDate])) {
+                    $stats[$completedDate]['completed']++;
+                }
+            }
+        }
+        
+        // Count abandoned date if task is abandoned and has updatedAt
+        if ($task->getStatut() === 'ABANDON') {
+            $updatedAt = $task->getUpdatedAt();
+            if ($updatedAt) {
+                $abandonedDate = $updatedAt->format('Y-m-d');
+                if (isset($stats[$abandonedDate])) {
+                    $stats[$abandonedDate]['abandoned']++;
+                }
+            }
+        }
+    }
+    
+    return $stats;
+}
+
+
 }
