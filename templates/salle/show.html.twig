@@ -702,34 +702,34 @@
                                 </td>
                               </tr>
                               <tr>
-                                <th>Nom</th>
+                                <th>Étage</th>
                                 <td>
-                                  <h5 class="mb-0">{{ salle.name }}</h5>
-                                  <small class="text-muted">Nom descriptif</small>
-                                </td>
-                              </tr>
-                              <tr>
-                                <th>Bloc</th>
-                                <td>
-                                  <span class="badge 
-                                    {% if salle.block == 'A' %}badge-block-a
-                                    {% elseif salle.block == 'B' %}badge-block-b
-                                    {% elseif salle.block == 'C' %}badge-block-c
-                                    {% elseif salle.block == 'D' %}badge-block-d
-                                    {% elseif salle.block == 'E' %}badge-block-e
-                                    {% else %}badge-block-f{% endif %}">
-                                    <i class="mdi mdi-domain me-1"></i>
-                                    Bloc {{ salle.block }}
+                                  <span class="badge badge-outline-primary" style="font-size: 1rem;">
+                                    Étage {{ salle.etage }}
                                   </span>
                                 </td>
                               </tr>
                               <tr>
-                                <th>Numéro</th>
+                                <th>Capacité</th>
                                 <td>
-                                  <span class="badge badge-light" style="font-size: 1rem;">
-                                    <i class="mdi mdi-numeric me-1"></i>
-                                    {{ salle.number }}
+                                  <span class="badge badge-info" style="font-size: 1rem;">
+                                    <i class="mdi mdi-account-group me-1"></i>
+                                    {{ salle.capacite }} personnes
                                   </span>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th>Disponibilité</th>
+                                <td>
+                                  {% if salle.disponibilite %}
+                                    <span class="badge badge-success" style="font-size: 1rem;">
+                                      <i class="mdi mdi-check-circle me-1"></i> Disponible
+                                    </span>
+                                  {% else %}
+                                    <span class="badge badge-danger" style="font-size: 1rem;">
+                                      <i class="mdi mdi-close-circle me-1"></i> Occupé / Indisponible
+                                    </span>
+                                  {% endif %}
                                 </td>
                               </tr>
                               <!-- Add more fields if your entity has them -->
@@ -796,11 +796,21 @@
                         <li><strong>ID:</strong> {{ salle.id }}</li>
                         <li><strong>Bloc:</strong> {{ salle.block }}</li>
                         <li><strong>Numéro:</strong> {{ salle.number }}</li>
+                        <li><strong>Étage:</strong> {{ salle.etage }}</li>
+                        <li><strong>Capacité:</strong> {{ salle.capacite }} personnes</li>
+                        <li><strong>Disponibilité:</strong> 
+                          {% if salle.disponibilite %}
+                            <span class="badge badge-success">Oui</span>
+                          {% else %}
+                            <span class="badge badge-danger">Non</span>
+                          {% endif %}
+                        </li>
                         <li><strong>Status:</strong> 
-                          <span class="badge badge-success">
-                            <span class="room-status room-available"></span>
-                            Active
-                          </span>
+                          {% if salle.disponibilite %}
+                            <span class="badge badge-success">Actif</span>
+                          {% else %}
+                            <span class="badge badge-danger">Inactif</span>
+                          {% endif %}
                         </li>
                       </ul>
                     </div>

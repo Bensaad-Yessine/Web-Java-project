@@ -878,7 +878,7 @@
                                     </div>
                                     <div class="detail-value">
                                         {% if objectif_sante.valeurCible %}
-                                            <strong>{{ objectif_sante.valeurCible }}</strong>
+                                            <strong>{{ objectif_sante.getValeurCibleAvecUnite() }}</strong>
                                         {% else %}
                                             <em class="text-muted">Non définie</em>
                                         {% endif %}
@@ -928,19 +928,19 @@
                                 <div class="detail-row">
     <div class="detail-label">
         <i class="mdi mdi-progress-check label-icon"></i>
-        Progression
+        Score Moyen
     </div>
     <div class="detail-value">
         <div class="d-flex align-items-center gap-3">
             <div class="progress w-100" style="height: 12px; border-radius: 10px; background: #e9ecef;">
                 <div class="progress-bar" role="progressbar" 
-                     style="width: {{ objectif_sante.progression }}%; background: linear-gradient(135deg, #fa8bff 0%, #2bd2ff 90%, #2bff88 100%); border-radius: 10px;" 
-                     aria-valuenow="{{ objectif_sante.progression }}" 
+                     style="width: {{ objectif_sante.scoreMoyen }}%; background: linear-gradient(135deg, #fa8bff 0%, #2bd2ff 90%, #2bff88 100%); border-radius: 10px;" 
+                     aria-valuenow="{{ objectif_sante.scoreMoyen }}" 
                      aria-valuemin="0" 
                      aria-valuemax="100">
                 </div>
             </div>
-            <strong style="min-width: 60px;">{{ objectif_sante.progression }}%</strong>
+            <strong style="min-width: 60px;">{{ objectif_sante.scoreMoyen }}%</strong>
         </div>
     </div>
 </div>
@@ -1103,7 +1103,7 @@
                                         {% if objectif_sante.dateDebut and objectif_sante.dateFin %}
                                             {% set totalDays = date(objectif_sante.dateFin).diff(date(objectif_sante.dateDebut)).days %}
                                             {% if totalDays > 0 %}
-                                                {{ (objectif_sante.progression / totalDays)|round(2) }}% par jour
+                                                {{ (objectif_sante.scoreMoyen / totalDays)|round(2) }}% par jour
                                             {% else %}
                                                 Objectif journalier
                                             {% endif %}
@@ -1114,7 +1114,7 @@
                                 </li>
                                 <li>
                                     <i class="mdi mdi-chart-line"></i>
-                                    <span><strong>Progression actuelle:</strong> {{ objectif_sante.progression }}%</span>
+                                    <span><strong>Score Moyen Actuel:</strong> {{ objectif_sante.scoreMoyen }}%</span>
                                 </li>
                                 <li>
                                     <i class="mdi mdi-target"></i>
@@ -1136,13 +1136,13 @@
                                 <li>
                                     <i class="mdi mdi-check-circle"></i>
                                     <span>
-                                        {% if objectif_sante.progression < 25 %}
+                                        {% if objectif_sante.scoreMoyen < 25 %}
                                             Commencez par de petites actions quotidiennes
-                                        {% elseif objectif_sante.progression < 50 %}
+                                        {% elseif objectif_sante.scoreMoyen < 50 %}
                                             Continuez sur votre lancée, vous êtes sur la bonne voie!
-                                        {% elseif objectif_sante.progression < 75 %}
+                                        {% elseif objectif_sante.scoreMoyen < 75 %}
                                             Vous avez dépassé la moitié, ne relâchez pas vos efforts
-                                        {% elseif objectif_sante.progression < 100 %}
+                                        {% elseif objectif_sante.scoreMoyen < 100 %}
                                             Plus que quelques efforts pour atteindre votre objectif!
                                         {% else %}
                                             Félicitations! Vous avez atteint votre objectif
@@ -1151,7 +1151,7 @@
                                 </li>
                                 <li>
                                     <i class="mdi mdi-check-circle"></i>
-                                    <span>Mettez à jour régulièrement votre progression</span>
+                                    <span>Suivi régulièrement par vos entres de journal</span>
                                 </li>
                                 <li>
                                     <i class="mdi mdi-check-circle"></i>

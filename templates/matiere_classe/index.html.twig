@@ -53,7 +53,77 @@
       .card-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
       .card-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
       .card-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-      .card-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+      
+      .matiere-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+      }
+      
+      .badge-coefficient {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+      }
+      
+      .badge-charge {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+      }
+      
+      .badge-complexite {
+        background: linear-gradient(135deg, #ffa502 0%, #ffb81c 100%);
+        color: white;
+      }
+
+      .complexity-bar {
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 3px;
+        margin-top: 6px;
+        overflow: hidden;
+        width: 100px;
+      }
+
+      .complexity-fill {
+        height: 100%;
+        border-radius: 3px;
+        background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      }
+      
+      .action-buttons .btn {
+        padding: 5px 10px;
+        margin: 0 2px;
+      }
+      
+      .table-hover tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+      }
+      
+      .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+      }
+      
+      .empty-state i {
+        font-size: 60px;
+        color: #dee2e6;
+        margin-bottom: 20px;
+      }
+      
+      .matiere-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+      }
       
       /* Profile styles */
       .user-avatar {
@@ -156,97 +226,6 @@
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         margin-bottom: 20px;
       }
-      
-      /* Matiere specific styles */
-      .matiere-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 16px;
-      }
-      
-      .matiere-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 500;
-      }
-      
-      .badge-coefficient {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        color: white;
-      }
-      
-      .badge-charge {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-        color: white;
-      }
-      
-      .badge-complexite {
-        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-        color: white;
-      }
-      
-      .complexity-bar {
-        height: 8px;
-        background: #e9ecef;
-        border-radius: 4px;
-        overflow: hidden;
-        margin-top: 5px;
-      }
-      
-      .complexity-fill {
-        height: 100%;
-        border-radius: 4px;
-      }
-      
-      .complexity-1 { background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); width: 10%; }
-      .complexity-2 { background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); width: 20%; }
-      .complexity-3 { background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); width: 30%; }
-      .complexity-4 { background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%); width: 40%; }
-      .complexity-5 { background: linear-gradient(90deg, #00f2fe 0%, #38f9d7 100%); width: 50%; }
-      .complexity-6 { background: linear-gradient(90deg, #00f2fe 0%, #38f9d7 100%); width: 60%; }
-      .complexity-7 { background: linear-gradient(90deg, #38f9d7 0%, #fa709a 100%); width: 70%; }
-      .complexity-8 { background: linear-gradient(90deg, #38f9d7 0%, #fa709a 100%); width: 80%; }
-      .complexity-9 { background: linear-gradient(90deg, #fa709a 0%, #f5576c 100%); width: 90%; }
-      .complexity-10 { background: linear-gradient(90deg, #fa709a 0%, #f5576c 100%); width: 100%; }
-      
-      .action-buttons {
-        display: flex;
-        gap: 5px;
-      }
-      
-      .action-buttons .btn {
-        padding: 5px 10px;
-        margin: 0 2px;
-      }
-      
-      .search-box {
-        max-width: 300px;
-      }
-      
-      .table-hover tbody tr:hover {
-        background-color: rgba(102, 126, 234, 0.05);
-      }
-      
-      .empty-state {
-        text-align: center;
-        padding: 50px 20px;
-      }
-      
-      .empty-state i {
-        font-size: 60px;
-        color: #dee2e6;
-        margin-bottom: 20px;
-      }
     </style>
   </head>
   <body>
@@ -335,7 +314,7 @@
           </li>
           
           <!-- Classes -->
-          <li class="nav-item menu-items ">
+          <li class="nav-item menu-items">
             <a class="nav-link" href="{{ path('app_classe_index') }}">
               <span class="menu-icon">
                 <i class="mdi mdi-school"></i>
@@ -430,7 +409,7 @@
             <ul class="navbar-nav w-100">
               <li class="nav-item w-100">
                 <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                  <input type="text" class="form-control" placeholder="Rechercher une matière..." id="searchInput">
+                  <input type="text" class="form-control" placeholder="Rechercher une matière..." id="navbarSearchInput">
                 </form>
               </li>
             </ul>
@@ -438,20 +417,20 @@
               <li class="nav-item dropdown border-left">
                 <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
                   <i class="mdi mdi-bell"></i>
-                  <span class="count bg-danger">2</span>
+                  <span class="count bg-danger">1</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
                   <h6 class="p-3 mb-0">Notifications</h6>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item preview-item">
                     <div class="preview-thumbnail">
-                      <div class="preview-icon bg-success rounded-circle">
+                      <div class="preview-icon bg-info rounded-circle">
                         <i class="mdi mdi-book-open-page-variant"></i>
                       </div>
                     </div>
                     <div class="preview-item-content">
                       <p class="preview-subject mb-1">Nouvelle matière</p>
-                      <p class="text-muted ellipsis mb-0">Matière Mathématiques créée</p>
+                      <p class="text-muted ellipsis mb-0">Action récente</p>
                     </div>
                   </a>
                 </div>
@@ -579,18 +558,6 @@
                       </li>
                     </ul>
                   </nav>
-                  {% if app.user %}
-                    <div class="mt-2">
-                      <small class="text-muted">
-                        <i class="mdi mdi-account me-1"></i>
-                        Connecté en tant que: <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong>
-                        ({{ app.user.email }})
-                        {% if 'ROLE_ADMIN' in app.user.roles %}
-                          <span class="badge badge-admin ms-2">Administrateur</span>
-                        {% endif %}
-                      </small>
-                    </div>
-                  {% endif %}
                 </div>
               </div>
             </div>
@@ -604,7 +571,7 @@
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
                           <h3 class="mb-0 stat-count">{{ matiere_classes|length }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(2, 8) }}%</p>
+                          <p class="text-success ms-2 mb-0 font-weight-medium">Total</p>
                         </div>
                       </div>
                       <div class="col-3">
@@ -613,7 +580,7 @@
                         </div>
                       </div>
                     </div>
-                    <h6 class="stat-label">Total Matières</h6>
+                    <h6 class="stat-label">Matières Enseignées</h6>
                   </div>
                 </div>
               </div>
@@ -623,9 +590,8 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set highCoefficient = matiere_classes|filter(m => m.coefficient > 2.0)|length %}
-                          <h3 class="mb-0 stat-count">{{ highCoefficient }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(5, 15) }}%</p>
+                          <h3 class="mb-0 stat-count">{{ matiere_classes|filter(m => m.coefficient > 2.0)|length }}</h3>
+                          <p class="text-danger ms-2 mb-0 font-weight-medium">Importantes</p>
                         </div>
                       </div>
                       <div class="col-3">
@@ -634,7 +600,7 @@
                         </div>
                       </div>
                     </div>
-                    <h6 class="stat-label">Coefficient > 2</h6>
+                    <h6 class="stat-label">Coef > 2</h6>
                   </div>
                 </div>
               </div>
@@ -644,9 +610,8 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set avgComplexity = matiere_classes|length > 0 ? (matiere_classes|reduce((sum, m) => sum + m.scorecomplexite, 0) / matiere_classes|length)|round(1) : 0 %}
-                          <h3 class="mb-0 stat-count">{{ avgComplexity }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(1, 5) }}%</p>
+                          <h3 class="mb-0 stat-count">{{ matiere_classes|length > 0 ? (matiere_classes|reduce((sum, m) => sum + m.scorecomplexite, 0) / matiere_classes|length)|round(1) : 0 }}</h3>
+                          <p class="text-warning ms-2 mb-0 font-weight-medium">Moyenne</p>
                         </div>
                       </div>
                       <div class="col-3">
@@ -655,7 +620,7 @@
                         </div>
                       </div>
                     </div>
-                    <h6 class="stat-label">Complexité moyenne</h6>
+                    <h6 class="stat-label">Complexité Global</h6>
                   </div>
                 </div>
               </div>
@@ -665,9 +630,8 @@
                     <div class="row">
                       <div class="col-9">
                         <div class="d-flex align-items-center align-self-start">
-                          {% set highCharge = matiere_classes|filter(m => m.chargehoraire > 30)|length %}
-                          <h3 class="mb-0 stat-count">{{ highCharge }}</h3>
-                          <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(3, 10) }}%</p>
+                          <h3 class="mb-0 stat-count">{{ matiere_classes|filter(m => m.chargehoraire > 30)|length }}</h3>
+                          <p class="text-info ms-2 mb-0 font-weight-medium">Intensives</p>
                         </div>
                       </div>
                       <div class="col-3">
@@ -682,21 +646,55 @@
               </div>
             </div>
             
-            <!-- Matiere Classes Table -->
+            <!-- Matieres Table -->
             <div class="row">
               <div class="col-12 grid-margin">
                 <div class="card">
                   <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                      <h4 class="card-title">📚 Liste des Matières</h4>
-                      <div class="d-flex">
-                        <div class="search-box me-3">
-                          <input type="text" class="form-control" placeholder="Rechercher..." id="tableSearchInput">
+                      <h4 class="card-title">📖 Liste des Matières</h4>
+                      <a href="{{ path('app_matiere_classe_new') }}" class="btn btn-gradient-primary btn-icon-text">
+                        <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
+                        Nouvelle Matière
+                      </a>
+                    </div>
+
+                    <!-- Filters Panel -->
+                    <div class="card mb-3" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border: none; border-radius: 10px;">
+                      <div class="card-body">
+                        <h4 class="card-title mb-4 text-primary"><i class="mdi mdi-filter-variant me-2"></i>Filtrer et Rechercher</h4>
+                        <div class="row g-3">
+                          <div class="col-md-4">
+                            <label class="fw-bold mb-1">Recherche</label>
+                            <input type="text" id="searchInput" class="form-control form-control-lg border-primary" placeholder="🔍 Nom, description..." value="{{ search }}" style="border-width: 2px;">
+                          </div>
+                          <div class="col-md-4">
+                            <label class="fw-bold mb-1">Complexité Max: <span id="scoreLabel" class="text-primary fw-bold" style="font-size: 1.1em;">{{ minScore }}</span></label>
+                            <input type="range" id="scoreMinRange" class="form-range" min="{{ minScore }}" max="{{ maxScore }}" value="{{ scoreMin ? scoreMin : minScore }}" style="cursor: pointer; width: 100%; height: 10px;">
+                          </div>
+                          <div class="col-md-4">
+                            <label class="fw-bold mb-1">Trier par</label>
+                            <select id="sortSelect" class="form-control form-control-lg border-secondary" style="cursor: pointer;">
+                              <option value="id-asc" {% if sort == 'id' and direction == 'asc' %}selected{% endif %}>ID (croissant)</option>
+                              <option value="id-desc" {% if sort == 'id' and direction == 'desc' %}selected{% endif %}>ID (décroissant)</option>
+                              <option value="nom-asc" {% if sort == 'nom' and direction == 'asc' %}selected{% endif %}>Nom (A-Z)</option>
+                              <option value="nom-desc" {% if sort == 'nom' and direction == 'desc' %}selected{% endif %}>Nom (Z-A)</option>
+                            </select>
+                          </div>
                         </div>
-                        <a href="{{ path('app_matiere_classe_new') }}" class="btn btn-gradient-primary btn-icon-text">
-                          <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
-                          Nouvelle Matière
-                        </a>
+                        <div class="row mt-3">
+                          <div class="col-md-12 d-flex align-items-center">
+                            <button id="applyFilters" class="btn btn-gradient-primary btn-lg text-white me-3 px-4 shadow">
+                              <i class="mdi mdi-filter me-2"></i>FILTRER
+                            </button>
+                            <button id="resetFilters" class="btn btn-outline-secondary btn-lg px-4">
+                              <i class="mdi mdi-refresh me-2"></i>Réinitialiser
+                            </button>
+                            <span class="text-muted ms-auto" id="resultCount" style="font-size: 1.1em; font-weight: 500;">
+                              <i class="mdi mdi-format-list-bulleted me-1"></i>Résultats: {{ matiere_classes|length }}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -718,9 +716,8 @@
                               <th>ID</th>
                               <th>Matière</th>
                               <th>Coefficient</th>
-                              <th>Charge Horaire</th>
+                              <th>Charge</th>
                               <th>Complexité</th>
-                              <th>Classes associées</th>
                               <th>Actions</th>
                             </tr>
                           </thead>
@@ -736,68 +733,40 @@
                                       <i class="mdi mdi-book-open-page-variant"></i>
                                     </div>
                                     <div>
-                                      <h6 class="mb-0 font-weight-bold">Matière #{{ matiere_classe.id }}</h6>
+                                      <h6 class="mb-0 font-weight-bold">{{ matiere_classe.nom }}</h6>
                                       <small class="text-muted">ID: {{ matiere_classe.id }}</small>
                                     </div>
                                   </div>
                                 </td>
                                 <td>
                                   <span class="matiere-badge badge-coefficient">
-                                    <i class="mdi mdi-weight me-1"></i>
-                                    {{ matiere_classe.coefficient }}
+                                    <i class="mdi mdi-weight me-1"></i>{{ matiere_classe.coefficient }}
                                   </span>
                                 </td>
                                 <td>
                                   <span class="matiere-badge badge-charge">
-                                    <i class="mdi mdi-clock-outline me-1"></i>
-                                    {{ matiere_classe.chargehoraire }}h
+                                    <i class="mdi mdi-clock-outline me-1"></i>{{ matiere_classe.chargehoraire }}h
                                   </span>
                                 </td>
                                 <td>
                                   <div>
-                                    <span class="matiere-badge badge-complexite">
-                                      <i class="mdi mdi-chart-line me-1"></i>
-                                      {{ matiere_classe.scorecomplexite }}/10
-                                    </span>
+                                    <span class="matiere-badge badge-complexite">{{ matiere_classe.scorecomplexite }}/10</span>
                                     <div class="complexity-bar">
-                                      <div class="complexity-fill complexity-{{ matiere_classe.scorecomplexite }}"></div>
+                                      <div class="complexity-fill" style="width: {{ (matiere_classe.scorecomplexite / 10 * 100)|round }}%"></div>
                                     </div>
                                   </div>
                                 </td>
                                 <td>
-                                  {% if matiere_classe.classe|length > 0 %}
-                                    <div class="d-flex flex-wrap gap-1">
-                                      {% for classe in matiere_classe.classe|slice(0, 3) %}
-                                        <span class="badge bg-light text-dark">
-                                          {{ classe.nom }}
-                                        </span>
-                                      {% endfor %}
-                                      {% if matiere_classe.classe|length > 3 %}
-                                        <span class="badge bg-secondary">
-                                          +{{ matiere_classe.classe|length - 3 }}
-                                        </span>
-                                      {% endif %}
-                                    </div>
-                                  {% else %}
-                                    <span class="text-muted">—</span>
-                                  {% endif %}
-                                </td>
-                                <td>
                                   <div class="action-buttons">
-                                    <a href="{{ path('app_matiere_classe_show', {'id': matiere_classe.id}) }}" 
-                                       class="btn btn-info btn-sm btn-icon"
-                                       title="Voir détails">
+                                    <a href="{{ path('app_matiere_classe_show', {'id': matiere_classe.id}) }}" class="btn btn-info btn-sm btn-icon" title="Voir">
                                       <i class="mdi mdi-eye"></i>
                                     </a>
-                                    <a href="{{ path('app_matiere_classe_edit', {'id': matiere_classe.id}) }}" 
-                                       class="btn btn-warning btn-sm btn-icon"
-                                       title="Modifier">
+                                    <a href="{{ path('app_matiere_classe_edit', {'id': matiere_classe.id}) }}" class="btn btn-warning btn-sm btn-icon" title="Modifier">
                                       <i class="mdi mdi-pencil"></i>
                                     </a>
-                                    <button type="button" 
-                                            class="btn btn-danger btn-sm btn-icon delete-btn"
-                                            data-matiere-id="{{ matiere_classe.id }}"
-                                            data-matiere-name="Matière #{{ matiere_classe.id }}"
+                                    <button type="button" class="btn btn-danger btn-sm btn-icon delete-btn" 
+                                            data-matiere-id="{{ matiere_classe.id }}" 
+                                            data-matiere-name="{{ matiere_classe.nom }}" 
                                             data-csrf-token="{{ csrf_token('delete' ~ matiere_classe.id) }}"
                                             title="Supprimer">
                                       <i class="mdi mdi-delete"></i>
@@ -809,80 +778,12 @@
                           </tbody>
                         </table>
                       </div>
-                      
-                      <!-- Quick Stats -->
-                      <div class="row mt-4">
-                        <div class="col-md-12">
-                          <div class="card">
-                            <div class="card-body">
-                              <h5 class="card-title">📊 Vue d'ensemble des matières</h5>
-                              <div class="row">
-                                <div class="col-md-3">
-                                  <div class="d-flex align-items-center">
-                                    <div class="me-3">
-                                      <span class="matiere-badge badge-coefficient">
-                                        Moy. Coef
-                                      </span>
-                                    </div>
-                                    <div>
-                                      {% set avgCoefficient = matiere_classes|length > 0 ? (matiere_classes|reduce((sum, m) => sum + m.coefficient, 0) / matiere_classes|length)|round(2) : 0 %}
-                                      <h6 class="mb-0">{{ avgCoefficient }}</h6>
-                                      <small class="text-muted">Coefficient moyen</small>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="col-md-3">
-                                  <div class="d-flex align-items-center">
-                                    <div class="me-3">
-                                      <span class="matiere-badge badge-charge">
-                                        Moy. Heures
-                                      </span>
-                                    </div>
-                                    <div>
-                                      {% set avgCharge = matiere_classes|length > 0 ? (matiere_classes|reduce((sum, m) => sum + m.chargehoraire, 0) / matiere_classes|length)|round(0) : 0 %}
-                                      <h6 class="mb-0">{{ avgCharge }}h</h6>
-                                      <small class="text-muted">Charge moyenne</small>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="col-md-3">
-                                  <div class="d-flex align-items-center">
-                                    <div class="me-3">
-                                      <span class="matiere-badge badge-complexite">
-                                        Complexité
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <h6 class="mb-0">{{ avgComplexity }}/10</h6>
-                                      <small class="text-muted">Niveau moyen</small>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="col-md-3">
-                                  <div class="d-flex align-items-center">
-                                    <div class="me-3">
-                                      <span class="badge bg-secondary">
-                                        Classes
-                                      </span>
-                                    </div>
-                                    <div>
-                                      {% set totalClasses = matiere_classes|reduce((sum, m) => sum + m.classe|length, 0) %}
-                                      <h6 class="mb-0">{{ totalClasses }}</h6>
-                                      <small class="text-muted">Associations totales</small>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
                     {% endif %}
                   </div>
                 </div>
               </div>
             </div>
-          
+
             <!-- Footer -->
             <footer class="footer">
               <div class="d-sm-flex justify-content-center justify-content-sm-between">
@@ -890,10 +791,7 @@
                   © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
                 </span>
                 <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
-                  Gestion des Matières - {{ matiere_classes|length }} matière{{ matiere_classes|length > 1 ? 's' : '' }}
-                  {% if app.user %}
-                    | Connecté: {{ app.user.prenom|slice(0, 10) }}...
-                  {% endif %}
+                  Gestion des Matières - {{ matiere_classes|length }} matières
                 </span>
               </div>
             </footer>
@@ -902,103 +800,216 @@
       </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header bg-danger text-white">
-            <h5 class="modal-title" id="deleteModalLabel">
-              <i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression
-            </h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h5 class="modal-title"><i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
             <p>Êtes-vous sûr de vouloir supprimer <strong id="matiereNameDisplay"></strong> ?</p>
-            <p class="text-danger mb-0">
-              <i class="mdi mdi-alert me-1"></i>
-              <small>Cette action est irréversible. Toutes les associations avec les classes seront supprimées.</small>
-            </p>
+            <p class="text-danger"><i class="mdi mdi-alert me-1"></i><small>Cette action est irréversible.</small></p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              <i class="mdi mdi-close me-1"></i>Annuler
-            </button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
             <form id="deleteForm" method="POST" style="display: inline;">
               <input type="hidden" name="_token" id="csrfToken" value="">
-              <button type="submit" class="btn btn-danger">
-                <i class="mdi mdi-delete me-1"></i>Supprimer
-              </button>
+              <button type="submit" class="btn btn-danger">Supprimer</button>
             </form>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Scripts -->
     <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
     <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
     <script src="{{ asset('assets/js/misc.js') }}"></script>
-    
+
     <script>
       document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality for navbar
         const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-          searchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#matieresTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
+        const navbarSearchInput = document.getElementById('navbarSearchInput');
+        const scoreMinRange = document.getElementById('scoreMinRange');
+        const scoreLabel = document.getElementById('scoreLabel');
+        const sortSelect = document.getElementById('sortSelect');
+        const applyFiltersBtn = document.getElementById('applyFilters');
+        const resetFiltersBtn = document.getElementById('resetFilters');
+        const matieresTable = document.getElementById('matieresTable');
+        const resultCountSpan = document.getElementById('resultCount');
+
+        // Update score label
+        if (scoreMinRange && scoreLabel) {
+            scoreMinRange.addEventListener('input', function() {
+                scoreLabel.textContent = this.value;
+                // Live update for slider with debounce
+                clearTimeout(scoreMinRange.searchTimeout);
+                scoreMinRange.searchTimeout = setTimeout(applyFilters, 300);
             });
-          });
         }
         
-        // Search functionality for table
-        const tableSearchInput = document.getElementById('tableSearchInput');
-        if (tableSearchInput) {
-          tableSearchInput.addEventListener('keyup', function() {
-            const filter = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#matieresTable tbody tr');
-            
-            rows.forEach(row => {
-              const text = row.textContent.toLowerCase();
-              row.style.display = text.includes(filter) ? '' : 'none';
-            });
+        // Sync navbar search with filter search (debounced) and use AbortController for cancellation
+        let __matiereSearchController = null;
+        function scheduleApplyFromInput(value) {
+          clearTimeout(window.__matiereSearchTimeout);
+          window.__matiereSearchTimeout = setTimeout(() => {
+            if (searchInput) searchInput.value = value;
+            applyFilters();
+          }, 400);
+        }
+
+        if (navbarSearchInput) {
+          navbarSearchInput.addEventListener('input', function() {
+            if(searchInput) {
+              scheduleApplyFromInput(this.value);
+            }
           });
         }
+
+        function applyFilters() {
+          const search = searchInput ? searchInput.value.trim() : '';
+          const scoreMin = scoreMinRange ? scoreMinRange.value : '';
+          const [sort, direction] = sortSelect ? sortSelect.value.split('-') : ['id', 'asc'];
+          
+          // Show loading state
+          if(applyFiltersBtn) {
+            const originalText = applyFiltersBtn.innerHTML;
+            applyFiltersBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin me-1"></i>Chargement...';
+            applyFiltersBtn.disabled = true;
+          }
+          if(matieresTable) matieresTable.style.opacity = '0.5';
+
+          const params = new URLSearchParams();
+          if (search) params.append('search', search);
+          if (scoreMin) params.append('scoreMin', scoreMin);
+          if (sort) params.append('sort', sort);
+          if (direction) params.append('direction', direction);
+
+          console.log('Date:', new Date().toISOString());
+          console.log('Filtering with params:', params.toString());
+
+          // Cancel previous request if any
+          if (window.__matiereSearchController) {
+              try { window.__matiereSearchController.abort(); } catch (e) {}
+          }
+          window.__matiereSearchController = new AbortController();
+
+          fetch('{{ path("app_matiere_classe_ajax_filter") }}?' + params.toString(), { signal: window.__matiereSearchController.signal })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+              console.log('Data received:', data);
+              if (data.success) {
+                if (resultCountSpan) resultCountSpan.textContent = 'Résultats: ' + data.count;
+                
+                const tbody = matieresTable.querySelector('tbody');
+                if (tbody) {
+                    tbody.innerHTML = '';
+                    if (data.count === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-5"><i class="mdi mdi-alert-circle-outline display-4 mb-3 d-block"></i><h4>Aucune matière trouvée</h4><p>Essayez de modifier vos critères de recherche</p></td></tr>';
+                    } else {
+                        data.data.forEach(matiere => {
+                        const complexityPercent = (matiere.scorecomplexite / 10 * 100).toFixed(0);
+                        const row = `<tr>
+                            <td><span class="text-muted">#${matiere.id}</span></td>
+                            <td>
+                            <div class="d-flex align-items-center">
+                                <div class="matiere-avatar me-3"><i class="mdi mdi-book-open-page-variant"></i></div>
+                                <div>
+                                <h6 class="mb-0 fw-bold">${matiere.nom}</h6>
+                                <small class="text-muted">ID: ${matiere.id}</small>
+                                </div>
+                            </div>
+                            </td>
+                            <td><span class="matiere-badge badge-coefficient"><i class="mdi mdi-weight me-1"></i>${matiere.coefficient}</span></td>
+                            <td><span class="matiere-badge badge-charge"><i class="mdi mdi-clock-outline me-1"></i>${matiere.chargehoraire}h</span></td>
+                            <td>
+                            <div>
+                                <span class="matiere-badge badge-complexite">${matiere.scorecomplexite}/10</span>
+                                <div class="complexity-bar">
+                                <div class="complexity-fill" style="width: ${complexityPercent}%"></div>
+                                </div>
+                            </div>
+                            </td>
+                            <td>
+                            <div class="action-buttons">
+                                <a href="${matiere.url}" class="btn btn-info btn-sm btn-icon" title="Voir"><i class="mdi mdi-eye"></i></a>
+                                <a href="${matiere.editUrl}" class="btn btn-warning btn-sm btn-icon" title="Modifier"><i class="mdi mdi-pencil"></i></a>
+                                <button class="btn btn-danger btn-sm btn-icon delete-btn" data-matiere-id="${matiere.id}" data-matiere-name="${matiere.nom}" data-csrf-token="${matiere.csrfToken}" title="Supprimer"><i class="mdi mdi-delete"></i></button>
+                            </div>
+                            </td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                        });
+                        attachDeleteHandlers();
+                    }
+                }
+              }
+            })
+            .catch(error => {
+              if (error.name === 'AbortError') return;
+              console.error('Erreur AJAX:', error);
+              alert('Une erreur est survenue lors du filtrage.');
+            })
+            .finally(() => {
+                // Restore loading state
+                if(applyFiltersBtn) {
+                    applyFiltersBtn.innerHTML = '<i class="mdi mdi-magnify me-1"></i>Appliquer';
+                    applyFiltersBtn.disabled = false;
+                }
+                if(matieresTable) matieresTable.style.opacity = '1';
+            });
+        }
+
+        if(applyFiltersBtn) applyFiltersBtn.addEventListener('click', applyFilters);
         
-        // Delete confirmation modal
-        const deleteButtons = document.querySelectorAll('.delete-btn');
-        deleteButtons.forEach(button => {
-          button.addEventListener('click', function() {
-            const matiereId = this.getAttribute('data-matiere-id');
-            const matiereName = this.getAttribute('data-matiere-name');
-            const csrfToken = this.getAttribute('data-csrf-token');
-            
-            // Update modal content
-            document.getElementById('matiereNameDisplay').textContent = matiereName;
-            
-            // Set the form action - Build the URL dynamically
-            const deleteForm = document.getElementById('deleteForm');
-            deleteForm.action = '/matiere_classe/' + matiereId + '/delete';
-            
-            // Set CSRF token
-            document.getElementById('csrfToken').value = csrfToken;
-            
-            // Show modal using Bootstrap 5
-            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-            modal.show();
+        if(searchInput) {
+            searchInput.addEventListener('input', function() {
+            clearTimeout(searchInput.searchTimeout);
+            searchInput.searchTimeout = setTimeout(applyFilters, 300);
+            });
+        }
+        
+        if(sortSelect) sortSelect.addEventListener('change', applyFilters);
+
+        if(resetFiltersBtn) {
+            resetFiltersBtn.addEventListener('click', function() {
+            window.location.href = '{{ path("app_matiere_classe_index") }}';
+            });
+        }
+
+        function attachDeleteHandlers() {
+          document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.onclick = function() {
+              const matiereId = this.getAttribute('data-matiere-id');
+              const matiereName = this.getAttribute('data-matiere-name');
+              const csrfToken = this.getAttribute('data-csrf-token');
+              const display = document.getElementById('matiereNameDisplay');
+              if(display) display.textContent = matiereName;
+              
+              const form = document.getElementById('deleteForm');
+              if(form) {
+                  form.action = '/matiere/classe/' + matiereId;
+                  const tokenInput = document.getElementById('csrfToken');
+                  if(tokenInput) tokenInput.value = csrfToken;
+              }
+              
+              const modalEl = document.getElementById('deleteModal');
+              if(modalEl) new bootstrap.Modal(modalEl).show();
+            };
           });
-        });
+        }
+
+        // Attach handlers initially
+        attachDeleteHandlers();
         
-        // Auto-hide alerts after 5 seconds
+        // Auto-close alerts
         setTimeout(() => {
-          const alerts = document.querySelectorAll('.alert');
-          alerts.forEach(alert => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
+          document.querySelectorAll('.alert').forEach(alert => {
+            new bootstrap.Alert(alert).close();
           });
         }, 5000);
       });

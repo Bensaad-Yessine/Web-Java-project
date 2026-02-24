@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Route('/front/objectif/sante')]
 final class FrontObjectifSanteController extends AbstractController
@@ -24,6 +25,25 @@ final class FrontObjectifSanteController extends AbstractController
 
         return $this->render('front/objectif_sante/index.html.twig', [
             'objectif_santes' => $objectifs,
+        ]);
+    }
+    #[Route('/filter', name: 'front_objectif_sante_filter', methods: ['GET'])]
+    public function filter(Request $request, ObjectifSanteRepository $repo): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $user = $this->getUser();
+
+        $q        = $request->query->get('q');
+        $type     = $request->query->get('type');
+        $priorite = $request->query->get('priorite');
+        $statut   = $request->query->get('statut');
+        $sortBy   = $request->query->get('sortBy', 'dateDebut');
+        $sortDir  = $request->query->get('sortDir', 'DESC');
+
+        $objectifs = $repo->searchFrontAjax($user, $q, $type, $priorite, $statut, $sortBy, $sortDir);
+
+        return $this->render('front/objectif_sante/_rows.html.twig', [
+            'objectif_santes' => $objectifs
         ]);
     }
 
@@ -114,4 +134,6 @@ public function show(ObjectifSante $objectif): Response
         'objectif_sante' => $objectif,
     ]);
 }
+
 }
+

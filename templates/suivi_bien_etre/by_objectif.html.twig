@@ -70,11 +70,12 @@
       display:inline-flex;align-items:center;gap:5px;
       padding:5px 10px;border-radius:20px;font-size:.85rem;font-weight:600;
     }
-    .mood-1 { background:#ffeaea; color:#dc3545; } /* Très mauvaise */
-    .mood-2 { background:#fff3cd; color:#856404; } /* Mauvaise */
-    .mood-3 { background:#e9ecef; color:#495057; } /* Neutre */
-    .mood-4 { background:#d4edda; color:#155724; } /* Bonne */
-    .mood-5 { background:#d1ecf1; color:#0c5460; } /* Excellente */
+    .mood-tres-mauvaise { background:#ffeaea; color:#dc3545; }
+.mood-mauvaise      { background:#fff3cd; color:#856404; }
+.mood-neutre        { background:#e9ecef; color:#495057; }
+.mood-bonne         { background:#d4edda; color:#155724; }
+.mood-excellente    { background:#d1ecf1; color:#0c5460; }
+
 
     .rating-badge {
       display:inline-flex;align-items:center;justify-content:center;
@@ -437,7 +438,7 @@
                 {% endif %}
                 <span class="chip">
                   <i class="mdi mdi-progress-check me-1"></i> 
-                  Progression: {{ objectif.progression ? objectif.progression ~ '%' : '0%' }}
+                  Score Moyen: {{ objectif.scoreMoyen ? objectif.scoreMoyen ~ '%' : '0%' }}
                 </span>
               </div>
 
@@ -524,7 +525,8 @@
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center">
                   <div>
-                    {% set goodMoods = suivis|filter(s => s.humeur >= 4)|length %}
+                    {% set goodMoods = suivis|filter(s => s.humeur in ['Bonne','Excellente'])|length %}
+
                     <h3 class="mb-0" style="font-size:1.8rem;color:#4facfe;">{{ goodMoods }}</h3>
                     <p class="mb-0 text-muted">Humeurs positives</p>
                   </div>
@@ -552,14 +554,13 @@
   </div>
 
   <select id="humeurFilter" class="form-control" style="max-width:200px;border-radius:10px;">
-    <option value="">Toutes les humeurs</option>
-    <option value="1">Très mauvaise</option>
-    <option value="2">Mauvaise</option>
-    <option value="3">Neutre</option>
-    <option value="4">Bonne</option>
-    <option value="5">Excellente</option>
-  </select>
-
+  <option value="">Toutes les humeurs</option>
+  <option value="Très mauvaise">Très mauvaise</option>
+  <option value="Mauvaise">Mauvaise</option>
+  <option value="Neutre">Neutre</option>
+  <option value="Bonne">Bonne</option>
+  <option value="Excellente">Excellente</option>
+</select>
   <select id="sortBy" class="form-control" style="max-width:170px;border-radius:10px;">
     <option value="date">Trier par date</option>
     <option value="score">Trier par score</option>

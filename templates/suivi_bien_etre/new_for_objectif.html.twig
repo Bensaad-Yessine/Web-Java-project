@@ -1097,7 +1097,24 @@
                                 <h4>Formulaire de suivi</h4>
                             </div>
                             <div class="card-body p-4">
-                                {{ form_start(form, {'attr': {'class': 'form-sample', 'id': 'suivi-form'}}) }}
+                              {{ form_start(form, {'attr': {'id': 'suivi-form', 'novalidate': 'novalidate'}}) }}
+
+
+
+{# ✅ Global form errors #}
+{% if form.vars.submitted and not form.vars.valid %}
+  <div class="alert alert-danger">
+    <i class="mdi mdi-alert-circle me-2"></i>
+    Veuillez corriger les erreurs ci-dessous.
+  </div>
+{% endif %}
+
+{{ form_errors(form) }}
+
+
+
+
+
                                 
                                 <!-- Section 1: Date et Humeur -->
 <div class="form-section-header">
@@ -1147,82 +1164,62 @@
     </div>
 </div>
 
-                               <!-- Section 2: Indicateurs de santé - CORRIGÉ -->
+                              <!-- Section 2: Indicateurs de santé (0-10) -->
 <div class="form-section-header">
-    <h5>
-        <span class="section-icon">
-            <i class="mdi mdi-heart-pulse"></i>
-        </span>
-        Indicateurs de Santé (1-10)
-    </h5>
+  <h5>
+    <span class="section-icon">
+      <i class="mdi mdi-heart-pulse"></i>
+    </span>
+    Indicateurs de Santé (0-10)
+  </h5>
 </div>
 
 <div class="row">
-    <div class="col-md-6">
-        <div class="form-group">
-            <label class="form-label-custom">
-                <i class="mdi mdi-battery-charging label-icon"></i>
-                Niveau d'énergie
-            </label>
-            {{ form_widget(form.niveauEnergie, {'attr': {
-                'class': 'form-control',
-                'min': '1',
-                'max': '10',
-                'value': form.niveauEnergie.vars.value ?: '5'
-            }}) }}
-            {{ form_errors(form.niveauEnergie) }}
-        </div>
+  <div class="col-md-6">
+    <div class="form-group">
+      <label class="form-label-custom">
+        <i class="mdi mdi-battery-charging label-icon"></i>
+        Niveau d'énergie
+      </label>
+      {{ form_widget(form.niveauEnergie, {'attr': {'class': 'form-control', 'min': 0, 'max': 10}}) }}
+      {{ form_errors(form.niveauEnergie) }}
     </div>
-    
-    <div class="col-md-6">
-        <div class="form-group">
-            <label class="form-label-custom">
-                <i class="mdi mdi-bed label-icon"></i>
-                Qualité du sommeil
-            </label>
-            {{ form_widget(form.qualiteSommeil, {'attr': {
-                'class': 'form-control',
-                'min': '1',
-                'max': '10',
-                'value': form.qualiteSommeil.vars.value ?: '5'
-            }}) }}
-            {{ form_errors(form.qualiteSommeil) }}
-        </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="form-group">
+      <label class="form-label-custom">
+        <i class="mdi mdi-bed label-icon"></i>
+        Qualité du sommeil
+      </label>
+      {{ form_widget(form.qualiteSommeil, {'attr': {'class': 'form-control', 'min': 0, 'max': 10}}) }}
+      {{ form_errors(form.qualiteSommeil) }}
     </div>
+  </div>
 </div>
 
 <div class="row">
-    <div class="col-md-6">
-        <div class="form-group">
-            <label class="form-label-custom">
-                <i class="mdi mdi-brain label-icon"></i>
-                Niveau de stress
-            </label>
-            {{ form_widget(form.niveauStress, {'attr': {
-                'class': 'form-control',
-                'min': '1',
-                'max': '10',
-                'value': form.niveauStress.vars.value ?: '5'
-            }}) }}
-            {{ form_errors(form.niveauStress) }}
-        </div>
+  <div class="col-md-6">
+    <div class="form-group">
+      <label class="form-label-custom">
+        <i class="mdi mdi-brain label-icon"></i>
+        Niveau de stress
+      </label>
+      {{ form_widget(form.niveauStress, {'attr': {'class': 'form-control', 'min': 0, 'max': 10}}) }}
+      {{ form_errors(form.niveauStress) }}
     </div>
-    
-    <div class="col-md-6">
-        <div class="form-group">
-            <label class="form-label-custom">
-                <i class="mdi mdi-food label-icon"></i>
-                Qualité d'alimentation
-            </label>
-            {{ form_widget(form.qualiteAlimentation, {'attr': {
-                'class': 'form-control',
-                'min': '1',
-                'max': '10',
-                'value': form.qualiteAlimentation.vars.value ?: '5'
-            }}) }}
-            {{ form_errors(form.qualiteAlimentation) }}
-        </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="form-group">
+      <label class="form-label-custom">
+        <i class="mdi mdi-food label-icon"></i>
+        Qualité d'alimentation
+      </label>
+      {{ form_widget(form.qualiteAlimentation, {'attr': {'class': 'form-control', 'min': 0, 'max': 10}}) }}
+      {{ form_errors(form.qualiteAlimentation) }}
     </div>
+  </div>
 </div>
 
                                 <!-- Section 3: Notes -->
@@ -1258,21 +1255,7 @@
                                 
                                 <!-- Form Actions -->
                                 <div class="form-actions">
-                                    {% if suivi is defined and suivi.id %}
-                                    <div class="form-actions-left">
-                                        <form method="post" action="{{ path('app_suivi_delete', {'id': suivi.id}) }}" 
-                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce suivi ? Cette action est irréversible.');" 
-                                              style="display: inline;">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ suivi.id) }}">
-                                            <button type="submit" class="btn-custom-danger">
-                                                <i class="mdi mdi-delete"></i>
-                                                Supprimer
-                                            </button>
-                                        </form>
-                                    </div>
-                                    {% else %}
-                                    <div class="form-actions-left"></div>
-                                    {% endif %}
+                                    
                                     <div class="form-actions-right">
                                         <a href="{{ path('app_objectif_suivis', {'id': objectif.id}) }}" class="btn-custom-secondary">
                                             <i class="mdi mdi-arrow-left"></i>
@@ -1371,15 +1354,20 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('suivi-form');
-    const submitBtn = form?.querySelector('button[type="submit"]');
-    
-    if (form && submitBtn) {
-        form.addEventListener('submit', function() {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Création en cours...';
-        });
-    }
+  const form = document.getElementById('suivi-form');
+  const submitBtn = form?.querySelector('button[type="submit"]');
+  if (!form || !submitBtn) return;
+
+  form.addEventListener('submit', function() {
+    // ✅ si invalid HTML => laisser Symfony afficher erreurs
+    if (!form.checkValidity()) return;
+
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Enregistrement...';
+  });
 });
 </script>
+
+</body>
+</html>
 {% endblock %}

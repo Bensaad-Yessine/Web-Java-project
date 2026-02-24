@@ -394,6 +394,38 @@
             height: 40px;
             font-size: 16px;
         }
+
+        /* Error styling */
+        .form-general-errors {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-general-errors .form-error-message {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 10px;
+            color: #721c24;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .form-general-errors .form-error-message i {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .form-general-errors .form-error-message ul {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+
+        .form-general-errors .form-error-message li {
+            margin: 0.25rem 0;
+        }
     </style>
 </head>
 <body>
@@ -777,8 +809,18 @@
                                     <h4>Formulaire de modification du suivi</h4>
                                 </div>
                                 <div class="card-body p-4">
-                                    {{ form_start(form, {'attr': {'class': 'form-sample', 'id': 'edit-suivi-form'}}) }}
-                                    
+                                    {{ form_start(form, {'attr': {'class': 'form-sample', 'id': 'edit-suivi-form', 'novalidate': 'novalidate'}}) }}
+
+{% if form.vars.submitted and not form.vars.valid %}
+  <div class="alert alert-danger mt-3">
+    <i class="mdi mdi-alert-circle me-2"></i>
+    Veuillez corriger les erreurs dans le formulaire.
+  </div>
+{% endif %}
+
+<div class="form-general-errors">
+  {{ form_errors(form) }}
+</div>
                                     <!-- Section 1: Date et Humeur -->
                                     <div class="form-section-header">
                                         <h5>
@@ -800,11 +842,23 @@
                                                 {{ form_widget(form.dateSaisie, {'attr': {
                                                     'class': 'form-control'
                                                 }}) }}
+                                                
                                                 <div class="form-help-text">
                                                     <i class="mdi mdi-lightbulb-on-outline"></i>
                                                     <span>Date à laquelle vous effectuez ce suivi</span>
                                                 </div>
-                                                {{ form_errors(form.dateSaisie) }}
+                                                {% if form.dateSaisie.vars.errors|length > 0 %}
+                                                    <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                                                        <i class="mdi mdi-alert-circle me-2"></i>
+                                                        <strong>Erreur de date:</strong>
+                                                        <ul class="mb-0 mt-1">
+                                                            {% for error in form.dateSaisie.vars.errors %}
+                                                                <li>{{ error.message }}</li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                    </div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         
@@ -1059,64 +1113,36 @@
     <script src="{{ asset('assets/js/todolist.js') }}"></script>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-
+document.addEventListener('DOMContentLoaded', function () {
   const form = document.getElementById('edit-suivi-form');
+  if (!form) return;
 
-  if (form) {
-    form.addEventListener('submit', function(e) {
-      const dateSaisie = form.querySelector('[name*="[dateSaisie]"]');
-      const humeur = form.querySelector('[name*="[humeur]"]');
+  // ✅ Capture = s'exécute avant les autres scripts
+  form.addEventListener('submit', function (e) {
+    // ✅ Empêche les autres listeners de faire preventDefault()
+    e.stopImmediatePropagation();
 
-      if (dateSaisie && !dateSaisie.value) {
-        e.preventDefault();
-        alert('La date de saisie est obligatoire');
-        dateSaisie.focus();
-        return;
-      }
+    const dateSaisie = form.querySelector('[name*="[dateSaisie]"]');
+    const humeur = form.querySelector('[name*="[humeur]"]');
 
-      if (humeur && !humeur.value) {
-        e.preventDefault();
-        alert("L'humeur est obligatoire");
-        humeur.focus();
-        return;
-      }
+    // Feedback visuel seulement (NE PAS preventDefault)
+    if (dateSaisie && !dateSaisie.value) dateSaisie.focus();
+    if (humeur && !humeur.value) humeur.focus();
 
-      const submitBtn = form.querySelector('.btn-custom-primary');
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Enregistrement...';
-      }
-    });
-  }
-        
-        // Validation des champs numériques (1-10)
-        const numberInputs = document.querySelectorAll('input[type="number"][min="1"][max="10"]');
-        numberInputs.forEach(input => {
-            input.addEventListener('change', function() {
-                const value = parseInt(this.value);
-                if (value < 1) this.value = 1;
-                if (value > 10) this.value = 10;
-            });
-            
-            input.addEventListener('input', function() {
-                const value = parseInt(this.value);
-                if (value < 1) this.value = 1;
-                if (value > 10) this.value = 10;
-            });
-        });
-        
-        // Gestion du menu responsive
-        const sidebar = document.getElementById('sidebar');
-        const navbarToggler = document.querySelector('[data-toggle="minimize"]');
-        
-        if (navbarToggler && sidebar) {
-            navbarToggler.addEventListener('click', function() {
-                sidebar.classList.toggle('active');
-            });
-        }
-    });
-    </script>
+    // Loading state
+    const submitBtn = form.querySelector('.btn-custom-primary');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i> Enregistrement...';
+    }
+  }, true); // <-- true = CAPTURE
+
+  // Clamp inputs 1..10
+ 
+});
+</script>
+
+
 </body>
 </html>
 {% endblock %}

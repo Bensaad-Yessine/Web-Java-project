@@ -1,0 +1,135 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Propositions de réunion - ESPRIT{% endblock %}
+
+{% set current_page = 'groupes' %}
+
+{% block content %}
+<main class="main">
+<header class="header">
+    <div>
+        <h1 class="h1">Propositions de réunion</h1>
+        <p class="muted">Consultez toutes les propositions de réunion de vos groupes</p>
+    </div>
+    <div class="session-display">
+        <div>Total propositions</div>
+        <div>{{ propositions|length }}</div>
+    </div>
+</header>
+
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ label }}" style="margin-bottom: 20px; padding: 16px 20px; border-radius: 12px; background: {% if label == 'success' %}var(--green-50){% elseif label == 'error' %}var(--red-50){% else %}var(--blue-50){% endif %}; border: 1px solid {% if label == 'success' %}var(--green-200){% elseif label == 'error' %}var(--red-200){% else %}var(--blue-200){% endif %}; color: {% if label == 'success' %}var(--green-900){% elseif label == 'error' %}var(--red-900){% else %}var(--blue-900){% endif %};">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
+
+<div class="profile-container">
+    <!-- Toolbar -->
+    <div style="margin-bottom: 32px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+        <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="🔍 Rechercher une proposition..." 
+            style="flex: 1; min-width: 250px; padding: 14px 20px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 15px; transition: all var(--transition);"
+            onkeyup="filterPropositions()"
+        >
+        
+        <select 
+            id="filterStatus" 
+            onchange="filterByStatus()" 
+            style="padding: 14px 20px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 15px; background: white; cursor: pointer; transition: all var(--transition);"
+        >
+            <option value="">Tous les statuts</option>
+            <option value="En attente">En attente</option>
+            <option value="Confirmée">Confirmée</option>
+            <option value="Annulée">Annulée</option>
+            <option value="Reportée">Reportée</option>
+        </select>
+
+        <a href="{{ path('front_groupe_projet_index') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: white; color: var(--gray-700); text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; border: 1px solid var(--gray-300); transition: all var(--transition);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+            </svg>
+            Retour aux groupes
+        </a>
+    </div>
+
+    <!-- Propositions List -->
+    <div style="display:flex; gap:12px; align-items:center; margin-bottom:18px;">
+        <label style="font-weight:600;">Trier :</label>
+        <select id="sortSelect" style="padding:10px; border-radius:8px;">
+            <option value="dateCreation|desc">Plus récentes</option>
+            <option value="dateCreation|asc">Plus anciennes</option>
+            <option value="dateReunion|asc">Date réunion (plus proche)</option>
+            <option value="dateReunion|desc">Date réunion (plus lointaine)</option>
+        </select>
+    </div>
+
+    <div id="propositionsContainer" style="display: grid; gap: 20px;">
+        {{ include('proposition_reunion/_list.html.twig', { proposition_reunions: proposition_reunions }) }}
+    </div>
+</div>
+</main>
+
+<script>
+(function(){
+    const container = document.getElementById('propositionsContainer');
+    const searchInput = document.getElementById('searchInput');
+    const statusSelect = document.getElementById('filterStatus');
+    const sortSelect = document.getElementById('sortSelect');
+    const url = '{{ path('app_proposition_reunion_ajax_filter', {'groupeId': groupe_projet.id}) }}';
+
+    let timer;
+    const debounce = (fn, delay = 350) => (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+    };
+
+    function buildParams() {
+        const params = new URLSearchParams();
+        if (searchInput && searchInput.value.trim()) params.append('search', searchInput.value.trim());
+        if (statusSelect && statusSelect.value) params.append('status', statusSelect.value);
+        if (sortSelect && sortSelect.value) {
+            const [s, d] = sortSelect.value.split('|');
+            params.append('sort', s);
+            params.append('direction', d);
+        }
+        return params.toString();
+    }
+
+    async function fetchAndRender() {
+        if (!container) return;
+
+        if (window.__propPropositionsAbort) window.__propPropositionsAbort.abort();
+        window.__propPropositionsAbort = new AbortController();
+
+        container.innerHTML = '<div class="card" style="padding:20px; text-align:center;"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Chargement...</div></div>';
+
+        try {
+            const resp = await fetch(url + '?' + buildParams(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                signal: window.__propPropositionsAbort.signal
+            });
+
+            if (!resp.ok) throw new Error('Network error');
+
+            const data = await resp.json();
+            container.innerHTML = data.html || '';
+        } catch (e) {
+            if (e.name === 'AbortError') return;
+            console.error('proposition reload failed', e);
+            container.innerHTML = '<div class="card" style="padding:20px; text-align:center; color:#c00;">Erreur lors du chargement</div>';
+        }
+    }
+
+    const debounced = debounce(fetchAndRender, 350);
+
+    if (searchInput) searchInput.addEventListener('input', debounced);
+    if (statusSelect) statusSelect.addEventListener('change', fetchAndRender);
+    if (sortSelect) sortSelect.addEventListener('change', fetchAndRender);
+
+})();
+</script>
+{% endblock %}

@@ -17,6 +17,13 @@ class PropositionReunionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $statusChoices = $options['status_choices'] ?? [
+            'En attente' => 'En attente',
+            'Acceptée' => 'Acceptée',
+            'Refusée' => 'Refusée',
+            'Annulée' => 'Annulée',
+        ];
+
         $builder
             ->add('titre', TextType::class, [
                 'label' => 'Titre',
@@ -28,6 +35,7 @@ class PropositionReunionType extends AbstractType
                     'class' => 'form-control',
                 ],
             ])
+
             ->add('dateReunion', DateType::class, [
                 'label' => 'Date de réunion',
                 'widget' => 'single_text',
@@ -75,16 +83,13 @@ class PropositionReunionType extends AbstractType
             ])
             ->add('status', ChoiceType::class, [
                 'label' => 'Statut',
-                'choices' => [
-                    'En attente' => 'En attente',
-                    'Acceptée' => 'Acceptée',
-                    'Refusée' => 'Refusée',
-                    'Annulée' => 'Annulée',
-                ],
+                'choices' => $statusChoices,
+                'placeholder' => 'Choisir un statut',
                 'attr' => [
                     'class' => 'form-control',
                 ],
             ])
+
         ;
         
         // Only show nbrVoteAccept in edit mode if needed
@@ -103,6 +108,12 @@ class PropositionReunionType extends AbstractType
         $resolver->setDefaults([
             'data_class' => PropositionReunion::class,
             'show_votes' => false,
+            'status_choices' => [
+                'En attente' => 'En attente',
+                'Acceptée' => 'Acceptée',
+                'Refusée' => 'Refusée',
+                'Annulée' => 'Annulée',
+            ],
         ]);
     }
 }

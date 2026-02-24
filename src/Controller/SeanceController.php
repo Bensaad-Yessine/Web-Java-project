@@ -11,7 +11,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 #[Route('/seance')]
 final class SeanceController extends AbstractController
@@ -20,10 +22,65 @@ final class SeanceController extends AbstractController
     // INDEX
     // =========================
     #[Route('/', name: 'app_seance_index', methods: ['GET'])]
-    public function index(SeanceRepository $seanceRepository): Response
+    public function index(Request $request, SeanceRepository $repo): Response
     {
+        $search = $request->query->get('search');
+        $jour = $request->query->get('jour');
+        $type = $request->query->get('type');
+        $mode = $request->query->get('mode');
+        $sort = $request->query->get('sort', 'id');
+        $direction = $request->query->get('direction', 'asc');
+
+        $seances = $repo->findWithFilters($search, $jour, $type, $mode, null, null, $sort, $direction);
+
         return $this->render('seance/index.html.twig', [
-            'seances' => $seanceRepository->findAll(),
+            'seances' => $seances,
+            'search' => $search,
+            'jour' => $jour,
+            'type' => $type,
+            'mode' => $mode,
+            'sort' => $sort,
+            'direction' => $direction,
+        ]);
+    }
+
+    #[Route('/ajax/filter', name: 'app_seance_ajax_filter', methods: ['GET'])]
+    public function ajaxFilter(
+        Request $request,
+        SeanceRepository $repo,
+        CsrfTokenManagerInterface $csrfTokenManager
+    ): JsonResponse {
+        $search = $request->query->get('search');
+        $jour = $request->query->get('jour');
+        $type = $request->query->get('type');
+        $mode = $request->query->get('mode');
+        $sort = $request->query->get('sort', 'id');
+        $direction = $request->query->get('direction', 'asc');
+
+        $seances = $repo->findWithFilters($search, $jour, $type, $mode, null, null, $sort, $direction);
+
+        $data = [];
+        foreach ($seances as $seance) {
+            $data[] = [
+                'id' => $seance->getId(),
+                'matiere' => $seance->getMatiere() ? $seance->getMatiere()->getNom() : 'N/A',
+                'classe' => $seance->getClasse() ? $seance->getClasse()->getNom() : 'N/A',
+                'salle' => $seance->getSalle() ? $seance->getSalle()->getName() : 'N/A',
+                'jour' => $seance->getJour(),
+                'typeSeance' => $seance->getTypeSeance(),
+                'mode' => $seance->getMode(),
+                'heureDebut' => $seance->getHeureDebut() ? $seance->getHeureDebut()->format('H:i') : '',
+                'heureFin' => $seance->getHeureFin() ? $seance->getHeureFin()->format('H:i') : '',
+                'url' => $this->generateUrl('app_seance_show', ['id' => $seance->getId()]),
+                'editUrl' => $this->generateUrl('app_seance_edit', ['id' => $seance->getId()]),
+                'csrfToken' => $csrfTokenManager->getToken('delete' . $seance->getId())->getValue(),
+            ];
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'count' => count($seances),
+            'data' => $data,
         ]);
     }
 
