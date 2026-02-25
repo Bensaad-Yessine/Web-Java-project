@@ -19,6 +19,7 @@ class GroupeProjetRepository extends ServiceEntityRepository
 
     /**
      * Groupes dont l'utilisateur fait partie (un membre ne voit que ses groupes).
+     * Optimized with eager loading to prevent N+1 queries
      *
      * @return GroupeProjet[]
      */
@@ -26,6 +27,11 @@ class GroupeProjetRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('g')
             ->innerJoin('g.idUser', 'u')
+            ->addSelect('u')
+            ->leftJoin('g.createdBy', 'cb')
+            ->addSelect('cb')
+            ->leftJoin('g.idReunion', 'r')
+            ->addSelect('r')
             ->andWhere('u.id = :userId')
             ->setParameter('userId', $user->getId())
             ->orderBy('g.CreatedAt', 'DESC')
@@ -92,5 +98,24 @@ class GroupeProjetRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Find all groups with eager loading to prevent N+1 queries
+     * 
+     * @return GroupeProjet[]
+     */
+    public function findAllOptimized(): array
+    {
+        return $this->createQueryBuilder('g')
+            ->leftJoin('g.idUser', 'u')
+            ->addSelect('u')
+            ->leftJoin('g.createdBy', 'cb')
+            ->addSelect('cb')
+            ->leftJoin('g.idReunion', 'r')
+            ->addSelect('r')
+            ->orderBy('g.CreatedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 }

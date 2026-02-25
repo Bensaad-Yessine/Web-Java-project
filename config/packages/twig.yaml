@@ -4,3 +4,10 @@ twig:
 when@test:
     twig:
         strict_variables: true
+
+when@prod:
+    twig:
+        # Cache templates aggressively in production
+        cache: '%kernel.cache_dir%/twig'
+        auto_reload: false
+        optimizations: -1

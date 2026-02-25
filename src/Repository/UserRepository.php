@@ -105,4 +105,40 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * Find all users with eager loading of relationships to prevent N+1 queries
+     * 
+     * @return User[]
+     */
+    public function findAllOptimized(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->leftJoin('u.classe', 'c')
+            ->addSelect('c')
+            ->leftJoin('u.taches', 't')
+            ->addSelect('t')
+            ->leftJoin('u.objectifSantes', 'o')
+            ->addSelect('o')
+            ->orderBy('u.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Find users by class with eager loading
+     * 
+     * @return User[]
+     */
+    public function findByClasseOptimized(int $classeId): array
+    {
+        return $this->createQueryBuilder('u')
+            ->leftJoin('u.classe', 'c')
+            ->addSelect('c')
+            ->where('c.id = :classeId')
+            ->setParameter('classeId', $classeId)
+            ->orderBy('u.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
 }

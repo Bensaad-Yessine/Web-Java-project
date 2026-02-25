@@ -8,6 +8,9 @@ doctrine:
 
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
+        # Connection pooling for better performance
+        options:
+            !php/const PDO::ATTR_PERSISTENT: true
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
@@ -34,6 +37,9 @@ when@prod:
         orm:
             auto_generate_proxy_classes: false
             proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
+            metadata_cache_driver:
+                type: pool
+                pool: doctrine.system_cache_pool
             query_cache_driver:
                 type: pool
                 pool: doctrine.system_cache_pool

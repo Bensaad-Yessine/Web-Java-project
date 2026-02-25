@@ -12,10 +12,19 @@ framework:
         cookie_secure: auto
         cookie_samesite: lax
 
-    #esi: true
-    #fragments: true
+    # Enable ESI for fragment caching
+    esi: true
+    fragments: true
+    
+    # Enable HTTP cache
+    http_cache: true
+    
     php_errors:
         log: true
+    
+    # Property info cache
+    property_info:
+        enabled: true
 
 when@test:
     framework:
