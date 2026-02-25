@@ -137,7 +137,7 @@ class AlertEngineService
 
             $email = (new Email())
                 ->from('tahayassinesnoussi05@gmail.com')
-                ->to('tahayassinesnoussi05@gmail.com')
+                ->to($user->getEmail())
                 ->subject($emailSubject)
                 ->text($emailBody);
 
