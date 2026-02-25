@@ -99,6 +99,23 @@
             backdrop-filter: blur(10px);
         }
 
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(209, 213, 219, 0.5);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(209, 213, 219, 0.8);
+        }
+
         .brand {
             margin-bottom: 36px;
             padding-bottom: 28px;
@@ -279,6 +296,25 @@
             max-width: 1400px;
             margin: 0 auto;
             width: 100%;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        .main::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .main::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .main::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        .main::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
         }
 
         .header {
@@ -287,7 +323,7 @@
             align-items: center;
             margin-bottom: 48px;
             padding-bottom: 28px;
-            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
+            border-bottom: 2px solid rgba(229, 231, 235, 0.4);
         }
 
         .h1 {
@@ -295,12 +331,16 @@
             font-weight: 800;
             margin: 0;
             color: #111827;
-            letter-spacing: -0.5px;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--red-600) 0%, var(--orange-600) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .muted {
             color: #6b7280;
-            margin-top: 10px;
+            margin-top: 12px;
             font-size: 16px;
             font-weight: 500;
         }
@@ -327,12 +367,14 @@
         }
 
         .card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-xl);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+            border-color: rgba(220, 38, 38, 0.2);
         }
 
         .card-header {
             padding: 28px 28px 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(249, 250, 251, 0.3) 100%);
         }
 
         .card-title {
@@ -344,69 +386,83 @@
             align-items: center;
             gap: 12px;
             padding-bottom: 16px;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 2px solid rgba(220, 38, 38, 0.15);
+            letter-spacing: -0.3px;
         }
 
         .card-title::before {
             content: '';
-            width: 6px;
-            height: 24px;
+            width: 4px;
+            height: 28px;
             background: linear-gradient(180deg, var(--red-500), var(--orange-500));
-            border-radius: 3px;
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
         }
 
         .card-content {
-            padding: 28px;
+            padding: 32px;
+        }
+
+        .card-content > form > button {
+            margin-top: 24px;
         }
 
         .form-group {
-            margin-bottom: 24px;
+            margin-bottom: 28px;
+        }
+
+        .form-group:last-of-type {
+            margin-bottom: 0;
         }
 
         .form-group label {
             display: block;
             font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #374151;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #1f2937;
+            letter-spacing: -0.3px;
         }
 
         .form-control {
             width: 100%;
-            padding: 16px 20px;
-            border: 2px solid #d1d5db;
+            padding: 16px 18px;
+            border: 2px solid #e5e7eb;
             border-radius: var(--radius-lg);
-            background: #ffffff;
+            background: #fafbfc;
             color: #111827;
             font-size: 15px;
             font-weight: 500;
-            transition: all var(--transition);
+            transition: all var(--transition-fast);
             font-family: inherit;
         }
 
         .form-control:hover {
-            border-color: #9ca3af;
+            border-color: #d1d5db;
+            background: #ffffff;
         }
 
         .form-control:focus {
             border-color: var(--red-500);
-            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+            background: #ffffff;
+            box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.08), inset 0 1px 2px rgba(0, 0, 0, 0.02);
             outline: none;
         }
         
         .form-control:disabled,
         .form-control[readonly] {
-            background: var(--gray-100);
-            border-color: var(--gray-200);
+            background: #f3f4f6;
+            border-color: #e5e7eb;
             cursor: not-allowed;
-            opacity: 0.7;
+            opacity: 0.6;
         }
         
         .form-text {
             display: block;
-            margin-top: 6px;
+            margin-top: 8px;
             font-size: 13px;
-            color: var(--gray-500);
+            color: #6b7280;
+            font-weight: 500;
         }
 
         .btn {
@@ -415,45 +471,99 @@
             background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
             color: white;
             border-radius: var(--radius-lg);
-            padding: 16px 28px;
-            font-weight: 600;
+            padding: 14px 28px;
+            font-weight: 700;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
-            transition: all var(--transition);
+            transition: all var(--transition-fast);
             font-size: 15px;
-            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+            letter-spacing: -0.3px;
         }
 
         .btn:hover {
             background: linear-gradient(135deg, var(--red-600) 0%, var(--orange-600) 100%);
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .btn-outline {
             background: transparent;
             color: #374151;
-            border-color: #d1d5db;
+            border: 2px solid #d1d5db;
             box-shadow: none;
         }
 
         .btn-outline:hover {
-            background: #f3f4f6;
-            border-color: #9ca3af;
+            background: #f9fafb;
+            border-color: var(--red-500);
+            color: var(--red-600);
         }
 
         .quick-actions {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
         }
 
         .quick-actions .btn-outline {
             width: 100%;
             justify-content: flex-start;
+            padding: 16px 20px;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            transition: all var(--transition-fast);
+        }
+
+        .password-field {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-field input {
+            flex: 1;
+            padding-right: 45px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6b7280;
+            font-size: 18px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            z-index: 10;
+            opacity: 0.6;
+        }
+
+        .password-toggle:hover {
+            color: var(--red-500);
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        .password-toggle:active {
+            transform: scale(0.95);
         }
 
         @media (max-width: 1024px) {
@@ -466,11 +576,38 @@
                 height: auto;
                 position: relative;
             }
+
+            .main {
+                height: auto;
+                padding: 32px;
+            }
+
+            .h1 {
+                font-size: 32px;
+            }
         }
 
         @media (max-width: 768px) {
             .main {
-                padding: 24px;
+                padding: 20px;
+                height: auto;
+            }
+
+            .card-content {
+                padding: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .h1 {
+                font-size: 28px;
+            }
+
+            .quick-actions .btn-outline {
+                padding: 14px 16px;
+                font-size: 14px;
             }
         }
     </style>
@@ -490,8 +627,8 @@
 
             <div class="user-session">
                 <div class="user-info">
-                    <div class="avatar">
-                        {{ app.user.nom|first }}{{ app.user.prenom|first }}
+                    <div class="avatar" {% if app.user.profilePic %}style="background: no-repeat center/cover url({{ app.user.getProfilePicUrl() }});"{% endif %}>
+                        {% if not app.user.profilePic %}{{ app.user.nom|first }}{{ app.user.prenom|first }}{% endif %}
                     </div>
                     <div class="user-details">
                         <h3>{{ app.user.nom }} {{ app.user.prenom }}</h3>
@@ -552,6 +689,27 @@
                             <div class="card-content">
                                 <form id="profileForm">
                                     <div class="form-group">
+                                        <label style="margin-bottom: 16px;">📷 Profile Picture</label>
+                                        <div style="display: flex; gap: 24px; align-items: flex-start; background: linear-gradient(135deg, rgba(254, 242, 242, 0.4) 0%, rgba(254, 242, 242, 0.2) 100%); padding: 24px; border-radius: var(--radius-lg); border: 2px dashed rgba(220, 38, 38, 0.2);">
+                                            <div style="flex-shrink: 0;">
+                                                <div id="profilePreview" style="width: 110px; height: 110px; border-radius: 50%; {% if app.user.profilePic %}background: no-repeat center/cover url({{ app.user.getProfilePicUrl() }}){% else %}background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%){% endif %}; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 36px; border: 4px solid white; box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);">
+                                                    {% if not app.user.profilePic %}{{ app.user.nom|first }}{{ app.user.prenom|first }}{% endif %}
+                                                </div>
+                                            </div>
+                                            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                                                <input type="file" id="profilePic" class="form-control" accept="image/*" style="padding: 12px; margin-bottom: 12px; display: none;">
+                                                <button type="button" id="uploadPicBtn" class="btn" style="background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-500) 100%); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); width: 100%; justify-content: center;">
+                                                    📤 Choose Photo
+                                                </button>
+                                                <small class="form-text" style="margin-top: 12px;">JPG, PNG, GIF, WebP • Max 5MB</small>
+                                                <small class="form-text" style="margin-top: 8px; color: #4b5563;">Shown throughout the application</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr style="margin: 28px 0; border: none; border-top: 2px dashed rgba(220, 38, 38, 0.15); opacity: 0.5;">
+
+                                    <div class="form-group">
                                         <label for="nom">Last Name *</label>
                                         <input type="text" id="nom" class="form-control" 
                                                value="{{ app.user.nom }}"
@@ -598,7 +756,7 @@
                                         <small class="form-text">Optional: Include country code</small>
                                     </div>
                                     
-                                    <button type="submit" class="btn">✏️ Update Profile</button>
+                                    <button type="submit" class="btn" style="width: 100%; justify-content: center; padding: 16px 32px; font-size: 16px;">✏️ Update Profile</button>
                                 </form>
                             </div>
                         </div>
@@ -612,9 +770,9 @@
                             </div>
                             <div class="card-content">
                                 <div class="quick-actions">
-                                    <a href="#" class="btn btn-outline">
+                                    <button type="button" onclick="openPasswordModal()" class="btn btn-outline">
                                         🔒 Change Password
-                                    </a>
+                                    </button>
                                     <a href="{{path('front_preference_alerte_show',{'id': app.user.id})}}" class="btn btn-outline">
                                         🔔 Notification Settings
                                     </a>
@@ -633,7 +791,330 @@
         </main>
     </div>
 
+    <!-- Password Change Modal -->
+    <div id="passwordModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 10000; align-items: center; justify-content: center; animation: fadeIn 0.2s ease-out;">
+        <div style="background: white; border-radius: var(--radius-xl); padding: 40px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2); animation: slideUp 0.3s ease-out;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 28px;">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%); display: flex; align-items: center; justify-content: center; font-size: 20px;">🔐</div>
+                <h2 style="font-size: 26px; font-weight: 800; margin: 0; color: #111827; letter-spacing: -0.5px;">Change Password</h2>
+            </div>
+            
+            <form id="passwordForm" style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="currentPassword">Current Password *</label>
+                    <div class="password-field">
+                        <input type="password" id="currentPassword" class="form-control" placeholder="••••••••" required>
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('currentPassword', event)">
+                            👁️
+                        </button>
+                    </div>
+                    <small class="form-text">Enter your current password for security</small>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="newPassword">New Password *</label>
+                    <div class="password-field">
+                        <input type="password" id="newPassword" class="form-control" placeholder="••••••••" required minlength="8">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('newPassword', event)">
+                            👁️
+                        </button>
+                    </div>
+                    <small class="form-text">At least 8 characters with uppercase, numbers & symbols</small>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="confirmPassword">Confirm Password *</label>
+                    <div class="password-field">
+                        <input type="password" id="confirmPassword" class="form-control" placeholder="••••••••" required minlength="8">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('confirmPassword', event)">
+                            👁️
+                        </button>
+                    </div>
+                    <small class="form-text">Must match your new password</small>
+                </div>
+
+                <div id="passwordStrength" style="padding: 14px 16px; border-radius: var(--radius); background: linear-gradient(135deg, rgba(254, 242, 242, 0.4) 0%, rgba(254, 242, 242, 0.2) 100%); border: 1px solid rgba(220, 38, 38, 0.1); display: none;">
+                    <small style="color: #111827; font-weight: 600;">📊 Strength: <span id="strengthText" style="color: #ef4444;">Weak</span></small>
+                    <div style="height: 6px; background: #e5e7eb; border-radius: 3px; margin-top: 10px; overflow: hidden;">
+                        <div id="strengthBar" style="height: 100%; background: #ef4444; border-radius: 3px; width: 30%; transition: all 0.3s ease-out;"></div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                    <button type="submit" class="btn" style="flex: 1; justify-content: center;">🔐 Update Password</button>
+                    <button type="button" onclick="closePasswordModal()" class="btn btn-outline" style="flex: 1; justify-content: center; background: white;">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <style>
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translateY(20px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        </style>
+    </div>
+
     <script>
+        // Toggle Password Visibility
+        function togglePasswordVisibility(fieldId, event) {
+            event.preventDefault();
+            const field = document.getElementById(fieldId);
+            const button = event.target.closest('.password-toggle');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                button.textContent = '👁️‍🗨️';
+                button.style.opacity = '1';
+            } else {
+                field.type = 'password';
+                button.textContent = '👁️';
+                button.style.opacity = '0.6';
+            }
+        }
+
+        // Password Modal Functions
+        function openPasswordModal() {
+            document.getElementById('passwordModal').style.display = 'flex';
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+            document.getElementById('passwordForm').reset();
+            
+            // Reset password field types to password
+            document.getElementById('currentPassword').type = 'password';
+            document.getElementById('newPassword').type = 'password';
+            document.getElementById('confirmPassword').type = 'password';
+            
+            // Reset eye icons
+            document.querySelectorAll('.password-toggle').forEach(btn => {
+                btn.textContent = '👁️';
+                btn.style.opacity = '0.6';
+            });
+        }
+
+        // Password Strength Indicator
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            
+            if (!password) {
+                document.getElementById('passwordStrength').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('passwordStrength').style.display = 'block';
+
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+
+            const strengthLevels = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+            const strengthPercentages = [30, 50, 70, 85, 100];
+            const strengthColors = ['#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e'];
+
+            strengthText.textContent = strengthLevels[Math.min(strength - 1, 4)] || 'Weak';
+            strengthBar.style.width = strengthPercentages[Math.min(strength - 1, 4)] + '%';
+            strengthBar.style.background = strengthColors[Math.min(strength - 1, 4)];
+        }
+
+        // Monitor new password field for strength
+        document.getElementById('newPassword').addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+        });
+
+        // Profile Picture Upload
+        document.getElementById('uploadPicBtn').addEventListener('click', function() {
+            document.getElementById('profilePic').click();
+        });
+
+        document.getElementById('profilePic').addEventListener('change', function(e) {
+            const file = this.files[0];
+            
+            if (!file) return;
+
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showErrorMsg('File size must not exceed 5MB');
+                this.value = '';
+                return;
+            }
+
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                showErrorMsg('Only JPG, PNG, GIF, and WebP formats are allowed');
+                this.value = '';
+                return;
+            }
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profilePreview').style.background = 'no-repeat center/cover url(' + e.target.result + ')';
+                document.getElementById('profilePreview').style.color = 'transparent';
+            };
+            reader.readAsDataURL(file);
+
+            // Upload file
+            uploadProfilePicture(file);
+        });
+
+        function uploadProfilePicture(file) {
+            const formData = new FormData();
+            formData.append('profilePic', file);
+
+            const uploadBtn = document.getElementById('uploadPicBtn');
+            const originalHTML = uploadBtn.innerHTML;
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '⏳ Uploading...';
+
+            fetch('{{ path('app_profile_picture_upload') }}', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || `Upload failed with status ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = originalHTML;
+                
+                if (data.success) {
+                    showSuccessMsg('Profile picture updated successfully!');
+                    
+                    // Update the sidebar avatar
+                    const avatar = document.querySelector('.avatar');
+                    if (avatar) {
+                        avatar.style.background = 'no-repeat center/cover url(' + data.url + ')';
+                        avatar.style.color = 'transparent';
+                        avatar.innerHTML = '';
+                    }
+                    
+                    // Reset file input
+                    document.getElementById('profilePic').value = '';
+                } else {
+                    showErrorMsg(data.message || 'Failed to upload profile picture');
+                    // Reset preview
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = originalHTML;
+                showErrorMsg('Upload error: ' + error.message);
+                // Reset preview
+                document.getElementById('profilePic').value = '';
+                location.reload();
+            });
+        }
+
+        // Password Change Form
+        document.getElementById('passwordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validation
+            if (!currentPassword) {
+                showErrorMsg('Current password is required');
+                return;
+            }
+
+            if (!newPassword || newPassword.length < 8) {
+                showErrorMsg('New password must be at least 8 characters');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showErrorMsg('Passwords do not match');
+                return;
+            }
+
+            if (currentPassword === newPassword) {
+                showErrorMsg('New password must be different from current password');
+                return;
+            }
+
+            // Check password strength (at least 3 criteria should be met)
+            const strength = calculatePasswordStrength(newPassword);
+            if (strength < 3) {
+                showErrorMsg('Password is too weak. Use uppercase, numbers, and special characters');
+                return;
+            }
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '⏳ Updating...';
+
+            const formData = {
+                currentPassword: currentPassword,
+                newPassword: newPassword
+            };
+
+            fetch('{{ path('app_change_password') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(formData),
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+
+                if (data.success) {
+                    showSuccessMsg(data.message || 'Password updated successfully!');
+                    closePasswordModal();
+                } else {
+                    showErrorMsg(data.message || 'Failed to update password');
+                }
+            })
+            .catch(error => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+                showErrorMsg('Error: ' + error.message);
+            });
+        });
+
+        function calculatePasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+            return strength;
+        }
+
         document.getElementById('profileForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -766,6 +1247,20 @@
                 alert('Export feature coming soon!');
             }
         }
+
+        // Close modal when clicking outside
+        document.getElementById('passwordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePasswordModal();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePasswordModal();
+            }
+        });
     </script>
 </body>
 </html>

@@ -927,6 +927,7 @@
                               </th>
                               <th>Rôle</th>
                               <th>Status</th>
+                              <th>Ban Status</th>
                               <th>Actions</th>
                             </tr>
                           </thead>
@@ -996,6 +997,16 @@
                                   {% endif %}
                                 </td>
                                 <td>
+                                  {% if user.isBanned %}
+                                    <span class="badge badge-danger" title="{{ user.banReason }}">
+                                      <i class="mdi mdi-block-helper me-1"></i>Banni
+                                    </span>
+                                    <small class="d-block text-muted mt-1">{{ user.bannedAt ? user.bannedAt|date('d/m/Y H:i') : '' }}</small>
+                                  {% else %}
+                                    <span class="badge badge-info">Actif</span>
+                                  {% endif %}
+                                </td>
+                                <td>
                                   <div class="action-buttons">
                                     <a href="{{ path('app_user_show', { id: user.id }) }}" 
                                        class="btn btn-info btn-sm btn-icon"
@@ -1008,6 +1019,23 @@
                                       <i class="mdi mdi-pencil"></i>
                                     </a>
                                     {% if user.id != app.user?.id %}
+                                      {% if user.isBanned %}
+                                        <button type="button" 
+                                                class="btn btn-success btn-sm btn-icon unban-btn"
+                                                data-user-id="{{ user.id }}"
+                                                data-user-name="{{ user.prenom }} {{ user.nom }}"
+                                                title="Débannir">
+                                          <i class="mdi mdi-check-circle"></i>
+                                        </button>
+                                      {% else %}
+                                        <button type="button" 
+                                                class="btn btn-secondary btn-sm btn-icon ban-btn"
+                                                data-user-id="{{ user.id }}"
+                                                data-user-name="{{ user.prenom }} {{ user.nom }}"
+                                                title="Bannir">
+                                          <i class="mdi mdi-block-helper"></i>
+                                        </button>
+                                      {% endif %}
                                       <button type="button" 
                                               class="btn btn-danger btn-sm btn-icon delete-btn"
                                               data-user-id="{{ user.id }}"
@@ -1078,6 +1106,68 @@
                 <i class="mdi mdi-delete me-1"></i>Supprimer
               </button>
             </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ban Confirmation Modal -->
+    <div class="modal fade" id="banModal" tabindex="-1" aria-labelledby="banModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-warning text-white">
+            <h5 class="modal-title" id="banModalLabel">
+              <i class="mdi mdi-block-helper me-2"></i>Bannir un utilisateur
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Êtes-vous sûr de vouloir bannir <strong id="banUserNameDisplay"></strong> ?</p>
+            <div class="form-group mt-3">
+              <label for="banReason" class="form-label">Raison du bannissement (obligatoire)</label>
+              <textarea class="form-control" id="banReason" rows="3" placeholder="Ex: Comportement inapproprié, spam..."></textarea>
+              <small class="text-muted d-block mt-1">
+                <i class="mdi mdi-information me-1"></i>
+                L'utilisateur n'aura plus accès à son compte
+              </small>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <i class="mdi mdi-close me-1"></i>Annuler
+            </button>
+            <button type="button" class="btn btn-warning" id="confirmBanBtn">
+              <i class="mdi mdi-block-helper me-1"></i>Bannir
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unban Confirmation Modal -->
+    <div class="modal fade" id="unbanModal" tabindex="-1" aria-labelledby="unbanModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title" id="unbanModalLabel">
+              <i class="mdi mdi-check-circle me-2"></i>Débannir un utilisateur
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Êtes-vous sûr de vouloir débannir <strong id="unbanUserNameDisplay"></strong> ?</p>
+            <p class="text-success mb-0">
+              <i class="mdi mdi-check-circle me-1"></i>
+              <small>L'utilisateur aura de nouveau accès à son compte.</small>
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <i class="mdi mdi-close me-1"></i>Annuler
+            </button>
+            <button type="button" class="btn btn-success" id="confirmUnbanBtn">
+              <i class="mdi mdi-check-circle me-1"></i>Débannir
+            </button>
           </div>
         </div>
       </div>
@@ -1241,6 +1331,15 @@
                 }
               </td>
               <td>
+                ${user.isBanned ?
+                  `<span class="badge badge-danger" title="${user.banReason}">
+                    <i class="mdi mdi-block-helper me-1"></i>Banni
+                  </span>
+                  <small class="d-block text-muted mt-1">${user.bannedAt || ''}</small>` :
+                  '<span class="badge badge-info">Actif</span>'
+                }
+              </td>
+              <td>
                 <div class="action-buttons">
                   <a href="/user/${user.id}" class="btn btn-info btn-sm btn-icon" title="Voir">
                     <i class="mdi mdi-eye"></i>
@@ -1249,7 +1348,21 @@
                     <i class="mdi mdi-pencil"></i>
                   </a>
                   ${!user.isCurrentUser ?
-                    `<button type="button" class="btn btn-danger btn-sm btn-icon delete-btn" 
+                    `${user.isBanned ?
+                      `<button type="button" class="btn btn-success btn-sm btn-icon unban-btn" 
+                               data-user-id="${user.id}" 
+                               data-user-name="${user.prenom} ${user.nom}"
+                               title="Débannir">
+                        <i class="mdi mdi-check-circle"></i>
+                      </button>` :
+                      `<button type="button" class="btn btn-secondary btn-sm btn-icon ban-btn" 
+                               data-user-id="${user.id}" 
+                               data-user-name="${user.prenom} ${user.nom}"
+                               title="Bannir">
+                        <i class="mdi mdi-block-helper"></i>
+                      </button>`
+                    }
+                    <button type="button" class="btn btn-danger btn-sm btn-icon delete-btn" 
                              data-user-id="${user.id}" 
                              data-user-name="${user.prenom} ${user.nom}" 
                              data-csrf-token="${user.csrfToken}"
@@ -1265,6 +1378,8 @@
 
           // Reattach delete button listeners
           attachDeleteListeners();
+          attachBanListeners();
+          attachUnbanListeners();
         }
 
         // Update statistics
@@ -1374,6 +1489,141 @@
             });
           });
         }
+
+        // Ban button listeners
+        function attachBanListeners() {
+          const banButtons = document.querySelectorAll('.ban-btn');
+          banButtons.forEach(button => {
+            button.addEventListener('click', function() {
+              const userId = this.getAttribute('data-user-id');
+              const userName = this.getAttribute('data-user-name');
+              
+              document.getElementById('banUserNameDisplay').textContent = userName;
+              document.getElementById('banReason').value = '';
+              
+              // Store userId for later use
+              window.banUserId = userId;
+              
+              const modal = new bootstrap.Modal(document.getElementById('banModal'));
+              modal.show();
+            });
+          });
+        }
+
+        // Unban button listeners
+        function attachUnbanListeners() {
+          const unbanButtons = document.querySelectorAll('.unban-btn');
+          unbanButtons.forEach(button => {
+            button.addEventListener('click', function() {
+              const userId = this.getAttribute('data-user-id');
+              const userName = this.getAttribute('data-user-name');
+              
+              document.getElementById('unbanUserNameDisplay').textContent = userName;
+              
+              // Store userId for later use
+              window.unbanUserId = userId;
+              
+              const modal = new bootstrap.Modal(document.getElementById('unbanModal'));
+              modal.show();
+            });
+          });
+        }
+
+        // Confirm ban action
+        document.getElementById('confirmBanBtn')?.addEventListener('click', function() {
+          const userId = window.banUserId;
+          const reason = document.getElementById('banReason').value.trim();
+          
+          if (!reason) {
+            alert('Veuillez entrer une raison de bannissement');
+            return;
+          }
+
+          loadingOverlay.classList.add('active');
+          
+          fetch('/user/' + userId + '/ban', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ reason: reason })
+          })
+          .then(response => response.json())
+          .then(data => {
+            loadingOverlay.classList.remove('active');
+            
+            if (data.success) {
+              const modal = bootstrap.Modal.getInstance(document.getElementById('banModal'));
+              modal.hide();
+              
+              // Show success message
+              const alert = document.createElement('div');
+              alert.className = 'alert alert-success alert-dismissible fade show';
+              alert.innerHTML = `
+                <i class="mdi mdi-check-circle me-2"></i>
+                ${data.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              `;
+              document.querySelector('.content-wrapper').prepend(alert);
+              
+              // Refresh table
+              applyFilters();
+            } else {
+              alert('Erreur: ' + data.message);
+            }
+          })
+          .catch(error => {
+            loadingOverlay.classList.remove('active');
+            console.error('Error:', error);
+            alert('Une erreur est survenue lors du bannissement');
+          });
+        });
+
+        // Confirm unban action
+        document.getElementById('confirmUnbanBtn')?.addEventListener('click', function() {
+          const userId = window.unbanUserId;
+
+          loadingOverlay.classList.add('active');
+          
+          fetch('/user/' + userId + '/unban', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({})
+          })
+          .then(response => response.json())
+          .then(data => {
+            loadingOverlay.classList.remove('active');
+            
+            if (data.success) {
+              const modal = bootstrap.Modal.getInstance(document.getElementById('unbanModal'));
+              modal.hide();
+              
+              // Show success message
+              const alert = document.createElement('div');
+              alert.className = 'alert alert-success alert-dismissible fade show';
+              alert.innerHTML = `
+                <i class="mdi mdi-check-circle me-2"></i>
+                ${data.message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              `;
+              document.querySelector('.content-wrapper').prepend(alert);
+              
+              // Refresh table
+              applyFilters();
+            } else {
+              alert('Erreur: ' + data.message);
+            }
+          })
+          .catch(error => {
+            loadingOverlay.classList.remove('active');
+            console.error('Error:', error);
+            alert('Une erreur est survenue lors du débannissement');
+          });
+        });
 
         // Initial delete listeners
         attachDeleteListeners();

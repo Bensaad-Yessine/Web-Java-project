@@ -21,7 +21,8 @@ final class Version20260207152055 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE user CHANGE roles roles JSON NOT NULL, CHANGE num_tel num_tel VARCHAR(20) DEFAULT NULL, CHANGE profile_pic profile_pic VARCHAR(255) DEFAULT NULL');
-        $this->addSql('ALTER TABLE user RENAME INDEX uniq_identifier_email TO UNIQ_8D93D649E7927C74');
+        // Skip the RENAME INDEX as it's not compatible with all MySQL/MariaDB versions
+        // $this->addSql('ALTER TABLE user RENAME INDEX uniq_identifier_email TO UNIQ_8D93D649E7927C74');
         $this->addSql('ALTER TABLE messenger_messages CHANGE delivered_at delivered_at DATETIME DEFAULT NULL');
     }
 

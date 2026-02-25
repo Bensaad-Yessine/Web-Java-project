@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESPRIT — Payment Checkout</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        :root {
+            --font-size: 16px;
+            --bg: #ffffff;
+            --fg: #111827;
+            
+            --red-50: #fef2f2;
+            --red-100: #fee2e2;
+            --red-200: #fecaca;
+            --red-300: #fca5a5;
+            --red-400: #f87171;
+            --red-500: #ef4444;
+            --red-600: #dc2626;
+            --red-700: #b91c1c;
+            --red-800: #991b1b;
+            --red-900: #7f1d1d;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            
+            --green-50: #f0fdf4;
+            --green-500: #22c55e;
+            --green-600: #16a34a;
+            
+            --orange-500: #f97316;
+            --orange-600: #ea580c;
+            
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+            
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        html { 
+            font-size: var(--font-size); 
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, #ffffff 30%, var(--gray-50) 100%);
+            color: var(--fg);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            padding: 40px 20px;
+        }
+
+        .checkout-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .checkout-header {
+            text-align: center;
+            margin-bottom: 48px;
+            padding-bottom: 28px;
+            border-bottom: 2px solid rgba(229, 231, 235, 0.4);
+        }
+
+        .h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin: 0;
+            color: #111827;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--red-600) 0%, var(--orange-600) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .muted {
+            color: #6b7280;
+            margin-top: 12px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 36px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.9) 100%);
+            border: 1px solid rgba(229, 231, 235, 0.6);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            transition: all var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+            border-color: rgba(220, 38, 38, 0.2);
+        }
+
+        .card-header {
+            padding: 28px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(249, 250, 251, 0.3) 100%);
+            border-bottom: 2px solid rgba(220, 38, 38, 0.15);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(180deg, var(--red-500), var(--orange-500));
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+        }
+
+        .card-body {
+            padding: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            font-size: 15px;
+            font-weight: 500;
+            color: #1f2937;
+            background: #ffffff;
+            transition: all var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--red-500);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .payment-method {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .payment-method input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .payment-method-card {
+            padding: 20px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            transition: all var(--transition);
+            background: white;
+        }
+
+        .payment-method input[type="radio"]:checked + .payment-method-card {
+            border-color: var(--red-500);
+            background: linear-gradient(135deg, rgba(254, 242, 242, 0.9) 0%, rgba(254, 242, 242, 0.5) 100%);
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.15);
+        }
+
+        .payment-method-card:hover {
+            border-color: var(--red-300);
+            transform: translateY(-2px);
+        }
+
+        .payment-method-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .payment-method-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .order-summary {
+            position: sticky;
+            top: 20px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .item-price {
+            font-weight: 700;
+            color: var(--red-600);
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 0;
+            margin-top: 16px;
+            border-top: 2px solid var(--gray-300);
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .total-label {
+            color: #111827;
+        }
+
+        .total-amount {
+            color: var(--red-600);
+            background: linear-gradient(135deg, var(--red-600) 0%, var(--orange-600) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px 24px;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--red-600) 0%, var(--orange-600) 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--red-600);
+            border: 2px solid var(--red-600);
+            margin-top: 12px;
+        }
+
+        .btn-secondary:hover {
+            background: var(--red-50);
+        }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--green-50) 0%, rgba(240, 253, 244, 0.5) 100%);
+            border-radius: var(--radius);
+            color: var(--green-600);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .secure-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .promo-code {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .promo-input {
+            flex: 1;
+        }
+
+        .btn-apply {
+            padding: 14px 24px;
+            background: var(--gray-800);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .btn-apply:hover {
+            background: var(--gray-900);
+        }
+
+        @media (max-width: 968px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .order-summary {
+                position: static;
+            }
+
+            .payment-methods {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .h1 {
+                font-size: 32px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card input styling */
+        .card-number-display {
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        /* Loading state */
+        .btn-loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spinner 0.8s linear infinite;
+        }
+
+        @keyframes spinner {
+            to { transform: rotate(360deg); }
+        }
+
+        .payment-icons {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            justify-content: center;
+        }
+
+        .payment-icon-img {
+            height: 24px;
+            opacity: 0.7;
+            transition: opacity var(--transition);
+        }
+
+        .payment-icon-img:hover {
+            opacity: 1;
+        }
+
+        /* Stripe Elements styling */
+        #card-element {
+            padding: 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            background: white;
+            transition: all var(--transition);
+        }
+
+        #card-element.StripeElement--focus {
+            border-color: var(--red-500);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        #card-element.StripeElement--invalid {
+            border-color: #dc2626;
+        }
+
+        #card-errors {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .success-checkmark {
+            font-size: 64px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <div class="checkout-header">
+            <h1 class="h1">💳 Checkout</h1>
+            <p class="muted">Complete your payment securely</p>
+        </div>
+
+        <div class="checkout-grid">
+            <!-- Payment Form Section -->
+            <div>
+                <!-- Payment Method Selection -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Payment Method</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="payment-methods">
+                            <label class="payment-method">
+                                <input type="radio" name="payment_method" value="card" checked>
+                                <div class="payment-method-card">
+                                    <div class="payment-method-icon">💳</div>
+                                    <div class="payment-method-label">Credit Card</div>
+                                </div>
+                            </label>
+                            <label class="payment-method">
+                                <input type="radio" name="payment_method" value="paypal">
+                                <div class="payment-method-card">
+                                    <div class="payment-method-icon">🅿️</div>
+                                    <div class="payment-method-label">PayPal</div>
+                                </div>
+                            </label>
+                            <label class="payment-method">
+                                <input type="radio" name="payment_method" value="bank">
+                                <div class="payment-method-card">
+                                    <div class="payment-method-icon">🏦</div>
+                                    <div class="payment-method-label">Bank Transfer</div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div class="payment-icons">
+                            <span style="font-size: 24px;">💳</span>
+                            <span style="font-size: 24px;">💶</span>
+                            <span style="font-size: 24px;">💵</span>
+                            <span style="font-size: 24px;">💴</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card Details Section -->
+                <div class="card" id="cardDetails">
+                    <div class="card-header">
+                        <h2 class="card-title">Card Details</h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="paymentForm">
+                            <div class="form-group">
+                                <label class="form-label">Card Information</label>
+                                <!-- Stripe Elements will be inserted here -->
+                                <div id="card-element"></div>
+                                <div id="card-errors" role="alert"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Cardholder Name</label>
+                                <input type="text" class="form-control" 
+                                       placeholder="John Doe"
+                                       id="cardName"
+                                       required>
+                            </div>
+
+                            <div class="secure-badge">
+                                <svg class="secure-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                                Your payment information is encrypted and secure with Stripe
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Billing Address -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Billing Address</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label class="form-label">Street Address</label>
+                            <input type="text" class="form-control" placeholder="123 Main Street">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">City</label>
+                                <input type="text" class="form-control" placeholder="Tunis">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Postal Code</label>
+                                <input type="text" class="form-control" placeholder="1000">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Country</label>
+                            <select class="form-control">
+                                <option>Tunisia</option>
+                                <option>France</option>
+                                <option>USA</option>
+                                <option>UK</option>
+                                <option>Germany</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary Section -->
+            <div>
+                <div class="card order-summary">
+                    <div class="card-header">
+                        <h2 class="card-title">Order Summary</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="order-item">
+                            <div>
+                                <div class="item-name">Premium Subscription</div>
+                                <div style="color: #6b7280; font-size: 14px;">1 Month</div>
+                            </div>
+                            <div class="item-price">€29.99</div>
+                        </div>
+                        
+                        <div class="order-item">
+                            <div>
+                                <div class="item-name">Additional Storage</div>
+                                <div style="color: #6b7280; font-size: 14px;">50 GB</div>
+                            </div>
+                            <div class="item-price">€9.99</div>
+                        </div>
+
+                        <div class="order-item">
+                            <div class="item-name">Tax (20%)</div>
+                            <div class="item-price">€8.00</div>
+                        </div>
+
+                        <div class="promo-code">
+                            <input type="text" class="form-control promo-input" placeholder="Promo code">
+                            <button class="btn-apply">Apply</button>
+                        </div>
+
+                        <div class="order-total">
+                            <span class="total-label">Total</span>
+                            <span class="total-amount">€47.98</span>
+                        </div>
+
+                        <button class="btn btn-primary" id="payButton">
+                            Complete Payment
+                        </button>
+                        <button class="btn btn-secondary">
+                            Cancel
+                        </button>
+
+                        <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--gray-200);">
+                            <div style="color: #6b7280; font-size: 13px; line-height: 1.6;">
+                                By completing this purchase, you agree to our 
+                                <a href="#" style="color: var(--red-600); text-decoration: none; font-weight: 600;">Terms of Service</a> 
+                                and 
+                                <a href="#" style="color: var(--red-600); text-decoration: none; font-weight: 600;">Privacy Policy</a>.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Stripe
+        const stripe = Stripe('{{ stripe_public_key }}');
+        const elements = stripe.elements();
+
+        // Create card element with custom styling
+        const cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#1f2937',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                    '::placeholder': {
+                        color: '#9ca3af',
+                    },
+                },
+                invalid: {
+                    color: '#dc2626',
+                },
+            },
+        });
+
+        // Mount the card element
+        cardElement.mount('#card-element');
+
+        // Handle real-time validation errors
+        cardElement.on('change', (event) => {
+            const displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        // Payment form submission
+        const form = document.getElementById('paymentForm');
+        const payButton = document.getElementById('payButton');
+        let clientSecret = null;
+
+        // Create Payment Intent when page loads
+        async function createPaymentIntent() {
+            try {
+                const response = await fetch('{{ path('app_payment_create_intent') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        amount: 4798, // €47.98 in cents
+                    }),
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                clientSecret = data.clientSecret;
+            } catch (error) {
+                console.error('Error creating payment intent:', error);
+                alert('Error initializing payment. Please refresh the page.');
+            }
+        }
+
+        // Create payment intent on page load
+        createPaymentIntent();
+
+        // Handle payment button click
+        payButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            if (!clientSecret) {
+                alert('Payment system is initializing. Please wait a moment and try again.');
+                return;
+            }
+
+            const cardholderName = document.getElementById('cardName').value;
+            
+            if (!cardholderName) {
+                alert('Please enter the cardholder name.');
+                return;
+            }
+
+            // Show loading state
+            payButton.classList.add('btn-loading');
+            payButton.disabled = true;
+
+            try {
+                // Confirm the payment
+                const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: cardholderName,
+                        },
+                    },
+                });
+
+                if (error) {
+                    // Show error to customer
+                    const errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = error.message;
+                    
+                    payButton.classList.remove('btn-loading');
+                    payButton.disabled = false;
+                } else if (paymentIntent.status === 'succeeded') {
+                    // Payment successful
+                    // Notify backend
+                    await fetch('{{ path('app_payment_confirm') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            payment_intent_id: paymentIntent.id,
+                        }),
+                    });
+
+                    // Show success message
+                    alert('✅ Payment Successful!\n\nThank you for your purchase.');
+                    
+                    // Redirect to success page
+                    window.location.href = '{{ path('app_payment_success') }}';
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('An error occurred. Please try again.');
+                
+                payButton.classList.remove('btn-loading');
+                payButton.disabled = false;
+            }
+        });
+
+        // Payment method toggle
+        document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const cardDetails = document.getElementById('cardDetails');
+                if (this.value === 'card') {
+                    cardDetails.style.display = 'block';
+                } else {
+                    cardDetails.style.display = 'none';
+                    alert('This payment method is coming soon. Please use Credit Card for now.');
+                    document.querySelector('input[name="payment_method"][value="card"]').checked = true;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

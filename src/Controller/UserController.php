@@ -10,6 +10,7 @@ use App\Form\FrontOfficeTacheType;
 use App\Repository\UserRepository;
 use App\Entity\Tache;
 use App\Repository\TacheRepository;
+use App\Service\BanNotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -71,6 +72,9 @@ class UserController extends AbstractController
                 'roles' => $user->getRoles(),
                 'isAdmin' => in_array('ROLE_ADMIN', $user->getRoles()),
                 'isVerified' => $user->isVerified(),
+                'isBanned' => $user->isBanned(),
+                'banReason' => $user->getBanReason(),
+                'bannedAt' => $user->getBannedAt() ? $user->getBannedAt()->format('d/m/Y H:i') : null,
                 'profilePic' => $user->getProfilePic(),
                 'initials' => strtoupper(substr($user->getPrenom(), 0, 1) . substr($user->getNom(), 0, 1)),
                 'isCurrentUser' => $this->getUser() && $user->getId() === $this->getUser()->getId(),
@@ -223,6 +227,116 @@ class UserController extends AbstractController
         return $this->redirectToRoute('app_user_index');
     }
 
+    #[Route('/{id}/ban', name: 'app_user_ban', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function ban(
+        Request $request, 
+        User $user, 
+        EntityManagerInterface $em,
+        BanNotificationService $banNotificationService
+    ): JsonResponse {
+        // Check if user is authorized (must be admin and not banning themselves)
+        if (!$this->getUser() || !in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+            return $this->json(['success' => false, 'message' => 'Accès non autorisé'], 403);
+        }
+
+        if ($user->getId() === $this->getUser()->getId()) {
+            return $this->json(['success' => false, 'message' => 'Vous ne pouvez pas vous bannir vous-même'], 400);
+        }
+
+        try {
+            $content = $request->getContent();
+            $data = json_decode($content, true);
+            
+            $reason = $data['reason'] ?? 'Aucune raison spécifiée';
+
+            $user->setIsBanned(true);
+            $user->setBanReason($reason);
+            $user->setBannedAt(new \DateTime('now'));
+            
+            $em->flush();
+
+            // Send ban notification email
+            $banNotificationService->sendBanNotification($user, $this->getUser(), $reason);
+
+            return $this->json([
+                'success' => true,
+                'message' => 'Utilisateur banni avec succès. Un email de notification a été envoyé.',
+                'user' => [
+                    'id' => $user->getId(),
+                    'isBanned' => $user->isBanned(),
+                    'bannedAt' => $user->getBannedAt()?->format('d/m/Y H:i'),
+                    'banReason' => $user->getBanReason()
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Erreur lors du bannissement: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    #[Route('/{id}/unban', name: 'app_user_unban', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function unban(
+        Request $request, 
+        User $user, 
+        EntityManagerInterface $em,
+        BanNotificationService $banNotificationService
+    ): JsonResponse {
+        // Check if user is authorized (must be admin)
+        if (!$this->getUser() || !in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+            return $this->json(['success' => false, 'message' => 'Accès non autorisé'], 403);
+        }
+
+        try {
+            $user->setIsBanned(false);
+            $user->setBanReason(null);
+            $user->setBannedAt(null);
+            
+            $em->flush();
+
+            // Send unban notification email
+            $banNotificationService->sendUnbanNotification($user, $this->getUser());
+
+            return $this->json([
+                'success' => true,
+                'message' => 'Utilisateur débanni avec succès. Un email de notification a été envoyé.',
+                'user' => [
+                    'id' => $user->getId(),
+                    'isBanned' => $user->isBanned()
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Erreur lors du débannissement: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    #[Route('/ajax/ban-status', name: 'app_user_ajax_ban_status', methods: ['GET'])]
+    public function ajaxBanStatus(UserRepository $userRepository): JsonResponse
+    {
+        $banned = $userRepository->findBy(['isBanned' => true]);
+        
+        $bannedData = [];
+        foreach ($banned as $user) {
+            $bannedData[] = [
+                'id' => $user->getId(),
+                'name' => $user->getPrenom() . ' ' . $user->getNom(),
+                'email' => $user->getEmail(),
+                'bannedAt' => $user->getBannedAt()?->format('d/m/Y H:i'),
+                'banReason' => $user->getBanReason()
+            ];
+        }
+
+        return $this->json([
+            'success' => true,
+            'bannedUsers' => $bannedData,
+            'count' => count($bannedData)
+        ]);
+    }
+
     #[Route('/dashboard', name: 'app_dashboard', methods: ['GET'])]
 public function dashboard(TacheRepository $tacheRepository): Response
 {
@@ -352,6 +466,164 @@ public function mytasks(TacheRepository $tacheRepository): Response
             ], 400);
         }
     }
+
+    #[Route('/dashboard/profile/picture-upload', name: 'app_profile_picture_upload', methods: ['POST'])]
+    public function uploadProfilePicture(
+        Request $request, 
+        EntityManagerInterface $em, 
+        SluggerInterface $slugger
+    ): JsonResponse {
+        $user = $this->getUser();
+        
+        if (!$user) {
+            return $this->json(['success' => false, 'message' => 'User not authenticated'], 401);
+        }
+
+        try {
+            $profilePicFile = $request->files->get('profilePic');
+            
+            if (!$profilePicFile) {
+                return $this->json(['success' => false, 'message' => 'No file uploaded'], 400);
+            }
+
+            // Validate file size (5MB max)
+            if ($profilePicFile->getSize() > 5 * 1024 * 1024) {
+                return $this->json(['success' => false, 'message' => 'File size exceeds 5MB limit'], 400);
+            }
+
+            // Validate file type
+            $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!in_array($profilePicFile->getMimeType(), $allowedMimes)) {
+                return $this->json(['success' => false, 'message' => 'Invalid file type. Allowed: JPG, PNG, GIF, WebP'], 400);
+            }
+
+            // Create unique filename
+            $originalFilename = pathinfo($profilePicFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = $slugger->slug($originalFilename);
+            $newFilename = $safeFilename . '-' . uniqid() . '.' . $profilePicFile->guessExtension();
+
+            // Upload the file
+            try {
+                $uploadDir = $this->getParameter('kernel.project_dir') . '/public/uploads/profile_pics';
+                
+                // Create directory if it doesn't exist
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+
+                $profilePicFile->move($uploadDir, $newFilename);
+            } catch (FileException $e) {
+                return $this->json(['success' => false, 'message' => 'Failed to upload file'], 500);
+            }
+
+            // Delete old profile picture if it exists
+            if ($user->getProfilePic()) {
+                $oldFile = $this->getParameter('kernel.project_dir') . '/public/uploads/profile_pics/' . $user->getProfilePic();
+                if (file_exists($oldFile)) {
+                    unlink($oldFile);
+                }
+            }
+
+            // Update user profile picture
+            $user->setProfilePic($newFilename);
+            $em->flush();
+
+            return $this->json([
+                'success' => true,
+                'message' => 'Profile picture uploaded successfully!',
+                'filename' => $newFilename,
+                'url' => '/uploads/profile_pics/' . $newFilename
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Error uploading profile picture: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    #[Route('/dashboard/profile/change-password', name: 'app_change_password', methods: ['POST'])]
+    public function changePassword(
+        Request $request, 
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $passwordHasher
+    ): JsonResponse {
+        $user = $this->getUser();
+        
+        if (!$user) {
+            return $this->json(['success' => false, 'message' => 'User not authenticated'], 401);
+        }
+
+        try {
+            $content = $request->getContent();
+            $data = json_decode($content, true);
+
+            if (!$data) {
+                return $this->json(['success' => false, 'message' => 'Invalid JSON data'], 400);
+            }
+
+            $currentPassword = $data['currentPassword'] ?? '';
+            $newPassword = $data['newPassword'] ?? '';
+
+            // Validate current password
+            if (!$passwordHasher->isPasswordValid($user, $currentPassword)) {
+                return $this->json(['success' => false, 'message' => 'Current password is incorrect'], 401);
+            }
+
+            // Validate new password
+            if (empty($newPassword) || strlen($newPassword) < 8) {
+                return $this->json(['success' => false, 'message' => 'New password must be at least 8 characters'], 400);
+            }
+
+            // Check if new password is same as current
+            if ($passwordHasher->isPasswordValid($user, $newPassword)) {
+                return $this->json(['success' => false, 'message' => 'New password must be different from current password'], 400);
+            }
+
+            // Validate password strength
+            $strength = $this->validatePasswordStrength($newPassword);
+            if ($strength < 3) {
+                return $this->json([
+                    'success' => false, 
+                    'message' => 'Password is too weak. Use uppercase letters, numbers, and special characters'
+                ], 400);
+            }
+
+            // Hash and update password
+            $hashedPassword = $passwordHasher->hashPassword($user, $newPassword);
+            $user->setPassword($hashedPassword);
+            
+            $em->flush();
+
+            return $this->json([
+                'success' => true,
+                'message' => 'Password changed successfully!'
+            ]);
+        } catch (\Exception $e) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Error changing password: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Validate password strength
+     * Returns number of criteria met (0-5)
+     */
+    private function validatePasswordStrength(string $password): int {
+        $strength = 0;
+        
+        if (strlen($password) >= 8) $strength++;
+        if (strlen($password) >= 12) $strength++;
+        if (preg_match('/[A-Z]/', $password)) $strength++;
+        if (preg_match('/[a-z]/', $password)) $strength++;
+        if (preg_match('/[0-9]/', $password)) $strength++;
+        if (preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)) $strength++;
+        
+        return min($strength, 6);
+    }
+
 #[Route('/dashboard/task/add', name: 'app_task_add', methods: ['GET', 'POST'])]
 public function addTask(Request $request, EntityManagerInterface $em): Response
 {

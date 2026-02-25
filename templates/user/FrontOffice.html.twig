@@ -283,6 +283,12 @@
             margin-bottom: 40px;
         }
 
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
         .header-content h1 {
             font-size: 36px;
             font-weight: 800;
@@ -806,12 +812,21 @@
                     <h1>Mes Tâches</h1>
                     <p>Gérez et suivez toutes vos tâches académiques</p>
                 </div>
-                <a href="{{ path('app_tache_new') }}" class="btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 5v14M5 12h14"/>
-                    </svg>
-                    Nouvelle Tâche
-                </a>
+                <div class="header-actions">
+                    <a href="{{ path('app_payment_packs') }}" class="btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="5" width="20" height="14" rx="2"/>
+                            <line x1="2" y1="10" x2="22" y2="10"/>
+                        </svg>
+                        Packs & Paiement
+                    </a>
+                    <a href="{{ path('app_tache_new') }}" class="btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                        Nouvelle Tâche
+                    </a>
+                </div>
             </header>
 
             {% set totalTasks = tasks|length %}

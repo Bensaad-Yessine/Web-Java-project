@@ -20,103 +20,273 @@
             box-shadow: 0 10px 40px 0 rgba(0,0,0,0.1);
             border: none;
         }
-        /* FIXED: Input fields with better visibility */
-        .form-control {
+        
+        /* FIXED: Input fields with ALWAYS visible text */
+        .form-control, .form-select {
             border: 2px solid #667eea;
             border-radius: 8px;
             padding: 12px 15px;
             height: 48px;
-            background-color: #ffffff;
-            color: #333;
+            background-color: #ffffff !important;
+            color: #2c3e50 !important;
             font-size: 15px;
             font-weight: 500;
+            -webkit-text-fill-color: #2c3e50 !important;
+            opacity: 1 !important;
         }
-        .form-control:focus {
+        
+        .form-control:focus, .form-select:focus {
             border-color: #764ba2;
             box-shadow: 0 0 0 0.3rem rgba(102, 126, 234, 0.3);
-            background-color: #fff;
+            background-color: #fff !important;
+            color: #2c3e50 !important;
+            -webkit-text-fill-color: #2c3e50 !important;
         }
-        /* FIXED: Date input styling */
+        
+        /* Ensure typed text is ALWAYS visible */
+        .form-control::placeholder {
+            color: #999 !important;
+            opacity: 1;
+            -webkit-text-fill-color: #999 !important;
+        }
+        
+        /* Fix autocomplete background */
+        .form-control:-webkit-autofill,
+        .form-control:-webkit-autofill:hover,
+        .form-control:-webkit-autofill:focus {
+            -webkit-text-fill-color: #2c3e50 !important;
+            -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+            background-color: #ffffff !important;
+            color: #2c3e50 !important;
+        }
+        
+        /* FIXED: Date input with CLEAR visible text */
         input[type="date"] {
-            color: #333;
-            font-weight: 500;
-            background-color: #fff;
+            color: #2c3e50 !important;
+            font-weight: 600 !important;
+            background-color: #fff !important;
+            position: relative;
+            -webkit-text-fill-color: #2c3e50 !important;
+            opacity: 1 !important;
         }
+        
+        input[type="date"]:focus {
+            color: #2c3e50 !important;
+            background-color: #fff !important;
+            -webkit-text-fill-color: #2c3e50 !important;
+        }
+        
+        /* Make date placeholder visible when empty */
+        input[type="date"]:invalid {
+            color: #999 !important;
+            -webkit-text-fill-color: #999 !important;
+        }
+        
+        input[type="date"]:valid {
+            color: #2c3e50 !important;
+            -webkit-text-fill-color: #2c3e50 !important;
+        }
+        
+        /* Fix for all webkit browsers (Chrome, Safari, Edge) */
+        input[type="date"]::-webkit-datetime-edit {
+            color: #2c3e50;
+        }
+        
+        input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+            color: #2c3e50;
+        }
+        
+        input[type="date"]::-webkit-datetime-edit-text {
+            color: #2c3e50;
+        }
+        
+        input[type="date"]::-webkit-datetime-edit-month-field {
+            color: #2c3e50;
+        }
+        
+        input[type="date"]::-webkit-datetime-edit-day-field {
+            color: #2c3e50;
+        }
+        
+        input[type="date"]::-webkit-datetime-edit-year-field {
+            color: #2c3e50;
+        }
+        
+        /* Styled calendar icon */
         input[type="date"]::-webkit-calendar-picker-indicator {
-            background-color: #667eea;
-            padding: 5px;
-            border-radius: 4px;
+            background: transparent;
+            bottom: 0;
+            color: transparent;
             cursor: pointer;
-            color: white;
+            height: auto;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: auto;
+            padding: 0;
+            margin: 0;
         }
-        /* FIXED: Select dropdown */
+        
+        /* Add a custom calendar button */
+        .date-input-wrapper {
+            position: relative;
+            display: block;
+        }
+        
+        .date-input-wrapper::after {
+            content: '📅';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            font-size: 18px;
+        }
+        
+        /* IMPROVED: Modern radio button styling for gender */
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .radio-item {
+            display: inline-flex;
+            align-items: center;
+            background: #f8f9fa;
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .radio-item:hover {
+            background: #e8ecf7;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .radio-item input[type="radio"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        .radio-item span {
+            cursor: pointer;
+            margin: 0;
+            font-weight: 500;
+            color: #495057;
+            font-size: 15px;
+        }
+        
+        /* When radio is checked */
+        .radio-item:has(input[type="radio"]:checked) {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .radio-item:has(input[type="radio"]:checked) span {
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .radio-item:has(input[type="radio"]:checked) input[type="radio"] {
+            filter: brightness(0) invert(1);
+        }
+        
+        /* Select dropdown */
         .form-select {
-            background-color: #fff;
-            color: #333;
+            background-color: #fff !important;
+            color: #2c3e50 !important;
             border: 2px solid #667eea;
+            cursor: pointer;
         }
+        
+        .form-select option {
+            color: #2c3e50 !important;
+            background-color: #fff !important;
+        }
+        
         .form-check-input:checked {
             background-color: #667eea;
             border-color: #667eea;
         }
+        
         .form-check-label {
             cursor: pointer;
         }
-        .radio-group {
-            display: flex;
-            gap: 20px;
-            margin-top: 5px;
-        }
-        .radio-item {
-            display: flex;
-            align-items: center;
-        }
-        .radio-item input[type="radio"] {
-            margin-right: 8px;
-        }
+        
         .form-row {
             display: flex;
             flex-wrap: wrap;
             margin-right: -5px;
             margin-left: -5px;
         }
+        
         .form-group {
             margin-bottom: 1.5rem;
         }
+        
         .col-md-6 {
             flex: 0 0 50%;
             max-width: 50%;
             padding-right: 5px;
             padding-left: 5px;
         }
+        
         @media (max-width: 768px) {
             .col-md-6 {
                 flex: 0 0 100%;
                 max-width: 100%;
             }
+            
+            .radio-group {
+                flex-direction: column;
+            }
+            
+            .radio-item {
+                width: 100%;
+            }
         }
+        
         .btn-primary {
             background-color: #667eea;
             border-color: #667eea;
         }
+        
         .btn-primary:hover {
             background-color: #5a6fd8;
             border-color: #5a6fd8;
         }
+        
         .alert {
             border-radius: 5px;
             margin-bottom: 20px;
         }
+        
         .terms {
             font-size: 12px;
             color: #666;
             text-align: center;
             margin-top: 15px;
         }
+        
         .terms a {
             color: #667eea;
             text-decoration: none;
         }
+        
         .invalid-feedback {
             display: block;
             width: 100%;
@@ -124,24 +294,23 @@
             font-size: 0.875em;
             color: #dc3545;
         }
+        
         .is-invalid {
             border-color: #dc3545;
         }
-        /* Make placeholder visible */
-        .form-control::placeholder {
-            color: #777;
-            opacity: 1;
-        }
+        
         /* Password strength indicator */
         .password-strength {
             margin-top: 10px;
         }
+        
         .password-strength .progress {
             height: 6px;
             border-radius: 3px;
             margin-bottom: 5px;
             background-color: #e9ecef;
         }
+        
         .strength-text {
             font-weight: 600;
         }
@@ -213,11 +382,14 @@
                                     </div>
                                     <div class="form-group col-md-6">
                                         {{ form_label(registrationForm.dateDeNaissance) }}
-                                        {{ form_widget(registrationForm.dateDeNaissance, {
-                                            'attr': {
-                                                'class': 'form-control p_input' ~ (registrationForm.dateDeNaissance.vars.errors|length > 0 ? ' is-invalid' : '')
-                                            }
-                                        }) }}
+                                        <div class="date-input-wrapper">
+                                            {{ form_widget(registrationForm.dateDeNaissance, {
+                                                'attr': {
+                                                    'class': 'form-control p_input' ~ (registrationForm.dateDeNaissance.vars.errors|length > 0 ? ' is-invalid' : ''),
+                                                    'max': 'now'|date('Y-m-d')
+                                                }
+                                            }) }}
+                                        </div>
                                         <div class="invalid-feedback">
                                             {{ form_errors(registrationForm.dateDeNaissance) }}
                                         </div>
@@ -227,7 +399,12 @@
                                 <div class="form-group">
                                     {{ form_label(registrationForm.sexe) }}
                                     <div class="radio-group">
-                                        {{ form_widget(registrationForm.sexe) }}
+                                        {% for choice in registrationForm.sexe %}
+                                            <label class="radio-item">
+                                                {{ form_widget(choice) }}
+                                                <span>{{ choice.vars.label }}</span>
+                                            </label>
+                                        {% endfor %}
                                     </div>
                                     <div class="invalid-feedback">
                                         {{ form_errors(registrationForm.sexe) }}
@@ -344,14 +521,23 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Add Bootstrap classes to radio buttons
-            const radioButtons = document.querySelectorAll('input[type="radio"]');
-            radioButtons.forEach(radio => {
-                radio.classList.add('form-check-input');
-                const label = radio.closest('.form-check');
-                if (label) {
-                    label.classList.add('form-check-inline', 'radio-item');
-                }
+            // Ensure all form inputs have proper styling for visibility
+            const allInputs = document.querySelectorAll('.form-control, .form-select, input[type="date"]');
+            allInputs.forEach(input => {
+                // Force visible styling
+                input.style.color = '#2c3e50';
+                input.style.backgroundColor = '#fff';
+                
+                // Add input event to ensure color stays visible
+                input.addEventListener('input', function() {
+                    this.style.color = '#2c3e50';
+                    this.style.backgroundColor = '#fff';
+                });
+                
+                input.addEventListener('change', function() {
+                    this.style.color = '#2c3e50';
+                    this.style.backgroundColor = '#fff';
+                });
             });
 
             // ============ SYSTÈME DE VALIDATION AVANCÉ ============
@@ -620,22 +806,6 @@
                     }, 10000);
                 });
             }
-
-            // Ensure all inputs have visible styling
-            const allInputs = document.querySelectorAll('.form-control');
-            allInputs.forEach(input => {
-                input.style.backgroundColor = '#fff';
-                input.style.color = '#333';
-                input.style.border = '2px solid #667eea';
-            });
-            
-            // Ensure select elements are visible
-            const selectElements = document.querySelectorAll('select');
-            selectElements.forEach(select => {
-                select.style.backgroundColor = '#fff';
-                select.style.color = '#333';
-                select.style.border = '2px solid #667eea';
-            });
         });
     </script>
 {% endblock %}

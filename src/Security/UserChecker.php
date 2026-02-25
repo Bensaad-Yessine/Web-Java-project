@@ -14,10 +14,17 @@ class UserChecker implements UserCheckerInterface
             return;
         }
 
+        // Check if user is verified
         if (!$user->isVerified()) {
-            // Stop login with a message
             throw new CustomUserMessageAuthenticationException(
-                'Your account is not verified yet. Please check your email.'
+                'Your account is not verified yet. Please check your email and click the verification link.'
+            );
+        }
+        
+        // Check if user is banned
+        if ($user->isBanned()) {
+            throw new CustomUserMessageAuthenticationException(
+                'Your account has been banned. Please contact administration.'
             );
         }
     }
