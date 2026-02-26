@@ -1,0 +1,4 @@
+ID: 5 | Email: islemjebrane123@gmail.com | Role: ROLE_ADMIN | Verified: NULL
+ID: 6 | Email: yassinebensaad567@gmail.com | Role: ROLE_ADMIN | Verified: YES
+ID: 7 | Email: yassinebensaad1s2@gmail.com | Role: ROLE_USER | Verified: YES
+ID: 8 | Email: islemjebrane1@gmail.com | Role: ROLE_ADMIN | Verified: YES

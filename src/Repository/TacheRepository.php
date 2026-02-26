@@ -58,6 +58,20 @@ class TacheRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param \App\Entity\User $user
+     * @return Tache[]
+     */
+    public function findTaskByUser(\App\Entity\User $user): array
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.user = :user')
+            ->setParameter('user', $user)
+            ->orderBy('t.dateDebut', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Optionally: find tasks for a specific student
      * (assuming you later add a ManyToOne relation Tache->Etudiant)
      *

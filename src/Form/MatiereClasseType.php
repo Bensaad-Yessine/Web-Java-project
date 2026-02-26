@@ -21,7 +21,6 @@ class MatiereClasseType extends AbstractType
             ->add('coefficient')
             ->add('chargehoraire')
             ->add('scorecomplexite')
-            ->add('progression')
             ->add('classes', EntityType::class, [
                 'class' => Classe::class,
                 'choice_label' => 'nom',
@@ -29,6 +28,15 @@ class MatiereClasseType extends AbstractType
                 'expanded' => false,
                 'required' => false,
                 'attr' => ['class' => 'form-control']
+            ])
+            ->add('prerequis', EntityType::class, [
+                'class' => MatiereClasse::class,
+                'choice_label' => 'nom',
+                'multiple' => true,
+                'expanded' => false,
+                'required' => false,
+                'attr' => ['class' => 'form-control'],
+                'label' => 'Matières prérequises'
             ]);
 
     }

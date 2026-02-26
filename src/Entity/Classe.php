@@ -33,7 +33,7 @@ class Classe
     /**
      * @var Collection<int, MatiereClasse>
      */
-    #[ORM\ManyToMany(targetEntity: MatiereClasse::class, mappedBy: 'classes')]
+    #[ORM\ManyToMany(targetEntity: MatiereClasse::class, mappedBy: "classes")]
     private Collection $matiereClasses;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
@@ -112,7 +112,7 @@ private ?string $anneeuniversitaire = "2025/2026";
     {
         if (!$this->matiereClasses->contains($matiereClass)) {
             $this->matiereClasses->add($matiereClass);
-            $matiereClass->setClasse($this);
+            $matiereClass->addClass($this);
         }
 
         return $this;
@@ -121,10 +121,7 @@ private ?string $anneeuniversitaire = "2025/2026";
     public function removeMatiereClass(MatiereClasse $matiereClass): static
     {
         if ($this->matiereClasses->removeElement($matiereClass)) {
-            // set the owning side to null (unless already changed)
-            if ($matiereClass->getClasse() === $this) {
-                $matiereClass->setClasse(null);
-            }
+            $matiereClass->removeClass($this);
         }
 
         return $this;

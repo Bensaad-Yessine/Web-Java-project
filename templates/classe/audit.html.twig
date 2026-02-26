@@ -1,4 +1,4 @@
-{% extends 'classe/base_classe.html.twig' %}
+{% extends 'classe/base.html.twig' %}
 
 {% block title %}Audit de Charge - {{ classe.nom }}{% endblock %}
 
@@ -42,8 +42,9 @@
                     <p class="text-muted mb-1">Complexité Totale</p>
                     <small class="text-muted">Seuil : {{ workload.seuilComplexite }}</small>
                     <div class="progress mt-2" style="height:8px">
+                        {% set pctComplexite = workload.totalComplexite / workload.seuilComplexite * 100 %}
                         <div class="progress-bar {% if workload.totalComplexite > workload.seuilComplexite %}bg-danger{% else %}bg-success{% endif %}"
-                             style="width: {{ [workload.totalComplexite / workload.seuilComplexite * 100, 100]|min }}%"></div>
+                             style="width: {{ pctComplexite > 100 ? 100 : pctComplexite }}%"></div>
                     </div>
                 </div>
             </div>
@@ -57,8 +58,9 @@
                     <p class="text-muted mb-1">Charge Horaire Totale</p>
                     <small class="text-muted">Seuil : {{ workload.seuilHeures }}h</small>
                     <div class="progress mt-2" style="height:8px">
+                        {% set pctHeures = workload.totalHeures / workload.seuilHeures * 100 %}
                         <div class="progress-bar {% if workload.totalHeures > workload.seuilHeures %}bg-danger{% else %}bg-success{% endif %}"
-                             style="width: {{ [workload.totalHeures / workload.seuilHeures * 100, 100]|min }}%"></div>
+                             style="width: {{ pctHeures > 100 ? 100 : pctHeures }}%"></div>
                     </div>
                 </div>
             </div>
@@ -72,8 +74,9 @@
                     <p class="text-muted mb-1">Complexité Moyenne</p>
                     <small class="text-muted">Seuil : {{ workload.seuilComplexiteMoyenne }}/10</small>
                     <div class="progress mt-2" style="height:8px">
+                        {% set pctComplexiteMoy = workload.complexiteMoyenne / 10 * 100 %}
                         <div class="progress-bar {% if workload.complexiteMoyenne > workload.seuilComplexiteMoyenne %}bg-danger{% else %}bg-success{% endif %}"
-                             style="width: {{ [workload.complexiteMoyenne / 10 * 100, 100]|min }}%"></div>
+                             style="width: {{ pctComplexiteMoy > 100 ? 100 : pctComplexiteMoy }}%"></div>
                     </div>
                 </div>
             </div>

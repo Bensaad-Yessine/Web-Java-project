@@ -1,0 +1,9 @@
+﻿ ---- ----------------------------- ---------------- 
+  id   email                         role            
+ ---- ----------------------------- ---------------- 
+  5    islemjebrane123@gmail.com     ROLE_ADMIN      
+  6    yassinebensaad567@gmail.com   ["ROLE_ADMIN"]  
+  7    yassinebensaad1s2@gmail.com   []              
+  8    islemjebrane1@gmail.com       ["ROLE_ADMIN"]  
+ ---- ----------------------------- ---------------- 
+

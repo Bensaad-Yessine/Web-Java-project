@@ -19,17 +19,14 @@ final class Version20260207152055 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE user CHANGE roles roles JSON NOT NULL, CHANGE num_tel num_tel VARCHAR(20) DEFAULT NULL, CHANGE profile_pic profile_pic VARCHAR(255) DEFAULT NULL');
-        $this->addSql('ALTER TABLE user RENAME INDEX uniq_identifier_email TO UNIQ_8D93D649E7927C74');
+        // Migration ajustée : on ne touche plus à la colonne "roles" (absente dans ce projet)
+        // On garde uniquement l'ajustement éventuel sur messenger_messages.
         $this->addSql('ALTER TABLE messenger_messages CHANGE delivered_at delivered_at DATETIME DEFAULT NULL');
     }
 
     public function down(Schema $schema): void
     {
-        // this down() migration is auto-generated, please modify it to your needs
+        // Rollback limité à messenger_messages.
         $this->addSql('ALTER TABLE messenger_messages CHANGE delivered_at delivered_at DATETIME DEFAULT \'NULL\'');
-        $this->addSql('ALTER TABLE `user` CHANGE roles roles LONGTEXT NOT NULL COLLATE `utf8mb4_bin`, CHANGE num_tel num_tel VARCHAR(20) DEFAULT \'NULL\', CHANGE profile_pic profile_pic VARCHAR(255) DEFAULT \'NULL\'');
-        $this->addSql('ALTER TABLE `user` RENAME INDEX uniq_8d93d649e7927c74 TO UNIQ_IDENTIFIER_EMAIL');
     }
 }

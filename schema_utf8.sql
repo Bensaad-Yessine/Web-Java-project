@@ -1,0 +1,13 @@
+﻿ALTER TABLE classe CHANGE description description VARCHAR(255) DEFAULT NULL, CHANGE filiere filiere VARCHAR(255) DEFAULT NULL;
+ALTER TABLE groupe_projet CHANGE description description VARCHAR(255) DEFAULT NULL, CHANGE created_at created_at DATETIME DEFAULT NULL, CHANGE statut statut VARCHAR(255) DEFAULT NULL, CHANGE updated_at updated_at DATETIME DEFAULT NULL;
+ALTER TABLE proposition_reunion CHANGE created_at created_at DATETIME DEFAULT NULL, CHANGE updated_at updated_at DATETIME DEFAULT NULL;
+ALTER TABLE objectif_sante CHANGE priorite priorite VARCHAR(10) DEFAULT NULL;
+ALTER TABLE matiere_classe CHANGE nom nom VARCHAR(255) DEFAULT NULL, CHANGE description description VARCHAR(255) DEFAULT NULL;
+ALTER TABLE preference_alerte CHANGE titre titre VARCHAR(255) DEFAULT NULL;
+ALTER TABLE salle CHANGE updated_at updated_at DATETIME DEFAULT NULL;
+ALTER TABLE seance CHANGE created_at created_at DATETIME DEFAULT NULL;
+ALTER TABLE tache ADD description VARCHAR(255) DEFAULT NULL, ADD updated_at DATETIME DEFAULT NULL, DROP origine, CHANGE titre titre VARCHAR(100) NOT NULL, CHANGE duree_estimee duree_estimee INT DEFAULT NULL, CHANGE user_id user_id INT NOT NULL, CHANGE created_at created_at DATETIME DEFAULT NULL, CHANGE date_echeance date_echeance DATE DEFAULT NULL;
+ALTER TABLE user CHANGE nom nom VARCHAR(255) DEFAULT NULL, CHANGE prenom prenom VARCHAR(255) DEFAULT NULL, CHANGE profile_pic profile_pic VARCHAR(255) DEFAULT NULL, CHANGE num_tel num_tel VARCHAR(20) DEFAULT NULL, CHANGE date_de_naissance date_de_naissance DATE DEFAULT NULL, CHANGE sexe sexe VARCHAR(20) DEFAULT NULL, CHANGE created_at created_at DATETIME DEFAULT NULL;
+ALTER TABLE suivi_bien_etre CHANGE score score DOUBLE PRECISION DEFAULT NULL;
+ALTER TABLE suivi_tache CHANGE ancien_statut ancien_statut VARCHAR(50) DEFAULT NULL, CHANGE nouveau_statut nouveau_statut VARCHAR(50) DEFAULT NULL;
+ALTER TABLE messenger_messages CHANGE delivered_at delivered_at DATETIME DEFAULT NULL;

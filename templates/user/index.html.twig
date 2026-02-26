@@ -481,7 +481,7 @@
           </li>
           
           <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{path('app_preference_alerte_index')}}">
               <span class="menu-icon">
                 <i class="mdi mdi-alert-circle-outline"></i>
               </span>
@@ -941,7 +941,7 @@
                                     <div>
                                       <h6 class="mb-0">{{ user.prenom }} {{ user.nom }}</h6>
                                       <small class="text-muted">{{ user.email }}</small>
-                                      {% if user.id == app.user?.id %}
+                                      {% if app.user and user.id == app.user.id %}
                                         <div class="mt-1">
                                           <small class="text-primary">
                                             <i class="mdi mdi-account-circle me-1"></i>C'est vous
@@ -1001,11 +1001,14 @@
                                     <button onclick="exportData()" class="btn btn-outline">
                                         Export My Data
                                     </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    {% endif %}
             </div>
           
             <!-- Footer -->

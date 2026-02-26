@@ -8,6 +8,7 @@ use App\Entity\Tache;
 use App\Entity\Classe;
 use App\Entity\MatiereClasse;
 use App\Form\UserType;
+use App\form\PreferencesOFAlertsType;
 use App\Form\FrontOfficeTacheType;
 use App\Repository\UserRepository;
 use App\Repository\TacheRepository;
@@ -423,7 +424,7 @@ public function showTask(Tache $tache): Response
     } /**
         * Show preferences for the logged-in user
         */
-    #[Route('/FrontOffice/show/{id}', name: 'front_preference_alerte_show', methods: ['GET'])]
+    #[Route('/dashboard/FrontOffice/show/{id}', name: 'front_preference_alerte_show', methods: ['GET'])]
 public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAlerteRepository, UserRepository $userRepository, int $id): Response
 {   
     $preferenceAlerte = $preferenceAlerteRepository->findBy([
@@ -434,7 +435,7 @@ public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAler
         'preference_alertes' => $preferenceAlerte
     ]);
 }
-   #[Route('/FrontOffice/edit/{id}', name: 'front_preference_alerte_edit', methods: ['GET', 'POST'])]
+   #[Route('/dashboard/FrontOffice/edit/{id}', name: 'front_preference_alerte_edit', methods: ['GET', 'POST'])]
     public function editPreferencesbyUser(Request $request, PreferenceAlerteRepository $preferenceAlerteRepository, UserRepository $userRepository, int $id, EntityManagerInterface $entityManager): Response
     {
         $preferenceAlerte = $preferenceAlerteRepository->find($id);
@@ -456,7 +457,7 @@ public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAler
             'preference_alerte' => $preferenceAlerte
         ]);
     }
-    #[Route('/FrontOffice/add/{id}', name: 'front_preference_alerte_add', methods: ['GET', 'POST'])]
+    #[Route('/dashboard/FrontOffice/add/{id}', name: 'front_preference_alerte_add', methods: ['GET', 'POST'])]
     public function addPreferencesbyUser(Request $request, PreferenceAlerteRepository $preferenceAlerteRepository, UserRepository $userRepository, int $id, EntityManagerInterface $entityManager): Response
     {
         $preferenceAlerte = new PreferenceAlerte();
@@ -479,7 +480,7 @@ public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAler
             'form' => $form,
         ]);
     }
-    #[Route('/FrontOffice/detail/{userId}/{preferenceId}', name: "front_preference_alerte_detail", methods: ['GET'])]
+    #[Route('/dashboard/FrontOffice/detail/{userId}/{preferenceId}', name: "front_preference_alerte_detail", methods: ['GET'])]
     public function detail(
         int $userId, 
         int $preferenceId, 
@@ -522,7 +523,7 @@ public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAler
         ]);
     }
 
-    #[Route('/preference/{id}/set-active', name: 'app_preference_set_active', methods: ['POST'])]
+    #[Route('/dashboard/preference/{id}/set-active', name: 'app_preference_set_active', methods: ['POST'])]
     public function setActive(
         int $id,
         PreferenceAlerteRepository $preferenceAlerteRepository,
@@ -551,4 +552,5 @@ public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAler
         // 5. Optional: redirect or return JSON
         return $this->redirectToRoute('front_preference_alerte_show', ['id' => $user->getId()]); 
     }
+
 }

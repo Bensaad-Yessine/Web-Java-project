@@ -38,6 +38,17 @@ class MatiereClasse
     )]
     private ?int $scorecomplexite = null;
 
+    public function getScorecomplexite(): ?int
+    {
+        return $this->scorecomplexite;
+    }
+
+    public function setScorecomplexite(int $scorecomplexite): static
+    {
+        $this->scorecomplexite = $scorecomplexite;
+        return $this;
+    }
+
     /**
      * @var Collection<int, Classe>
      */
@@ -118,14 +129,25 @@ class MatiereClasse
         return $this;
     }
 
-    public function getScorecomplexite(): ?int
+    public function getNom(): ?string
     {
-        return $this->scorecomplexite;
+        return $this->nom;
     }
 
-    public function setScorecomplexite(int $scorecomplexite): static
+    public function setNom(?string $nom): static
     {
-        $this->scorecomplexite = $scorecomplexite;
+        $this->nom = $nom;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
         return $this;
     }
 
@@ -142,44 +164,15 @@ class MatiereClasse
         if (!$this->classes->contains($classe)) {
             $this->classes->add($classe);
         }
-
         return $this;
     }
 
     public function removeClass(Classe $classe): static
     {
         $this->classes->removeElement($classe);
-
         return $this;
     }
 
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(?string $nom): static
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Seance>
-     */
     public function getSeances(): Collection
     {
         return $this->seances;

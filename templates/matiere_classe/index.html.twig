@@ -667,6 +667,7 @@
                               <th>Coefficient</th>
                               <th>Charge</th>
                               <th>Complexité</th>
+                              <th>Quiz</th>
                               <th>Actions</th>
                             </tr>
                           </thead>
@@ -705,6 +706,17 @@
                                     </div>
                                   </div>
                                 </td>
+                                <td>
+                                  <div class="btn-group" role="group">
+                                    <a href="{{ path('app_admin_quiz_matiere', {id: matiere_classe.id}) }}" class="btn btn-success btn-sm btn-icon" title="Gérer le quiz">
+                                      <i class="mdi mdi-help-circle-outline"></i>
+                                    </a>
+                                    <a href="{{ path('app_admin_quiz_matiere_stats', {id: matiere_classe.id}) }}" class="btn btn-outline-info btn-sm btn-icon" title="Voir les résultats du quiz">
+                                      <i class="mdi mdi-chart-bar"></i>
+                                    </a>
+                                  </div>
+                                </td>
+
                                 <td>
                                   <div class="action-buttons">
                                     <a href="{{ path('app_matiere_classe_show', {'id': matiere_classe.id}) }}" class="btn btn-info btn-sm btn-icon" title="Voir">
@@ -858,7 +870,8 @@
                 if (tbody) {
                     tbody.innerHTML = '';
                     if (data.count === 0) {
-                        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-5"><i class="mdi mdi-alert-circle-outline display-4 mb-3 d-block"></i><h4>Aucune matière trouvée</h4><p>Essayez de modifier vos critères de recherche</p></td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-5"><i class="mdi mdi-alert-circle-outline display-4 mb-3 d-block"></i><h4>Aucune matière trouvée</h4><p>Essayez de modifier vos critères de recherche</p></td></tr>';
+
                     } else {
                         data.data.forEach(matiere => {
                         const complexityPercent = (matiere.scorecomplexite / 10 * 100).toFixed(0);
@@ -884,6 +897,12 @@
                             </div>
                             </td>
                             <td>
+                              <div class="btn-group" role="group">
+                                <a href="/admin/quiz/matiere/${matiere.id}" class="btn btn-success btn-sm btn-icon" title="Gérer le quiz"><i class="mdi mdi-help-circle-outline"></i></a>
+                                <a href="/admin/quiz/matiere/${matiere.id}/stats" class="btn btn-outline-info btn-sm btn-icon" title="Voir les résultats du quiz"><i class="mdi mdi-chart-bar"></i></a>
+                              </div>
+                            </td>
+                            <td>
                             <div class="action-buttons">
                                 <a href="${matiere.url}" class="btn btn-info btn-sm btn-icon" title="Voir"><i class="mdi mdi-eye"></i></a>
                                 <a href="${matiere.editUrl}" class="btn btn-warning btn-sm btn-icon" title="Modifier"><i class="mdi mdi-pencil"></i></a>
@@ -893,6 +912,7 @@
                         </tr>`;
                         tbody.innerHTML += row;
                         });
+
                         attachDeleteHandlers();
                     }
                 }

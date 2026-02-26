@@ -1,4 +1,4 @@
-{% extends 'classe/base_classe.html.twig' %}
+{% extends 'classe/base.html.twig' %}
 
 {% block title %}Suggestions de Matières - {{ classe.nom }}{% endblock %}
 
@@ -50,7 +50,13 @@
                             </td>
                             <td class="text-center">{{ matiere.chargehoraire }}h</td>
                             <td class="text-center">{{ matiere.coefficient }}</td>
-                            <td class="text-muted small">{{ matiere.description|default('—')|truncate(60) }}</td>
+                            <td class="text-muted small">
+                                {% if matiere.description is not empty %}
+                                    {{ matiere.description|slice(0, 60) ~ (matiere.description|length > 60 ? '…' : '') }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
                         </tr>
                         {% endfor %}
                     </tbody>

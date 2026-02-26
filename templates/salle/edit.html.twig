@@ -471,6 +471,136 @@
         </ul>
       </nav>
 
+      <!-- Top Navbar -->
+      <nav class="navbar p-0 fixed-top d-flex flex-row">
+        <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+          <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+        </div>
+        <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+          <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+            <span class="mdi mdi-menu"></span>
+          </button>
+          <ul class="navbar-nav w-100">
+            <li class="nav-item w-100">
+              <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                <input type="text" class="form-control" placeholder="Rechercher une salle..." id="searchInput">
+              </form>
+            </li>
+          </ul>
+          <ul class="navbar-nav navbar-nav-right">
+            <li class="nav-item dropdown border-left">
+              <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                <i class="mdi mdi-bell"></i>
+                <span class="count bg-danger">3</span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                <h6 class="p-3 mb-0">Notifications</h6>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item preview-item">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-warning rounded-circle">
+                      <i class="mdi mdi-office-building"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject mb-1">Nouvelle salle</p>
+                    <p class="text-muted ellipsis mb-0"> Salle B-301 ajoutée</p>
+                  </div>
+                </a>
+              </div>
+            </li>
+            
+            <li class="nav-item dropdown">
+              <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                <div class="navbar-profile">
+                  {% if app.user %}
+                    <div class="avatar-container">
+                      {% if app.user.profilePic %}
+                        <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                             alt="{{ app.user.prenom }}" 
+                             class="user-avatar-img">
+                      {% else %}
+                        <div class="user-avatar">
+                          {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                        </div>
+                      {% endif %}
+                      <div class="text-start ms-2">
+                        <p class="mb-0 d-none d-sm-block navbar-profile-name">
+                          {{ app.user.prenom }} {{ app.user.nom }}
+                        </p>
+                        <small class="text-muted d-none d-sm-block">
+                          {% if 'ROLE_ADMIN' in app.user.roles %}
+                            <span class="badge badge-admin">Admin</span>
+                          {% else %}
+                            <span class="badge badge-etudiant">Utilisateur</span>
+                          {% endif %}
+                        </small>
+                      </div>
+                    </div>
+                  {% else %}
+                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                  {% endif %}
+                  <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                </div>
+              </a>
+              <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                <div class="dropdown-header p-3">
+                  {% if app.user %}
+                    <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                    <p class="text-muted mb-0">{{ app.user.email }}</p>
+                    <small class="text-muted">
+                      {% if 'ROLE_ADMIN' in app.user.roles %}
+                        <span class="badge badge-admin">Administrateur</span>
+                      {% else %}
+                        <span class="badge badge-etudiant">Utilisateur</span>
+                      {% endif %}
+                    </small>
+                  {% else %}
+                    <h6 class="mb-0">Non connecté</h6>
+                    <p class="text-muted mb-0">Veuillez vous connecter</p>
+                  {% endif %}
+                </div>
+                <div class="dropdown-divider"></div>
+                {% if app.user %}
+                  <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-primary rounded-circle">
+                        <i class="mdi mdi-account"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Mon profil</p>
+                    </div>
+                  </a>
+                  <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                    <div class="preview-thumbnail">
+                      <div class="preview-icon bg-warning rounded-circle">
+                        <i class="mdi mdi-account-edit"></i>
+                      </div>
+                    </div>
+                    <div class="preview-item-content">
+                      <p class="preview-subject mb-1">Modifier mon profil</p>
+                    </div>
+                  </a>
+                  <div class="dropdown-divider"></div>
+                {% endif %}
+                <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
+                  <div class="preview-thumbnail">
+                    <div class="preview-icon bg-dark rounded-circle">
+                      <i class="mdi mdi-logout text-danger"></i>
+                    </div>
+                  </div>
+                  <div class="preview-item-content">
+                    <p class="preview-subject mb-1">Déconnexion</p>
+                  </div>
+                </a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
         <!-- Content -->
         <div class="main-panel">
           <div class="content-wrapper">

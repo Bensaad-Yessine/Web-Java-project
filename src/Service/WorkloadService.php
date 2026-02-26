@@ -8,10 +8,10 @@ use Symfony\Component\Mime\Email;
 
 class WorkloadService
 {
-    // Seuils configurables
-    private const SEUIL_COMPLEXITE_TOTALE = 50;
-    private const SEUIL_CHARGE_HORAIRE_TOTALE = 300; // heures par semestre
-    private const SEUIL_COMPLEXITE_MOYENNE = 7;
+    // Seuils configurables (abaissés pour déclencher plus facilement l'alerte)
+    private const SEUIL_COMPLEXITE_TOTALE = 20;
+    private const SEUIL_CHARGE_HORAIRE_TOTALE = 100; // heures par semestre
+    private const SEUIL_COMPLEXITE_MOYENNE = 5;
 
     public function __construct(
         private MailerInterface $mailer,
@@ -155,10 +155,7 @@ class WorkloadService
                 <p><small>Cet email a été généré automatiquement par le système de gestion scolaire.</small></p>
             ");
 
-        try {
-            $this->mailer->send($email);
-        } catch (\Exception $e) {
-            // Log silently if mail fails
-        }
+        // En dev, on laisse remonter les erreurs pour voir clairement les problèmes d'envoi
+        $this->mailer->send($email);
     }
 }

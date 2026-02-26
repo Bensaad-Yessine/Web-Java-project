@@ -1,1550 +1,497 @@
-{# templates/user/profile.html.twig #}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESPRIT — User Profile</title>
+    <title>ESPRIT — {{ classe.nom }}</title>
     <style>
         :root {
             --font-size: 16px;
-            --bg: #ffffff;
-            --fg: #111827;
-            
-            --red-50: #fef2f2;
-            --red-100: #fee2e2;
-            --red-200: #fecaca;
-            --red-300: #fca5a5;
-            --red-400: #f87171;
-            --red-500: #ef4444;
-            --red-600: #dc2626;
-            --red-700: #b91c1c;
-            --red-800: #991b1b;
-            --red-900: #7f1d1d;
-            
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
+            --primary-red: #DC2626;
+            --primary-red-dark: #B91C1C;
+            --primary-red-light: #FEE2E2;
+            --primary-gradient: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+            --secondary: #10B981;
+            --secondary-dark: #059669;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
             --gray-700: #374151;
-            --gray-800: #1f2937;
+            --gray-800: #1F2937;
             --gray-900: #111827;
-            
-            --blue-50: #eff6ff;
-            --blue-100: #dbeafe;
-            --blue-200: #bfdbfe;
-            --blue-300: #93c5fd;
-            --blue-400: #60a5fa;
-            --blue-500: #3b82f6;
-            --blue-600: #2563eb;
-            --blue-700: #1d4ed8;
-            --blue-800: #1e40af;
-            --blue-900: #1e3a8a;
-            
-            --purple-50: #faf5ff;
-            --purple-100: #f3e8ff;
-            --purple-200: #e9d5ff;
-            --purple-300: #d8b4fe;
-            --purple-400: #c084fc;
-            --purple-500: #a855f7;
-            --purple-600: #9333ea;
-            --purple-700: #7e22ce;
-            --purple-800: #6b21a8;
-            --purple-900: #581c87;
-            
-            --green-50: #f0fdf4;
-            --green-100: #dcfce7;
-            --green-200: #bbf7d0;
-            --green-300: #86efac;
-            --green-400: #4ade80;
-            --green-500: #22c55e;
-            --green-600: #16a34a;
-            --green-700: #15803d;
-            --green-800: #166534;
-            --green-900: #14532d;
-            
-            --orange-50: #fff7ed;
-            --orange-100: #ffedd5;
-            --orange-200: #fed7aa;
-            --orange-300: #fdba74;
-            --orange-400: #fb923c;
-            --orange-500: #f97316;
-            --orange-600: #ea580c;
-            --orange-700: #c2410c;
-            --orange-800: #9a3412;
-            --orange-900: #7c2d12;
-            
-            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
-            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
-            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
-            
-            --radius-sm: 8px;
-            --radius: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
-            --radius-2xl: 24px;
-            
-            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+            --radius-lg: 12px;
+            --radius-xl: 16px;
             --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { 
-            box-sizing: border-box; 
-            margin: 0;
-            padding: 0;
-        }
-        
-        html { 
-            font-size: var(--font-size); 
-            scroll-behavior: smooth;
-        }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: var(--font-size); scroll-behavior: smooth; }
         body {
             margin: 0;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
-            background: linear-gradient(135deg, var(--gray-50) 0%, #ffffff 30%, var(--gray-50) 100%);
-            color: var(--fg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+            color: var(--gray-900);
             min-height: 100vh;
             line-height: 1.6;
-            font-feature-settings: 'ss01', 'ss02', 'cv01', 'cv02';
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Main Layout with Glassmorphism */
-        .app-shell {
-            display: flex;
-            min-height: 100vh;
-            background: linear-gradient(135deg, 
-                rgba(249, 250, 251, 0.95) 0%, 
-                rgba(255, 255, 255, 0.97) 50%, 
-                rgba(249, 250, 251, 0.95) 100%);
-            backdrop-filter: blur(20px);
-        }
+        .app-shell { display: flex; min-height: 100vh; }
 
-        /* Premium Sidebar with Glass Effect */
         .sidebar {
-            width: 300px;
-            background: linear-gradient(165deg, 
-                rgba(255, 255, 255, 0.92) 0%, 
-                rgba(249, 250, 251, 0.88) 100%);
-            border-right: 1px solid rgba(229, 231, 235, 0.6);
-            padding: 28px 24px;
+            width: 280px;
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            padding: 24px;
             display: flex;
             flex-direction: column;
             position: sticky;
             top: 0;
             height: 100vh;
             overflow-y: auto;
-            box-shadow: var(--shadow-md);
-            backdrop-filter: blur(10px);
-            z-index: 10;
+            box-shadow: 2px 0 20px rgba(220, 38, 38, 0.05);
         }
 
-        /* Premium Brand Section */
         .brand {
-            margin-bottom: 36px;
-            padding-bottom: 28px;
-            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
-            position: relative;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--gray-200);
         }
 
-        .brand::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 60px;
-            height: 2px;
-            background: linear-gradient(90deg, var(--red-500), var(--red-300));
-            border-radius: 2px;
-        }
-
-        .brand-row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
+        .brand-row { display: flex; align-items: center; gap: 12px; }
         .brand-icon {
-            background: linear-gradient(135deg, var(--red-500) 0%, var(--red-700) 100%);
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius-lg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 800;
-            font-size: 20px;
+            background: var(--primary-gradient);
+            width: 44px; height: 44px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 800; font-size: 18px;
             box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
-            transition: all var(--transition);
         }
 
-        .brand-icon:hover {
-            transform: rotate(-5deg) scale(1.05);
-            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.35);
-        }
+        .brand-title { font-weight: 800; font-size: 20px; color: var(--primary-red); }
 
-        .brand-title {
-            font-weight: 800;
-            font-size: 20px;
-            line-height: 1;
-            color: var(--gray-900);
-            letter-spacing: -0.5px;
-        }
-
-        .brand-sub {
-            font-size: 13px;
-            color: var(--gray-500);
-            margin-top: 6px;
-            font-weight: 500;
-            letter-spacing: 0.3px;
-        }
-
-        /* Premium User Session Card */
         .user-session {
-            margin-top: 28px;
-            padding: 24px;
-            background: linear-gradient(145deg, 
-                rgba(255, 255, 255, 0.95) 0%, 
-                rgba(249, 250, 251, 0.9) 100%);
-            border-radius: var(--radius-xl);
-            border: 1px solid rgba(229, 231, 235, 0.5);
-            box-shadow: var(--shadow-sm);
+            margin-top: 24px;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
             position: relative;
-            overflow: hidden;
-            transition: all var(--transition);
         }
 
         .user-session::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
-            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-        }
-
-        .user-session:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-            border-color: rgba(229, 231, 235, 0.8);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 20px;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: var(--primary-gradient); border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         }
 
         .avatar {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 20px;
-            flex-shrink: 0;
-            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.2);
-            border: 3px solid white;
-            transition: all var(--transition);
+            width: 48px; height: 48px; border-radius: 50%;
+            background: var(--primary-gradient); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 18px; border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
         }
 
-        .avatar:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3);
-        }
-
-        .user-details h3 {
-            margin: 0;
-            font-size: 16px;
-            font-weight: 700;
-            color: #1f2937;
-            line-height: 1.4;
-        }
-
-        .user-details p {
-            margin: 6px 0 0;
-            font-size: 14px;
-            color: #4b5563;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .user-details p::before {
-            content: '📚';
-            font-size: 12px;
-        }
-
-        .session-info {
-            font-size: 13px;
-            color: #4b5563;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
-            font-weight: 500;
-        }
-
-        .session-info div {
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-            transition: all var(--transition-fast);
-        }
-
-        .session-info div:hover {
-            background: rgba(249, 250, 251, 0.5);
-            border-radius: var(--radius-sm);
-            padding: 6px 8px;
-        }
-
-        .session-info strong {
-            color: #1f2937;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* Premium Navigation */
-        .nav {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-top: 32px;
-        }
-
+        .nav { display: flex; flex-direction: column; gap: 4px; margin-top: 24px; }
         .nav a {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px 20px;
-            border-radius: var(--radius-lg);
-            color: #374151;
-            text-decoration: none;
-            transition: all var(--transition);
-            font-weight: 500;
-            position: relative;
-            overflow: hidden;
-            font-size: 15px;
+            display: flex; align-items: center; gap: 12px; padding: 14px 16px;
+            border-radius: var(--radius-lg); color: var(--gray-700);
+            text-decoration: none; transition: all var(--transition);
+            font-weight: 500; font-size: 14px;
+        }
+        .nav a:hover, .nav a.active {
+            background: var(--primary-red-light); color: var(--primary-red);
+        }
+        .nav a.active { font-weight: 600; border-left: 3px solid var(--primary-red); }
+
+        .nav-section-title {
+            font-size: 12px; font-weight: 600; color: var(--gray-500);
+            text-transform: uppercase; letter-spacing: 0.5px; margin: 24px 0 8px 16px;
         }
 
-        .nav a:hover {
-            background: linear-gradient(90deg, 
-                rgba(254, 242, 242, 0.7) 0%, 
-                rgba(254, 242, 242, 0.4) 100%);
-            color: var(--red-600);
-            transform: translateX(8px);
-            box-shadow: var(--shadow-xs);
+        .main { flex: 1; padding: 32px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+        .header { margin-bottom: 40px; }
+        .header-content h1 {
+            font-size: 36px; font-weight: 800;
+            background: var(--primary-gradient); -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .nav a.active {
-            background: linear-gradient(90deg, 
-                rgba(254, 242, 242, 0.9) 0%, 
-                rgba(254, 242, 242, 0.6) 100%);
-            color: var(--red-600);
-            font-weight: 600;
-            border-left: 4px solid var(--red-500);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .nav a.active::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 4px;
-            background: linear-gradient(180deg, var(--red-500), var(--orange-500));
-            border-radius: 0 var(--radius) var(--radius) 0;
-        }
-
-        .nav a .icon {
-            width: 20px;
-            height: 20px;
-            flex-shrink: 0;
-            stroke-width: 2;
-            transition: all var(--transition);
-        }
-
-        .nav a:hover .icon {
-            transform: scale(1.1);
-        }
-
-        /* Premium Main Content */
-        .main {
-            flex: 1;
-            padding: 40px;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        /* Premium Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 48px;
-            padding-bottom: 28px;
-            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
-            position: relative;
-        }
-
-        .header::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 120px;
-            height: 2px;
-            background: linear-gradient(90deg, var(--red-500), transparent);
-            border-radius: 2px;
-        }
-
-        .h1 {
-            font-size: 42px;
-            font-weight: 800;
-            margin: 0;
-            color: #111827;
-            letter-spacing: -0.5px;
-            line-height: 1.2;
-        }
-
-        .muted {
-            color: #6b7280;
-            margin-top: 10px;
-            font-size: 16px;
-            font-weight: 500;
-            max-width: 600px;
-            line-height: 1.6;
-        }
-
-        .session-display {
-            text-align: right;
-            padding: 16px 24px;
-            background: linear-gradient(135deg, 
-                rgba(255, 255, 255, 0.9) 0%, 
-                rgba(249, 250, 251, 0.8) 100%);
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(229, 231, 235, 0.6);
-            box-shadow: var(--shadow-sm);
-            transition: all var(--transition);
-        }
-
-        .session-display:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .session-display div:first-child {
-            font-size: 12px;
-            color: var(--gray-500);
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-
-        .session-display div:last-child {
-            font-weight: 700;
-            font-size: 15px;
-            color: #1f2937;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 8px;
-        }
-
-        .session-display div:last-child::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: var(--green-500);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Premium Profile Container */
-        .profile-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .profile-grid {
+        /* Feature Cards */
+        .feature-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 36px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
         }
 
-        @media (max-width: 1200px) {
-            .profile-grid {
-                gap: 28px;
-            }
+        .feature-card {
+            background: white; border-radius: var(--radius-xl);
+            padding: 24px; border: 1px solid var(--gray-200);
+            transition: all var(--transition); text-decoration: none; color: inherit;
         }
 
-        @media (max-width: 1024px) {
-            .profile-grid {
-                grid-template-columns: 1fr;
-                gap: 32px;
-            }
+        .feature-card:hover {
+            transform: translateY(-4px); box-shadow: var(--shadow-lg);
+            border-color: var(--primary-red-light);
         }
 
-        /* Premium Card Design */
-        .card {
-            background: linear-gradient(145deg, 
-                rgba(255, 255, 255, 0.95) 0%, 
-                rgba(249, 250, 251, 0.9) 100%);
-            border: 1px solid rgba(229, 231, 235, 0.6);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-md);
-            margin-bottom: 28px;
-            overflow: hidden;
-            transition: all var(--transition);
-            position: relative;
+        .feature-icon {
+            width: 48px; height: 48px; border-radius: 12px;
+            background: var(--gray-50); display: flex; align-items: center; justify-content: center;
+            font-size: 24px; margin-bottom: 16px;
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
-            opacity: 0;
-            transition: opacity var(--transition);
-        }
-
-        .card:hover::before {
-            opacity: 1;
-        }
-
-        .card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-xl);
-            border-color: rgba(229, 231, 235, 0.8);
-        }
-
-        .card-header {
-            padding: 28px 28px 0;
-        }
-
-        .card-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin: 0;
-            color: #111827;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        .card-title::before {
-            content: '';
-            width: 6px;
-            height: 24px;
-            background: linear-gradient(180deg, var(--red-500), var(--orange-500));
-            border-radius: 3px;
-            flex-shrink: 0;
-        }
-
-        .card-content {
-            padding: 28px;
-        }
-
-        /* Premium Form Design */
-        .form-group {
-            margin-bottom: 24px;
-            position: relative;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #374151;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .form-group label::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            background: var(--red-400);
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 16px 20px;
-            border: 2px solid #d1d5db;
-            border-radius: var(--radius-lg);
-            background: #ffffff;
-            color: #111827;
-            font-size: 15px;
-            font-weight: 500;
-            transition: all var(--transition);
-            font-family: inherit;
-        }
-
-        .form-control:hover {
-            border-color: #9ca3af;
-            background: #ffffff;
-        }
-
-        .form-control:focus {
-            border-color: var(--red-500);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
-            outline: none;
-            transform: translateY(-1px);
-        }
-
-        /* Premium Buttons */
-        .btn {
-            appearance: none;
-            border: 2px solid transparent;
-            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
-            color: white;
-            border-radius: var(--radius-lg);
-            padding: 16px 28px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            transition: all var(--transition);
-            font-size: 15px;
-            letter-spacing: 0.3px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                transparent, 
-                rgba(255, 255, 255, 0.2), 
-                transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        .btn:hover {
-            background: linear-gradient(135deg, var(--red-600) 0%, var(--orange-600) 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: #374151;
-            border-color: #d1d5db;
-            font-weight: 500;
-            box-shadow: none;
-        }
-
-        .btn-outline:hover {
-            background: #f3f4f6;
-            color: #111827;
-            border-color: #9ca3af;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .btn-profile {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-profile:hover {
-            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-            box-shadow: 0 8px 28px rgba(102, 126, 234, 0.4);
-            transform: translateY(-3px);
-        }
-
-        .btn-profile:active {
-            transform: translateY(-1px);
-        }
-
-        .quick-actions .btn-green {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
-        }
-
-        .quick-actions .btn-green:hover {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-            box-shadow: 0 8px 28px rgba(16, 185, 129, 0.4);
-            transform: translateY(-3px);
-        }
-
-        .btn-blue {
-            background: linear-gradient(135deg, var(--blue-500) 0%, var(--blue-700) 100%);
-            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.2);
-        }
-
-        .btn-blue:hover {
-            background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-800) 100%);
-            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
-            transform: translateY(-3px);
-        }
-
-        .btn-green {
-            background: linear-gradient(135deg, var(--green-500) 0%, var(--green-700) 100%);
-            box-shadow: 0 4px 16px rgba(22, 163, 74, 0.2);
-        }
-
-        .btn-green:hover {
-            background: linear-gradient(135deg, var(--green-600) 0%, var(--green-800) 100%);
-            box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3);
-        }
-
-        /* Premium Task List */
-        .task-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .task-item {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            padding: 20px;
-            background: linear-gradient(145deg, 
-                rgba(255, 255, 255, 0.9) 0%, 
-                rgba(249, 250, 251, 0.8) 100%);
-            border: 1px solid rgba(229, 231, 235, 0.6);
-            border-radius: var(--radius-lg);
-            transition: all var(--transition);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .task-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(180deg, var(--red-500), transparent);
-            opacity: 0;
-            transition: opacity var(--transition);
-        }
-
-        .task-item:hover::before {
-            opacity: 1;
-        }
-
-        .task-item:hover {
-            border-color: rgba(229, 231, 235, 0.8);
-            box-shadow: var(--shadow-lg);
-            transform: translateX(8px) translateY(-2px);
-        }
-
-        .task-item.completed {
-            opacity: 0.85;
-            background: linear-gradient(145deg, 
-                rgba(243, 244, 246, 0.8) 0%, 
-                rgba(249, 250, 251, 0.7) 100%);
-        }
-
-        .task-checkbox {
-            width: 22px;
-            height: 22px;
-            border: 2px solid var(--gray-300);
-            border-radius: 8px;
-            cursor: pointer;
-            flex-shrink: 0;
-            transition: all var(--transition);
-            position: relative;
-            background: white;
-        }
-
-        .task-checkbox:hover {
-            border-color: var(--green-500);
-            transform: scale(1.1);
-        }
-
-        .task-checkbox.checked {
-            background: linear-gradient(135deg, var(--green-500) 0%, var(--green-700) 100%);
-            border-color: var(--green-600);
-            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
-        }
-
-        .task-checkbox.checked::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .task-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .task-title {
-            font-weight: 600;
-            font-size: 16px;
-            margin: 0 0 8px 0;
-            color: #111827;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 1.4;
-        }
-
-        .task-title.completed {
-            text-decoration: line-through;
-            color: var(--gray-500);
-        }
-
-        .task-meta {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 13px;
-            color: #6b7280;
-            flex-wrap: wrap;
-        }
-
-        /* Premium Badge Design */
-        .task-type {
-            padding: 6px 12px;
-            border-radius: 24px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            box-shadow: var(--shadow-xs);
-            border: 1px solid transparent;
-            transition: all var(--transition-fast);
-        }
-
-        .task-type:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .type-course { 
-            background: linear-gradient(135deg, var(--blue-100) 0%, var(--blue-50) 100%); 
-            color: var(--blue-700); 
-            border-color: var(--blue-200);
-        }
-        .type-exam { 
-            background: linear-gradient(135deg, var(--red-100) 0%, var(--red-50) 100%); 
-            color: var(--red-700); 
-            border-color: var(--red-200);
-        }
-        .type-meeting { 
-            background: linear-gradient(135deg, var(--orange-100) 0%, var(--orange-50) 100%); 
-            color: var(--orange-700); 
-            border-color: var(--orange-200);
-        }
-        .type-personal { 
-            background: linear-gradient(135deg, var(--gray-100) 0%, var(--gray-50) 100%); 
-            color: var(--gray-700); 
-            border-color: var(--gray-200);
-        }
-
-        .task-priority {
-            padding: 6px 12px;
-            border-radius: 24px;
-            font-size: 11px;
-            font-weight: 700;
-            color: white;
-            box-shadow: var(--shadow-xs);
-            letter-spacing: 0.4px;
-            transition: all var(--transition-fast);
-        }
-
-        .task-priority:hover {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .priority-high { 
-            background: linear-gradient(135deg, var(--red-500) 0%, var(--red-700) 100%); 
-        }
-        .priority-medium { 
-            background: linear-gradient(135deg, var(--orange-500) 0%, var(--orange-700) 100%); 
-        }
-        .priority-low { 
-            background: linear-gradient(135deg, var(--green-500) 0%, var(--green-700) 100%); 
-        }
+        .feature-card h3 { font-size: 18px; margin-bottom: 8px; color: var(--gray-900); }
+        .feature-card p { font-size: 14px; color: var(--gray-500); line-height: 1.5; }
 
-        /* Premium User Stats */
-        .user-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
-            margin-top: 24px;
+        /* Tables and Lists */
+        .section-container {
+            background: white; border-radius: var(--radius-xl);
+            border: 1px solid var(--gray-200); box-shadow: var(--shadow-md);
+            margin-bottom: 32px; overflow: hidden;
         }
 
-        .stat-box {
-            text-align: center;
-            padding: 24px 18px;
-            background: linear-gradient(145deg, 
-                rgba(255, 255, 255, 0.95) 0%, 
-                rgba(249, 250, 251, 0.9) 100%);
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(229, 231, 235, 0.6);
-            transition: all var(--transition);
-            position: relative;
-            overflow: hidden;
+        .section-header {
+            padding: 24px; background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+            display: flex; justify-content: space-between; align-items: center;
         }
 
-        .stat-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
-            opacity: 0;
-            transition: opacity var(--transition);
-        }
-
-        .stat-box:hover::before {
-            opacity: 1;
-        }
-
-        .stat-box:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-            border-color: rgba(229, 231, 235, 0.8);
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: 800;
-            margin-bottom: 8px;
-            color: #111827;
-            line-height: 1;
-        }
-
-        .stat-label {
-            font-size: 13px;
-            color: #6b7280;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Quick Actions Enhancement */
-        .quick-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .quick-actions .btn {
-            width: 100%;
-            justify-content: flex-start;
-            padding: 18px 24px;
-            border-radius: var(--radius-lg);
-            text-align: left;
-            font-size: 15px;
-        }
-
-        /* Account Settings Enhancement */
-        .account-settings {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-
-        .account-settings .btn-outline {
-            width: 100%;
-            justify-content: flex-start;
-            padding: 16px 24px;
-            border-radius: var(--radius-lg);
-            font-weight: 500;
-            text-align: left;
-            font-size: 15px;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 1024px) {
-            .app-shell {
-                flex-direction: column;
-            }
-            
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                padding: 24px;
-                border-right: none;
-                border-bottom: 1px solid rgba(229, 231, 235, 0.6);
-            }
-            
-            .main {
-                padding: 32px;
-            }
-            
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 20px;
-            }
-            
-            .h1 {
-                font-size: 36px;
-            }
-            
-            .session-display {
-                width: 100%;
-                text-align: left;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main {
-                padding: 24px;
-            }
-            
-            .card-content {
-                padding: 24px;
-            }
-            
-            .user-stats {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-            
-            .task-meta {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .main {
-                padding: 20px;
-            }
-            
-            .card-header,
-            .card-content {
-                padding: 20px;
-            }
-            
-            .form-control {
-                padding: 14px 16px;
-            }
-            
-            .btn {
-                padding: 14px 20px;
-            }
-        }
-
-        /* Loading Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card {
-            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(249, 250, 251, 0.8);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, var(--red-300), var(--orange-300));
-            border-radius: 10px;
-            border: 2px solid rgba(249, 250, 251, 0.8);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, var(--red-400), var(--orange-400));
-        }
+        .section-title { font-size: 20px; font-weight: 700; color: var(--gray-900); }
 
-        /* Focus States */
-        *:focus-visible {
-            outline: 2px solid var(--red-500);
-            outline-offset: 2px;
-            border-radius: var(--radius-sm);
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th {
+            text-align: left; padding: 16px; color: var(--gray-500);
+            font-size: 13px; text-transform: uppercase; border-bottom: 1px solid var(--gray-100);
         }
+        .data-table td { padding: 16px; border-bottom: 1px solid var(--gray-50); font-size: 14px; }
 
-        /* Print Styles */
-        @media print {
-            .sidebar,
-            .btn,
-            .session-display {
-                display: none;
-            }
-            
-            .main {
-                width: 100%;
-                padding: 20px;
-            }
+        .badge {
+            padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
         }
+        .badge-red { background: var(--primary-red-light); color: var(--primary-red); }
+        .badge-blue { background: #DBEAFE; color: #1E40AF; }
+        .badge-green { background: #D1FAE5; color: #065F46; }
 
-        /* Dark Mode Support (Optional) */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: #0f172a;
-                --fg: #f1f5f9;
-                
-                --gray-50: #1e293b;
-                --gray-100: #334155;
-                --gray-200: #475569;
-                --gray-300: #64748b;
-                --gray-400: #94a3b8;
-                --gray-500: #cbd5e1;
-                --gray-600: #e2e8f0;
-                --gray-700: #f1f5f9;
-                --gray-800: #f8fafc;
-                --gray-900: #ffffff;
-            }
+        .avatar-sm {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--primary-red-light); color: var(--primary-red);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 12px;
         }
     </style>
 </head>
 <body>
     <div class="app-shell">
-        <!-- Sidebar with session info -->
         <aside class="sidebar">
             <div class="brand">
                 <div class="brand-row">
                     <div class="brand-icon">ES</div>
                     <div>
                         <div class="brand-title">ESPRIT</div>
-                        <div class="brand-sub">Student Assistant</div>
+                        <div class="brand-sub">Assistant Étudiant</div>
                     </div>
                 </div>
             </div>
 
-            <!-- User session information -->
             <div class="user-session">
                 <div class="user-info">
-                    <div class="avatar">
-                        {{ app.user ? app.user.initials|default(app.user.nom|first ~ app.user.prenom|first) : 'JD' }}
-                    </div>
-                    <div class="user-details">
-                        <h3>{{ app.user ? app.user.nom ~ ' ' ~ app.user.prenom : 'John Doe' }}</h3>
-                        <p>{{ app.user ? app.user.classe.nom|default('4SE-G1') : '4SE-G1' }}</p>
-                    </div>
+                    {% if app.user %}
+                        <div class="avatar">{{ app.user.nom|first }}{{ app.user.prenom|first }}</div>
+                        <div class="user-details">
+                            <h3>{{ app.user.nom }} {{ app.user.prenom }}</h3>
+                            <p>🏫 {{ classe.nom }}</p>
+                        </div>
+                    {% else %}
+                        <div class="avatar">?</div>
+                        <div class="user-details">
+                            <h3>Invité</h3>
+                            <p>🏫 {{ classe.nom }}</p>
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="session-info">
-                    <div><strong>Email:</strong> {{ app.user ? app.user.email : 'student@esprit.tn' }}</div>
-                    <div><strong>Role:</strong> {{ app.user ? app.user.roles|first|replace({'ROLE_': ''})|capitalize : 'Student' }}</div>
-                    <div><strong>Member since:</strong> {{ app.user ? app.user.createdAt|date('M Y') : 'Jan 2024' }}</div>
+                    {% if app.user %}
+                        <div><strong>Email:</strong> {{ app.user.email }}</div>
+                    {% else %}
+                        <div><strong>Email:</strong> —</div>
+                    {% endif %}
+                    <div><strong>Niveau:</strong> {{ classe.niveau }}</div>
                 </div>
             </div>
 
-            <!-- Navigation -->
             <nav class="nav">
-                <a href="#">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <div class="nav-section-title">Général</div>
+                <a href="{{ path('app_dashboard') }}">
+                    <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/>
                     </svg>
-                    Dashboard
+                    Tableau de bord
                 </a>
-                <a href="#">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+
+                <div class="nav-section-title">Académique</div>
+                <a href="{{ path('app_classe_front_show', {'id': classe.id}) }}" class="active">
+                    <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
                     </svg>
-                    My Tasks
+                    Ma Classe
                 </a>
-                <a href="#">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <a href="{{ path('app_matiere_classe_front_index') }}">
+                    <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    Mes Matières
+                </a>
+
+                <div class="nav-section-title">Compte</div>
+                <a href="{{ path('app_profile') }}">
+                    <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                         <circle cx="12" cy="7" r="4"/>
                     </svg>
-                    Profile
-                </a>
-                <a href="{{ userClasse ? path('app_classe_front_show', {id: userClasse.id}) : '#' }}" class="active" {% if not userClasse %}style="opacity: 0.5; cursor: not-allowed;"{% endif %}>
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 10v6m0 0l-8.5-5-8.5 5V6a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/><path d="M2 10l10-6 10 6"/>
-                    </svg>
-                    My Class
-                </a>
-                <a href="{{ userClasse ? path('app_matiere_classe_front_index', {id: userClasse.id}) : path('app_matiere_classe_front_index') }}">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6.5a2.5 2.5 0 0 0-2 2.5"/><line x1="4" y1="9" x2="20" y2="9"/>
-                    </svg>
-                    Class Subjects
-                </a>
-                <a href="#">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-                    </svg>
-                    Settings
+                    Profil
                 </a>
                 <a href="{{ path('app_logout') }}">
-                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>
                     </svg>
-                    Logout
+                    Déconnexion
                 </a>
             </nav>
         </aside>
 
-        <!-- Main content -->
         <main class="main">
-
             <header class="header">
-                <div>
-                    <h1 class="h1">Class Details</h1>
-                    <p class="muted">View details for {{ classe.nom }}</p>
-                </div>
-                <div class="session-display">
-                    <div class="subtitle">Academic Year</div>
-                    <div class="h2">{{ classe.anneeuniversitaire }}</div>
+                {# Flash Messages #}
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div style="padding: 16px; border-radius: var(--radius-lg); margin-bottom: 24px; 
+                                    background: {% if label == 'warning' %}#FFFBEB{% else %}#F0FDF4{% endif %}; 
+                                    color: {% if label == 'warning' %}#92400E{% else %}#166534{% endif %};
+                                    border: 1px solid {% if label == 'warning' %}#FDE68A{% else %}#BBF7D0{% endif %};
+                                    font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 12px;">
+                            <svg style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <div class="header-content">
+                    <span class="badge badge-red">{{ classe.filiere }} — {{ classe.niveau }}</span>
+                    <h1>{{ classe.nom }}</h1>
+                    <p>Espace académique de votre promotion — Année {{ classe.anneeuniversitaire }}</p>
                 </div>
             </header>
 
-            <div class="dashboard-grid" style="grid-template-columns: 1fr;">
-                <div class="left-column">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Class Information</h2>
-                        </div>
-                        <div class="card-content">
-                             <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 12px; margin-bottom: 24px; text-align: center;">
-                                <h2 style="margin-bottom: 12px; font-weight: 700;">{{ classe.nom }}</h2>
-                                <p style="font-size: 16px; opacity: 0.9;">
-                                    Level: {{ classe.niveau }}
-                                </p>
-                            </div>
-                            
-                            <h3 class="card-title" style="margin-top: 20px; margin-bottom: 15px;">Subjects</h3>
-                            
-                            {% if classe.matiereClasses is not empty %}
-                                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
-                                    {% for matiereClasse in classe.matiereClasses %}
-                                        <div style="background: #f9fafb; padding: 20px; border-radius: 12px; border: 1px solid #e5e7eb; transition: transform 0.2s;">
-                                            <h4 style="font-weight: 600; color: #111827; margin-bottom: 10px;">
-                                                Matière #{{ matiereClasse.id }}
-                                            </h4>
-                                            <div style="font-size: 14px; color: #4b5563; display: grid; gap: 8px;">
-                                                <div><strong>Coeff:</strong> {{ matiereClasse.coefficient }}</div>
-                                                <div><strong>Hours:</strong> {{ matiereClasse.chargehoraire }}h</div>
-                                                <div><strong>Complexity:</strong> {{ matiereClasse.scorecomplexite }}/10</div>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            {% else %}
-                                <div style="padding: 20px; text-align: center; color: #6b7280;">
-                                    No subjects assigned.
-                                </div>
-                            {% endif %}
+            <div class="nav-section-title" style="margin-left:0; margin-bottom:16px;">🎓 Outils Académiques</div>
+            <div class="feature-grid">
+                <a href="{{ path('app_classe_audit', {id: classe.id}) }}" class="feature-card">
+                    <div class="feature-icon">⚖️</div>
+                    <h3>Audit de Charge</h3>
+                    <p>Analysez votre volume horaire et prévenez le surmenage.</p>
+                </a>
+                <a href="{{ path('app_classe_stats', {id: classe.id}) }}" class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Statistiques détaillées</h3>
+                    <p>Analyse avancée de la complexité des matières.</p>
+                </a>
+                <a href="{{ path('app_classe_export_pdf', {id: classe.id}) }}" class="feature-card">
+                    <div class="feature-icon">🖨️</div>
+                    <h3>Fiche PDF</h3>
+                    <p>Téléchargez votre programme officiel complet.</p>
+                </a>
+                <a href="{{ path('app_classe_export_csv', {id: classe.id}) }}" class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Données CSV</h3>
+                    <p>Exportez vos matières vers Excel ou Sheets.</p>
+                </a>
+            </div>
+
+
+            {# Assistant de révision AI #}
+            <div id="ai-study-coach" class="section-container" style="margin-top: 24px; overflow: hidden; position: relative;">
+                <div style="position:absolute; inset:0; background:radial-gradient(circle at top left, rgba(252,165,165,0.35), transparent 55%), radial-gradient(circle at bottom right, rgba(248,113,113,0.25), transparent 55%); opacity:0.8; pointer-events:none;"></div>
+
+                <div class="section-header" style="background: linear-gradient(135deg, rgba(220,38,38,0.98), rgba(185,28,28,0.98)); color:white; border-bottom:none; position:relative; z-index:1;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="width:36px; height:36px; border-radius:12px; background:rgba(255,255,255,0.14); display:flex; align-items:center; justify-content:center; font-size:18px;">🤖</div>
+                        <div>
+                            <h2 class="section-title" style="color:white; margin:0;">Assistant de révision intelligent</h2>
+                            <p style="margin:2px 0 0; font-size:13px; opacity:0.9;">Plan de travail optimisé sur vos matières, leur complexité et vos quiz</p>
                         </div>
                     </div>
+                    <span style="font-size:12px; padding:4px 10px; border-radius:999px; background:rgba(255,255,255,0.12); border:1px solid rgba(248,250,252,0.35);">Basé sur les données de {{ classe.nom }}</span>
+                </div>
+
+                <div style="position:relative; z-index:1; padding:24px; background:linear-gradient(to bottom right, rgba(255,255,255,0.96), rgba(254,242,242,0.96));">
+                    {% if studyPlan is not defined %}
+                        <p style="font-size:14px; color:var(--gray-600);">L'assistant de révision n'est pas encore disponible.</p>
+                    {% elseif studyPlan.status == 'not_configured' %}
+                        <p style="font-size:14px; color:var(--gray-600);">{{ studyPlan.message }}</p>
+                    {% elseif studyPlan.status == 'error' %}
+                        <div style="padding:12px 14px; border-radius:10px; background:rgba(254,242,242,1); border:1px solid rgba(248,113,113,0.6); font-size:13px; color:var(--danger); display:flex; gap:8px; align-items:flex-start;">
+                            <span>⚠️</span>
+                            <span>Une erreur est survenue lors de la génération du plan : {{ studyPlan.message }}</span>
+                        </div>
+                    {% else %}
+                        {% set plan = studyPlan.plan ?? {} %}
+
+                        <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start;">
+                            <div style="flex:1.6 1 260px; min-width:0;">
+                                {% if plan.summary is defined %}
+                                    <div style="padding:14px 16px; border-radius:12px; background:rgba(239,246,255,0.85); border:1px solid rgba(191,219,254,0.9); font-size:13px; color:var(--gray-800); margin-bottom:16px; display:flex; gap:10px;">
+                                        <span style="font-size:18px;">📌</span>
+                                        <span>{{ plan.summary }}</span>
+                                    </div>
+                                {% endif %}
+
+                                {% set focus = plan.week_focus ?? [] %}
+                                {% if focus is not empty %}
+                                    <h3 style="font-size:14px; font-weight:700; margin-bottom:8px; color:var(--gray-800); text-transform:uppercase; letter-spacing:0.04em;">Priorités de la semaine</h3>
+                                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap:14px;">
+                                        {% for item in focus %}
+                                            <div style="border-radius:14px; padding:14px; background:white; box-shadow:0 6px 16px rgba(15,23,42,0.06); border:1px solid rgba(248,250,252,1);">
+                                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                                    <div style="display:flex; flex-direction:column;">
+                                                        <span style="font-size:13px; font-weight:600; color:var(--gray-900);">{{ item.matiere ?? 'Matière' }}</span>
+                                                        {% if item.recommended_hours is defined %}
+                                                            <span style="font-size:12px; color:var(--gray-500);">⏱ {{ item.recommended_hours }} h cette semaine</span>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% if item.priority is defined %}
+                                                        <span class="badge badge-red" style="font-size:11px; text-transform:uppercase;">Priorité {{ item.priority }}</span>
+                                                    {% endif %}
+                                                </div>
+                                                {% set topics = item.topics ?? [] %}
+                                                {% if topics is not empty %}
+                                                    <ul style="padding-left:18px; font-size:12px; color:var(--gray-700); margin:4px 0 0; list-style:disc;">
+                                                        {% for t in topics %}
+                                                            <li>{{ t }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div style="flex:1 1 220px; min-width:0; padding:14px 16px; border-radius:14px; background:white; box-shadow:0 8px 22px rgba(15,23,42,0.08); border:1px solid rgba(248,250,252,1);">
+                                <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--gray-800); text-transform:uppercase; letter-spacing:0.08em;">Ordre conseillé</h3>
+                                {% if plan.ordering is defined and plan.ordering is not empty %}
+                                    <ol style="padding-left:18px; font-size:12px; color:var(--gray-700); margin:0 0 10px;">
+                                        {% for name in plan.ordering %}
+                                            <li style="margin-bottom:4px;">{{ name }}</li>
+                                        {% endfor %}
+                                    </ol>
+                                {% else %}
+                                    <p style="font-size:12px; color:var(--gray-500);">L'ordre conseillé sera affiché dès que suffisamment de données seront disponibles.</p>
+                                {% endif %}
+
+                                {% if plan.notes is defined and plan.notes %}
+                                    <div style="margin-top:10px; padding:10px 12px; border-radius:10px; background:rgba(254,249,195,0.7); border:1px solid rgba(250,204,21,0.8); font-size:12px; color:var(--gray-800); display:flex; gap:8px;">
+                                        <span>💡</span>
+                                        <span>{{ plan.notes }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
 
+            <div class="section-container">
+
+                <div class="section-header">
+                    <h2 class="section-title">📚 Programme Académique</h2>
+                    <span class="badge badge-blue">{{ classe.matiereClasses|length }} Matières</span>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Matière</th>
+                            <th>Coefficient</th>
+                            <th>Charge Horaire</th>
+                            <th>Complexité</th>
+                            <th>Pré-requis</th>
+                            <th>Quiz</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mc in classe.matiereClasses %}
+                        <tr>
+                            <td><strong>{{ mc.nom }}</strong></td>
+                            <td><span class="badge badge-blue">{{ mc.coefficient }}</span></td>
+                            <td>{{ mc.chargehoraire }}h</td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <div style="flex:1; height:6px; background:#f3f4f6; border-radius:3px; max-width:80px;">
+                                        <div style="width:{{ mc.scorecomplexite * 10 }}%; height:100%; background:var(--primary-red); border-radius:3px;"></div>
+                                    </div>
+                                    <span style="font-size:12px; font-weight:700;">{{ mc.scorecomplexite }}/10</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% for pre in mc.prerequis %}
+                                    <span class="badge badge-green" style="margin-right:4px;">{{ pre.nom }}</span>
+                                {% else %}
+                                    <span style="color:var(--gray-400);">Aucun</span>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <a href="{{ path('app_quiz_matiere', {id: mc.id}) }}" style="font-size:12px; color:var(--primary-red); text-decoration:underline;">Lancer le quiz</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">👥 Membres de la Classe</h2>
+                    <span class="badge badge-green">{{ users|length }} Étudiants</span>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Étudiant</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td style="display:flex; align-items:center; gap:12px;">
+                                <div class="avatar-sm">{{ u.nom|first }}{{ u.prenom|first }}</div>
+                                <strong>{{ u.nom }} {{ u.prenom }}</strong>
+                            </td>
+                            <td>{{ u.email }}</td>
+                            <td>
+                                <a href="#" class="btn" style="padding:6px 12px; font-size:11px; height:auto; box-shadow:none;">Message</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </main>
     </div>
-
-    <script>
-        // Toggle task completion
-        function toggleTask(taskId) {
-            const checkbox = event.target.closest('.task-checkbox');
-            checkbox.classList.toggle('checked');
-            
-            // You would typically make an AJAX call here to update the task status
-            fetch(`/tasks/${taskId}/toggle`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Task updated:', data);
-                // Update task counters if needed
-                updateTaskCounters();
-            })
-            .catch(error => console.error('Error:', error));
-        }
-
-        // Update task counters
-        function updateTaskCounters() {
-            // This would be implemented based on your actual data structure
-            console.log('Updating task counters...');
-        }
-
-        // Handle profile form submission
-        document.getElementById('profileForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalHTML = submitBtn.innerHTML;
-            
-            const formData = {
-                fullName: document.getElementById('fullName').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                phone: document.getElementById('phone').value.trim()
-            };
-            
-            // Validate inputs
-            if (!formData.email) {
-                showErrorMsg('Please enter an email address');
-                return;
-            }
-
-            // Show loading state
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '⏳ Updating...';
-            
-            console.log('Sending profile update:', formData);
-            
-            // Build request headers
-            const headers = {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest',
-            };
-            
-            // Add CSRF token if available
-            const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
-            if (csrfTokenElement) {
-                headers['X-CSRF-TOKEN'] = csrfTokenElement.content;
-            }
-            
-            fetch('{{ path("app_profile_update") }}', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(formData),
-                credentials: 'same-origin'
-            })
-            .then(response => {
-                console.log('Response status:', response.status);
-                if (!response.ok) {
-                    return response.json().then(data => {
-                        throw new Error(data.message || `HTTP error! status: ${response.status}`);
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Response data:', data);
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalHTML;
-                
-                if (data.success) {
-                    showSuccessMsg(data.message || 'Profile updated successfully!');
-                    // Update form with returned values
-                    if (data.user) {
-                        document.getElementById('fullName').value = data.user.fullName || '';
-                        document.getElementById('email').value = data.user.email || '';
-                        document.getElementById('phone').value = data.user.phone || '';
-                    }
-                } else {
-                    showErrorMsg(data.message || 'Failed to update profile');
-                }
-            })
-            .catch(error => {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalHTML;
-                console.error('Fetch error:', error);
-                showErrorMsg('Error: ' + error.message);
-            });
-        });
-
-        function showSuccessMsg(message) {
-            const successMsg = document.createElement('div');
-            successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 16px 24px; border-radius: 10px; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3); z-index: 9999; font-weight: 600; animation: slideIn 0.3s ease;';
-            successMsg.innerHTML = '✓ ' + message;
-            document.body.appendChild(successMsg);
-            
-            setTimeout(() => {
-                successMsg.style.transition = 'opacity 0.3s ease';
-                successMsg.style.opacity = '0';
-                setTimeout(() => successMsg.remove(), 300);
-            }, 4000);
-        }
-
-        function showErrorMsg(message) {
-            const errorMsg = document.createElement('div');
-            errorMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 16px 24px; border-radius: 10px; box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3); z-index: 9999; font-weight: 600; animation: slideIn 0.3s ease;';
-            errorMsg.innerHTML = '✗ ' + message;
-            document.body.appendChild(errorMsg);
-            
-            setTimeout(() => {
-                errorMsg.style.transition = 'opacity 0.3s ease';
-                errorMsg.style.opacity = '0';
-                setTimeout(() => errorMsg.remove(), 300);
-            }, 4000);
-        }
-
-        // Add animation styles
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(400px);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Export data function
-        function exportData() {
-            if (confirm('This will export all your data as a JSON file. Continue?')) {
-                fetch('#')
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'esprit-data-export.json';
-                    document.body.appendChild(a);
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                })
-                .catch(error => {
-                    alert('Error exporting data. Please try again.');
-                    console.error('Error:', error);
-                });
-            }
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Profile page loaded');
-            
-            // Prevent default for placeholder buttons
-            document.getElementById('createTaskBtn')?.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Task creation feature coming soon!');
-            });
-            
-            document.getElementById('calendarBtn')?.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Calendar view coming soon!');
-            });
-            
-            document.getElementById('joinGroupsBtn')?.addEventListener('click', function(e) {
-                e.preventDefault();
-                alert('Groups feature coming soon!');
-            });
-            
-            // Add hover effects to cards
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.addEventListener('mouseenter', () => {
-                    card.style.transform = 'translateY(-8px)';
-                });
-                
-                card.addEventListener('mouseleave', () => {
-                    card.style.transform = 'translateY(0)';
-                });
-            });
-            
-            // Add ripple effect to buttons
-            const buttons = document.querySelectorAll('.btn');
-            buttons.forEach(button => {
-                button.addEventListener('click', function(e) {
-                    // Skip ripple for clicks that already have preventDefault
-                    if (e.defaultPrevented) return;
-                    
-                    const ripple = document.createElement('span');
-                    const rect = this.getBoundingClientRect();
-                    const size = Math.max(rect.width, rect.height);
-                    const x = e.clientX - rect.left - size / 2;
-                    const y = e.clientY - rect.top - size / 2;
-                    
-                    ripple.style.cssText = `
-                        position: absolute;
-                        border-radius: 50%;
-                        background: rgba(255, 255, 255, 0.3);
-                        transform: scale(0);
-                        animation: ripple 0.6s linear;
-                        width: ${size}px;
-                        height: ${size}px;
-                        top: ${y}px;
-                        left: ${x}px;
-                    `;
-                    
-                    this.appendChild(ripple);
-                    
-                    setTimeout(() => {
-                        ripple.remove();
-                    }, 600);
-                });
-            });
-        });
-
-        // Add ripple animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes ripple {
-                to {
-                    transform: scale(4);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
 </body>
 </html>
