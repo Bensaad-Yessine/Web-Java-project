@@ -4,6 +4,13 @@
 
 {% block head_extra %}
 <style>
+    :root {
+        --red-50: #fef2f2;
+        --red-200: #fecaca;
+        --red-900: #7f1d1d;
+        --green-500: #10b981;
+        --green-600: #059669;
+    }
     #lieu-map-wrapper { display: none; margin-top: 12px; }
     #lieu-map { width: 100%; height: 300px; border-radius: 10px; border: 2px solid #6366f1; }
     #lieu-map-close { display: block; text-align: right; font-size: 12px; color: #6b7280; cursor: pointer; margin-bottom: 4px; }
@@ -42,7 +49,7 @@
                 <p style="margin: 0; opacity: 0.9; font-size: 14px;">{{ groupe_projet.matiere }} · {{ groupe_projet.nbrMembre }} membre(s)</p>
             </div>
             <div class="card-content" style="padding: 24px;">
-                <div id="form-errors"></div>
+                <div id="form-errors" style="margin-bottom: 20px;"></div>
                 {{ form_start(form, {'action': path('front_proposition_reunion_new', { id: groupe_projet.id }), 'method': 'POST', 'attr': {'id': 'propositionForm'}}) }}
                 {{ form_errors(form) }}
 
@@ -69,20 +76,21 @@
                     <div class="form-group" style="margin-bottom: 20px; position: relative;">
                         {{ form_label(form.lieu) }}
                         {# Champ Symfony réel (caché) - recevra adresse||lat,lng au submit #}
-                        {{ form_widget(form.lieu, {'attr': {'id': 'lieu-symfony-input', 'type': 'hidden', 'style': 'display:none;'}}) }}
+                        {{ form_widget(form.lieu, {'attr': {'id': 'lieu-symfony-input', 'type': 'hidden', 'style': 'display:none;'}, 'required': false}) }}
+                        {{ form_errors(form.lieu) }}
                         {# Champ visible pour l'utilisateur #}
                         <div style="display: flex; gap: 10px; align-items: center;">
                             <div style="flex: 1;">
                                 <input type="text" id="lieu-display" autocomplete="off" class="form-control"
                                     style="width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px;"
-                                    placeholder="Tapez un lieu ou cliquez sur la carte...">
+                                    placeholder="Tapez un lieu ou cliquez sur la carte (optionnel)..."
+                                    oninput="document.getElementById('lieu-symfony-input').value = this.value.trim();">
                             </div>
                             <button type="button" id="btn-open-map" style="white-space: nowrap; padding: 12px 14px; border: 1px solid #6366f1; background: #6366f1; color:white; border-radius: var(--radius); font-size: 13px; cursor: pointer; font-weight:600;">
                                 🗺 Carte
                             </button>
                             <button type="button" id="lieu-use-my-position" style="white-space: nowrap; padding: 12px 14px; border: 1px solid var(--gray-300); background: white; border-radius: var(--radius); font-size: 13px; cursor: pointer;">Ma position</button>
                         </div>
-                        {{ form_errors(form.lieu) }}
                         <div id="lieu-map-wrapper" style="display:none; margin-top: 12px;">
                             <span id="lieu-map-close" style="display: block; text-align: right; font-size: 12px; color: #6b7280; cursor: pointer; margin-bottom: 4px;">✕ Fermer la carte</span>
                             <div id="lieu-map" style="width: 100%; height: 300px; border-radius: 10px; border: 2px solid #6366f1;"></div>
@@ -118,11 +126,11 @@
                 </div>
 
                 <div style="display: flex; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--gray-200); flex-wrap: wrap;">
-                    <button type="submit" style="flex: 1; min-width: 200px; padding: 16px; background: linear-gradient(135deg, var(--green-500), var(--green-600)); color: white; border: none; border-radius: var(--radius-lg); font-weight: 700; font-size: 16px; cursor: pointer; transition: all var(--transition); box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <button type="submit" id="submitBtn" style="flex: 1; min-width: 200px; padding: 16px; background: linear-gradient(135deg, #059669, #047857); color: white; border: none; border-radius: var(--radius-lg); font-weight: 700; font-size: 16px; cursor: pointer; transition: all var(--transition); box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center; gap: 10px;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 16px rgba(5, 150, 105, 0.3)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-sm)';">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
                         </svg>
-                        Créer la proposition
+                        <span id="submitBtnText">Créer la proposition</span>
                     </button>
                     <a href="{{ path('front_groupe_projet_show', { id: groupe_projet.id }) }}" style="padding: 16px 24px; background: white; color: var(--gray-700); text-decoration: none; border: 1px solid var(--gray-300); border-radius: var(--radius-lg); font-weight: 600; font-size: 16px; transition: all var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 10px;">
                         Annuler
@@ -190,14 +198,22 @@
     function _saveLocation(addr, lat, lng) {
         _selLat = lat; _selLng = lng; _selAddr = addr || '';
         var displayInput = document.getElementById('lieu-display');
-        if (displayInput) displayInput.value = _selAddr || (lat.toFixed(6) + ', ' + lng.toFixed(6));
         var hiddenInput = document.getElementById('lieu-symfony-input');
-        if (hiddenInput) {
-            var coordStr = lat.toFixed(6) + ',' + lng.toFixed(6);
-            hiddenInput.value = _selAddr ? (_selAddr + '||' + coordStr) : coordStr;
+        
+        var displayText = _selAddr || (lat.toFixed(6) + ', ' + lng.toFixed(6));
+        var coordStr = lat.toFixed(6) + ',' + lng.toFixed(6);
+        var hiddenValue = _selAddr ? (_selAddr + '||' + coordStr) : coordStr;
+        
+        if (displayInput) {
+            displayInput.value = displayText;
         }
+        if (hiddenInput) {
+            hiddenInput.value = hiddenValue;
+            console.log('Location saved - Hidden field value:', hiddenValue);
+        }
+        
         var statusEl = document.getElementById('lieu-status');
-        if (statusEl) statusEl.textContent = '✅ Lieu enregistré : ' + (_selAddr || lat.toFixed(6) + ', ' + lng.toFixed(6));
+        if (statusEl) statusEl.textContent = '✅ Lieu enregistré : ' + displayText;
     }
 
     function _reverseGeocode(lat, lng) {
@@ -212,6 +228,18 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+        console.log('DOMContentLoaded - Initializing form');
+        
+        // Test button click
+        var submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+            submitBtn.addEventListener('click', function(e) {
+                console.log('Submit button clicked!');
+            });
+        } else {
+            console.log('Submit button not found during initialization');
+        }
+        
         // Pré-remplir lieu-display depuis lieu-symfony-input (si rechargement après erreur Symfony)
         var hiddenInit  = document.getElementById('lieu-symfony-input');
         var displayInit = document.getElementById('lieu-display');
@@ -258,21 +286,64 @@
         var hiddenInputSync  = document.getElementById('lieu-symfony-input');
         if (displayInputSync && hiddenInputSync) {
             displayInputSync.addEventListener('input', function () {
-                if (_selLat === null) {
-                    hiddenInputSync.value = displayInputSync.value.trim();
-                }
+                // Always sync the value
+                var value = displayInputSync.value.trim();
+                hiddenInputSync.value = value;
+                console.log('Real-time sync - Hidden field updated to:', value);
             });
+        } else {
+            console.log('Lieu sync fields not found:', { displayInputSync, hiddenInputSync });
         }
 
         var form = document.getElementById('propositionForm');
-        if (!form) return;
+        if (!form) {
+            console.log('Form not found');
+            return;
+        }
+
+        var submitBtn = document.getElementById('submitBtn');
+        var submitBtnText = document.getElementById('submitBtnText');
+        
+        if (!submitBtn) {
+            console.log('Submit button not found');
+        }
 
         form.addEventListener('submit', function (e) {
-            // Synchroniser lieu-display → lieu-symfony-input si pas de coordonnées carte
+            console.log('Form submit triggered');
+            
+            // CRITICAL: Synchronize lieu fields FIRST before any other validation
             var hiddenInput  = document.getElementById('lieu-symfony-input');
             var displayInput = document.getElementById('lieu-display');
-            if (hiddenInput && _selLat === null && displayInput && displayInput.value.trim()) {
-                hiddenInput.value = displayInput.value.trim();
+            
+            if (displayInput && hiddenInput) {
+                var displayValue = displayInput.value.trim();
+                console.log('Lieu display value:', displayValue);
+                
+                if (displayValue) {
+                    // Always update hidden field with display field value
+                    if (_selLat !== null && _selLng !== null) {
+                        // If coordinates were selected, format: address||lat,lng
+                        hiddenInput.value = _selAddr ? (_selAddr + '||' + _selLat.toFixed(6) + ',' + _selLng.toFixed(6)) : displayValue;
+                    } else {
+                        // No coordinates, just use the text
+                        hiddenInput.value = displayValue;
+                    }
+                    console.log('Hidden lieu value set to:', hiddenInput.value);
+                } else {
+                    // Lieu est optionnel, on peut le laisser vide
+                    hiddenInput.value = '';
+                    console.log('Lieu field is empty (optional)');
+                }
+            } else {
+                console.error('Lieu fields not found:', { displayInput, hiddenInput });
+            }
+            
+            // Show loading state
+            if (submitBtn && submitBtnText) {
+                submitBtn.disabled = true;
+                submitBtnText.textContent = 'Création en cours...';
+                submitBtn.style.opacity = '0.7';
+                submitBtn.style.cursor = 'wait';
             }
 
             // Validation dates
@@ -280,10 +351,21 @@
             var voteEndField = form.querySelector('input[name="proposition_reunion[dateFinVote]"]');
             var startField   = form.querySelector('input[name="proposition_reunion[heureDebut]"]');
             var endField     = form.querySelector('input[name="proposition_reunion[heureFin]"]');
-            if (!dateField || !startField || !endField) return;
+            
+            console.log('Form fields:', { dateField, startField, endField });
+            
+            if (!dateField || !startField || !endField) {
+                console.log('Missing required fields, allowing submission');
+                return;
+            }
 
             var dateVal = dateField.value, startVal = startField.value, endVal = endField.value;
-            if (!dateVal || !startVal || !endVal) return;
+            console.log('Field values:', { dateVal, startVal, endVal });
+            
+            if (!dateVal || !startVal || !endVal) {
+                console.log('Empty field values, allowing submission');
+                return;
+            }
 
             var dp = dateVal.split('-').map(Number), sp = startVal.split(':').map(Number), ep = endVal.split(':').map(Number);
             var start = new Date(dp[0], dp[1]-1, dp[2], sp[0], sp[1], 0);
@@ -310,18 +392,35 @@
                 if (diffMin > 300) errors.push('La durée maximale est de 5 heures.');
             }
 
+            console.log('Validation errors:', errors);
+
             if (errors.length) {
                 e.preventDefault();
-                if (errorContainer) {
-                    errorContainer.innerHTML = '<div class="alert alert-danger">' + errors.join('<br>') + '</div>';
-                    errorContainer.scrollIntoView({ behavior: 'smooth' });
-                } else {
-                    alert(errors.join('\n'));
+                e.stopPropagation();
+                
+                // Restore button state
+                if (submitBtn && submitBtnText) {
+                    submitBtn.disabled = false;
+                    submitBtnText.textContent = 'Créer la proposition';
+                    submitBtn.style.opacity = '1';
+                    submitBtn.style.cursor = 'pointer';
                 }
+                
+                if (errorContainer) {
+                    errorContainer.innerHTML = '<div class="alert alert-error" style="padding: 16px 20px; border-radius: 12px; background: var(--red-50); border: 2px solid var(--red-200); color: var(--red-900); font-weight: 600; margin-bottom: 20px;">' +
+                        '<strong style="display: block; margin-bottom: 8px; font-size: 16px;">⚠️ Erreurs de validation :</strong>' +
+                        errors.map(function(err) { return '<div style="margin-left: 20px; margin-top: 6px;">• ' + err + '</div>'; }).join('') +
+                        '</div>';
+                    errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    alert('⚠️ Erreurs de validation :\n\n' + errors.join('\n'));
+                }
+            } else {
+                console.log('No validation errors, form will submit');
             }
         });
     });
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places&callback=initGoogleMaps" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places&callback=initGoogleMaps&loading=async" async defer></script>
 </main>
 {% endblock %}

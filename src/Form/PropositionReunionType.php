@@ -76,12 +76,11 @@ class PropositionReunionType extends AbstractType
                 ],
             ])
             ->add('lieu', TextType::class, [
-                'label' => 'Lieu',
-                'required' => true,
+                'label' => 'Lieu (optionnel)',
+                'required' => false,
                 'attr' => [
                     'placeholder' => 'Ex: Salle B2.3, Amphi A...',
                     'class' => 'form-control',
-                    'required' => 'required',
                 ],
             ])
             ->add('description', TextareaType::class, [

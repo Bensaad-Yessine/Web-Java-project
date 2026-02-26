@@ -24,7 +24,7 @@ class CalendrierController extends AbstractController
 
         return $this->render('calendrier/index.html.twig', [
             'groupes' => $groupes,
-            'tasks'   => [],
+           
         ]);
     }
 

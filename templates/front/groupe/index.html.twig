@@ -2,6 +2,206 @@
 
 {% block title %}Gestion de Groupe - ESPRIT{% endblock %}
 
+{% block head_extra %}
+<style>
+    :root {
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        
+        --red-50: #fef2f2;
+        --red-100: #fee2e2;
+        --red-200: #fecaca;
+        --red-300: #fca5a5;
+        --red-400: #f87171;
+        --red-500: #ef4444;
+        --red-600: #dc2626;
+        --red-700: #b91c1c;
+        --red-800: #991b1b;
+        --red-900: #7f1d1d;
+        
+        --green-50: #ecfdf5;
+        --green-200: #a7f3d0;
+        --green-900: #064e3b;
+        
+        --blue-50: #eff6ff;
+        --blue-200: #bfdbfe;
+        --blue-900: #1e3a8a;
+        
+        --orange-500: #f97316;
+        
+        --radius-lg: 12px;
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+        --transition: all 0.2s ease;
+    }
+    
+    /* Main content colors */
+    h1, h2, h3, h4, h5, h6 { color: #111827 !important; }
+    .h1 { color: #111827 !important; }
+    .muted { color: #6b7280 !important; }
+    p { color: #4b5563 !important; }
+    
+    /* Input and select colors */
+    input, select { 
+        color: #1f2937 !important; 
+        background: white !important;
+    }
+    input::placeholder {
+        color: #9ca3af !important;
+    }
+    option {
+        color: #1f2937 !important;
+        background: white !important;
+    }
+    
+    /* Card colors */
+    .card {
+        background: white !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 16px !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+    }
+    
+    .card-title {
+        color: #111827 !important;
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        margin-bottom: 8px !important;
+    }
+    
+    .card-text {
+        color: #4b5563 !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+    
+    .card-body {
+        padding: 20px !important;
+    }
+    
+    .card-footer {
+        padding: 16px 20px !important;
+        border-top: 1px solid #f3f4f6 !important;
+    }
+    
+    .text-muted {
+        color: #6b7280 !important;
+    }
+    
+    small {
+        color: #6b7280 !important;
+    }
+    
+    /* Badge colors */
+    .badge {
+        padding: 4px 10px !important;
+        border-radius: 6px !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+    }
+    
+    .bg-success {
+        background: #10b981 !important;
+        color: white !important;
+    }
+    
+    .bg-info {
+        background: #06b6d4 !important;
+        color: white !important;
+    }
+    
+    .bg-warning {
+        background: #f59e0b !important;
+        color: white !important;
+    }
+    
+    .bg-secondary {
+        background: #6b7280 !important;
+        color: white !important;
+    }
+    
+    .bg-white {
+        background: white !important;
+    }
+    
+    .text-dark {
+        color: #111827 !important;
+    }
+    
+    /* Button colors */
+    .btn {
+        padding: 10px 16px !important;
+        border-radius: 10px !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+        text-decoration: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        transition: all 0.2s ease !important;
+        border: none !important;
+        cursor: pointer !important;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #ef4444, #f97316) !important;
+        color: white !important;
+        box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2) !important;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3) !important;
+    }
+    
+    .btn-outline-secondary {
+        background: white !important;
+        color: #6b7280 !important;
+        border: 1px solid #d1d5db !important;
+    }
+    
+    .btn-outline-secondary:hover {
+        background: #f9fafb !important;
+        border-color: #9ca3af !important;
+    }
+    
+    /* Session display */
+    .session-display {
+        background: white !important;
+        color: #111827 !important;
+        border: 1px solid #e5e7eb !important;
+    }
+    
+    .session-display > div:first-child {
+        color: #6b7280 !important;
+    }
+    
+    .session-display > div:last-child {
+        color: #ef4444 !important;
+    }
+    
+    /* Alert colors */
+    .alert {
+        padding: 16px 20px !important;
+        border-radius: 12px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    /* Pagination colors */
+    span[style*="Page"] {
+        color: #6b7280 !important;
+    }
+</style>
+{% endblock %}
+
 {% block body %}
 <main class="main">
 <header class="header">
@@ -18,7 +218,7 @@
 <!-- Flash Messages -->
 {% for label, messages in app.flashes %}
     {% for message in messages %}
-        <div class="alert alert-{{ label }}" style="margin-bottom: 20px; padding: 16px 20px; border-radius: 12px; background: {% if label == 'success' %}var(--green-50){% elseif label == 'error' %}var(--red-50){% else %}var(--blue-50){% endif %}; border: 1px solid {% if label == 'success' %}var(--green-200){% elseif label == 'error' %}var(--red-200){% else %}var(--blue-200){% endif %}; color: {% if label == 'success' %}var(--green-900){% elseif label == 'error' %}var(--red-900){% else %}var(--blue-900){% endif %};">
+        <div class="alert alert-{{ label }}" style="margin-bottom: 20px; padding: 16px 20px; border-radius: 12px; background: {% if label == 'success' %}#ecfdf5{% elseif label == 'error' %}#fef2f2{% else %}#eff6ff{% endif %}; border: 1px solid {% if label == 'success' %}#a7f3d0{% elseif label == 'error' %}#fecaca{% else %}#bfdbfe{% endif %}; color: {% if label == 'success' %}#064e3b{% elseif label == 'error' %}#7f1d1d{% else %}#1e3a8a{% endif %};">
             {{ message }}
         </div>
     {% endfor %}
@@ -31,7 +231,7 @@
             type="text" 
             id="searchInput" 
             placeholder="🔍 Rechercher un groupe..." 
-            style="padding: 14px 20px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 15px; transition: all var(--transition);"
+            style="padding: 14px 20px; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 15px; transition: all 0.2s ease; color: #1f2937; background: white;"
             onkeyup="filterGroups()"
             aria-label="Rechercher un groupe"
         >
@@ -39,7 +239,7 @@
         <select 
             id="statusFilter" 
             onchange="filterGroups()" 
-            style="padding: 14px 20px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 15px; background: white; cursor: pointer; transition: all var(--transition);"
+            style="padding: 14px 20px; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 15px; background: white; cursor: pointer; transition: all 0.2s ease; color: #1f2937;"
             aria-label="Filtrer par statut"
         >
             <option value="">Tous les statuts</option>
@@ -61,7 +261,7 @@
         <select 
             id="matiereFilter" 
             onchange="filterGroups()" 
-            style="padding: 14px 20px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 15px; background: white; cursor: pointer; transition: all var(--transition);"
+            style="padding: 14px 20px; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 15px; background: white; cursor: pointer; transition: all 0.2s ease; color: #1f2937;"
             aria-label="Filtrer par matière"
         >
             <option value="">Toutes les matières</option>
@@ -73,7 +273,7 @@
         <select 
             id="sortBy" 
             onchange="sortGroups()" 
-            style="padding: 14px 20px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 15px; background: white; cursor: pointer; transition: all var(--transition);"
+            style="padding: 14px 20px; border: 1px solid #e5e7eb; border-radius: 12px; font-size: 15px; background: white; cursor: pointer; transition: all 0.2s ease; color: #1f2937;"
             aria-label="Trier par"
         >
             <option value="createdAt">Trier par date</option>
@@ -81,7 +281,7 @@
             <option value="members">Trier par membres</option>
         </select>
 
-        <a href="{{ path('front_groupe_projet_new') }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, var(--red-500), var(--orange-500)); color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: all var(--transition); box-shadow: var(--shadow-sm);" title="Créer un nouveau groupe">
+        <a href="{{ path('front_groupe_projet_new') }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, #ef4444, #f97316); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(239,68,68,0.2);" title="Créer un nouveau groupe">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
@@ -95,13 +295,13 @@
             {% include 'front/groupe/_group_card.html.twig' with {'groupe': groupe} %}
         {% else %}
             <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
-                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--gray-300)" stroke-width="1.5" style="margin: 0 auto 20px;">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" style="margin: 0 auto 20px;">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                     <circle cx="9" cy="7" r="4"/>
                     <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                 </svg>
-                <h3 style="font-size: 20px; color: var(--gray-600); margin-bottom: 8px;">Aucun groupe</h3>
-                <p style="color: var(--gray-400); margin-bottom: 24px;">Vous ne faites partie d'aucun groupe pour le moment. Créez un groupe ou attendez qu'un autre membre vous y ajoute.</p>
+                <h3 style="font-size: 20px; color: #4b5563; margin-bottom: 8px;">Aucun groupe</h3>
+                <p style="color: #9ca3af; margin-bottom: 24px;">Vous ne faites partie d'aucun groupe pour le moment. Créez un groupe ou attendez qu'un autre membre vous y ajoute.</p>
                 <a href="{{ path('front_groupe_projet_new') }}" class="btn btn-primary">Créer un groupe</a>
             </div>
         {% endfor %}
@@ -112,12 +312,12 @@
         {# Bouton précédent #}
         {% if current_page > 1 %}
             <a href="{{ path('front_groupe_projet_index', {'page': current_page - 1}) }}"
-               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: white; border: 1px solid var(--gray-200); color: var(--gray-700); text-decoration: none; font-weight: 600; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.06);"
+               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: white; border: 1px solid #e5e7eb; color: #374151; text-decoration: none; font-weight: 600; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.06);"
                title="Page précédente">
                 ‹
             </a>
         {% else %}
-            <span style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: var(--gray-50); border: 1px solid var(--gray-100); color: var(--gray-300); cursor: not-allowed;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: #f9fafb; border: 1px solid #f3f4f6; color: #d1d5db; cursor: not-allowed;">
                 ‹
             </span>
         {% endif %}
@@ -125,12 +325,12 @@
         {# Pages numérotées #}
         {% for p in 1..total_pages %}
             {% if p == current_page %}
-                <span style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--red-500), var(--orange-500)); color: white; font-weight: 700; font-size: 15px; box-shadow: 0 2px 8px rgba(239,68,68,0.3);">
+                <span style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #ef4444, #f97316); color: white; font-weight: 700; font-size: 15px; box-shadow: 0 2px 8px rgba(239,68,68,0.3);">
                     {{ p }}
                 </span>
             {% else %}
                 <a href="{{ path('front_groupe_projet_index', {'page': p}) }}"
-                   style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: white; border: 1px solid var(--gray-200); color: var(--gray-700); text-decoration: none; font-weight: 600; font-size: 15px; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+                   style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: white; border: 1px solid #e5e7eb; color: #374151; text-decoration: none; font-weight: 600; font-size: 15px; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
                     {{ p }}
                 </a>
             {% endif %}
@@ -139,17 +339,17 @@
         {# Bouton suivant #}
         {% if current_page < total_pages %}
             <a href="{{ path('front_groupe_projet_index', {'page': current_page + 1}) }}"
-               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: white; border: 1px solid var(--gray-200); color: var(--gray-700); text-decoration: none; font-weight: 600; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.06);"
+               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: white; border: 1px solid #e5e7eb; color: #374151; text-decoration: none; font-weight: 600; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.06);"
                title="Page suivante">
                 ›
             </a>
         {% else %}
-            <span style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: var(--gray-50); border: 1px solid var(--gray-100); color: var(--gray-300); cursor: not-allowed;">
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: #f9fafb; border: 1px solid #f3f4f6; color: #d1d5db; cursor: not-allowed;">
                 ›
             </span>
         {% endif %}
 
-        <span style="margin-left: 12px; font-size: 13px; color: var(--gray-500);">
+        <span style="margin-left: 12px; font-size: 13px; color: #6b7280;">
             Page {{ current_page }} sur {{ total_pages }} · {{ total_groupes }} groupe(s)
         </span>
     </div>
@@ -204,28 +404,7 @@ function sortGroups() {
 }
 </script>
 
-<style>
-.btn {
-    display: inline-block;
-    padding: 12px 24px;
-    border-radius: var(--radius-lg);
-    font-weight: 600;
-    text-decoration: none;
-    transition: all var(--transition);
-    cursor: pointer;
-    border: none;
-    font-size: 15px;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, var(--red-500), var(--orange-500));
-    color: white;
-    box-shadow: var(--shadow-sm);
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-</style>
+<!-- Chatbot Widget -->
+{% include 'chatbot/_widget.html.twig' %}
+<script src="{{ asset('js/chatbot.js') }}"></script>
 {% endblock %}

@@ -1650,12 +1650,12 @@
                         </svg>
                         Mes Tâches
                     </a>
-                    <a href="#">
+                    <a href="{{path('front_calendrier')}}">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
                             <circle cx="12" cy="12" r="10"/>
                         </svg>
-                        Objectifs
+                        Calendrier 
                     </a>
                     <a href="{{path('front_objectif_sante_index')}}">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1734,6 +1734,7 @@
         </aside>
 
         <!-- Rest of the content remains the same -->
+        {% block body %}
         <main class="main">
             <header class="header">
                 <div class="header-content">
@@ -1769,74 +1770,74 @@
             <div class="task-stats">
                 <!-- Tasks Statistics -->
                 <div class="stat-card">
-                    <div class="stat-value">{{ stats.tasks.total }}</div>
+                    <div class="stat-value">{{ stats.tasks.total|default(0) }}</div>
                     <div class="stat-label">📋 Tâches totales</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">{{ stats.tasks.completed }}</div>
+                    <div class="stat-value">{{ stats.tasks.completed|default(0) }}</div>
                     <div class="stat-label">✅ Complétées</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">{{ stats.tasks.pending }}</div>
+                    <div class="stat-value">{{ stats.tasks.pending|default(0) }}</div>
                     <div class="stat-label">⏳ En attente</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">{{ stats.tasks.highPriority }}</div>
+                    <div class="stat-value">{{ stats.tasks.highPriority|default(0) }}</div>
                     <div class="stat-label">🚨 Haute priorité</div>
                 </div>
 
                 <!-- Health Objectives Statistics -->
                 <div class="stat-card">
-                    <div class="stat-value">{{ stats.objectifs_sante.total }}</div>
+                    <div class="stat-value">{{ stats.objectifs_sante.total|default(0) }}</div>
                     <div class="stat-label">🏥 Objectifs Santé</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">{{ stats.objectifs_sante.active }}</div>
+                    <div class="stat-value">{{ stats.objectifs_sante.active|default(0) }}</div>
                     <div class="stat-label">🌟 Actifs</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">{{ stats.objectifs_sante.completed }}</div>
+                    <div class="stat-value">{{ stats.objectifs_sante.completed|default(0) }}</div>
                     <div class="stat-label">🎯 Complétés</div>
                 </div>
 
                 <!-- Wellbeing Tracking Statistics -->
                 <div class="stat-card">
-                    <div class="stat-value">{{ stats.suivi_bien_etre.total }}</div>
+                    <div class="stat-value">{{ stats.suivi_bien_etre.total|default(0) }}</div>
                     <div class="stat-label">😊 Suivi Bien-être</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">{{ stats.suivi_bien_etre.this_month }}</div>
+                    <div class="stat-value">{{ stats.suivi_bien_etre.this_month|default(0) }}</div>
                     <div class="stat-label">📆 Ce mois-ci</div>
                 </div>
 
                 <!-- Project Groups Statistics -->
                 <div class="stat-card">
-                    <div class="stat-value">{{ stats.groupes_projets.total }}</div>
+                    <div class="stat-value">{{ stats.groupes_projets.total|default(0) }}</div>
                     <div class="stat-label">👥 Groupes Projets</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">{{ stats.groupes_projets.active }}</div>
+                    <div class="stat-value">{{ stats.groupes_projets.active|default(0) }}</div>
                     <div class="stat-label">💼 Actifs</div>
                 </div>
 
                 <!-- Alert Preferences Statistics -->
                 <div class="stat-card">
-                    <div class="stat-value">{{ stats.preferences_alertes.total }}</div>
+                    <div class="stat-value">{{ stats.preferences_alertes.total|default(0) }}</div>
                     <div class="stat-label">🔔 Préférences Alertes</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">{{ stats.preferences_alertes.active }}</div>
+                    <div class="stat-value">{{ stats.preferences_alertes.active|default(0) }}</div>
                     <div class="stat-label">✔️ Activées</div>
                 </div>
             </div>
 
             <div class="tasks-container">
                 <div class="tasks-header">
-                    <h2 class="tasks-title">Toutes les tâches ({{ stats.tasks.total }})</h2>
+                    <h2 class="tasks-title">Toutes les tâches ({{ stats.tasks.total|default(0) }})</h2>
                 </div>
 
                 <div class="task-grid" id="taskList">
-                    {% if tasks is not empty %}
+                    {% if tasks is defined and tasks is not empty %}
                         {% for task in tasks %}
                             {% set taskType = task.type|default('personnel') %}
                             {% set taskPriority = task.priorite|default('MOYEN') %}
@@ -1959,6 +1960,7 @@
                 <p>ESPRIT Assistant Étudiant • © {{ "now"|date("Y") }} • Tous droits réservés</p>
             </div>
         </main>
+        {% endblock %}
     </div>
 
     <!-- Floating notification dropdown -->
@@ -2062,20 +2064,22 @@
         const notifList = document.getElementById('notif-list');
         const notifBadge = document.getElementById('notif-badge');
 
-        notifBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            notifDropdown.classList.toggle('hidden');
-            if (!notifDropdown.classList.contains('hidden')) {
-                positionDropdown(notifDropdown, notifBtn);
-                fetchNotifications();
-            }
-        });
+        if (notifBtn && notifDropdown) {
+            notifBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notifDropdown.classList.toggle('hidden');
+                if (!notifDropdown.classList.contains('hidden')) {
+                    positionDropdown(notifDropdown, notifBtn);
+                    fetchNotifications();
+                }
+            });
 
-        document.addEventListener('click', function(e) {
-            if (!notifDropdown.contains(e.target) && e.target !== notifBtn) {
-                notifDropdown.classList.add('hidden');
-            }
-        });
+            document.addEventListener('click', function(e) {
+                if (!notifDropdown.contains(e.target) && e.target !== notifBtn) {
+                    notifDropdown.classList.add('hidden');
+                }
+            });
+        }
 
         function positionDropdown(dropdown, button) {
             const rect = button.getBoundingClientRect();
@@ -2175,26 +2179,28 @@
             };
         }
 
-        messagingButton.addEventListener('click', toggleMessaging);
-        studentSearch.addEventListener('input', debounce(searchStudents, 300));
-        studentSearch.addEventListener('focus', () => {
-            if (studentSearch.value.trim()) searchResults.style.display = 'block';
-        });
-        
-        messageInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        });
-        
-        sendBtn.addEventListener('click', sendMessage);
-        
-        document.addEventListener('click', function(e) {
-            if (!searchResults.contains(e.target) && e.target !== studentSearch) {
-                searchResults.style.display = 'none';
-            }
-        });
+        if (messagingButton && studentSearch && messageInput && sendBtn && searchResults) {
+            messagingButton.addEventListener('click', toggleMessaging);
+            studentSearch.addEventListener('input', debounce(searchStudents, 300));
+            studentSearch.addEventListener('focus', () => {
+                if (studentSearch.value.trim()) searchResults.style.display = 'block';
+            });
+            
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            sendBtn.addEventListener('click', sendMessage);
+            
+            document.addEventListener('click', function(e) {
+                if (!searchResults.contains(e.target) && e.target !== studentSearch) {
+                    searchResults.style.display = 'none';
+                }
+            });
+        }
 
         function toggleMessaging() {
             messagingWidget.classList.toggle('active');
@@ -2649,14 +2655,16 @@
             conversationHistory: []
         };
 
-        aiChatButton.addEventListener('click', toggleAIChat);
-        aiMessageInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendAIMessage();
-            }
-        });
-        aiSendBtn.addEventListener('click', sendAIMessage);
+        if (aiChatButton && aiMessageInput && aiSendBtn) {
+            aiChatButton.addEventListener('click', toggleAIChat);
+            aiMessageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendAIMessage();
+                }
+            });
+            aiSendBtn.addEventListener('click', sendAIMessage);
+        }
 
         function toggleAIChat() {
             aiChatWidget.classList.toggle('active');

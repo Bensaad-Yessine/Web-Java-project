@@ -78,7 +78,7 @@ final class FrontGroupeProjetController extends AbstractController
             'current_page' => $page,
             'total_pages' => $totalPages,
             'limit' => $limit,
-            'tasks' => [],
+        
         ]);
     }
 

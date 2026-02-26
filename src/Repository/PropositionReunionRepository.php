@@ -17,7 +17,7 @@ class PropositionReunionRepository extends ServiceEntityRepository
         parent::__construct($registry, PropositionReunion::class);
     }
 
-    /** Toutes les propositions de l'utilisateur (via ses groupes), actives (date >= aujourd'hui) */
+    /** Toutes les propositions de l'utilisateur (via ses groupes), actives (date >= aujourd'hui ET statut pas refusé/annulé) */
     public function findActiveByUser(User $user): array
     {
         $today = new \DateTime('today midnight');
@@ -26,14 +26,16 @@ class PropositionReunionRepository extends ServiceEntityRepository
             ->join('g.idUser', 'u')
             ->where('u.id = :userId')
             ->andWhere('p.dateReunion >= :today')
+            ->andWhere('p.status NOT IN (:archivedStatuses)')
             ->setParameter('userId', $user->getId())
             ->setParameter('today', $today)
+            ->setParameter('archivedStatuses', ['Refusée', 'Annulée'])
             ->orderBy('p.dateReunion', 'ASC')
             ->getQuery()
             ->getResult();
     }
 
-    /** Toutes les propositions archivées (date < aujourd'hui) de l'utilisateur */
+    /** Toutes les propositions archivées (date < aujourd'hui OU statut refusé/annulé) de l'utilisateur */
     public function findArchivedByUser(User $user): array
     {
         $today = new \DateTime('today midnight');
@@ -41,9 +43,10 @@ class PropositionReunionRepository extends ServiceEntityRepository
             ->join('p.idGroupe', 'g')
             ->join('g.idUser', 'u')
             ->where('u.id = :userId')
-            ->andWhere('p.dateReunion < :today')
+            ->andWhere('(p.dateReunion < :today OR p.status IN (:archivedStatuses))')
             ->setParameter('userId', $user->getId())
             ->setParameter('today', $today)
+            ->setParameter('archivedStatuses', ['Refusée', 'Annulée'])
             ->orderBy('p.dateReunion', 'DESC')
             ->getQuery()
             ->getResult();

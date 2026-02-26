@@ -33,7 +33,7 @@ class PropositionReunion
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     private ?\DateTime $heureFin = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $lieu = null;
 
     #[ORM\Column(length: 255)]
@@ -144,7 +144,7 @@ class PropositionReunion
         return $this->lieu;
     }
 
-    public function setLieu(string $lieu): static
+    public function setLieu(?string $lieu): static
     {
         $this->lieu = $lieu;
 
@@ -341,10 +341,18 @@ class PropositionReunion
     }
 
     /**
-     * Une réunion est archivée si sa date est strictement passée (hier ou avant).
+     * Une réunion est archivée si:
+     * - sa date est strictement passée (hier ou avant)
+     * - OU son statut est 'Refusée' ou 'Annulée'
      */
     public function isArchived(): bool
     {
+        // Archived if status is refused or canceled
+        if (in_array($this->status, ['Refusée', 'Annulée'], true)) {
+            return true;
+        }
+        
+        // Archived if date is in the past
         if (!$this->dateReunion) {
             return false;
         }
