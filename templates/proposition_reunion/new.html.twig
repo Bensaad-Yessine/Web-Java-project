@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Détails Groupe Projet - {{ groupe_projet.nomProjet }}{% endblock %}
+{% block title %}Nouvelle proposition de réunion{% if proposition_reunion.idGroupe %} - {{ proposition_reunion.idGroupe.nomProjet }}{% endif %}{% endblock %}
 
 {% block body %}
 <!DOCTYPE html>
@@ -766,7 +766,8 @@
                 <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
                   <h6 class="p-3 mb-0">Notifications</h6>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item preview-item" href="{{ path('app_groupe_projet_show', {'id': groupe_projet.id}) }}">
+                  {% if proposition_reunion.idGroupe %}
+                  <a class="dropdown-item preview-item" href="{{ path('app_groupe_projet_show', {'id': proposition_reunion.idGroupe.id}) }}">
                     <div class="preview-thumbnail">
                       <div class="preview-icon bg-info rounded-circle">
                         <i class="mdi mdi-account-multiple"></i>
@@ -774,9 +775,10 @@
                     </div>
                     <div class="preview-item-content">
                       <p class="preview-subject mb-1">Groupe projet</p>
-                      <p class="text-muted ellipsis mb-0"> Vous consultez: {{ groupe_projet.nomProjet }}</p>
+                      <p class="text-muted ellipsis mb-0"> Vous consultez: {{ proposition_reunion.idGroupe.nomProjet }}</p>
                     </div>
                   </a>
+                  {% endif %}
                 </div>
               </li>
               
@@ -900,12 +902,14 @@
                       <li class="breadcrumb-item">
                         <a href="{{ path('app_groupe_projet_index') }}">Groupes</a>
                       </li>
+                      {% if proposition_reunion.idGroupe %}
                       <li class="breadcrumb-item">
-                        <a href="{{ path('app_groupe_projet_show', {'id': groupe_projet.id}) }}">{{ groupe_projet.nomProjet }}</a>
+                        <a href="{{ path('app_groupe_projet_show', {'id': proposition_reunion.idGroupe.id}) }}">{{ proposition_reunion.idGroupe.nomProjet }}</a>
                       </li>
                       <li class="breadcrumb-item">
-                        <a href="{{ path('app_proposition_reunion_index', {'groupeId': groupe_projet.id}) }}">Propositions</a>
+                        <a href="{{ path('app_proposition_reunion_index') }}">Propositions</a>
                       </li>
+                      {% endif %}
                       <li class="breadcrumb-item active" aria-current="page">
                         <span></span>Nouvelle
                       </li>
@@ -926,29 +930,39 @@
                       </div>
                       <div>
                         <h4 class="mb-1">Créer une nouvelle proposition</h4>
-                        <p class="mb-0 opacity-75">Pour le groupe: {{ groupe_projet.nomProjet }}</p>
+                        <p class="mb-0 opacity-75">{% if proposition_reunion.idGroupe %}Pour le groupe: {{ proposition_reunion.idGroupe.nomProjet }}{% else %}Choisir un groupe dans le formulaire{% endif %}</p>
                       </div>
                     </div>
                   </div>
                   
                   <div class="form-body">
-                    {{ form_start(form, {'attr': {'class': 'form-sample'}}) }}
+                    {{ form_start(form, {
+                      'action': path('app_proposition_reunion_new'),
+                      'method': 'POST',
+                      'attr': {
+                        'class': 'form-sample',
+                        'id': 'proposition-reunion-form',
+                        'novalidate': 'novalidate'
+                      }
+                    }) }}
                     
-                    <!-- Group Info -->
+                    <!-- Group Info (affiché si un groupe est déjà sélectionné) -->
+                    {% if proposition_reunion.idGroupe %}
                     <div class="info-card">
                       <div class="row">
                         <div class="col-md-6">
                           <h6 class="mb-2"><i class="mdi mdi-account-group me-2"></i>Groupe</h6>
-                          <p class="mb-0"><strong>{{ groupe_projet.nomProjet }}</strong></p>
-                          <small class="text-muted">ID: {{ groupe_projet.id }}</small>
+                          <p class="mb-0"><strong>{{ proposition_reunion.idGroupe.nomProjet }}</strong></p>
+                          <small class="text-muted">ID: {{ proposition_reunion.idGroupe.id }}</small>
                         </div>
                         <div class="col-md-6">
                           <h6 class="mb-2"><i class="mdi mdi-book-open me-2"></i>Matière</h6>
-                          <p class="mb-0">{{ groupe_projet.matiere }}</p>
-                          <small class="text-muted">{{ groupe_projet.idUser|length }} membre(s)</small>
+                          <p class="mb-0">{{ proposition_reunion.idGroupe.matiere }}</p>
+                          <small class="text-muted">{{ proposition_reunion.idGroupe.idUser|length }} membre(s)</small>
                         </div>
                       </div>
                     </div>
+                    {% endif %}
 
                     <!-- Basic Information -->
                     <div class="form-section">
@@ -1083,11 +1097,11 @@
                     
                     <!-- Actions -->
                     <div class="form-actions">
-                      <a href="{{ path('app_proposition_reunion_index', {'groupeId': groupe_projet.id}) }}" class="btn btn-cancel">
+                      <a href="{{ path('app_proposition_reunion_index') }}{% if proposition_reunion.idGroupe %}?groupeId={{ proposition_reunion.idGroupe.id }}{% endif %}" class="btn btn-cancel">
                         <i class="mdi mdi-arrow-left me-1"></i>
                         Retour aux propositions
                       </a>
-                      <button type="submit" class="btn btn-create">
+                      <button type="submit" class="btn btn-create" form="proposition-reunion-form">
                         <i class="mdi mdi-check-circle me-1"></i>
                         Créer la proposition
                       </button>

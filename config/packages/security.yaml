@@ -21,6 +21,8 @@ security:
             provider: app_user_provider
             user_checker: App\Security\UserChecker
 
+            custom_authenticators:
+                - App\Security\GoogleAuthenticator
             
             form_login:
                 login_path: app_login
@@ -37,12 +39,16 @@ security:
                 path: /
                 always_remember_me: true
 
+            entry_point: form_login
+
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
    
 
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/face-login, roles: PUBLIC_ACCESS }
+        - { path: ^/connect/google, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/verify, roles: PUBLIC_ACCESS }
         - { path: ^/user/dashboard, roles: ROLE_USER }

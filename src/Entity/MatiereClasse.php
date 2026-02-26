@@ -38,6 +38,17 @@ class MatiereClasse
     )]
     private ?int $scorecomplexite = null;
 
+    public function getScorecomplexite(): ?int
+    {
+        return $this->scorecomplexite;
+    }
+
+    public function setScorecomplexite(int $scorecomplexite): static
+    {
+        $this->scorecomplexite = $scorecomplexite;
+        return $this;
+    }
+
     /**
      * @var Collection<int, Classe>
      */
@@ -70,13 +81,23 @@ class MatiereClasse
     #[ORM\OneToMany(targetEntity: Seance::class, mappedBy: 'matiere', cascade: ['remove'])]
     private Collection $seances;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $progression = null;
+    /**
+     * Matières pré-requises (self-referencing ManyToMany)
+     * @var Collection<int, MatiereClasse>
+     */
+    #[ORM\ManyToMany(targetEntity: self::class)]
+    #[ORM\JoinTable(
+        name: 'matiere_prerequis',
+        joinColumns: [new ORM\JoinColumn(name: 'matiere_id', referencedColumnName: 'id')],
+        inverseJoinColumns: [new ORM\JoinColumn(name: 'prerequis_id', referencedColumnName: 'id')]
+    )]
+    private Collection $prerequis;
 
     public function __construct()
     {
         $this->classes = new ArrayCollection();
         $this->seances = new ArrayCollection();
+        $this->prerequis = new ArrayCollection();
     }
 
    
@@ -108,14 +129,25 @@ class MatiereClasse
         return $this;
     }
 
-    public function getScorecomplexite(): ?int
+    public function getNom(): ?string
     {
-        return $this->scorecomplexite;
+        return $this->nom;
     }
 
-    public function setScorecomplexite(int $scorecomplexite): static
+    public function setNom(?string $nom): static
     {
-        $this->scorecomplexite = $scorecomplexite;
+        $this->nom = $nom;
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
         return $this;
     }
 
@@ -132,44 +164,15 @@ class MatiereClasse
         if (!$this->classes->contains($classe)) {
             $this->classes->add($classe);
         }
-
         return $this;
     }
 
     public function removeClass(Classe $classe): static
     {
         $this->classes->removeElement($classe);
-
         return $this;
     }
 
-    public function getNom(): ?string
-    {
-        return $this->nom;
-    }
-
-    public function setNom(?string $nom): static
-    {
-        $this->nom = $nom;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): static
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Seance>
-     */
     public function getSeances(): Collection
     {
         return $this->seances;
@@ -196,22 +199,37 @@ class MatiereClasse
 
         return $this;
     }
-  public function __toString(): string
-{
-    return $this->nom ?? 'Matière';
-}
+    public function __toString(): string
+    {
+        return $this->nom ?? 'Matière';
+    }
 
-  public function getProgression(): ?string
-  {
-      return $this->progression;
-  }
+    // ===== Prerequis =====
 
-  public function setProgression(?string $progression): static
-  {
-      $this->progression = $progression;
+    /**
+     * @return Collection<int, MatiereClasse>
+     */
+    public function getPrerequis(): Collection
+    {
+        return $this->prerequis;
+    }
 
-      return $this;
-  }
+    public function addPrerequis(self $prerequis): static
+    {
+        if (!$this->prerequis->contains($prerequis) && $prerequis !== $this) {
+            $this->prerequis->add($prerequis);
+        }
+        return $this;
+    }
 
-    
+    public function removePrerequis(self $prerequis): static
+    {
+        $this->prerequis->removeElement($prerequis);
+        return $this;
+    }
+
+    public function hasPrerequis(self $prerequis): bool
+    {
+        return $this->prerequis->contains($prerequis);
+    }
 }

@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\PreferenceAlerte;
-use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -15,6 +14,39 @@ class PreferenceAlerteRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, PreferenceAlerte::class);
+    }
+
+    
+    public function searchAjax(?string $titre, ?int $etudiantId, string $sort = 'desc'): array
+    {
+        $qb = $this->createQueryBuilder('p');
+        if ($etudiantId) {
+            $qb->andWhere('p.etudiant = :etudiantId')
+                ->setParameter('etudiantId', $etudiantId);
+        }
+        if ($titre) {
+            $qb->andWhere('p.nom LIKE :nom')
+                ->setParameter('nom', '%' . $titre . '%');
+        }
+
+        // Updated filters for statut and isDefault (expecting '1' or '0' from frontend)
+        $statut = isset($_GET['statut']) ? $_GET['statut'] : null;
+        if ($statut === '1' || $statut === 1) {
+            $qb->andWhere('p.isActive = true');
+        } elseif ($statut === '0' || $statut === 0) {
+            $qb->andWhere('p.isActive = false');
+        }
+
+        $isDefault = isset($_GET['isDefault']) ? $_GET['isDefault'] : null;
+        if ($isDefault === '1' || $isDefault === 1) {
+            $qb->andWhere('p.isDefault = true');
+        } elseif ($isDefault === '0' || $isDefault === 0) {
+            $qb->andWhere('p.isDefault = false');
+        }
+
+        $sort = strtolower($sort) === 'asc' ? 'ASC' : 'DESC';
+        $qb->orderBy('p.dateCreation', $sort);
+        return $qb->getQuery()->getResult();
     }
 
 //    /**
@@ -42,25 +74,21 @@ class PreferenceAlerteRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-    // SEARCH - user specific search (front office)
-    public function searchByTitle(?string $title, User $user): array
+    // SEARCH
+    public function searchByTitle(string $title, User $user): array
     {
-        $qb = $this->createQueryBuilder('p')
+        return $this->createQueryBuilder('p')
             ->where('p.etudiant = :user')
-            ->setParameter('user', $user);
-
-        if ($title) {
-            $qb->andWhere('LOWER(p.nom) LIKE :title')
-               ->setParameter('title', '%' . mb_strtolower($title) . '%');
-        }
-
-        return $qb->orderBy('p.dateCreation', 'DESC')
-                  ->getQuery()
-                  ->getResult();
+            ->andWhere('p.titre LIKE :title')
+            ->setParameter('user', $user)
+            ->setParameter('title', '%' . $title . '%')
+            ->orderBy('p.dateCreation', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 
-    // sort by dates - user specific
-    public function sortByDate(?string $field, User $user): array
+    // sort by dates
+    public function sortByDate(string $field, User $user): array
     {
         $allowedFields = ['dateCreation', 'dateMiseAJour'];
 
@@ -74,36 +102,6 @@ class PreferenceAlerteRepository extends ServiceEntityRepository
             ->orderBy('p.' . $field, 'DESC')
             ->getQuery()
             ->getResult();
-    }
-
-    // ADMIN search (global list) with optional filters and sorting
-    public function searchAdmin(?string $title, ?string $sort = null, ?bool $isActive = null, ?bool $isDefault = null): array
-    {
-        $qb = $this->createQueryBuilder('p');
-
-        if ($title) {
-            $qb->andWhere('LOWER(p.nom) LIKE :title')
-               ->setParameter('title', '%' . mb_strtolower($title) . '%');
-        }
-
-        if ($isActive !== null) {
-            $qb->andWhere('p.isActive = :isActive')
-               ->setParameter('isActive', $isActive);
-        }
-
-        if ($isDefault !== null) {
-            $qb->andWhere('p.isDefault = :isDefault')
-               ->setParameter('isDefault', $isDefault);
-        }
-
-        // Secure sort
-        if ($sort && in_array($sort, ['dateCreation', 'dateMiseAJour'])) {
-            $qb->orderBy('p.' . $sort, 'DESC');
-        } else {
-            $qb->orderBy('p.dateCreation', 'DESC');
-        }
-
-        return $qb->getQuery()->getResult();
     }
 
 

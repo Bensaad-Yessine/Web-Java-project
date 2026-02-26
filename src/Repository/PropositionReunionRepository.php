@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\PropositionReunion;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,72 +17,69 @@ class PropositionReunionRepository extends ServiceEntityRepository
         parent::__construct($registry, PropositionReunion::class);
     }
 
-    /**
-     * Find propositions with dynamic filters and sorting for AJAX listing.
-     *
-     * @param int $groupeId
-     * @param string|null $search
-     * @param string|null $status
-     * @param string $sort
-     * @param string $direction
-     * @return PropositionReunion[]
-     */
-    public function findWithFilters(int $groupeId, ?string $search, ?string $status, string $sort = 'dateCreation', string $direction = 'DESC'): array
+    /** Toutes les propositions de l'utilisateur (via ses groupes), actives (date >= aujourd'hui) */
+    public function findActiveByUser(User $user): array
+    {
+        $today = new \DateTime('today midnight');
+        return $this->createQueryBuilder('p')
+            ->join('p.idGroupe', 'g')
+            ->join('g.idUser', 'u')
+            ->where('u.id = :userId')
+            ->andWhere('p.dateReunion >= :today')
+            ->setParameter('userId', $user->getId())
+            ->setParameter('today', $today)
+            ->orderBy('p.dateReunion', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /** Toutes les propositions archivées (date < aujourd'hui) de l'utilisateur */
+    public function findArchivedByUser(User $user): array
+    {
+        $today = new \DateTime('today midnight');
+        return $this->createQueryBuilder('p')
+            ->join('p.idGroupe', 'g')
+            ->join('g.idUser', 'u')
+            ->where('u.id = :userId')
+            ->andWhere('p.dateReunion < :today')
+            ->setParameter('userId', $user->getId())
+            ->setParameter('today', $today)
+            ->orderBy('p.dateReunion', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /** Toutes les propositions de l'utilisateur pour le calendrier (avec filtres optionnels) */
+    public function findAllByUser(User $user, ?string $start = null, ?string $end = null, ?int $groupeId = null): array
     {
         $qb = $this->createQueryBuilder('p')
-            ->innerJoin('p.idGroupe', 'g')
-            ->addSelect('g')
-            ->andWhere('g.id = :groupeId')
-            ->setParameter('groupeId', $groupeId);
+            ->join('p.idGroupe', 'g')
+            ->join('g.idUser', 'u')
+            ->where('u.id = :userId')
+            ->setParameter('userId', $user->getId())
+            ->orderBy('p.dateReunion', 'ASC');
 
-        if ($search) {
-            $qb->andWhere('LOWER(p.titre) LIKE :search OR LOWER(p.description) LIKE :search OR LOWER(g.nomProjet) LIKE :search')
-               ->setParameter('search', '%' . mb_strtolower($search) . '%');
+        if ($start) {
+            try {
+                // FullCalendar envoie format ISO avec timezone, on prend juste la date
+                $startDate = new \DateTime(substr($start, 0, 10));
+                $qb->andWhere('p.dateReunion >= :start')
+                   ->setParameter('start', $startDate);
+            } catch (\Exception $e) { /* ignore filtre invalide */ }
         }
-
-        if ($status) {
-            $qb->andWhere('p.status = :status')
-               ->setParameter('status', $status);
+        if ($end) {
+            try {
+                $endDate = new \DateTime(substr($end, 0, 10));
+                $qb->andWhere('p.dateReunion <= :end')
+                   ->setParameter('end', $endDate);
+            } catch (\Exception $e) { /* ignore filtre invalide */ }
         }
-
-        // sanitize sort field
-        $allowed = [
-            'dateCreation' => 'p.dateCreation',
-            'dateReunion'  => 'p.dateReunion',
-            'propositionId'=> 'p.propositionId',
-            'id'           => 'p.id'
-        ];
-
-        $field = $allowed[$sort] ?? $allowed['dateCreation'];
-        $direction = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
-
-        $qb->orderBy($field, $direction);
+        if ($groupeId) {
+            $qb->andWhere('g.id = :groupeId')
+               ->setParameter('groupeId', $groupeId);
+        }
 
         return $qb->getQuery()->getResult();
     }
-
-    //    /**
-    //     * @return PropositionReunion[] Returns an array of PropositionReunion objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('p.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?PropositionReunion
-    //    {
-    //        return $this->createQueryBuilder('p')
-    //            ->andWhere('p.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }
+

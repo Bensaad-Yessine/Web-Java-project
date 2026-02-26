@@ -1,10 +1,14 @@
-{% extends 'front/base.html.twig' %}
+{% extends 'user/FrontOffice.html.twig' %}
 
 {% block title %}{{ proposition_reunion.titre }} - ESPRIT{% endblock %}
 
-{% set current_page = 'groupes' %}
+{% block head_extra %}
+<style>
+    #show-map { background: var(--gray-100); }
+</style>
+{% endblock %}
 
-{% block content %}
+{% block body %}
 <main class="main">
 <header class="header">
     <div>
@@ -100,9 +104,52 @@
                         </div>
                         <div style="flex: 1;">
                             <div style="font-size: 13px; color: var(--orange-700); margin-bottom: 4px; font-weight: 600;">Lieu de réunion</div>
-                            <div style="font-size: 16px; font-weight: 700; color: var(--orange-900);">
-                                {{ proposition_reunion.lieu|default('Non défini') }}
-                            </div>
+                            {% set lieu_raw = proposition_reunion.lieu|default('') %}
+                            {% if '||' in lieu_raw %}
+                                {% set lieu_parts = lieu_raw|split('||') %}
+                                {% set lieu_adresse = lieu_parts[0] %}
+                                {% set lieu_coords = lieu_parts[1] %}
+                                <div style="font-size: 16px; font-weight: 700; color: var(--orange-900); margin-bottom: 10px;">
+                                    {{ lieu_adresse }}
+                                </div>
+                                <div id="show-map" style="width: 100%; height: 220px; border-radius: 10px; border: 2px solid var(--orange-300); overflow: hidden;"></div>
+                                <a href="https://www.google.com/maps?q={{ lieu_coords }}" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; color: var(--orange-700); text-decoration: none; font-weight: 600;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                    Voir sur Google Maps
+                                </a>
+                                <script>
+                                    window._showMapCoords = '{{ lieu_coords }}';
+                                    window._showMapAddress = '{{ lieu_adresse|e('js') }}';
+                                </script>
+                            {% elseif lieu_raw matches '/^-?\\d+\\.\\d+\\s*,\\s*-?\\d+\\.\\d+$/' %}
+                                {# Format lat,lng sans adresse — afficher directement la carte #}
+                                <div style="font-size: 16px; font-weight: 700; color: var(--orange-900); margin-bottom: 10px;">
+                                    {{ lieu_raw }}
+                                </div>
+                                <div id="show-map" style="width: 100%; height: 220px; border-radius: 10px; border: 2px solid var(--orange-300); overflow: hidden;"></div>
+                                <a href="https://www.google.com/maps?q={{ lieu_raw|url_encode }}" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; color: var(--orange-700); text-decoration: none; font-weight: 600;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                    Voir sur Google Maps
+                                </a>
+                                <script>
+                                    window._showMapCoords = '{{ lieu_raw|e('js') }}';
+                                    window._showMapAddress = '';
+                                </script>
+                            {% elseif lieu_raw %}
+                                <div style="font-size: 16px; font-weight: 700; color: var(--orange-900); margin-bottom: 10px;">
+                                    {{ lieu_raw }}
+                                </div>
+                                <div id="show-map" style="width: 100%; height: 220px; border-radius: 10px; border: 2px solid var(--orange-300); overflow: hidden;"></div>
+                                <a href="https://www.google.com/maps?q={{ lieu_raw|url_encode }}" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; color: var(--orange-700); text-decoration: none; font-weight: 600;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                    Voir sur Google Maps
+                                </a>
+                                <script>
+                                    window._showMapAddress = '{{ lieu_raw|e('js') }}';
+                                </script>
+                            {% else %}
+                                <div style="font-size: 15px; color: var(--gray-500); font-style: italic;">Non défini</div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -123,6 +170,44 @@
 
         <!-- Right Column - Sidebar -->
         <div>
+            <!-- Vote Card -->
+            <div class="card" style="margin-bottom: 24px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+                <div style="padding: 20px 24px; border-bottom: 1px solid var(--gray-200); background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h2 style="margin: 0; font-size: 16px; font-weight: 700;">Vote pour cette réunion</h2>
+                </div>
+                <div class="vote-card" data-proposition-id="{{ proposition_reunion.id }}" style="padding: 24px;">
+                    <div style="margin-bottom: 16px; font-size: 13px; color: var(--gray-600);">
+                        Fin du vote: {{ proposition_reunion.dateFinVote ? proposition_reunion.dateFinVote|date('d/m/Y H:i') : 'Non définie' }}
+                    </div>
+
+                    <div id="vote-message" style="margin-bottom: 12px;"></div>
+
+                    <div class="vote-buttons" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
+                        <button type="button" class="btn-vote" data-vote="pour" style="flex: 1; min-width: 110px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--green-300); background: var(--green-50); color: var(--green-800); font-weight: 600; cursor: pointer;">Pour</button>
+                        <button type="button" class="btn-vote" data-vote="contre" style="flex: 1; min-width: 110px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--red-300); background: var(--red-50); color: var(--red-800); font-weight: 600; cursor: pointer;">Contre</button>
+                        <button type="button" class="btn-vote" data-vote="abstention" style="flex: 1; min-width: 110px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--gray-300); background: var(--gray-50); color: var(--gray-800); font-weight: 600; cursor: pointer;">Abstention</button>
+                    </div>
+
+                    <div class="progress-bar-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                        <div style="background: var(--green-100); border-radius: 8px; overflow: hidden;">
+                            <div class="progress-bar-pour" style="width: 0%; background: var(--green-500); color: white; padding: 6px 8px; font-size: 12px; font-weight: 600;">0 Pour</div>
+                        </div>
+                        <div style="background: var(--red-100); border-radius: 8px; overflow: hidden;">
+                            <div class="progress-bar-contre" style="width: 0%; background: var(--red-500); color: white; padding: 6px 8px; font-size: 12px; font-weight: 600;">0 Contre</div>
+                        </div>
+                    </div>
+
+                    <div class="vote-stats" style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--gray-700);">
+                        <span class="stat-pour">0 Pour</span>
+                        <span class="stat-contre">0 Contre</span>
+                        <span class="stat-abstention">0 Abstention</span>
+                        <span class="stat-total">0 votants</span>
+                    </div>
+
+                    <div class="user-vote" data-user-vote="" style="margin-top: 10px; font-size: 13px; color: var(--gray-600);"></div>
+                </div>
+            </div>
+
             <!-- Group Info Card -->
             <div class="card" style="margin-bottom: 24px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
                 <div style="padding: 20px 24px; border-bottom: 1px solid var(--gray-200); background: linear-gradient(135deg, var(--red-500), var(--orange-500)); color: white;">
@@ -191,5 +276,187 @@
         </div>
     </div>
 </div>
+
+<script>
+    window.initShowMap = function () {
+        const coords = window._showMapCoords;
+        const address = window._showMapAddress;
+        const mapDiv = document.getElementById('show-map');
+        if ((!coords && !address) || !mapDiv) return;
+
+        const initMapWithLatLng = (lat, lng) => {
+            const map = new google.maps.Map(mapDiv, {
+                center: { lat: lat, lng: lng },
+                zoom: 15,
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: false,
+                zoomControl: true,
+                clickableIcons: false,
+                gestureHandling: 'cooperative'
+            });
+            new google.maps.Marker({
+                position: { lat: lat, lng: lng },
+                map: map,
+                animation: google.maps.Animation.DROP
+            });
+        };
+
+        if (coords) {
+            const parts = coords.split(',');
+            if (parts.length < 2) return;
+            const lat = parseFloat(parts[0]);
+            const lng = parseFloat(parts[1]);
+            if (isNaN(lat) || isNaN(lng)) return;
+            initMapWithLatLng(lat, lng);
+            return;
+        }
+
+        if (address) {
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address: address }, function (results, status) {
+                if (status === 'OK' && results[0]) {
+                    const location = results[0].geometry.location;
+                    initMapWithLatLng(location.lat(), location.lng());
+                }
+            });
+        }
+    };
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initShowMap" async defer></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const card = document.querySelector('.vote-card');
+    if (!card) return;
+
+    const propositionId = card.dataset.propositionId;
+    const buttons = Array.from(card.querySelectorAll('.btn-vote'));
+    const messageEl = document.getElementById('vote-message');
+    const userVoteEl = card.querySelector('.user-vote');
+    const barPour = card.querySelector('.progress-bar-pour');
+    const barContre = card.querySelector('.progress-bar-contre');
+    const statPour = card.querySelector('.stat-pour');
+    const statContre = card.querySelector('.stat-contre');
+    const statAbstention = card.querySelector('.stat-abstention');
+    const statTotal = card.querySelector('.stat-total');
+
+    const disableButtons = (disabled) => {
+        buttons.forEach(btn => {
+            btn.disabled = disabled;
+            btn.style.opacity = disabled ? '0.6' : '1';
+            btn.style.cursor = disabled ? 'not-allowed' : 'pointer';
+        });
+    };
+
+    const highlightVote = (voteValue) => {
+        buttons.forEach(btn => {
+            const isActive = btn.dataset.vote === voteValue;
+            btn.style.boxShadow = isActive ? '0 0 0 2px rgba(99,102,241,0.25)' : 'none';
+        });
+    };
+
+    const setMessage = (text, type = 'info') => {
+        if (!messageEl) return;
+        if (!text) {
+            messageEl.innerHTML = '';
+            return;
+        }
+        const color = type === 'error' ? 'var(--red-700)' : type === 'success' ? 'var(--green-700)' : 'var(--gray-700)';
+        const bg = type === 'error' ? 'var(--red-50)' : type === 'success' ? 'var(--green-50)' : 'var(--gray-50)';
+        const border = type === 'error' ? 'var(--red-200)' : type === 'success' ? 'var(--green-200)' : 'var(--gray-200)';
+        messageEl.innerHTML = `<div style="padding: 10px 12px; border-radius: 10px; background: ${bg}; border: 1px solid ${border}; color: ${color}; font-size: 13px;">${text}</div>`;
+    };
+
+    const updateUI = (results) => {
+        const pour = results.pour ?? 0;
+        const contre = results.contre ?? 0;
+        const abstention = results.abstention ?? 0;
+        const total = results.total ?? 0;
+        const pctPour = results.pourcentagePour ?? 0;
+        const pctContre = results.pourcentageContre ?? 0;
+
+        if (barPour) {
+            barPour.style.width = `${pctPour}%`;
+            barPour.textContent = `${pour} Pour`;
+        }
+        if (barContre) {
+            barContre.style.width = `${pctContre}%`;
+            barContre.textContent = `${contre} Contre`;
+        }
+        if (statPour) statPour.textContent = `${pour} Pour`;
+        if (statContre) statContre.textContent = `${contre} Contre`;
+        if (statAbstention) statAbstention.textContent = `${abstention} Abstention`;
+        if (statTotal) statTotal.textContent = `${total} votants`;
+
+        if (results.monVote) {
+            userVoteEl.textContent = `Votre vote: ${results.monVote}`;
+            highlightVote(results.monVote);
+        } else {
+            userVoteEl.textContent = '';
+            highlightVote(null);
+        }
+
+        const status = (results.statut || '').toLowerCase();
+        const dateFin = results.dateFin ? new Date(results.dateFin) : null;
+        const isOpen = (!dateFin || new Date() <= dateFin) && (status === 'proposé'.toLowerCase() || status === 'en attente'.toLowerCase());
+
+        if (!isOpen) {
+            disableButtons(true);
+            setMessage('Vote terminé.', 'info');
+        } else {
+            disableButtons(false);
+            if (results.aVote) {
+                setMessage('Vote enregistré. Vous pouvez changer votre vote.', 'success');
+            } else {
+                setMessage('Vote ouvert. Choisissez une option.', 'info');
+            }
+        }
+    };
+
+    const fetchResults = async () => {
+        try {
+            const res = await fetch(`/api/proposition/${propositionId}/results`, {
+                headers: { 'Accept': 'application/json' },
+            });
+            const data = await res.json();
+            if (data && data.results) updateUI(data.results);
+        } catch (e) {
+            setMessage('Impossible de charger les résultats.', 'error');
+        }
+    };
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const voteValue = btn.dataset.vote;
+            disableButtons(true);
+            try {
+                const res = await fetch(`/api/proposition/${propositionId}/vote`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({ vote: voteValue }),
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    setMessage(data.message || 'Erreur lors du vote.', 'error');
+                    await fetchResults();
+                    return;
+                }
+                if (data.results) updateUI(data.results);
+            } catch (e) {
+                setMessage('Erreur réseau lors du vote.', 'error');
+            } finally {
+                disableButtons(false);
+            }
+        });
+    });
+
+    fetchResults();
+    setInterval(fetchResults, 10000);
+});
+</script>
 </main>
 {% endblock %}

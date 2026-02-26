@@ -1,0 +1,127 @@
+{% extends 'classe/base.html.twig' %}
+
+{% block title %}Audit de Charge - {{ classe.nom }}{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">
+                ⚖️ Audit de Charge
+                <span class="badge {% if workload.surcharge %}bg-danger{% else %}bg-success{% endif %} ms-2">
+                    {% if workload.surcharge %}⚠️ Surchargée{% else %}✅ Équilibrée{% endif %}
+                </span>
+            </h1>
+            <p class="text-muted mb-0">{{ classe.nom }} — {{ classe.niveau }} {% if classe.filiere %}({{ classe.filiere }}){% endif %}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_classe_audit_api', {id: classe.id}) }}" class="btn btn-outline-secondary btn-sm" target="_blank">
+                📡 API JSON
+            </a>
+            <a href="{{ path('app_classe_show', {id: classe.id}) }}" class="btn btn-outline-primary btn-sm">
+                ← Retour à la classe
+            </a>
+        </div>
+    </div>
+
+    {% if workload.surcharge %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>⚠️ Alerte !</strong> Cette classe dépasse les seuils recommandés. Un email d'alerte peut être envoyé à l'administration.
+        <a href="{{ path('app_classe_audit_api', {id: classe.id}) }}" class="btn btn-danger btn-sm ms-3">📧 Envoyer l'alerte email</a>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card text-center h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="display-4 fw-bold {% if workload.totalComplexite > workload.seuilComplexite %}text-danger{% else %}text-success{% endif %}">
+                        {{ workload.totalComplexite }}
+                    </div>
+                    <p class="text-muted mb-1">Complexité Totale</p>
+                    <small class="text-muted">Seuil : {{ workload.seuilComplexite }}</small>
+                    <div class="progress mt-2" style="height:8px">
+                        {% set pctComplexite = workload.totalComplexite / workload.seuilComplexite * 100 %}
+                        <div class="progress-bar {% if workload.totalComplexite > workload.seuilComplexite %}bg-danger{% else %}bg-success{% endif %}"
+                             style="width: {{ pctComplexite > 100 ? 100 : pctComplexite }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="display-4 fw-bold {% if workload.totalHeures > workload.seuilHeures %}text-danger{% else %}text-success{% endif %}">
+                        {{ workload.totalHeures }}h
+                    </div>
+                    <p class="text-muted mb-1">Charge Horaire Totale</p>
+                    <small class="text-muted">Seuil : {{ workload.seuilHeures }}h</small>
+                    <div class="progress mt-2" style="height:8px">
+                        {% set pctHeures = workload.totalHeures / workload.seuilHeures * 100 %}
+                        <div class="progress-bar {% if workload.totalHeures > workload.seuilHeures %}bg-danger{% else %}bg-success{% endif %}"
+                             style="width: {{ pctHeures > 100 ? 100 : pctHeures }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="display-4 fw-bold {% if workload.complexiteMoyenne > workload.seuilComplexiteMoyenne %}text-danger{% else %}text-success{% endif %}">
+                        {{ workload.complexiteMoyenne }}
+                    </div>
+                    <p class="text-muted mb-1">Complexité Moyenne</p>
+                    <small class="text-muted">Seuil : {{ workload.seuilComplexiteMoyenne }}/10</small>
+                    <div class="progress mt-2" style="height:8px">
+                        {% set pctComplexiteMoy = workload.complexiteMoyenne / 10 * 100 %}
+                        <div class="progress-bar {% if workload.complexiteMoyenne > workload.seuilComplexiteMoyenne %}bg-danger{% else %}bg-success{% endif %}"
+                             style="width: {{ pctComplexiteMoy > 100 ? 100 : pctComplexiteMoy }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-semibold">
+            📚 Détail des {{ workload.nbMatieres }} matière(s)
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Matière</th>
+                        <th class="text-center">Score Complexité</th>
+                        <th class="text-center">Charge Horaire</th>
+                        <th class="text-center">Coefficient</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in workload.matieres %}
+                    <tr>
+                        <td class="fw-semibold">{{ m.nom }}</td>
+                        <td class="text-center">
+                            <span class="badge {% if m.scorecomplexite >= 7 %}bg-danger{% elseif m.scorecomplexite >= 4 %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                {{ m.scorecomplexite }}/10
+                            </span>
+                        </td>
+                        <td class="text-center">{{ m.chargehoraire }}h</td>
+                        <td class="text-center">{{ m.coefficient }}</td>
+                        <td>
+                            <div class="progress" style="height:8px; min-width:80px">
+                                <div class="progress-bar {% if m.scorecomplexite >= 7 %}bg-danger{% elseif m.scorecomplexite >= 4 %}bg-warning{% else %}bg-success{% endif %}"
+                                     style="width:{{ m.scorecomplexite * 10 }}%"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" class="text-center text-muted py-4">Aucune matière associée à cette classe.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

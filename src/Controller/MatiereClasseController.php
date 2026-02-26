@@ -4,19 +4,23 @@ namespace App\Controller;
 
 use App\Entity\MatiereClasse;
 use App\Entity\Classe;
+use App\Entity\User;
 use App\Form\MatiereClasseType;
 use App\Repository\MatiereClasseRepository;
+use App\Repository\TacheRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/matiere/classe')]
+#[Route('/matiereclasse')]
 final class MatiereClasseController extends AbstractController
 {
     #[Route(name: 'app_matiere_classe_index', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function index(
         Request $request,
         MatiereClasseRepository $matiereClasseRepository
@@ -99,7 +103,42 @@ final class MatiereClasseController extends AbstractController
         ]);
     }
 
+    #[Route('/front/{id}', name: 'app_matiere_classe_front_index', methods: ['GET'], defaults: ['id' => null])]
+    public function frontIndex(MatiereClasseRepository $matiereClasseRepository, TacheRepository $tacheRepository, ?Classe $classe = null): Response
+    {
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $matieres = [];
+        
+        if ($classe) {
+            // If ID passed, show subjects for that class
+            $matieres = $matiereClasseRepository->findByClasseWithSearch($classe);
+        } else {
+            // Default to user's class if no ID passed
+             $classe = $user->getClasse();
+             if ($classe) {
+                 $matieres = $matiereClasseRepository->findByClasseWithSearch($classe);
+             } else {
+                 $matieres = []; // or findAll() if you prefer a fallback, but user requested filtering.
+             }
+        }
+        
+        $tasks = $tacheRepository->findBy(['user' => $user], ['dateDebut' => 'ASC']);
+
+        return $this->render('user/matiere_classe/front_index.html.twig', [
+            'userClasse' => $classe ?? $user->getClasse(), // Pass user's class for context if needed, or null
+            'matieres' => $matieres,
+            'tasks' => $tasks,
+        ]);
+    }
+
+
+
     #[Route('/new', name: 'app_matiere_classe_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $matiereClasse = new MatiereClasse();
@@ -120,6 +159,7 @@ final class MatiereClasseController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_matiere_classe_show', methods: ['GET'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function show(MatiereClasse $matiereClasse): Response
     {
         return $this->render('matiere_classe/show.html.twig', [
@@ -128,6 +168,7 @@ final class MatiereClasseController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_matiere_classe_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, MatiereClasse $matiereClasse, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(MatiereClasseType::class, $matiereClasse);
@@ -146,6 +187,7 @@ final class MatiereClasseController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_matiere_classe_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, MatiereClasse $matiereClasse, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$matiereClasse->getId(), $request->getPayload()->getString('_token'))) {

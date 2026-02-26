@@ -9,6 +9,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -57,6 +59,13 @@ class TacheType extends AbstractType
                 'attr' => ['class' => 'form-control'],
             ])
 
+            ->add('dateEcheance', DateTimeType::class, [
+                'label' => 'Date d\'échéance',
+                'widget' => 'single_text',
+                'required' => false,
+                'attr' => ['class' => 'form-control'],
+            ])
+
             ->add('priorite', TextType::class, [
                 'label' => 'Priorité (FAIBLE, MOYEN, ELEVEE)',
                 'attr' => ['class' => 'form-control'],
@@ -65,6 +74,24 @@ class TacheType extends AbstractType
             ->add('statut', TextType::class, [
                 'label' => 'Statut (A_FAIRE, EN_COURS, TERMINEE, EN_RETARD)',
                 'attr' => ['class' => 'form-control'],
+            ])
+
+            ->add('description', TextareaType::class, [
+                'label' => 'Description',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                    'rows' => 4,
+                ],
+            ])
+
+            ->add('dureeEstimee', IntegerType::class, [
+                'label' => 'Durée estimée (minutes)',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                    'min' => 1,
+                ],
             ]);
     }
 

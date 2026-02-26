@@ -27,7 +27,7 @@ class SuiviTache
 
     #[ORM\Column(length: 50, nullable: true)] // DB-level nullable
     #[Assert\Choice(
-        choices: ['A_FAIRE', 'EN_COURS', 'TERMINEE', 'EN_RETARD', 'PAUSED'],
+        choices: ['A_FAIRE', 'EN_COURS', 'TERMINEE', 'EN_RETARD', 'PAUSED', 'ABANDONNEE'],
         message: "Choisissez un statut valide pour ancienStatut."
     )]
     private ?string $ancienStatut = null;
@@ -35,7 +35,7 @@ class SuiviTache
 
     #[ORM\Column(length: 50, nullable: true)]
     #[Assert\Choice(
-        choices: ['A_FAIRE', 'EN_COURS', 'TERMINEE', 'EN_RETARD', 'PAUSED'],
+        choices: ['A_FAIRE', 'EN_COURS', 'TERMINEE', 'EN_RETARD', 'PAUSED', 'ABANDONNEE'],
         message: 'Choisissez un statut valide pour nouveauStatut.'
     )]
     private ?string $nouveauStatut = null;

@@ -135,7 +135,7 @@
         }
         
         .date-input-wrapper::after {
-            content: '📅';
+            content: '����';
             position: absolute;
             right: 15px;
             top: 50%;
@@ -268,6 +268,11 @@
         .btn-primary:hover {
             background-color: #5a6fd8;
             border-color: #5a6fd8;
+        }
+        .btn-google {
+            background-color: #dd4b39;
+            border-color: #dd4b39;
+            color: white;
         }
         
         .alert {
@@ -463,6 +468,12 @@
                                     </button>
                                 </div>
 
+                                <div class="text-center d-grid gap-2 mt-3">
+                                    <a href="{{ path('connect_google') }}" class="btn btn-google">
+                                        <i class="mdi mdi-google mr-2"></i>Register with Gmail
+                                    </a>
+                                </div>
+
                                 <p class="sign-up text-center mt-4">
                                     Already have an Account? <a href="{{ path('app_login') }}">Sign In</a>
                                 </p>
@@ -540,29 +551,29 @@
                 });
             });
 
-            // ============ SYSTÈME DE VALIDATION AVANCÉ ============
+            // ============ SYST+�ME DE VALIDATION AVANC+� ============
             const validationRules = {
                 'registration_form_nom': {
                     minLength: 2,
                     maxLength: 255,
-                    pattern: /^[a-zA-ZÀ-ÿ\s-]*$/,
+                    pattern: /^[a-zA-Z+�-++\s-]*$/,
                     help: 'Utilisez uniquement des lettres, espaces ou tirets',
                     messages: {
                         required: 'Veuillez entrer votre nom de famille',
-                        minLength: 'Minimum 2 caractères requis',
-                        maxLength: 'Maximum 255 caractères',
+                        minLength: 'Minimum 2 caract+�res requis',
+                        maxLength: 'Maximum 255 caract+�res',
                         pattern: 'Lettres, espaces et tirets uniquement'
                     }
                 },
                 'registration_form_prenom': {
                     minLength: 2,
                     maxLength: 255,
-                    pattern: /^[a-zA-ZÀ-ÿ\s-]*$/,
+                    pattern: /^[a-zA-Z+�-++\s-]*$/,
                     help: 'Utilisez uniquement des lettres, espaces ou tirets',
                     messages: {
-                        required: 'Veuillez entrer votre prénom',
-                        minLength: 'Minimum 2 caractères requis',
-                        maxLength: 'Maximum 255 caractères',
+                        required: 'Veuillez entrer votre pr+�nom',
+                        minLength: 'Minimum 2 caract+�res requis',
+                        maxLength: 'Maximum 255 caract+�res',
                         pattern: 'Lettres, espaces et tirets uniquement'
                     }
                 },
@@ -578,7 +589,7 @@
                     numericOnly: true,
                     help: 'Entrez uniquement des chiffres (ex: 21612345678)',
                     messages: {
-                        numericOnly: 'Le numéro de téléphone ne doit contenir que des chiffres'
+                        numericOnly: 'Le num+�ro de t+�l+�phone ne doit contenir que des chiffres'
                     }
                 },
                 'registration_form_plainPassword': {
@@ -586,10 +597,10 @@
                     uppercase: true,
                     lowercase: true,
                     number: true,
-                    help: 'Minimum 8 caractères avec majuscule, minuscule et chiffre',
+                    help: 'Minimum 8 caract+�res avec majuscule, minuscule et chiffre',
                     messages: {
                         required: 'Veuillez entrer un mot de passe',
-                        minLength: 'Minimum 8 caractères requis',
+                        minLength: 'Minimum 8 caract+�res requis',
                         uppercase: 'Au moins une majuscule (A-Z)',
                         lowercase: 'Au moins une minuscule (a-z)',
                         number: 'Au moins un chiffre (0-9)'
@@ -597,14 +608,14 @@
                 }
             };
 
-            // Ajouter les icônes de validation pour chaque champ
+            // Ajouter les ic+�nes de validation pour chaque champ
             Object.keys(validationRules).forEach(fieldId => {
                 const field = document.getElementById(fieldId);
                 if (!field) return;
 
                 const formGroup = field.closest('.form-group') || field.closest('.col-md-6') || field.closest('div');
                 
-                // Créer un conteneur pour les icônes et les messages
+                // Cr+�er un conteneur pour les ic+�nes et les messages
                 const validationContainer = document.createElement('div');
                 validationContainer.className = 'validation-feedback mt-2';
                 validationContainer.style.fontSize = '0.875rem';
@@ -613,7 +624,7 @@
                     formGroup.appendChild(validationContainer);
                 }
 
-                // Ajouter les événements de validation
+                // Ajouter les +�v+�nements de validation
                 field.addEventListener('input', function() {
                     validateField(this, validationContainer);
                 });
@@ -663,7 +674,7 @@
 
                     // Validation progressive du mot de passe
                     if (field.id === 'registration_form_plainPassword') {
-                        isValid = true; // Les critères du mot de passe ne bloquent pas la soumission
+                        isValid = true; // Les crit+�res du mot de passe ne bloquent pas la soumission
                         let criteria = [];
 
                         const hasMinLength = value.length >= 8;
@@ -676,19 +687,19 @@
                         if (!hasLowercase) criteria.push('lowercase');
                         if (!hasNumber) criteria.push('number');
 
-                        // Créer l'affichage des critères
-                        container.innerHTML = '<div class="password-criteria"><strong>Critères du mot de passe:</strong></div>';
+                        // Cr+�er l'affichage des crit+�res
+                        container.innerHTML = '<div class="password-criteria"><strong>Crit+�res du mot de passe:</strong></div>';
                         
                         [
-                            {key: 'minLength', label: '✓ Au moins 8 caractères', check: hasMinLength},
-                            {key: 'uppercase', label: '✓ Au moins une majuscule (A-Z)', check: hasUppercase},
-                            {key: 'lowercase', label: '✓ Au moins une minuscule (a-z)', check: hasLowercase},
-                            {key: 'number', label: '✓ Au moins un chiffre (0-9)', check: hasNumber}
+                            {key: 'minLength', label: 'ԣ� Au moins 8 caract+�res', check: hasMinLength},
+                            {key: 'uppercase', label: 'ԣ� Au moins une majuscule (A-Z)', check: hasUppercase},
+                            {key: 'lowercase', label: 'ԣ� Au moins une minuscule (a-z)', check: hasLowercase},
+                            {key: 'number', label: 'ԣ� Au moins un chiffre (0-9)', check: hasNumber}
                         ].forEach(criteria => {
                             const item = document.createElement('div');
                             item.style.padding = '4px 0';
                             item.style.color = criteria.check ? '#28a745' : '#dc3545';
-                            item.innerHTML = (criteria.check ? '✓ ' : '✗ ') + criteria.label;
+                            item.innerHTML = (criteria.check ? 'ԣ� ' : 'ԣ� ') + criteria.label;
                             container.querySelector('.password-criteria').appendChild(item);
                         });
 
@@ -715,7 +726,7 @@
                                 strength < 75 ? '#ffc107' : '#28a745'
                             }; font-weight: bold;">
                                 Force: ${
-                                    strength < 25 ? 'Très faible' : 
+                                    strength < 25 ? 'Tr+�s faible' : 
                                     strength < 50 ? 'Faible' : 
                                     strength < 75 ? 'Moyen' : 'Fort'
                                 }
@@ -738,7 +749,7 @@
                     inputField.classList.remove('is-valid');
                     inputField.classList.add('is-invalid');
                     if (invalidFeedback && errors.length > 0) {
-                        invalidFeedback.innerHTML = `<span style="color: #dc3545;">✗ ${errors[0].message}</span>`;
+                        invalidFeedback.innerHTML = `<span style="color: #dc3545;">ԣ� ${errors[0].message}</span>`;
                     }
                 } else {
                     inputField.classList.remove('is-invalid', 'is-valid');
@@ -796,7 +807,7 @@
                     
                     // Show loading state
                     const originalText = submitBtn.innerHTML;
-                    submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin mr-2"></i>Création du compte...';
+                    submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin mr-2"></i>Cr+�ation du compte...';
                     submitBtn.disabled = true;
                     
                     // Restore button after 10 seconds in case of error

@@ -1059,7 +1059,8 @@
         </div>
       </div>
       <div class="info-card-body">
-        {% if groupe_projet.idReunion|length > 0 %}
+        {% set liste_propositions = propositions is defined ? propositions : groupe_projet.idReunion %}
+        {% if liste_propositions|length > 0 %}
           <div class="table-responsive">
             <table class="table table-hover">
               <thead>
@@ -1075,7 +1076,7 @@
                 </tr>
               </thead>
               <tbody>
-                {% for proposition in groupe_projet.idReunion %}
+                {% for proposition in liste_propositions %}
                   <tr>
                     <td>#{{ proposition.propositionId }}</td>
                     <td>
@@ -1133,7 +1134,7 @@
         {% endif %}
         
         <!-- Lien vers la page complète des propositions -->
-        {% if groupe_projet.idReunion|length > 0 %}
+        {% if liste_propositions|length > 0 %}
           <div class="text-center mt-4">
             <a href="{{ path('app_proposition_reunion_index', {'groupeId': groupe_projet.id}) }}" class="btn btn-outline-primary">
               <i class="mdi mdi-format-list-bulleted me-1"></i>

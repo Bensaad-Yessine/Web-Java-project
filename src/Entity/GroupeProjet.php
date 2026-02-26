@@ -7,7 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
+
 #[ORM\Entity(repositoryClass: GroupeProjetRepository::class)]
+#[Vich\Uploadable]
 class GroupeProjet
 {
     #[ORM\Id]
@@ -18,15 +23,27 @@ class GroupeProjet
     
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom du projet est obligatoire.')]
+    #[Assert\Length(
+        min: 3,
+        max: 20,
+        minMessage: 'Le nom du projet doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom du projet ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $nomProjet = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'La matière est obligatoire.')]
     private ?string $matiere = null;
 
     /**
      * @var Collection<int, User>
      */
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'idGroupe')]
+    #[Assert\Count(
+        min: 1,
+        minMessage: 'Vous devez sélectionner au moins {{ limit }} membre.'
+    )]
     private Collection $idUser;
 
     #[ORM\ManyToOne]
@@ -40,10 +57,19 @@ class GroupeProjet
     private Collection $idReunion;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\NotBlank(message: 'Le nombre de membres est obligatoire.')]
+    #[Assert\Range(
+        min: 2,
+        max: 10,
+        notInRangeMessage: 'Le nombre de membres doit être entre {{ min }} et {{ max }}.'
+    )]
     private ?int $nbrMembre = null;
 
-
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(
+        min: 10,
+        minMessage: 'La description doit contenir au moins {{ limit }} caractères.'
+    )]
     private ?string $description = null;
 
     #[ORM\Column(nullable: true)]
@@ -53,7 +79,14 @@ class GroupeProjet
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank(message: 'Le statut est obligatoire.')]
     private ?string $statut = null;
+
+    #[Vich\UploadableField(mapping: 'groupe_logo', fileNameProperty: 'logoImageName')]
+    private ?File $logoImageFile = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $logoImageName = null;
 
     public function __construct()
     {
@@ -215,6 +248,30 @@ class GroupeProjet
     public function setStatut(?string $statut): static
     {
         $this->statut = $statut;
+
+        return $this;
+    }
+
+    public function getLogoImageFile(): ?File
+    {
+        return $this->logoImageFile;
+    }
+
+    public function setLogoImageFile(?File $logoImageFile): static
+    {
+        $this->logoImageFile = $logoImageFile;
+
+        return $this;
+    }
+
+    public function getLogoImageName(): ?string
+    {
+        return $this->logoImageName;
+    }
+
+    public function setLogoImageName(?string $logoImageName): static
+    {
+        $this->logoImageName = $logoImageName;
 
         return $this;
     }

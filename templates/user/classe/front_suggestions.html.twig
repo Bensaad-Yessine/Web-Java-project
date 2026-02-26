@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESPRIT — Recommendations AI {{ classe.nom }}</title>
+    <style>
+        :root {
+            --primary-red: #DC2626;
+            --primary-red-dark: #B91C1C;
+            --primary-gradient: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+            --blue: #3B82F6;
+            --purple: #8B5CF6;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-900: #111827;
+            --radius-xl: 16px;
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+            color: var(--gray-900);
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; }
+        .back-link { margin-bottom: 24px; display: inline-block; color: var(--blue); text-decoration: none; font-weight: 600; }
+        
+        .header { margin-bottom: 32px; }
+        .h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+
+        .suggestion-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            border-left: 6px solid var(--primary-red);
+        }
+
+        .icon-box {
+            width: 64px; height: 64px;
+            background: var(--gray-50);
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .content { flex: 1; }
+        .content h3 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+        .content p { font-size: 14px; color: var(--gray-500); margin-bottom: 12px; }
+
+        .tag {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        .badge-ai { background: #DBEAFE; color: #1E40AF; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{{ path('app_classe_front_show', {'id': classe.id}) }}" class="back-link">← Retour au tableau de bord</a>
+        
+        <header class="header">
+            <h1 class="h1">Recommendations AI</h1>
+            <p style="color: var(--gray-500);">Voici les matières complémentaires recommandées pour votre programme <strong>{{ classe.nom }}</strong>.</p>
+        </header>
+
+        {% if suggestions is empty %}
+            <div style="text-align: center; padding: 80px; background: white; border-radius: 16px; border: 1px dashed var(--gray-300);">
+                <div style="font-size: 48px; margin-bottom: 16px;">✨</div>
+                <h3 style="color: var(--gray-400);">Votre programme est déjà complet !</h3>
+                <p style="color: var(--gray-400);">Aucune suggestion supplémentaire n'est nécessaire pour le moment.</p>
+            </div>
+        {% else %}
+            {% for s in suggestions %}
+                <div class="suggestion-card">
+                    <div class="icon-box">📘</div>
+                    <div class="content">
+                        <span class="badge-ai">SUGGESTION AI</span>
+                        <h3>{{ s.nom }}</h3>
+                        <p>{{ s.description|length > 150 ? s.description|slice(0, 150) ~ '...' : s.description }}</p>
+                        <div style="display: flex; gap: 8px;">
+                            <span class="tag">Coeff {{ s.coefficient }}</span>
+                            <span class="tag">{{ s.chargehoraire }}h</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div style="margin-top: 40px; padding: 24px; background: var(--gray-100); border-radius: 12px; border: 1px solid var(--gray-200);">
+            <p style="font-size: 13px; color: var(--gray-600); line-height: 1.5;">
+                <strong>Note :</strong> Ces suggestions sont purement informatives pour les étudiants. Seul un administrateur peut modifier officiellement le programme de la classe.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

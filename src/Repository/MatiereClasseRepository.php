@@ -145,6 +145,39 @@ class MatiereClasseRepository extends ServiceEntityRepository
 
         return $result[0] ?? ['min_score' => 1, 'max_score' => 10];
     }
+
+    /**
+     * Suggère des matières pour une classe en fonction de son niveau / filière
+     * (matières associées à d'autres classes du même niveau/filière mais pas encore à cette classe)
+     */
+    public function findSuggestionsForClasse(
+        ?string $niveau,
+        ?string $filiere,
+        array $excludeIds = []
+    ): array {
+        $qb = $this->createQueryBuilder('m')
+            ->innerJoin('m.classes', 'c');
+
+        if ($niveau) {
+            $qb->andWhere('c.niveau = :niveau')
+               ->setParameter('niveau', $niveau);
+        }
+
+        if ($filiere) {
+            $qb->andWhere('c.filiere = :filiere')
+               ->setParameter('filiere', $filiere);
+        }
+
+        if (!empty($excludeIds)) {
+            $qb->andWhere('m.id NOT IN (:excludeIds)')
+               ->setParameter('excludeIds', $excludeIds);
+        }
+
+        return $qb->distinct()
+            ->orderBy('m.nom', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }
 
 

@@ -803,174 +803,171 @@
             
             <!-- Edit Form -->
             <div class="row">
-              <div class="col-12 grid-margin">
-                <div class="card form-card">
-                  <div class="form-header">
-                    <div class="d-flex align-items-center">
-                      <div class="info-icon card-1 me-3">
+    <div class="col-12 grid-margin">
+        <div class="card form-card">
+            <div class="form-header">
+                <div class="d-flex align-items-center">
+                    <div class="info-icon card-1 me-3">
                         <i class="mdi mdi-pencil"></i>
-                      </div>
-                      <div>
+                    </div>
+                    <div>
                         <h4 class="mb-1">Formulaire de modification</h4>
                         <p class="mb-0 opacity-75">Modifiez les champs nécessaires ci-dessous</p>
-                      </div>
                     </div>
-                  </div>
-                  
-                  <div class="form-body">
-                    {{ form_start(form, {'attr': {'class': 'form-sample'}}) }}
-                    
-                    <!-- Section 1: Informations de base -->
-                    <div class="form-section">
-                      <h5 class="form-section-title">
+                </div>
+            </div>
+            
+            <div class="form-body">
+                {{ form_start(form, {'attr': {'id': 'editGroupForm', 'class': 'form-sample'}}) }}
+                
+                <!-- Section 1: Informations de base -->
+                <div class="form-section">
+                    <h5 class="form-section-title">
                         <i class="mdi mdi-information-outline"></i>
                         Informations de base
-                      </h5>
-                      
-                      <div class="row">
+                    </h5>
+                    
+                    <div class="row">
                         <div class="col-md-6">
-                          <div class="form-group-enhanced">
-                            <label class="form-label required-field">
-                              <i class="mdi mdi-rename-box"></i>
-                              {{ form_label(form.nomProjet) }}
-                            </label>
-                            {{ form_widget(form.nomProjet, {'attr': {
-                              'class': 'form-control form-control-custom',
-                              'placeholder': 'Ex: Système de gestion des étudiants'
-                            }}) }}
-                            <div class="form-text-help">
-                              Donnez un nom clair et descriptif à votre projet
+                            <div class="form-group-enhanced">
+                                <label class="form-label required-field">
+                                    <i class="mdi mdi-rename-box"></i>
+                                    {{ form_label(form.nomProjet) }}
+                                </label>
+                                {{ form_widget(form.nomProjet, {'attr': {
+                                    'class': 'form-control form-control-custom',
+                                    'placeholder': 'Ex: Système de gestion des étudiants'
+                                }}) }}
+                                <div class="form-text-help">
+                                    Donnez un nom clair et descriptif à votre projet
+                                </div>
+                                {{ form_errors(form.nomProjet) }}
                             </div>
-                            {{ form_errors(form.nomProjet) }}
-                          </div>
                         </div>
                         
                         <div class="col-md-6">
-                          <div class="form-group-enhanced">
-                            <label class="form-label required-field">
-                              <i class="mdi mdi-book-open"></i>
-                              {{ form_label(form.matiere) }}
-                            </label>
-                            {{ form_widget(form.matiere, {'attr': {
-                              'class': 'form-control form-control-custom',
-                              'placeholder': 'Ex: Développement Web, Base de données...'
-                            }}) }}
-                            <div class="form-text-help">
-                              Spécifiez la matière concernée par ce projet
+                            <div class="form-group-enhanced">
+                                <label class="form-label required-field">
+                                    <i class="mdi mdi-book-open"></i>
+                                    {{ form_label(form.matiere) }}
+                                </label>
+                                {{ form_widget(form.matiere, {'attr': {
+                                    'class': 'form-control form-control-custom',
+                                    'placeholder': 'Ex: Développement Web, Base de données...'
+                                }}) }}
+                                <div class="form-text-help">
+                                    Spécifiez la matière concernée par ce projet
+                                </div>
+                                {{ form_errors(form.matiere) }}
                             </div>
-                            {{ form_errors(form.matiere) }}
-                          </div>
                         </div>
-                      </div>
-                      
-                      <div class="row">
-                        <div class="col-md-4">
-                          <div class="form-group-enhanced">
-                            <label class="form-label required-field">
-                              <i class="mdi mdi-account-multiple"></i>
-                              {{ form_label(form.nbrMembre) }}
-                            </label>
-                            {{ form_widget(form.nbrMembre, {'attr': {
-                              'class': 'form-control form-control-custom',
-                              'min': '1',
-                              'max': '10'
-                            }}) }}
-                            <div class="form-text-help">
-                              Nombre de membres dans le groupe (1-10)
-                            </div>
-                            {{ form_errors(form.nbrMembre) }}
-                          </div>
-                        </div>
-                        
-                        <div class="col-md-4">
-                          <div class="form-group-enhanced">
-                            <label class="form-label">
-                              <i class="mdi mdi-calendar-check"></i>
-                              {{ form_label(form.CreatedAt) }}
-                            </label>
-                            {{ form_widget(form.CreatedAt, {'attr': {
-                              'class': 'form-control form-control-custom'
-                            }}) }}
-                            <div class="form-text-help">
-                              Date de création du groupe
-                            </div>
-                            {{ form_errors(form.CreatedAt) }}
-                          </div>
-                        </div>
-                        
-                        <div class="col-md-4">
-                          <div class="form-group-enhanced">
-                            <label class="form-label required-field">
-                              <i class="mdi mdi-progress-check"></i>
-                              {{ form_label(form.statut) }}
-                            </label>
-                            {{ form_widget(form.statut, {'attr': {
-                              'class': 'form-control form-control-custom'
-                            }}) }}
-                            <div class="form-text-help">
-                              Mettez à jour le statut du groupe
-                            </div>
-                            {{ form_errors(form.statut) }}
-                          </div>
-                        </div>
-                      </div>
                     </div>
                     
-                    <!-- Section 2: Description -->
-                    <div class="form-section">
-                      <h5 class="form-section-title">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group-enhanced">
+                                <label class="form-label required-field">
+                                    <i class="mdi mdi-account-multiple"></i>
+                                    {{ form_label(form.nbrMembre) }}
+                                </label>
+                                {{ form_widget(form.nbrMembre, {'attr': {
+                                    'class': 'form-control form-control-custom',
+                                    'min': '1',
+                                    'max': '10'
+                                }}) }}
+                                <div class="form-text-help">
+                                    Nombre de membres dans le groupe (1-10)
+                                </div>
+                                {{ form_errors(form.nbrMembre) }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="form-group-enhanced">
+                                <label class="form-label">
+                                    <i class="mdi mdi-calendar-check"></i>
+                                    {{ form_label(form.CreatedAt) }}
+                                </label>
+                                {{ form_widget(form.CreatedAt, {'attr': {
+                                    'class': 'form-control form-control-custom'
+                                }}) }}
+                                <div class="form-text-help">
+                                    Date de création du groupe
+                                </div>
+                                {{ form_errors(form.CreatedAt) }}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="form-group-enhanced">
+                                <label class="form-label required-field">
+                                    <i class="mdi mdi-progress-check"></i>
+                                    {{ form_label(form.statut) }}
+                                </label>
+                                {{ form_widget(form.statut, {'attr': {
+                                    'class': 'form-control form-control-custom'
+                                }}) }}
+                                <div class="form-text-help">
+                                    Mettez à jour le statut du groupe
+                                </div>
+                                {{ form_errors(form.statut) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Section 2: Description -->
+                <div class="form-section">
+                    <h5 class="form-section-title">
                         <i class="mdi mdi-text-box-outline"></i>
                         Description du projet
-                      </h5>
-                      
-                      <div class="form-group-enhanced">
-                        <label class="form-label required-field">
-                          <i class="mdi mdi-text"></i>
-                          {{ form_label(form.description) }}
+                    </h5>
+                    
+                    <div class="form-group-enhanced">
+                        <label class="form-label">
+                            <i class="mdi mdi-text"></i>
+                            {{ form_label(form.description) }}
                         </label>
                         {{ form_widget(form.description, {'attr': {
-                          'class': 'form-control form-control-custom',
-                          'rows': '5',
-                          'placeholder': 'Décrivez les objectifs, les fonctionnalités et les technologies utilisées dans ce projet...'
+                            'class': 'form-control form-control-custom',
+                            'rows': '5',
+                            'placeholder': 'Décrivez les objectifs, les fonctionnalités et les technologies utilisées dans ce projet...'
                         }}) }}
                         <div class="form-text-help">
-                          Décrivez en détail le projet, ses objectifs et son fonctionnement
+                            Décrivez en détail le projet, ses objectifs et son fonctionnement
                         </div>
                         {{ form_errors(form.description) }}
-                      </div>
                     </div>
-                    
-                    <!-- Section 3: Actions -->
-                    <div class="form-actions">
-                      <div>
-                        <form method="post" action="{{ path('app_groupe_projet_delete', {'id': groupe_projet.id}) }}" 
-                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce groupe ? Cette action est irréversible.');"
-                              class="d-inline">
-                          <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ groupe_projet.id) }}">
-                          <button type="submit" class="btn btn-delete">
+                </div>
+                
+                {{ form_rest(form) }}
+                
+                <!-- Section 3: Actions -->
+                <div class="form-actions">
+                    <div>
+                        <button type="button" id="deleteButton" class="btn btn-delete">
                             <i class="mdi mdi-delete me-1"></i>
                             Supprimer
-                          </button>
-                        </form>
-                      </div>
-                      
-                      <div class="d-flex gap-3">
-                        <a href="{{ path('app_groupe_projet_show', {'id': groupe_projet.id}) }}" class="btn btn-cancel">
-                          <i class="mdi mdi-close me-1"></i>
-                          Annuler
-                        </a>
-                        <button type="submit" class="btn btn-update">
-                          <i class="mdi mdi-content-save me-1"></i>
-                          Enregistrer les modifications
                         </button>
-                      </div>
                     </div>
                     
-                    {{ form_end(form) }}
-                  </div>
+                    <div class="d-flex gap-3">
+                        <a href="{{ path('app_groupe_projet_show', {'id': groupe_projet.id}) }}" class="btn btn-cancel">
+                            <i class="mdi mdi-close me-1"></i>
+                            Annuler
+                        </a>
+                        <button type="submit" id="submitButton" class="btn btn-update">
+                            <i class="mdi mdi-content-save me-1"></i>
+                            Enregistrer les modifications
+                        </button>
+                    </div>
                 </div>
-              </div>
+                
+                {{ form_end(form) }}
             </div>
+        </div>
+    </div>
+</div>
             
             <!-- History Section -->
             <div class="row mt-4">
@@ -1043,102 +1040,182 @@
     <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
     <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
     <script src="{{ asset('assets/js/misc.js') }}"></script>
-    
+
+    <!-- Loading Modal -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0">
+          <div class="d-flex justify-content-center align-items-center p-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <span class="ms-3 text-white">Traitement...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Auto-hide alerts after 5 seconds
-        setTimeout(() => {
-          const alerts = document.querySelectorAll('.alert');
-          alerts.forEach(alert => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-          });
-        }, 5000);
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('editGroupForm');
+    const submitButton = document.getElementById('submitButton');
+    const deleteButton = document.getElementById('deleteButton');
+    const loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'));
+    
+    // Handle form submission with AJAX
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        // Add character counter for description
-        const descriptionField = document.getElementById('{{ form.description.vars.id }}');
-        if (descriptionField) {
-          const counter = document.createElement('div');
-          counter.className = 'form-text-help text-end';
-          counter.innerHTML = '<span id="charCount">' + descriptionField.value.length + '</span> / 1000 caractères';
-          descriptionField.parentNode.appendChild(counter);
-          
-          descriptionField.addEventListener('input', function() {
+        // Show loading modal
+        loadingModal.show();
+        
+        // Get form data as FormData
+        const formData = new FormData(form);
+        
+        // Send AJAX request
+        fetch(form.action, {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: formData
+        })
+        .then(async response => {
+          // Try to parse JSON body even on non-OK responses to get server error details
+          let data = null;
+          try {
+            data = await response.json();
+          } catch (e) {
+            data = null;
+          }
+
+          loadingModal.hide();
+
+          if (response.ok) {
+            if (data && data.success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Succès!',
+                text: data.message,
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#43e97b',
+                timer: 2000,
+                timerProgressBar: true,
+                willClose: () => { window.location.href = data.redirect; }
+              });
+              return;
+            }
+          }
+
+          // Build error display from returned JSON or generic message
+          let errorHtml = 'Une erreur est survenue.';
+          if (data) {
+            if (data.message) {
+              errorHtml = data.message;
+            }
+            if (data.errors && data.errors.length > 0) {
+              errorHtml += '<ul class="text-start mt-2">';
+              data.errors.forEach(err => { errorHtml += `<li>${err}</li>`; });
+              errorHtml += '</ul>';
+            }
+          } else if (!response.ok) {
+            errorHtml = `Erreur serveur (${response.status} ${response.statusText})`;
+          }
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            html: errorHtml,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#f5576c'
+          });
+          console.error('Server response (status:', response.status, '):', data);
+        })
+        .catch(error => {
+          loadingModal.hide();
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Une erreur réseau est survenue. Vérifiez la console pour plus de détails.',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#f5576c'
+          });
+          console.error('Fetch error:', error);
+        });
+    });
+    
+    // Handle delete button
+    deleteButton.addEventListener('click', function() {
+        Swal.fire({
+            title: 'Êtes-vous sûr?',
+            text: "Cette action supprimera définitivement le groupe!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#f5576c',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Oui, supprimer!',
+            cancelButtonText: 'Annuler'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // AJAX delete request
+                fetch('{{ path('app_groupe_projet_delete', {'id': groupe_projet.id}) }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        '_token': '{{ csrf_token('delete' ~ groupe_projet.id) }}'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Supprimé!',
+                            text: data.message,
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#43e97b',
+                            timer: 2000,
+                            timerProgressBar: true
+                        }).then(() => {
+                            window.location.href = data.redirect;
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erreur',
+                            text: data.message,
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#f5576c'
+                        });
+                    }
+                });
+            }
+        });
+    });
+    
+    // Character counter for description
+    const descriptionField = document.getElementById('{{ form.description.vars.id }}');
+    if (descriptionField) {
+        const counter = document.createElement('div');
+        counter.className = 'form-text-help text-end';
+        counter.innerHTML = '<span id="charCount">' + descriptionField.value.length + '</span> / 1000 caractères';
+        descriptionField.parentNode.appendChild(counter);
+        
+        descriptionField.addEventListener('input', function() {
             const charCount = this.value.length;
             document.getElementById('charCount').textContent = charCount;
             
             if (charCount > 1000) {
-              counter.classList.add('text-danger');
+                counter.classList.add('text-danger');
             } else {
-              counter.classList.remove('text-danger');
+                counter.classList.remove('text-danger');
             }
-          });
-        }
-        
-        // Add tooltips for required fields
-        const requiredLabels = document.querySelectorAll('.required-field');
-        requiredLabels.forEach(label => {
-          label.title = 'Ce champ est obligatoire';
         });
-        
-        // Format date for CreatedAt field
-        const createdAtField = document.getElementById('{{ form.CreatedAt.vars.id }}');
-        if (createdAtField && createdAtField.value) {
-          // Convert date to local format if needed
-          const date = new Date(createdAtField.value);
-          if (!isNaN(date.getTime())) {
-            const formattedDate = date.toISOString().slice(0, 16);
-            createdAtField.value = formattedDate;
-          }
-        }
-        
-        // Confirmation for delete button
-        const deleteForm = document.querySelector('form[onsubmit*="confirm"]');
-        if (deleteForm) {
-          const deleteButton = deleteForm.querySelector('button[type="submit"]');
-          if (deleteButton) {
-            deleteButton.addEventListener('click', function(e) {
-              if (!confirm('Êtes-vous sûr de vouloir supprimer définitivement ce groupe ? Cette action est irréversible.')) {
-                e.preventDefault();
-                return false;
-              }
-            });
-          }
-        }
-        
-        // Highlight changes in form
-        const form = document.querySelector('form.form-sample');
-        if (form) {
-          const initialValues = {};
-          const inputs = form.querySelectorAll('input, textarea, select');
-          
-          inputs.forEach(input => {
-            if (input.name) {
-              initialValues[input.name] = input.value;
-            }
-          });
-          
-          form.addEventListener('submit', function(e) {
-            let hasChanges = false;
-            const changedFields = [];
-            
-            inputs.forEach(input => {
-              if (input.name && initialValues[input.name] !== input.value) {
-                hasChanges = true;
-                changedFields.push(input.name);
-              }
-            });
-            
-            if (!hasChanges) {
-              if (!confirm('Aucune modification détectée. Voulez-vous quand même continuer ?')) {
-                e.preventDefault();
-                return false;
-              }
-            }
-          });
-        }
-      });
-    </script>
+    }
+});
+</script>
   </body>
 </html>
 {% endblock %}

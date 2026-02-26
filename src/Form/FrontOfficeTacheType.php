@@ -61,6 +61,13 @@ class FrontOfficeTacheType extends AbstractType
                 'attr' => ['class' => 'form-control'],
             ])
 
+            ->add('dateEcheance', DateType::class, [
+                'label' => 'Date d\'échéance',
+                'widget' => 'single_text',
+                'required' => false,
+                'attr' => ['class' => 'form-control'],
+            ])
+
             ->add('priorite', TextType::class, [
                 'label' => 'Priorité (FAIBLE, MOYEN, ELEVEE)',
                 'attr' => ['class' => 'form-control'],
@@ -69,6 +76,15 @@ class FrontOfficeTacheType extends AbstractType
             ->add('statut', TextType::class, [
                 'label' => 'Statut (A_FAIRE, EN_COURS, TERMINEE, EN_RETARD)',
                 'attr' => ['class' => 'form-control'],
+            ])
+
+            ->add('dureeEstimee', IntegerType::class, [
+                'label' => 'Durée estimée (minutes)',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                    'min' => 1,
+                ],
             ]);
     }
 

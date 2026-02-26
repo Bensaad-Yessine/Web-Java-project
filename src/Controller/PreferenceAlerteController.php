@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Entity\PreferenceAlerte;
 use App\Form\PreferenceAlerteType;
 use App\Repository\PreferenceAlerteRepository;
@@ -17,50 +18,40 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PreferenceAlerteController extends AbstractController
 {
     #[Route(name: 'app_preference_alerte_index', methods: ['GET'])]
-    public function index(Request $request, PreferenceAlerteRepository $preferenceAlerteRepository): Response
+    public function index(Request $request, PreferenceAlerteRepository $repo): Response
     {
-        // Read filters from query. Accept both English and French param names used by templates.
-        $title = $request->query->get('title') ?? $request->query->get('titre');
-        $sort  = $request->query->get('sort');
 
-        // statut (FR) or isActive (EN)
-        $isActive = null;
-        if ($request->query->has('isActive')) {
-            $isActive = filter_var($request->query->get('isActive'), FILTER_VALIDATE_BOOL);
-        } elseif ($request->query->has('statut')) {
-            $val = $request->query->get('statut');
-            if ($val === '1' || $val === '0') {
-                $isActive = $val === '1';
-            }
+        $titre = $request->query->get('titre');
+        $etudiantIdRaw = $request->query->get('etudiantId');
+        $sort  = $request->query->get('sort', 'desc');
+        $statut = $request->query->get('statut');
+        $isDefault = $request->query->get('isDefault');
+
+        // Convert etudiantId to int or null
+        $etudiantId = null;
+        if ($etudiantIdRaw !== null && $etudiantIdRaw !== '') {
+            $etudiantId = (int) $etudiantIdRaw;
         }
 
-        // isDefault may come as '1'/'0' or true/false
-        $isDefault = null;
-        if ($request->query->has('isDefault')) {
-            $v = $request->query->get('isDefault');
-            if ($v === '1' || $v === '0') {
-                $isDefault = $v === '1';
-            } else {
-                $isDefault = filter_var($v, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE);
-            }
-        }
+        // Pass filters via global _GET for now (repo expects them)
+        $_GET['statut'] = $statut;
+        $_GET['isDefault'] = $isDefault;
 
-        $preferences = $preferenceAlerteRepository->searchAdmin($title, $sort, $isActive, $isDefault);
+        $preferenceAlertes = $repo->searchAjax($titre, $etudiantId, $sort);
 
-        // If this is an AJAX request, return only the rows partial (so the frontend can inject tbody HTML)
         if ($request->isXmlHttpRequest()) {
             return $this->render('preference_alerte/_rows.html.twig', [
-                'preference_alertes' => $preferences,
+                'preference_alertes' => $preferenceAlertes,
             ]);
         }
 
         return $this->render('preference_alerte/index.html.twig', [
-            'preference_alertes' => $preferences,
-            'title' => $title,
+            'preference_alertes' => $preferenceAlertes,
+            'titre' => $titre,
+            'etudiantId' => $etudiantId,
             'sort' => $sort,
-            'isActive' => $isActive,
+            'statut' => $statut,
             'isDefault' => $isDefault,
-            'statut' => $isActive !== null ? ($isActive ? '1' : '0') : '',
         ]);
     }
 
@@ -148,29 +139,19 @@ final class PreferenceAlerteController extends AbstractController
 
         return $this->redirectToRoute('app_preference_alerte_index', [], Response::HTTP_SEE_OTHER);
     }
+
+        /**
+        * Show preferences for the logged-in user
+        */
     #[Route('/FrontOffice/show/{id}', name: 'front_preference_alerte_show', methods: ['GET'])]
 public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAlerteRepository, UserRepository $userRepository, int $id): Response
 {   
-    $currentUser = $this->getUser();
-
-    if (!$currentUser) {
-        $this->addFlash('error', 'Vous devez être connecté pour accéder à cette page.');
-        return $this->redirectToRoute('app_login');
-    }
-
-    // Ensure the route id matches the logged in user; redirect if not
-    if ($currentUser->getId() !== $id) {
-        return $this->redirectToRoute('front_preference_alerte_show', ['id' => $currentUser->getId()]);
-    }
-
     $preferenceAlerte = $preferenceAlerteRepository->findBy([
-        'etudiant' => $currentUser
+        'etudiant' => $this->getUser()
     ]);
 
     return $this->render('preference_alerte/showAlertFO.html.twig', [
-        'preference_alertes' => $preferenceAlerte,
-        'userId' => $currentUser->getId(),
-        'user' => $currentUser,
+        'preference_alertes' => $preferenceAlerte
     ]);
 }
    #[Route('/FrontOffice/edit/{id}', name: 'front_preference_alerte_edit', methods: ['GET', 'POST'])]
@@ -290,4 +271,5 @@ public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAler
         // 5. Optional: redirect or return JSON
         return $this->redirectToRoute('front_preference_alerte_show', ['id' => $user->getId()]); 
     }
+
 }

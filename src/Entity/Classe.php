@@ -6,6 +6,7 @@ use App\Repository\ClasseRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ClasseRepository::class)]
 class Classe
@@ -16,18 +17,26 @@ class Classe
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom de la classe est obligatoire.")]
+    #[Assert\Length(
+        min: 2,
+        max: 50,
+        minMessage: "Le nom doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 50)]
+    #[Assert\NotBlank(message: "Le niveau est obligatoire.")]
     private ?string $niveau = null;
 
     /**
      * @var Collection<int, MatiereClasse>
      */
-    #[ORM\ManyToMany(targetEntity: MatiereClasse::class, mappedBy: 'classes')]
+    #[ORM\ManyToMany(targetEntity: MatiereClasse::class, mappedBy: "classes")]
     private Collection $matiereClasses;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'Classe')]
+    #[ORM\ManyToOne(targetEntity: User::class)]
 #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
 private ?User $user = null;
 
@@ -66,7 +75,6 @@ private ?string $anneeuniversitaire = "2025/2026";
     public function setNom(string $nom): static
     {
         $this->nom = $nom;
-
         return $this;
     }
 
@@ -78,7 +86,17 @@ private ?string $anneeuniversitaire = "2025/2026";
     public function setNiveau(string $niveau): static
     {
         $this->niveau = $niveau;
+        return $this;
+    }
 
+    public function getAnneeuniversitaire(): ?string
+    {
+        return $this->anneeuniversitaire;
+    }
+
+    public function setAnneeuniversitaire(string $anneeuniversitaire): static
+    {
+        $this->anneeuniversitaire = $anneeuniversitaire;
         return $this;
     }
 
@@ -94,7 +112,7 @@ private ?string $anneeuniversitaire = "2025/2026";
     {
         if (!$this->matiereClasses->contains($matiereClass)) {
             $this->matiereClasses->add($matiereClass);
-            $matiereClass->addClasse($this);
+            $matiereClass->addClass($this);
         }
 
         return $this;
@@ -103,22 +121,43 @@ private ?string $anneeuniversitaire = "2025/2026";
     public function removeMatiereClass(MatiereClasse $matiereClass): static
     {
         if ($this->matiereClasses->removeElement($matiereClass)) {
-            $matiereClass->removeClasse($this);
+            $matiereClass->removeClass($this);
         }
 
         return $this;
     }
 
-    public function getAnneeuniversitaire(): ?string
+    public function getFormattedNiveau(): string
     {
-        return $this->anneeuniversitaire;
+        $niveaux = [
+            '1ère année' => '1ère année',
+            '2ème année' => '2ème année', 
+            '3ème année' => '3ème année',
+            '4ème année' => '4ème année',
+            '5ème année' => '5ème année',
+            'Licence 1' => 'Licence 1',
+            'Licence 2' => 'Licence 2',
+            'Licence 3' => 'Licence 3',
+            'Master 1' => 'Master 1',
+            'Master 2' => 'Master 2',
+        ];
+
+        return $niveaux[$this->niveau] ?? $this->niveau;
     }
 
-    public function setAnneeuniversitaire(string $anneeuniversitaire): static
+    public function getDisplayName(): string
     {
-        $this->anneeuniversitaire = $anneeuniversitaire;
+        return $this->nom . ' - ' . $this->getFormattedNiveau() . ' (' . $this->anneeuniversitaire . ')';
+    }
+    public function __toString(): string
+    {
+        return $this->getDisplayName();
+    }
 
-        return $this;
+    // Méthodes utilitaires
+    public function getNombreMatieres(): int
+    {
+        return $this->matiereClasses->count();
     }
     public function getUser(): ?User
 {
@@ -172,12 +211,8 @@ public function removeSeance(Seance $seance): static
 
     return $this;
 }
-public function __toString(): string
-{
-    return $this->nom ?? 'Classe';
-}
 
-public function getFiliere(): ?string
+    public function getFiliere(): ?string
 {
     return $this->filiere;
 }

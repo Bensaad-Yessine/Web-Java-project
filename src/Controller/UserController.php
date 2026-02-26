@@ -3,13 +3,23 @@
 namespace App\Controller;
 
 use App\Repository\PreferenceAlerteRepository;
+use App\Service\WeatherAIService;
+use App\Service\StatisticsService;
+use App\Service\AlertEngineService;
+use App\Service\BehaviorAnalysisService;
 use App\Entity\User;
+use App\Entity\PreferenceAlerte;
+use App\Entity\ObjectifSante;
 use App\Form\UserType;
-use App\form\PreferencesOFAlertsType;
+use App\Form\PreferencesOFAlertsType;
 use App\Form\FrontOfficeTacheType;
 use App\Repository\UserRepository;
+use App\Repository\ObjectifSanteRepository;
+use App\Repository\GroupeProjetRepository;
+use App\Repository\SuiviBienEtreRepository;
 use App\Entity\Tache;
 use App\Repository\TacheRepository;
+use App\Repository\StudentIntelligenceProfileRepository;
 use App\Service\BanNotificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -58,35 +68,57 @@ class UserController extends AbstractController
         );
 
         // Transform users to array for JSON response
+        $currentUser = $this->getUser();
+        $currentUserId = $currentUser instanceof User ? $currentUser->getId() : null;
+        
+        // Helper function to ensure UTF-8 encoding
+        $ensureUtf8 = function($value) {
+            if ($value === null) {
+                return null;
+            }
+            if (is_string($value)) {
+                // Fix malformed UTF-8 characters
+                $encoded = mb_convert_encoding($value, 'UTF-8', 'UTF-8');
+                // Remove any remaining invalid UTF-8 sequences
+                return mb_check_encoding($encoded, 'UTF-8') ? $encoded : utf8_encode($value);
+            }
+            return $value;
+        };
+        
         $usersData = [];
         foreach ($users as $user) {
-            $usersData[] = [
-                'id' => $user->getId(),
-                'nom' => $user->getNom(),
-                'prenom' => $user->getPrenom(),
-                'email' => $user->getEmail(),
-                'dateDeNaissance' => $user->getDateDeNaissance() ? $user->getDateDeNaissance()->format('d/m/Y') : '—',
-                'classe' => $user->getClasse() ? $user->getClasse()->getNom() : null,
-                'numTel' => $user->getNumTel(),
-                'sexe' => $user->getSexe(),
-                'roles' => $user->getRoles(),
-                'isAdmin' => in_array('ROLE_ADMIN', $user->getRoles()),
-                'isVerified' => $user->isVerified(),
-                'isBanned' => $user->isBanned(),
-                'banReason' => $user->getBanReason(),
-                'bannedAt' => $user->getBannedAt() ? $user->getBannedAt()->format('d/m/Y H:i') : null,
-                'profilePic' => $user->getProfilePic(),
-                'initials' => strtoupper(substr($user->getPrenom(), 0, 1) . substr($user->getNom(), 0, 1)),
-                'isCurrentUser' => $this->getUser() && $user->getId() === $this->getUser()->getId(),
-                'csrfToken' => $csrfTokenManager->getToken('delete' . $user->getId())->getValue(),
-            ];
+            try {
+                $usersData[] = [
+                    'id' => $user->getId(),
+                    'nom' => $ensureUtf8($user->getNom()),
+                    'prenom' => $ensureUtf8($user->getPrenom()),
+                    'email' => $ensureUtf8($user->getEmail()),
+                    'dateDeNaissance' => $user->getDateDeNaissance() ? $user->getDateDeNaissance()->format('d/m/Y') : '—',
+                    'classe' => $user->getClasse() ? $ensureUtf8($user->getClasse()->getNom()) : null,
+                    'numTel' => $ensureUtf8($user->getNumTel()),
+                    'sexe' => $ensureUtf8($user->getSexe()),
+                    'roles' => $user->getRoles(),
+                    'isAdmin' => in_array('ROLE_ADMIN', $user->getRoles()),
+                    'isVerified' => $user->isVerified(),
+                    'isBanned' => $user->isBanned(),
+                    'banReason' => $ensureUtf8($user->getBanReason()),
+                    'bannedAt' => $user->getBannedAt() ? $user->getBannedAt()->format('d/m/Y H:i') : null,
+                    'profilePic' => $ensureUtf8($user->getProfilePic()),
+                    'initials' => strtoupper(substr($user->getPrenom() ?? '', 0, 1) . substr($user->getNom() ?? '', 0, 1)),
+                    'isCurrentUser' => $currentUserId && $user->getId() === $currentUserId,
+                    'csrfToken' => $csrfTokenManager->getToken('delete' . $user->getId())->getValue(),
+                ];
+            } catch (\Exception $e) {
+                // Log error but continue with other users
+                error_log('Error processing user ' . $user->getId() . ': ' . $e->getMessage());
+            }
         }
 
         return $this->json([
             'success' => true,
             'users' => $usersData,
             'count' => count($usersData)
-        ]);
+        ], 200, [], ['json_encode_options' => \JSON_INVALID_UTF8_SUBSTITUTE]);
     }
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
@@ -235,11 +267,13 @@ class UserController extends AbstractController
         BanNotificationService $banNotificationService
     ): JsonResponse {
         // Check if user is authorized (must be admin and not banning themselves)
-        if (!$this->getUser() || !in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+        $currentUser = $this->getUser();
+        if (!$currentUser || !in_array('ROLE_ADMIN', $currentUser->getRoles())) {
             return $this->json(['success' => false, 'message' => 'Accès non autorisé'], 403);
         }
 
-        if ($user->getId() === $this->getUser()->getId()) {
+        // Cast to User entity to access getId()
+        if ($currentUser instanceof User && $user->getId() === $currentUser->getId()) {
             return $this->json(['success' => false, 'message' => 'Vous ne pouvez pas vous bannir vous-même'], 400);
         }
 
@@ -255,8 +289,10 @@ class UserController extends AbstractController
             
             $em->flush();
 
-            // Send ban notification email
-            $banNotificationService->sendBanNotification($user, $this->getUser(), $reason);
+            // Send ban notification email (only if current user is User entity)
+            if ($currentUser instanceof User) {
+                $banNotificationService->sendBanNotification($user, $currentUser, $reason);
+            }
 
             return $this->json([
                 'success' => true,
@@ -284,7 +320,8 @@ class UserController extends AbstractController
         BanNotificationService $banNotificationService
     ): JsonResponse {
         // Check if user is authorized (must be admin)
-        if (!$this->getUser() || !in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+        $currentUser = $this->getUser();
+        if (!$currentUser || !in_array('ROLE_ADMIN', $currentUser->getRoles())) {
             return $this->json(['success' => false, 'message' => 'Accès non autorisé'], 403);
         }
 
@@ -295,8 +332,10 @@ class UserController extends AbstractController
             
             $em->flush();
 
-            // Send unban notification email
-            $banNotificationService->sendUnbanNotification($user, $this->getUser());
+            // Send unban notification email (only if current user is User entity)
+            if ($currentUser instanceof User) {
+                $banNotificationService->sendUnbanNotification($user, $currentUser);
+            }
 
             return $this->json([
                 'success' => true,
@@ -338,41 +377,77 @@ class UserController extends AbstractController
     }
 
     #[Route('/dashboard', name: 'app_dashboard', methods: ['GET'])]
-public function dashboard(TacheRepository $tacheRepository): Response
-{
-    $user = $this->getUser();
+    public function dashboard(
+        TacheRepository $tacheRepository,
+        ObjectifSanteRepository $objectifSanteRepository,
+        SuiviBienEtreRepository $suiviBienEtreRepository,
+        GroupeProjetRepository $groupeProjetRepository,
+        PreferenceAlerteRepository $preferenceAlerteRepository
+    ): Response
+    {
+        $user = $this->getUser();
 
-    if (!$user) {
-        throw $this->createAccessDeniedException('Vous devez être connecté pour accéder au tableau de bord.');
+        if (!$user) {
+            throw $this->createAccessDeniedException('Vous devez être connecté pour accéder au tableau de bord.');
+        }
+
+        // Get all user tasks
+        $tasks = $tacheRepository->findBy(
+            ['user' => $user],
+            ['id' => 'DESC']
+        );
+
+        // Get all user health objectives
+        $objectifsSante = $objectifSanteRepository->findBy(['user' => $user]);
+
+        // Get all user wellbeing tracking (through their objectives)
+        $suiviBienEtre = [];
+        foreach ($objectifsSante as $objectif) {
+            $suivis = $suiviBienEtreRepository->findBy(['objectif' => $objectif]);
+            $suiviBienEtre = array_merge($suiviBienEtre, $suivis);
+        }
+
+        // Get all user project groups
+        $groupesProjets = $groupeProjetRepository->findByMember($user);
+
+        // Get all user alert preferences
+        $preferenceAlertes = $preferenceAlerteRepository->findBy(['etudiant' => $user]);
+
+        // Calculate statistics
+        $stats = [
+            'tasks' => [
+                'total' => count($tasks),
+                'completed' => count(array_filter($tasks, fn($t) => $t->getStatut() === 'TERMINE')),
+                'pending' => count(array_filter($tasks, fn($t) => in_array($t->getStatut(), ['A_FAIRE', 'EN_COURS', 'EN_RETARD', 'PAUSED']))),
+                'overdue' => count(array_filter($tasks, fn($t) => $t->getStatut() === 'EN_RETARD')),
+                'highPriority' => count(array_filter($tasks, fn($t) => $t->getPriorite() === 'ELEVEE')),
+            ],
+            'objectifs_sante' => [
+                'total' => count($objectifsSante),
+                'active' => count(array_filter($objectifsSante, fn($o) => !$o->getDateFin() || $o->getDateFin() > new \DateTime())),
+                'completed' => count(array_filter($objectifsSante, fn($o) => $o->getDateFin() && $o->getDateFin() <= new \DateTime())),
+            ],
+            'suivi_bien_etre' => [
+                'total' => count($suiviBienEtre),
+                'this_month' => count(array_filter($suiviBienEtre, fn($s) => $s->getDateSaisie() && $s->getDateSaisie()->format('m-Y') === (new \DateTime())->format('m-Y'))),
+            ],
+            'groupes_projets' => [
+                'total' => count($groupesProjets),
+                'active' => count(array_filter($groupesProjets, fn($g) => $g->getStatut() !== 'ARCHIVE')),
+            ],
+            'preferences_alertes' => [
+                'total' => count($preferenceAlertes),
+                'active' => count(array_filter($preferenceAlertes, fn($p) => $p->isActive())),
+            ],
+        ];
+
+        return $this->render('user/FrontOffice.html.twig', [
+            'tasks' => $tasks,
+            'stats' => $stats,
+            'objectifs_sante' => $objectifsSante,
+            'groupes_projets' => $groupesProjets,
+        ]);
     }
-
-    $tasks = $tacheRepository->findBy(
-        ['user' => $user],
-        ['id' => 'DESC']
-    );
-
-    return $this->render('user/FrontOffice.html.twig', [
-        'tasks' => $tasks,
-    ]);
-}
- #[Route('/dashboard', name: 'app_my_tasks', methods: ['GET'])]
-public function mytasks(TacheRepository $tacheRepository): Response
-{
-    $user = $this->getUser();
-
-    if (!$user) {
-        throw $this->createAccessDeniedException('Vous devez être connecté pour accéder au tableau de bord.');
-    }
-
-    $tasks = $tacheRepository->findBy(
-        ['user' => $user],
-        ['id' => 'DESC']
-    );
-
-    return $this->render('user/FrontOffice.html.twig', [
-        'tasks' => $tasks,
-    ]);
-}
 
 
 
@@ -745,7 +820,30 @@ public function showTask(Tache $tache): Response
     }
 
     return $this->render('user/show_task.html.twig',['task'=>$tache]);
-    } /**
+    }
+
+    #[Route('/dashboard/task/{id}/delete', name: 'app_task_delete', methods: ['POST'])]
+    public function deleteTask(Tache $tache, EntityManagerInterface $em, Request $request): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user || $tache->getUser() !== $user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        // Validate CSRF token
+        if (!$this->isCsrfTokenValid('delete' . $tache->getId(), $request->request->get('_token'))) {
+            throw $this->createAccessDeniedException('Invalid CSRF token');
+        }
+
+        $em->remove($tache);
+        $em->flush();
+
+        $this->addFlash('success', 'Task deleted successfully!');
+        return $this->redirectToRoute('app_my_tasks');
+    }
+
+    /**
         * Show preferences for the logged-in user
         */
     #[Route('/dashboard/FrontOffice/show/{id}', name: 'front_preference_alerte_show', methods: ['GET'])]
@@ -875,6 +973,225 @@ public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAler
 
         // 5. Optional: redirect or return JSON
         return $this->redirectToRoute('front_preference_alerte_show', ['id' => $user->getId()]); 
+    }
+    #[Route('/dashboard/my-tasks', name: 'app_my_tasks', methods: ['GET'])]
+public function myTasks(
+    TacheRepository $tacheRepository,
+    StatisticsService $statsService
+): Response {
+    $user = $this->getUser();
+    if (!$user) {
+        throw $this->createAccessDeniedException();
+    }
+
+    // Get tasks lists
+    $activeStatuses = ['A_FAIRE', 'EN_COURS', 'EN_RETARD', 'PAUSED'];
+    $archivedStatuses = ['TERMINE', 'ABANDON'];
+
+    $activeTasks = $tacheRepository->findBy(
+        ['user' => $user, 'statut' => $activeStatuses],
+        ['id' => 'DESC']
+    );
+
+    $archivedTasks = $tacheRepository->findBy(
+        ['user' => $user, 'statut' => $archivedStatuses],
+        ['id' => 'DESC']
+    );
+
+    // Get all statistics
+    $stats = $statsService->getUserStats($user);
+
+    // ----- Chart 1: Status distribution -----
+    $todoTasks = $stats['counts']['total'] 
+        - $stats['counts']['completed'] 
+        - $stats['counts']['abandoned']
+        - $stats['counts']['inProgress']
+        - $stats['counts']['overdue']
+        - $stats['counts']['paused'];
+    
+    $statusChartData = [
+        'labels' => ['À faire', 'En cours', 'Terminées', 'Abandonnées', 'En retard', 'En pause'],
+        'datasets' => [
+            [
+                'label' => 'Tâches',
+                'backgroundColor' => [
+                    '#f59e0b',  // À faire
+                    '#3b82f6',  // En cours
+                    '#10b981',  // Terminées
+                    '#ef4444',  // Abandonnées
+                    '#d97706',  // En retard
+                    '#6b7280'   // En pause
+                ],
+                'data' => [
+                    $todoTasks,
+                    $stats['counts']['inProgress'],
+                    $stats['counts']['completed'],
+                    $stats['counts']['abandoned'],
+                    $stats['counts']['overdue'],
+                    $stats['counts']['paused'],
+                ],
+            ],
+        ],
+    ];
+
+    // ----- Chart 2: Priority distribution -----
+    $highPriority = $stats['counts']['highPriority'] ?? 0;
+    $remaining = max(0, $stats['counts']['total'] - $highPriority);
+    $mediumPriority = (int)($remaining * 0.6);
+    $lowPriority = $remaining - $mediumPriority;
+    
+    $priorityChartData = [
+        'labels' => ['Haute', 'Moyenne', 'Faible'],
+        'datasets' => [
+            [
+                'label' => 'Priorité',
+                'backgroundColor' => ['#ef4444', '#f59e0b', '#10b981'],
+                'data' => [$highPriority, $mediumPriority, $lowPriority],
+            ],
+        ],
+    ];
+
+    // ----- Chart 3: Progress over time (NEW) -----
+    // Get progress data for the last 30 days
+    $progressData = $tacheRepository->getDailyTaskStats($user, 30);
+    
+    // Format dates for the chart
+    $labels = [];
+    $created = [];
+    $completed = [];
+    $abandoned = [];
+    
+    foreach ($progressData as $date => $data) {
+        $dateObj = new \DateTime($date);
+        $labels[] = $dateObj->format('d/m');
+        $created[] = $data['created'];
+        $completed[] = $data['completed'];
+        $abandoned[] = $data['abandoned'];
+    }
+    
+    $progressChartData = [
+        'labels' => $labels,
+        'datasets' => [
+            [
+                'label' => 'Tâches créées',
+                'data' => $created,
+                'borderColor' => '#3b82f6',
+                'backgroundColor' => '#3b82f620',
+                'tension' => 0.4,
+                'fill' => true
+            ],
+            [
+                'label' => 'Tâches terminées',
+                'data' => $completed,
+                'borderColor' => '#10b981',
+                'backgroundColor' => '#10b98120',
+                'tension' => 0.4,
+                'fill' => true
+            ],
+            [
+                'label' => 'Tâches abandonnées',
+                'data' => $abandoned,
+                'borderColor' => '#ef4444',
+                'backgroundColor' => '#ef444420',
+                'tension' => 0.4,
+                'fill' => true
+            ]
+        ],
+    ];
+
+    return $this->render('user/my_task.html.twig', [
+        'activeTasks'     => $activeTasks,
+        'archivedTasks'   => $archivedTasks,
+        'stats'           => $stats,
+        'statusChart'     => $statusChartData,
+        'priorityChart'   => $priorityChartData,
+        'progressChart'   => $progressChartData,
+        // Add these lines:
+        'progressLabels'  => $labels,
+        'progressCreated' => $created,
+        'progressCompleted' => $completed,
+        'progressAbandoned' => $abandoned,
+    ]);
+}
+#[Route('/tasks/{id}/toggle', name: 'app_task_toggle', methods: ['POST'])]
+    public function toggleTask(Request $request, Tache $tache, EntityManagerInterface $em): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user || $tache->getUser() !== $user) {
+            return $this->json(['success' => false, 'message' => 'Access denied'], 403);
+        }
+
+        $current = $tache->getStatut();
+        if ($current === 'TERMINEE') {
+            $tache->setStatut('A_FAIRE');
+        } else {
+            $tache->setStatut('TERMINEE');
+        }
+
+        $tache->setUpdatedAt(new \DateTimeImmutable());
+        $em->flush();
+
+        return $this->json([
+            'success' => true,
+            'statut' => $tache->getStatut(),
+        ]);
+    }
+    
+    #[Route('/dashboard/my-tasks/insights', name: 'user_tasks_insights', methods: ['GET'])]
+    public function myTasksInsights(BehaviorAnalysisService $behaviorService): JsonResponse
+    {
+        $user = $this->getUser();
+
+        try {
+            $profile = $behaviorService->getOrComputeProfile($user);
+
+            return new JsonResponse([
+                'metrics' => [
+                    'completionRate'           => $profile->getCompletionRate(),
+                    'abandonmentRate'          => $profile->getAbandonmentRate(),
+                    'averageStartDelayMinutes' => $profile->getAverageStartDelayMinutes(),
+                    'pauseFrequency'           => $profile->getPauseFrequency(),
+                    'mostProductiveHour'       => $profile->getMostProductiveHour(),
+                    'mostProductiveDayOfWeek'  => $profile->getMostProductiveDayOfWeek(),
+                ],
+                'aiInsights' => [
+                    'weeklyProductivitySummary' => $profile->getWeeklyProductivitySummary(),
+                    'behavioralAdvice'          => $profile->getBehavioralAdvice(),
+                ],
+                'lastUpdated' => $profile->getAnalyzedAt()->format('Y-m-d H:i:s'),
+            ]);
+
+        } catch (\TypeError $e) {
+            return new JsonResponse([
+                'error_type' => 'TypeError',
+                'message'    => $e->getMessage(),
+                'file'       => $e->getFile() . ':' . $e->getLine(),
+            ], 500);
+        } catch (\Error $e) {
+            return new JsonResponse([
+                'error_type' => 'Error',
+                'message'    => $e->getMessage(),
+                'file'       => $e->getFile() . ':' . $e->getLine(),
+            ], 500);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'error_type' => 'Exception',
+                'message'    => $e->getMessage(),
+                'file'       => $e->getFile() . ':' . $e->getLine(),
+            ], 500);
+        }
+    }
+
+    #[Route('/dashboard/weather-ai', name:'weather_ai')]
+    public function weatherAI(
+        WeatherAIService $service
+    ): JsonResponse
+    {
+
+        $data = $service->getWeatherAndAdvice();
+
+        return $this->json($data);
+
     }
 
 }

@@ -11,17 +11,33 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
+use App\Service\CoachingSummaryService;
+use App\Service\DashboardAnalyticsService;
+use App\Repository\SuiviBienEtreRepository;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
+use Dompdf\Dompdf;
+use Dompdf\Options;
+use App\Command\ArchiveObjectifsCommand;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
+use App\Service\PdfGeneratorService;
 #[Route('/front/objectif/sante')]
 final class FrontObjectifSanteController extends AbstractController
 {
     #[Route('', name: 'front_objectif_sante_index', methods: ['GET'])]
-    public function index(ObjectifSanteRepository $repo): Response
+    public function index(ObjectifSanteRepository $repo, ArchiveObjectifsCommand $cmd): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
+          // ✅ Auto archive
+
+    $cmd->run(new ArrayInput([]), new NullOutput());
         $user = $this->getUser();
 
-        $objectifs = $repo->findBy(['user' => $user], ['dateDebut' => 'DESC']);
+        $objectifs = $repo->findBy(
+    ['user' => $user, 'archivedAt' => null],
+    ['dateDebut' => 'DESC']
+);
 
         return $this->render('front/objectif_sante/index.html.twig', [
             'objectif_santes' => $objectifs,
@@ -120,20 +136,237 @@ final class FrontObjectifSanteController extends AbstractController
 
         return $this->redirectToRoute('front_objectif_sante_index');
     }
-    #[Route('/{id}', name: 'front_objectif_sante_show', methods: ['GET'])]
-public function show(ObjectifSante $objectif): Response
-{
+    
+#[Route('/{id}/coaching-summary', name: 'front_objectif_coaching_summary', methods: ['GET'])]
+public function coachingSummary(
+    ObjectifSante $objectif,
+    CoachingSummaryService $service
+): JsonResponse {
     $this->denyAccessUnlessGranted('ROLE_USER');
 
-    // ✅ ممنوع تشوف هدف ماشي ديالك
     if ($objectif->getUser() !== $this->getUser()) {
         throw $this->createAccessDeniedException();
     }
 
-    return $this->render('front/objectif_sante/show.html.twig', [
-        'objectif_sante' => $objectif,
+    return $this->json($service->build($objectif));
+}
+#[Route('/{id}/dashboard-analytics', name: 'front_objectif_dashboard_analytics', methods: ['GET'])]
+public function dashboardAnalytics(
+    ObjectifSante $objectif,
+    DashboardAnalyticsService $service
+): JsonResponse {
+    $this->denyAccessUnlessGranted('ROLE_USER');
+
+    if ($objectif->getUser() !== $this->getUser()) {
+        throw $this->createAccessDeniedException();
+    }
+
+    return $this->json($service->build($objectif));
+}
+#[Route('/archives', name: 'front_objectif_sante_archives', methods: ['GET'])]
+public function archives(ObjectifSanteRepository $repo): Response
+{
+    $this->denyAccessUnlessGranted('ROLE_USER');
+    $user = $this->getUser();
+
+    $archived = $repo->createQueryBuilder('o')
+        ->andWhere('o.user = :user')
+        ->andWhere('o.archivedAt IS NOT NULL')
+        ->setParameter('user', $user)
+        ->orderBy('o.archivedAt', 'DESC')
+        ->getQuery()
+        ->getResult();
+
+    return $this->render('front/objectif_sante/archives.html.twig', [
+        'objectif_santes' => $archived,
     ]);
 }
+#[Route('/archives/{id}/pdf', name: 'front_objectif_archive_pdf', methods: ['GET'])]
+public function archivePdf(
+    ObjectifSante $objectif,
+    SuiviBienEtreRepository $suiviRepo
+): Response {
+    $this->denyAccessUnlessGranted('ROLE_USER');
+
+    if ($objectif->getUser() !== $this->getUser()) {
+        throw $this->createAccessDeniedException();
+    }
+
+    // ✅ لازم يكون Archived
+    if ($objectif->getArchivedAt() === null) {
+        throw $this->createNotFoundException('Objectif non archivé');
+    }
+
+    $suivis = $suiviRepo->findBy(['objectif' => $objectif], ['dateSaisie' => 'ASC']);
+
+    // ✅ حساب بسيط للـ scorePercent (بدلو حسب منطقك)
+    $lastScore = 0;
+    if (!empty($suivis)) {
+        $last = end($suivis);
+        $lastScore = $last->getScore();
+    }
+    $scorePercent = round($lastScore * 10); // إذا score /10
+
+    $html = $this->renderView('front/objectif_sante/objectif_archive.pdf.html.twig', [
+        'objectif' => $objectif,
+        'suivis' => $suivis,
+        'scorePercent' => $scorePercent,
+    ]);
+
+    $options = new Options();
+    $options->set('defaultFont', 'DejaVu Sans');
+
+    $dompdf = new Dompdf($options);
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
+
+    return new Response(
+        $dompdf->output(),
+        200,
+        [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="objectif_'.$objectif->getId().'.pdf"',
+        ]
+    );
+}
+
+#[Route('/{id}', name: 'front_objectif_sante_show', methods: ['GET'])]
+public function show(
+    ObjectifSante $objectif,
+    SuiviBienEtreRepository $repo,
+    DashboardAnalyticsService $analyticsService,
+    ChartBuilderInterface $chartBuilder
+): Response {
+    $this->denyAccessUnlessGranted('ROLE_USER');
+
+    if ($objectif->getUser() !== $this->getUser()) {
+        throw $this->createAccessDeniedException();
+    }
+
+    // 1) DATA series (Line)
+    $suivis = $repo->findBy(['objectif' => $objectif], ['dateSaisie' => 'ASC']);
+    $labels = [];
+    $scores = [];
+    foreach ($suivis as $s) {
+        $labels[] = $s->getDateSaisie()->format('d/m');
+        $scores[] = $s->getScore();
+    }
+
+    $scoreChart = $chartBuilder->createChart(Chart::TYPE_LINE);
+    $scoreChart->setData([
+        'labels' => $labels,
+        'datasets' => [[
+            'label' => 'Score',
+            'data' => $scores,
+            'tension' => 0.3,
+        ]],
+    ]);
+    $scoreChart->setOptions([
+    'responsive' => true,
+    'maintainAspectRatio' => false,
+]);
+
+
+    // 2) ANALYTICS (Bar + Pie)
+    $analytics = $analyticsService->build($objectif);
+
+    $indicators = $analytics['indicatorsAvg'] ?? [
+        'sommeil' => 0, 'energie' => 0, 'stress' => 0, 'alimentation' => 0
+    ];
+
+    $indicatorsChart = $chartBuilder->createChart(Chart::TYPE_BAR);
+    $indicatorsChart->setData([
+        'labels' => ['Sommeil', 'Énergie', 'Stress', 'Alimentation'],
+        'datasets' => [[
+            'label' => 'Moyenne /10',
+            'data' => [
+                $indicators['sommeil'] ?? 0,
+                $indicators['energie'] ?? 0,
+                $indicators['stress'] ?? 0,
+                $indicators['alimentation'] ?? 0,
+            ],
+        ]],
+    ]);
+    $indicatorsChart->setOptions([
+    'responsive' => true,
+    'maintainAspectRatio' => false,
+]);
+
+    $moods = $analytics['humeurDistribution'] ?? [];
+    $moodLabels = array_map(fn($m) => $m['humeur'] ?? '—', $moods);
+    $moodValues = array_map(fn($m) => $m['total'] ?? 0, $moods);
+
+    $moodChart = $chartBuilder->createChart(Chart::TYPE_PIE);
+    $moodChart->setData([
+        'labels' => $moodLabels,
+        'datasets' => [[
+            'data' => $moodValues,
+        ]],
+    ]);
+    $moodChart->setOptions([
+    'responsive' => true,
+    'maintainAspectRatio' => false,
+]);
+
+    return $this->render('front/objectif_sante/show.html.twig', [
+        'objectif_sante' => $objectif,
+
+        // charts (UX bundle)
+        'scoreChart' => $scoreChart,
+        'indicatorsChart' => $indicatorsChart,
+        'moodChart' => $moodChart,
+    ]);
+}
+
+#[Route('/share/pdf/{token}', name: 'share_pdf', methods: ['GET'])]
+public function sharePdfByToken(
+    string $token,
+    ObjectifSanteRepository $repo,
+    PdfGeneratorService $pdfService,
+    SuiviBienEtreRepository $suiviRepo
+): Response {
+    $objectif = $repo->findOneBy(['shareToken' => $token]);
+
+    if (!$objectif) {
+        throw $this->createNotFoundException('Lien invalide');
+    }
+
+    if ($objectif->getShareExpiresAt() && $objectif->getShareExpiresAt() < new \DateTimeImmutable()) {
+        throw $this->createNotFoundException('Lien expiré');
+    }
+
+    if (!$objectif->isArchived()) {
+        throw $this->createNotFoundException('Objectif non archivé');
+    }
+
+    // récupérer les suivis
+    $suivis = $suiviRepo->findBy(['objectif' => $objectif], ['dateSaisie' => 'ASC']);
+
+    // scorePercent (comme tu fais déjà)
+    $lastScore = 0;
+    if (!empty($suivis)) {
+        $last = end($suivis);
+        $lastScore = $last->getScore() ?? 0;
+    }
+    $scorePercent = round($lastScore * 10);
+
+    // Générer PDF et récupérer le path public (/archives_pdfs/xxx.pdf)
+    $publicPath = $pdfService->generateObjectifPdf($objectif, $suivis, $scorePercent);
+
+    // Convertir vers path physique
+    $filePath = $this->getParameter('kernel.project_dir') . '/public' . $publicPath;
+
+    if (!file_exists($filePath)) {
+        throw $this->createNotFoundException('PDF introuvable');
+    }
+
+    return new Response(file_get_contents($filePath), 200, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="objectif_'.$objectif->getId().'.pdf"',
+    ]);
+}
+
 
 }
 

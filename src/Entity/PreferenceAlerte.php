@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Entity;
-
+use App\Entity\User;
 use App\Repository\PreferenceAlerteRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -87,9 +87,6 @@ class PreferenceAlerte
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $dateMiseAJour = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $titre = null;
 
     #[Assert\Callback]
     public function validateSilenceTimes(\Symfony\Component\Validator\Context\ExecutionContextInterface $context)
@@ -279,17 +276,5 @@ class PreferenceAlerte
             return 'inapp';
         }
         return 'none';
-    }
-
-    public function getTitre(): ?string
-    {
-        return $this->titre;
-    }
-
-    public function setTitre(?string $titre): static
-    {
-        $this->titre = $titre;
-
-        return $this;
     }
 }

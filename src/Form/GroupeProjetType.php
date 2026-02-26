@@ -10,6 +10,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 
 
@@ -29,6 +30,13 @@ class GroupeProjetType extends AbstractType
 
         $builder
             ->add('nomProjet')
+            ->add('logoImageFile', VichImageType::class, [
+                'label' => 'Logo/Image du groupe',
+                'required' => false,
+                'allow_delete' => true,
+                'delete_label' => 'Supprimer l\'image',
+                'download_label' => 'Télécharger',
+            ])
             ->add('matiere', ChoiceType::class, [
                 'label' => 'Matière',
                 'choices' => $matiereChoices,
@@ -47,10 +55,6 @@ class GroupeProjetType extends AbstractType
                     'Actif' => 'Actif',
                     'Non actif' => 'Non actif',
                     'En pause' => 'En pause',
-                    'Annulé' => 'Annulé',
-                    'Terminé' => 'Terminé',
-                    'Effectué' => 'Effectué',
-                    'Pas effectué' => 'Pas effectué',
                 ],
                 'expanded' => true,
                 'multiple' => false,

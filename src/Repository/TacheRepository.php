@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Entity\Tache;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-
+use App\Entity\User;
 /**
  * @extends ServiceEntityRepository<Tache>
  *
@@ -99,46 +99,44 @@ class TacheRepository extends ServiceEntityRepository
     // SEARCH : 
     public function searchByTitre(?string $titre): array
     {
-        // If no title provided, return all tasks (more user-friendly)
         if (!$titre) {
-            return $this->findAll();
+            // Return empty array if nothing is searched
+            return [];
         }
 
         $qb = $this->createQueryBuilder('t')
-            ->where('LOWER(t.titre) LIKE :titre')
-            ->setParameter('titre', '%' . mb_strtolower($titre) . '%')
-            ->orderBy('t.dateDebut', 'ASC');
-
+            ->where('t.titre LIKE :titre')
+            ->setParameter('titre', '%' . $titre . '%');
         return $qb->getQuery()->getResult();
     }
 
     //filter by user email
     public function searchByUserEmail(?string $email): array
     {
-        // If empty email, return all tasks
         if (!$email) {
-            return $this->findAll();
+            // If empty input, return empty array to prevent showing all tasks
+            return [];
         }
 
         $qb = $this->createQueryBuilder('t')
-            ->join('t.user', 'u')
-            ->where('LOWER(u.email) LIKE :email')
-            ->setParameter('email', '%' . mb_strtolower($email) . '%')
+            ->join('t.user', 'u')                 // join tasks to user
+            ->where('LOWER(u.email) LIKE :email') // make search case-insensitive
+            ->setParameter('email', '%' . strtolower($email) . '%')
             ->orderBy('t.dateDebut', 'ASC');
 
         return $qb->getQuery()->getResult();
     }
 
     // src/Repository/TacheRepository.php
-    public function searchAjax(?string $titre, ?string $email, string $sortField = 'dateDebut', string $direction = 'DESC', ?string $type = null, ?string $statut = null, ?string $priorite = null): array
+    public function searchAjax(?string $titre, ?string $email, string $sort = 'desc', ?string $type = null, ?string $statut = null, ?string $priorite = null): array
     {
         $qb = $this->createQueryBuilder('t')
             ->leftJoin('t.user', 'u')
             ->addSelect('u');
 
         if ($titre) {
-            $qb->andWhere('LOWER(t.titre) LIKE :titre')
-                ->setParameter('titre', '%' . mb_strtolower($titre) . '%');
+            $qb->andWhere('t.titre LIKE :titre')
+                ->setParameter('titre', '%' . $titre . '%');
         }
 
         if ($email) {
@@ -146,35 +144,140 @@ class TacheRepository extends ServiceEntityRepository
                 ->setParameter('email', '%' . mb_strtolower($email) . '%');
         }
 
-        if ($type && $type !== '') {
+        if ($type) {
             $qb->andWhere('t.type = :type')
                 ->setParameter('type', $type);
         }
 
-        if ($statut && $statut !== '') {
+        if ($statut) {
             $qb->andWhere('t.statut = :statut')
                 ->setParameter('statut', $statut);
         }
 
-        if ($priorite && $priorite !== '') {
+        if ($priorite) {
             $qb->andWhere('t.priorite = :priorite')
                 ->setParameter('priorite', $priorite);
         }
 
-        // Secure sort field mapping
-        $allowed = [
-            'dateDebut' => 't.dateDebut',
-            'dateFin'   => 't.dateFin',
-            'priorite'  => 't.priorite',
-            'id'        => 't.id'
-        ];
-
-        $field = $allowed[$sortField] ?? $allowed['dateDebut'];
-        $dir = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
-        $qb->orderBy($field, $dir);
+        // Tri sécurisé
+        $sort = strtolower($sort) === 'asc' ? 'ASC' : 'DESC';
+        $qb->orderBy('t.dateDebut', $sort);
 
         return $qb->getQuery()->getResult();
     }
+    ##############################################################################################
+
+    public function findByUserSince(User $user, ?\DateTimeInterface $since = null): array
+    {
+        $qb = $this->createQueryBuilder('t')
+            ->andWhere('t.user = :user')
+            ->setParameter('user', $user);
+
+        if ($since !== null) {
+            $qb->andWhere('t.dateDebut >= :since OR t.dateFin >= :since')
+            ->setParameter('since', $since);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+
+    public function getTaskCompletionOverTime(User $user, int $days = 30): array
+{
+    $date = new \DateTimeImmutable("-$days days");
+    
+    $qb = $this->createQueryBuilder('t')
+        ->select('DATE(t.updatedAt) as date', 'COUNT(t.id) as count')
+        ->where('t.user = :user')
+        ->andWhere('t.statut = :status')
+        ->andWhere('t.updatedAt >= :date')
+        ->setParameter('user', $user)
+        ->setParameter('status', 'TERMINE')
+        ->setParameter('date', $date)
+        ->groupBy('date')
+        ->orderBy('date', 'ASC');
+    
+    return $qb->getQuery()->getResult();
+}
+
+public function getTaskCreationOverTime(User $user, int $days = 30): array
+{
+    $date = new \DateTimeImmutable("-$days days");
+    
+    $qb = $this->createQueryBuilder('t')
+        ->select('DATE(t.createdAt) as date', 'COUNT(t.id) as count')
+        ->where('t.user = :user')
+        ->andWhere('t.createdAt >= :date')
+        ->setParameter('user', $user)
+        ->setParameter('date', $date)
+        ->groupBy('date')
+        ->orderBy('date', 'ASC');
+    
+    return $qb->getQuery()->getResult();
+}
+
+public function getDailyTaskStats(User $user, int $days = 30): array
+{
+    $endDate = new \DateTimeImmutable('now');
+    $startDate = new \DateTimeImmutable("-$days days");
+    
+    // Initialize stats array for each day
+    $stats = [];
+    $interval = new \DateInterval('P1D');
+    $period = new \DatePeriod($startDate, $interval, $days);
+    
+    foreach ($period as $day) {
+        $dateStr = $day->format('Y-m-d');
+        $stats[$dateStr] = [
+            'created' => 0,
+            'completed' => 0,
+            'abandoned' => 0,
+            'in_progress' => 0
+        ];
+    }
+    
+    // Get ALL tasks
+    $allTasks = $this->createQueryBuilder('t')
+        ->where('t.user = :user')
+        ->setParameter('user', $user)
+        ->getQuery()
+        ->getResult();
+    
+    foreach ($allTasks as $task) {
+        // Count created date if it exists and is within the period
+        $createdAt = $task->getCreatedAt();
+        if ($createdAt) {
+            $createdDate = $createdAt->format('Y-m-d');
+            if (isset($stats[$createdDate])) {
+                $stats[$createdDate]['created']++;
+            }
+        }
+        
+        // Count completion date if task is completed and has updatedAt
+        if ($task->getStatut() === 'TERMINE') {
+            $updatedAt = $task->getUpdatedAt();
+            if ($updatedAt) {
+                $completedDate = $updatedAt->format('Y-m-d');
+                if (isset($stats[$completedDate])) {
+                    $stats[$completedDate]['completed']++;
+                }
+            }
+        }
+        
+        // Count abandoned date if task is abandoned and has updatedAt
+        if ($task->getStatut() === 'ABANDON') {
+            $updatedAt = $task->getUpdatedAt();
+            if ($updatedAt) {
+                $abandonedDate = $updatedAt->format('Y-m-d');
+                if (isset($stats[$abandonedDate])) {
+                    $stats[$abandonedDate]['abandoned']++;
+                }
+            }
+        }
+    }
+    
+    return $stats;
+}
 
 
 }

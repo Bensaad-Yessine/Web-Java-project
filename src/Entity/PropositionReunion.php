@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PropositionReunionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -37,14 +39,19 @@ class PropositionReunion
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
+
     #[ORM\Column(length: 255)]
     private ?string $status = null;
 
     #[ORM\Column]
     private ?\DateTime $dateCreation = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTime $dateFinVote = null;
+
     #[ORM\Column(nullable: true)]
     private ?int $nbrVoteAccept = null;
+
 
     #[ORM\ManyToOne(inversedBy: 'idReunion')]
     #[ORM\JoinColumn(nullable: false)]
@@ -55,6 +62,17 @@ class PropositionReunion
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTime $updatedAt = null;
+
+    /**
+     * @var Collection<int, Vote>
+     */
+    #[ORM\OneToMany(targetEntity: Vote::class, mappedBy: 'proposition', orphanRemoval: true)]
+    private Collection $votes;
+
+    public function __construct()
+    {
+        $this->votes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -169,10 +187,23 @@ class PropositionReunion
         return $this;
     }
 
+    public function getDateFinVote(): ?\DateTime
+    {
+        return $this->dateFinVote;
+    }
+
+    public function setDateFinVote(?\DateTime $dateFinVote): static
+    {
+        $this->dateFinVote = $dateFinVote;
+
+        return $this;
+    }
+
     public function getNbrVoteAccept(): ?int
     {
         return $this->nbrVoteAccept;
     }
+
 
     public function setNbrVoteAccept(?int $nbrVoteAccept): static
     {
@@ -277,5 +308,47 @@ class PropositionReunion
                 ->addViolation();
         }
 
+    }
+
+    /**
+     * @return Collection<int, Vote>
+     */
+    public function getVotes(): Collection
+    {
+        return $this->votes;
+    }
+
+    public function addVote(Vote $vote): static
+    {
+        if (!$this->votes->contains($vote)) {
+            $this->votes->add($vote);
+            $vote->setProposition($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVote(Vote $vote): static
+    {
+        if ($this->votes->removeElement($vote)) {
+            // set the owning side to null (unless already changed)
+            if ($vote->getProposition() === $this) {
+                $vote->setProposition(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Une réunion est archivée si sa date est strictement passée (hier ou avant).
+     */
+    public function isArchived(): bool
+    {
+        if (!$this->dateReunion) {
+            return false;
+        }
+        $today = new \DateTime('today midnight');
+        return $this->dateReunion < $today;
     }
 }

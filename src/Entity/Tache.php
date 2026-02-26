@@ -9,7 +9,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 
+/**
+ * @ORM\Entity(repositoryClass=TacheRepository::class)
+ * @ORM\HasLifecycleCallbacks()
+ */
 
 #[ORM\Entity(repositoryClass: TacheRepository::class)]
 class Tache
@@ -66,8 +71,8 @@ class Tache
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: "Le statut est obligatoire.")]
     #[Assert\Choice(
-        choices: ["A_FAIRE", "EN_COURS", "TERMINEE", "EN_RETARD", "PAUSED"],
-        message: 'Le statut doit être une valeur valide parmi : "A_FAIRE", "EN_COURS", "TERMINEE", "EN_RETARD", "PAUSED"'
+        choices: ["A_FAIRE", "EN_COURS", "TERMINE", "EN_RETARD", "PAUSED", "ABANDON"],
+        message: 'Le statut doit être une valeur valide parmi : "A_FAIRE", "EN_COURS", "TERMINE", "EN_RETARD", "PAUSED", "ABANDON"'
     )]
     private ?string $statut = null;
 
@@ -259,6 +264,18 @@ class Tache
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+        /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function updateTimestamps(): void
+    {
+        if ($this->getCreatedAt() === null) {
+            $this->setCreatedAt(new \DateTimeImmutable());
+        }
+        
+        $this->setUpdatedAt(new \DateTimeImmutable());
     }
 
 }

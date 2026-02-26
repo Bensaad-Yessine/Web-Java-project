@@ -1,0 +1,329 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Calendrier des réunions — ESPRIT{% endblock %}
+
+{% block stylesheets %}
+<style>
+    :root {
+        --primary-red: #dc2626;
+        --primary-red-dark: #b91c1c;
+        --gray-50: #f9fafb;
+        --gray-200: #e5e7eb;
+        --gray-500: #6b7280;
+        --gray-700: #374151;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.15);
+        --radius-lg: 12px;
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+        color: #111827;
+        min-height: 100vh;
+    }
+
+    .main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 32px 20px 60px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+
+    .h1 {
+        font-size: 28px;
+        margin: 0 0 6px;
+    }
+
+    .muted {
+        color: var(--gray-500);
+        margin: 0;
+    }
+
+    .btn {
+        border: 0;
+        background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+        color: white;
+        padding: 12px 20px;
+        border-radius: var(--radius-lg);
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .btn-outline {
+        background: white;
+        color: var(--gray-700);
+        border: 1px solid var(--gray-200);
+    }
+
+    .card {
+        background: white;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .legend-dot::before {
+        content: '';
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 8px;
+        background: var(--c);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<main class="main">
+    <header class="header">
+        <div>
+            <h1 class="h1">Calendrier des réunions</h1>
+            <p class="muted">Visualisez et gérez toutes vos réunions en un coup d'œil</p>
+        </div>
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+            <!-- Filtre par groupe -->
+            <select id="groupeFilter" style="padding:12px 18px; border:1px solid var(--gray-200); border-radius:var(--radius-lg); font-size:14px; background:white; cursor:pointer; min-width:180px;">
+                <option value="">Tous les groupes</option>
+                {% for groupe in groupes %}
+                    <option value="{{ groupe.id }}">{{ groupe.nomProjet }}</option>
+                {% endfor %}
+            </select>
+            <a href="{{ path('front_groupe_projet_index') }}" class="btn btn-outline" style="display:inline-flex; align-items:center; gap:8px; padding:12px 20px; text-decoration:none; border:1px solid var(--gray-200); border-radius:var(--radius-lg); font-weight:500; color:var(--gray-700); background:white;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                Mes groupes
+            </a>
+        </div>
+    </header>
+
+    <div class="profile-container">
+
+        <!-- Légende -->
+        <div style="display:flex; gap:20px; flex-wrap:wrap; margin-bottom:20px; padding:16px 20px; background:white; border-radius:var(--radius-lg); border:1px solid var(--gray-200); box-shadow:var(--shadow-sm);">
+            <span style="font-size:13px; font-weight:600; color:var(--gray-500); align-self:center;">Statut :</span>
+            <span class="legend-dot" style="--c:#3b82f6">En attente / Proposé</span>
+            <span class="legend-dot" style="--c:#22c55e">Acceptée / Confirmée</span>
+            <span class="legend-dot" style="--c:#ef4444">Refusée / Annulée</span>
+            <span class="legend-dot" style="--c:#f97316">Reportée</span>
+            <span class="legend-dot" style="--c:#9ca3af">Archivée (passée)</span>
+        </div>
+
+        <!-- Calendrier -->
+        <div class="card" style="padding:0; overflow:visible;">
+            <div id="calendar" style="padding:24px;"></div>
+        </div>
+
+    </div>
+</main>
+
+<!-- Tooltip flottant -->
+<div id="cal-tooltip" style="
+    display:none; position:fixed; z-index:9999;
+    background:white; border:1px solid var(--gray-200);
+    border-radius:var(--radius-lg); box-shadow:var(--shadow-lg);
+    padding:16px 20px; min-width:220px; max-width:300px;
+    pointer-events:none; font-size:14px;
+"></div>
+
+<!-- FullCalendar CDN -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+<script>
+const CAL_API_URL = '{{ path('api_propositions_calendar') }}';
+
+(function waitForFC() {
+    if (typeof FullCalendar === 'undefined') {
+        return setTimeout(waitForFC, 50);
+    }
+
+    const tooltip = document.getElementById('cal-tooltip');
+    const groupeFilter = document.getElementById('groupeFilter');
+    let calendar;
+
+    function initCalendar() {
+        const calEl = document.getElementById('calendar');
+        calendar = new FullCalendar.Calendar(calEl, {
+            locale: 'fr',
+            initialView: 'dayGridMonth',
+            initialDate: '{{ "now"|date("Y-m-d") }}',
+            height: 'auto',
+            headerToolbar: {
+                left:   'prev,next today',
+                center: 'title',
+                right:  'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+            },
+            buttonText: {
+                today:    "Aujourd'hui",
+                month:    'Mois',
+                week:     'Semaine',
+                day:      'Jour',
+                list:     'Agenda',
+            },
+            events: function (info, successCb, failureCb) {
+                const g = groupeFilter.value;
+                let url = CAL_API_URL + '?start=' + info.startStr.substring(0,10) + '&end=' + info.endStr.substring(0,10);
+                if (g) url += '&groupeId=' + g;
+                fetch(url, { credentials: 'same-origin' })
+                    .then(r => {
+                        if (!r.ok) throw new Error('HTTP ' + r.status);
+                        return r.json();
+                    })
+                    .then(data => {
+                        console.log('Événements reçus:', data.length, data);
+                        successCb(data);
+                    })
+                    .catch(err => {
+                        console.error('Erreur API calendrier:', err);
+                        failureCb();
+                    });
+            },
+            eventClick: function (info) {
+                info.jsEvent.preventDefault();
+                if (info.event.url) {
+                    window.location.href = info.event.url;
+                }
+            },
+            eventMouseEnter: function (info) {
+                const p = info.event.extendedProps;
+                const archived = p.archived ? '<span style="background:#f3f4f6;color:#6b7280;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;">Archivée</span>' : '';
+                tooltip.innerHTML = `
+                    <div style="font-weight:700;font-size:15px;margin-bottom:8px;color:#111827;">${info.event.title}</div>
+                    <div style="display:flex;flex-direction:column;gap:5px;color:#4b5563;">
+                        <div>📅 ${info.event.start ? info.event.start.toLocaleDateString('fr-FR', {weekday:'long',day:'numeric',month:'long'}) : ''}</div>
+                        <div>🕐 ${info.event.start ? info.event.start.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : ''} — ${info.event.end ? info.event.end.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : ''}</div>
+                        <div>📍 ${p.lieu || '—'}</div>
+                        <div>👥 ${p.groupe || '—'}</div>
+                        ${archived}
+                    </div>
+                `;
+                tooltip.style.display = 'block';
+            },
+            eventMouseLeave: function () {
+                tooltip.style.display = 'none';
+            },
+            eventDidMount: function (info) {
+                info.el.style.borderRadius = '8px';
+                info.el.style.border = 'none';
+                info.el.style.fontSize = '13px';
+                info.el.style.fontWeight = '600';
+                info.el.style.cursor = 'pointer';
+            },
+        });
+        calendar.render();
+    }
+
+    // Suivi de la souris pour le tooltip
+    document.addEventListener('mousemove', function (e) {
+        if (tooltip && tooltip.style.display === 'block') {
+            let x = e.clientX + 16;
+            let y = e.clientY + 16;
+            if (x + 320 > window.innerWidth) x = e.clientX - 320;
+            if (y + 200 > window.innerHeight) y = e.clientY - 200;
+            tooltip.style.left = x + 'px';
+            tooltip.style.top  = y + 'px';
+        }
+    });
+
+    // Filtre par groupe
+    groupeFilter.addEventListener('change', function () {
+        if (calendar) calendar.refetchEvents();
+    });
+
+    initCalendar();
+})();
+</script>
+
+<style>
+.legend-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-700);
+}
+.legend-dot::before {
+    content: '';
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--c);
+    flex-shrink: 0;
+}
+
+/* FullCalendar overrides */
+.fc .fc-toolbar-title {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #111827 !important;
+}
+.fc .fc-button-primary {
+    background: linear-gradient(135deg, var(--red-500), var(--orange-500)) !important;
+    border-color: transparent !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    box-shadow: none !important;
+    transition: all 0.2s !important;
+}
+.fc .fc-button-primary:hover {
+    background: linear-gradient(135deg, var(--red-600), var(--orange-600)) !important;
+    transform: translateY(-1px) !important;
+}
+.fc .fc-button-primary:not(.fc-button-active):focus {
+    box-shadow: none !important;
+}
+.fc .fc-button-active {
+    background: linear-gradient(135deg, var(--red-700), var(--orange-700)) !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2) !important;
+}
+.fc-day-today {
+    background: rgba(239, 68, 68, 0.04) !important;
+}
+.fc-day-today .fc-daygrid-day-number {
+    background: linear-gradient(135deg, var(--red-500), var(--orange-500));
+    color: white !important;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+.fc-col-header-cell-cushion {
+    font-weight: 600 !important;
+    color: #374151 !important;
+    text-decoration: none !important;
+}
+.fc-daygrid-day-number {
+    text-decoration: none !important;
+    color: #374151 !important;
+    font-weight: 500 !important;
+}
+.fc-event {
+    padding: 2px 6px !important;
+}
+.fc-list-event-title a {
+    text-decoration: none !important;
+    color: inherit !important;
+    font-weight: 600 !important;
+}
+</style>
+{% endblock %}

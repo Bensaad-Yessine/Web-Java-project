@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\SuiviBienEtre;
+use App\Entity\User;
+use App\Entity\ObjectifSante;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -21,7 +23,7 @@ public function findByUserAndObjectif(int $userId, int $objectifId): array
 {
     return $this->createQueryBuilder('s')
         ->join('s.objectif', 'o')
-        ->andWhere('o.user = :userId')
+        ->andWhere('IDENTITY(o.user) = :userId')
         ->andWhere('o.id = :objectifId')
         ->setParameter('userId', $userId)
         ->setParameter('objectifId', $objectifId)
@@ -125,7 +127,56 @@ public function searchFrontSuivis(int $objectifId, ?string $q, ?string $humeur, 
 
     return $qb->getQuery()->getResult();
 }
+    public function findLastTwoByObjectif(int $objectifId): array
+{
+    return $this->createQueryBuilder('s')
+        ->andWhere('s.objectif = :oid')
+        ->setParameter('oid', $objectifId)
+        ->orderBy('s.dateSaisie', 'DESC')
+        ->addOrderBy('s.id', 'DESC')
+        ->setMaxResults(2)
+        ->getQuery()
+        ->getResult();
+}
+public function findByObjectifOrdered(int $objectifId): array
+{
+    return $this->createQueryBuilder('s')
+        ->andWhere('s.objectif = :oid')
+        ->setParameter('oid', $objectifId)
+        ->orderBy('s.dateSaisie', 'ASC')
+        ->getQuery()
+        ->getResult();
+}
 
+public function getAggregatedStats(int $objectifId): array
+{
+    return $this->createQueryBuilder('s')
+        ->select(
+            'COUNT(s.id) as nbSuivis',
+            'AVG(s.score) as avgScore',
+            'MIN(s.score) as minScore',
+            'MAX(s.score) as maxScore',
+            'AVG(s.qualiteSommeil) as avgSleep',
+            'AVG(s.niveauEnergie) as avgEnergy',
+            'AVG(s.niveauStress) as avgStress',
+            'AVG(s.qualiteAlimentation) as avgFood'
+        )
+        ->andWhere('s.objectif = :oid')
+        ->setParameter('oid', $objectifId)
+        ->getQuery()
+        ->getSingleResult();
+}
+
+public function getHumeurDistribution(int $objectifId): array
+{
+    return $this->createQueryBuilder('s')
+        ->select('s.humeur, COUNT(s.id) as total')
+        ->andWhere('s.objectif = :oid')
+        ->setParameter('oid', $objectifId)
+        ->groupBy('s.humeur')
+        ->getQuery()
+        ->getResult();
+}
 
 //    /**
 //     * @return SuiviBienEtre[] Returns an array of SuiviBienEtre objects

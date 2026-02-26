@@ -57,6 +57,7 @@ public function searchFrontAjax($user, ?string $q, ?string $type, ?string $prior
     $qb = $this->createQueryBuilder('o')
         ->andWhere('o.user = :user')
         ->setParameter('user', $user);
+        $qb->andWhere('o.archivedAt IS NULL');
 
     if ($q) {
         $qb->andWhere('LOWER(o.titre) LIKE LOWER(:q)')

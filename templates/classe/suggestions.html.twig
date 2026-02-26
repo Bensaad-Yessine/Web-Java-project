@@ -1,0 +1,81 @@
+{% extends 'classe/base.html.twig' %}
+
+{% block title %}Suggestions de Matières - {{ classe.nom }}{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">🤖 Suggestions de Programme</h1>
+            <p class="text-muted mb-0">Matières recommandées pour <strong>{{ classe.nom }}</strong> ({{ classe.niveau }}{% if classe.filiere %} — {{ classe.filiere }}{% endif %})</p>
+        </div>
+        <a href="{{ path('app_classe_show', {id: classe.id}) }}" class="btn btn-outline-secondary btn-sm">← Retour</a>
+    </div>
+
+    {% if suggestions is empty %}
+    <div class="alert alert-info">
+        <strong>ℹ️ Aucune suggestion disponible.</strong> Il n'y a pas d'autres matières associées à des classes de même niveau ou filière.
+    </div>
+    {% else %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white">
+            <strong>{{ suggestions|length }} matière(s) suggérée(s)</strong>
+            <small class="text-muted ms-2">Basé sur le niveau "{{ classe.niveau }}"{% if classe.filiere %} et la filière "{{ classe.filiere }}"{% endif %}</small>
+        </div>
+        <form method="POST" action="{{ path('app_classe_suggestions', {id: classe.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('suggestions' ~ classe.id) }}">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th><input type="checkbox" id="selectAll" class="form-check-input"> Tout</th>
+                            <th>Matière</th>
+                            <th class="text-center">Complexité</th>
+                            <th class="text-center">Charge (h)</th>
+                            <th class="text-center">Coef.</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for matiere in suggestions %}
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="selected_matieres[]" value="{{ matiere.id }}" class="form-check-input suggestion-check">
+                            </td>
+                            <td class="fw-semibold">{{ matiere.nom }}</td>
+                            <td class="text-center">
+                                <span class="badge {% if matiere.scorecomplexite >= 7 %}bg-danger{% elseif matiere.scorecomplexite >= 4 %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                    {{ matiere.scorecomplexite }}/10
+                                </span>
+                            </td>
+                            <td class="text-center">{{ matiere.chargehoraire }}h</td>
+                            <td class="text-center">{{ matiere.coefficient }}</td>
+                            <td class="text-muted small">
+                                {% if matiere.description is not empty %}
+                                    {{ matiere.description|slice(0, 60) ~ (matiere.description|length > 60 ? '…' : '') }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer bg-white d-flex justify-content-between">
+                <span class="text-muted small">Sélectionnez les matières à ajouter à la classe</span>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    ✅ Ajouter les matières sélectionnées
+                </button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+document.getElementById('selectAll')?.addEventListener('change', function() {
+    document.querySelectorAll('.suggestion-check').forEach(cb => cb.checked = this.checked);
+});
+</script>
+{% endblock %}

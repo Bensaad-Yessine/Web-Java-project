@@ -40,6 +40,28 @@
             border-color: #dd4b39;
             color: white;
         }
+        .btn-faceid {
+            background-color: #111827;
+            border-color: #111827;
+            color: white;
+        }
+        .face-camera {
+            width: 100%;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #111827;
+        }
+        .face-camera video {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+        #face-status {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #0d6efd;
+        }
         .alert {
             border-radius: 5px;
             margin-bottom: 20px;
@@ -70,6 +92,31 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
                             {% endif %}
+
+                            <div id="face-login-section" class="mt-4" style="display: none;">
+                                <div class="alert alert-info text-center">
+                                    <i class="mdi mdi-face-recognition"></i>
+                                    <strong>Face Recognition Login</strong>
+                                    <p class="mb-0 mt-2 small">Click the button below to start your camera and login with your face</p>
+                                </div>
+
+                                <div id="face-status" class="text-center mb-3">
+                                    Ready to scan
+                                </div>
+
+                                <div class="face-camera" style="max-width: 640px; margin: 0 auto;">
+                                    <video id="face-video" autoplay playsinline style="display: none; width: 100%; height: auto; transform: scaleX(-1);"></video>
+                                    <canvas id="face-canvas" style="display: none;"></canvas>
+                                </div>
+
+                                <div class="text-center mt-3">
+                                    <button type="button"
+                                            id="face-start-button"
+                                            class="btn btn-primary btn-lg">
+                                        <i class="mdi mdi-camera"></i> Start Face Login
+                                    </button>
+                                </div>
+                            </div>
 
                             <form method="post">
                                 <div class="form-group">
@@ -102,22 +149,23 @@
                                         <i class="mdi mdi-login mr-2"></i>Login
                                     </button>
                                 </div>
-                                
-                                {# Uncomment if you want social login buttons
-                                <div class="d-flex mt-4">
-                                    <button class="btn btn-facebook me-2 col" type="button">
-                                        <i class="mdi mdi-facebook"></i> Facebook
-                                    </button>
-                                    <button class="btn btn-google col" type="button">
-                                        <i class="mdi mdi-google-plus"></i> Google
-                                    </button>
+
+                                <div class="d-grid gap-2 mt-3">
+                                    <a href="{{ path('connect_google') }}" class="btn btn-google">
+                                        <i class="mdi mdi-google mr-2"></i>Login with Gmail
+                                    </a>
                                 </div>
-                                #}
                                 
                                 <p class="sign-up text-center mt-4">
                                     Don't have an Account?<a href="{{ path('app_register') }}"> Sign Up</a>
                                 </p>
                             </form>
+
+                            <div class="d-grid gap-2 mt-3">
+                                <button type="button" class="btn btn-faceid" id="toggle-face-login">
+                                    <i class="mdi mdi-face-recognition mr-2"></i>Login with FaceID
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -135,63 +183,241 @@
     <script src="{{ asset('assets/js/todolist.js') }}"></script>
     
     <script>
-        // Add form validation and interactivity
-        document.addEventListener('DOMContentLoaded', function() {
-            const loginForm = document.querySelector('form');
-            const submitBtn = loginForm.querySelector('button[type="submit"]');
-            
-            loginForm.addEventListener('submit', function(e) {
-                // Validate form
-                const email = document.getElementById('inputEmail');
-                const password = document.getElementById('inputPassword');
-                
-                if (!email.value || !password.value) {
-                    e.preventDefault();
-                    if (!email.value) {
-                        email.classList.add('is-invalid');
-                    }
-                    if (!password.value) {
-                        password.classList.add('is-invalid');
-                    }
-                    return false;
-                }
-                
-                // Show loading state
-                submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin mr-2"></i>Logging in...';
-                submitBtn.disabled = true;
-            });
-            
-            // Remove invalid class on input
-            const inputs = document.querySelectorAll('.form-control');
-            inputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    this.classList.remove('is-invalid');
-                });
-            });
-            
-            // Password visibility toggle
-            const passwordInput = document.getElementById('inputPassword');
-            const passwordGroup = passwordInput.closest('.form-group');
-            
-            // Add eye icon to password field
-            const eyeIcon = document.createElement('span');
-            eyeIcon.className = 'mdi mdi-eye-off input-icon';
-            eyeIcon.style.cssText = 'position: absolute; right: 15px; top: 40px; cursor: pointer; color: #777;';
-            
-            passwordGroup.style.position = 'relative';
-            passwordGroup.appendChild(eyeIcon);
-            
-            eyeIcon.addEventListener('click', function() {
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    this.classList.remove('mdi-eye-off');
-                    this.classList.add('mdi-eye');
-                } else {
-                    passwordInput.type = 'password';
-                    this.classList.remove('mdi-eye');
-                    this.classList.add('mdi-eye-off');
-                }
-            });
+document.addEventListener('DOMContentLoaded', function() {
+
+    const loginForm = document.querySelector('form');
+    const submitBtn = loginForm.querySelector('button[type="submit"]');
+    const toggleFaceLogin = document.getElementById('toggle-face-login');
+    const faceLoginSection = document.getElementById('face-login-section');
+
+    /* ===============================
+       FORM VALIDATION
+    =============================== */
+    loginForm.addEventListener('submit', function(e) {
+        const email = document.getElementById('inputEmail');
+        const password = document.getElementById('inputPassword');
+
+        if (!email.value || !password.value) {
+            e.preventDefault();
+            if (!email.value) email.classList.add('is-invalid');
+            if (!password.value) password.classList.add('is-invalid');
+            return false;
+        }
+
+        submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin mr-2"></i>Logging in...';
+        submitBtn.disabled = true;
+    });
+
+    document.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
         });
-    </script>
+    });
+
+    /* ===============================
+       PASSWORD VISIBILITY TOGGLE
+    =============================== */
+    const passwordInput = document.getElementById('inputPassword');
+    const passwordGroup = passwordInput.closest('.form-group');
+
+    const eyeIcon = document.createElement('span');
+    eyeIcon.className = 'mdi mdi-eye-off';
+    eyeIcon.style.cssText = 'position:absolute;right:15px;top:40px;cursor:pointer;color:#777;';
+    passwordGroup.style.position = 'relative';
+    passwordGroup.appendChild(eyeIcon);
+
+    eyeIcon.addEventListener('click', function() {
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            this.classList.replace('mdi-eye-off', 'mdi-eye');
+        } else {
+            passwordInput.type = 'password';
+            this.classList.replace('mdi-eye', 'mdi-eye-off');
+        }
+    });
+
+    /* ===============================
+       FACE LOGIN TOGGLE
+    =============================== */
+    if (toggleFaceLogin && faceLoginSection) {
+
+        if (!document.getElementById('back-to-login')) {
+            const backBtn = document.createElement('div');
+            backBtn.className = 'text-center mt-3';
+            backBtn.innerHTML = '<button type="button" id="back-to-login" class="btn btn-outline-secondary"><i class="mdi mdi-arrow-left mr-1"></i> Back to Login</button>';
+            faceLoginSection.appendChild(backBtn);
+        }
+
+        function showFaceLogin() {
+            faceLoginSection.style.display = 'block';
+            loginForm.style.display = 'none';
+            toggleFaceLogin.style.display = 'none';
+            faceLoginSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showLoginForm() {
+            stopCamera();
+            faceLoginSection.style.display = 'none';
+            loginForm.style.display = 'block';
+            toggleFaceLogin.style.display = 'block';
+            updateStatus('Ready to scan', 'info');
+            const startBtn = document.getElementById('face-start-button');
+            if (startBtn) startBtn.disabled = false;
+        }
+
+        toggleFaceLogin.addEventListener('click', showFaceLogin);
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.id === 'back-to-login') showLoginForm();
+        });
+    }
+
+    /* ===============================
+       FACE LOGIN — PLAIN JS (no Stimulus)
+    =============================== */
+    let cameraStream = null;
+
+    function updateStatus(message, type = 'info') {
+        const statusEl = document.getElementById('face-status');
+        if (!statusEl) return;
+        const colors = { info: '#0d6efd', success: '#198754', error: '#dc3545', warning: '#ffc107' };
+        statusEl.textContent = message;
+        statusEl.style.color = colors[type] || colors.info;
+        statusEl.style.fontWeight = 'bold';
+    }
+
+    function stopCamera() {
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(track => track.stop());
+            cameraStream = null;
+        }
+        const video = document.getElementById('face-video');
+        if (video) { video.srcObject = null; video.style.display = 'none'; }
+    }
+
+    async function captureAndRecognize() {
+        const video = document.getElementById('face-video');
+        const canvas = document.getElementById('face-canvas');
+
+        if (!video || video.readyState !== video.HAVE_ENOUGH_DATA) {
+            return 'no_face';
+        }
+
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = canvas.toDataURL('image/jpeg', 0.95);
+
+        try {
+            const response = await fetch('/face-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: imageData })
+            });
+
+            const result = await response.json();
+            console.log('Face API response:', result);
+
+            if (response.ok && result.success) {
+                updateStatus('✅ Welcome ' + result.user_name + '! Logging in...', 'success');
+                stopCamera();
+                setTimeout(() => { window.location.href = result.redirect_url || '/'; }, 1500);
+                return 'success';
+
+            } else if (result.status === 'no_face') {
+                return 'no_face';
+
+            } else if (result.status === 'unknown') {
+                updateStatus('❌ Face not recognized. Please try password login.', 'error');
+                stopCamera();
+                setTimeout(() => {
+                    const startBtn = document.getElementById('face-start-button');
+                    if (startBtn) startBtn.disabled = false;
+                }, 3000);
+                return 'unknown';
+
+            } else if (result.status === 'banned') {
+                updateStatus('❌ Your account has been banned.', 'error');
+                stopCamera();
+                return 'banned';
+
+            } else if (result.status === 'unverified') {
+                updateStatus('⚠️ Your account is not verified. Please check your email.', 'warning');
+                stopCamera();
+                return 'unverified';
+
+            } else {
+                updateStatus('❌ ' + (result.message || 'Recognition failed'), 'error');
+                stopCamera();
+                setTimeout(() => {
+                    const startBtn = document.getElementById('face-start-button');
+                    if (startBtn) startBtn.disabled = false;
+                }, 3000);
+                return 'error';
+            }
+
+        } catch (error) {
+            console.error('Face API error:', error);
+            updateStatus('❌ Connection error. Make sure Flask API is running.', 'error');
+            stopCamera();
+            setTimeout(() => {
+                const startBtn = document.getElementById('face-start-button');
+                if (startBtn) startBtn.disabled = false;
+            }, 3000);
+            return 'error';
+        }
+    }
+
+    async function attemptCapture() {
+        const maxAttempts = 5;
+        for (let i = 1; i <= maxAttempts; i++) {
+            updateStatus('🔍 Analyzing face... (Attempt ' + i + '/' + maxAttempts + ')', 'info');
+            const result = await captureAndRecognize();
+            if (result === 'success') return;
+            if (result !== 'no_face') return; // fatal error, stop
+            await new Promise(resolve => setTimeout(resolve, 1500));
+        }
+        updateStatus('❌ Could not detect face clearly. Please try again with better lighting.', 'error');
+        setTimeout(() => {
+            stopCamera();
+            const startBtn = document.getElementById('face-start-button');
+            if (startBtn) startBtn.disabled = false;
+        }, 3000);
+    }
+
+    async function startFaceLogin() {
+        console.log('Starting face login...');
+        const startBtn = document.getElementById('face-start-button');
+        const video = document.getElementById('face-video');
+
+        try {
+            updateStatus('📸 Starting camera...', 'info');
+            if (startBtn) startBtn.disabled = true;
+
+            cameraStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } }
+            });
+
+            video.srcObject = cameraStream;
+            video.style.display = 'block';
+            updateStatus('📷 Camera active! Position your face in the center...', 'info');
+
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            await attemptCapture();
+
+        } catch (error) {
+            console.error('Camera error:', error);
+            updateStatus('❌ Camera access denied. Please allow camera access.', 'error');
+            if (startBtn) startBtn.disabled = false;
+        }
+    }
+
+    const faceStartBtn = document.getElementById('face-start-button');
+    if (faceStartBtn) {
+        faceStartBtn.addEventListener('click', startFaceLogin);
+        console.log('✓ Face login button wired up');
+    }
+
+});
+</script>
+</script>
 {% endblock %}

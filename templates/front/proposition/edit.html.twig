@@ -1,10 +1,17 @@
-{% extends 'front/base.html.twig' %}
+{% extends 'user/FrontOffice.html.twig' %}
 
 {% block title %}Modifier la proposition - {{ proposition_reunion.titre }}{% endblock %}
 
-{% set current_page = 'groupes' %}
+{% block head_extra %}
+<style>
+    #lieu-map-wrapper { display: none; margin-top: 12px; }
+    #lieu-map { width: 100%; height: 300px; border-radius: 10px; border: 2px solid #6366f1; }
+    #lieu-map-close { display: block; text-align: right; font-size: 12px; color: #6b7280; cursor: pointer; margin-bottom: 4px; }
+    #lieu-map-close:hover { color: #ef4444; }
+</style>
+{% endblock %}
 
-{% block content %}
+{% block body %}
 <main class="main">
 <header class="header">
     <div>
@@ -37,6 +44,7 @@
             <div class="card-content" style="padding: 24px;">
                 <div id="form-errors"></div>
                 {{ form_start(form, {'action': path('front_proposition_reunion_edit', {'id': proposition_reunion.id}), 'method': 'POST', 'attr': {'id': 'propositionForm'}}) }}
+                {{ form_errors(form) }}
 
                 <div class="form-group" style="margin-bottom: 20px;">
                     {{ form_label(form.titre) }}
@@ -51,9 +59,37 @@
                         {{ form_errors(form.dateReunion) }}
                     </div>
                     <div class="form-group" style="margin-bottom: 20px;">
+                        {{ form_label(form.dateFinVote) }}
+                        {{ form_widget(form.dateFinVote, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px;'}}) }}
+                        {{ form_errors(form.dateFinVote) }}
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-group" style="margin-bottom: 20px; position: relative;">
                         {{ form_label(form.lieu) }}
-                        {{ form_widget(form.lieu, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px;'}}) }}
+                        {# Champ Symfony réel (caché) - recevra adresse||lat,lng au submit #}
+                        {{ form_widget(form.lieu, {'attr': {'id': 'lieu-symfony-input', 'type': 'hidden', 'style': 'display:none;'}}) }}
+                        {# Champ visible pour l'utilisateur #}
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <div style="flex: 1;">
+                                <input type="text" id="lieu-display" autocomplete="off" class="form-control"
+                                    style="width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px;"
+                                    placeholder="Tapez un lieu ou cliquez sur la carte..."
+                                    value="{{ proposition_reunion.lieu ? (proposition_reunion.lieu|split('||')|first) : '' }}">
+                            </div>
+                            <button type="button" id="btn-open-map" style="white-space: nowrap; padding: 12px 14px; border: 1px solid #6366f1; background: #6366f1; color:white; border-radius: var(--radius); font-size: 13px; cursor: pointer; font-weight:600;">
+                                🗺 Carte
+                            </button>
+                            <button type="button" id="lieu-use-my-position" style="white-space: nowrap; padding: 12px 14px; border: 1px solid var(--gray-300); background: white; border-radius: var(--radius); font-size: 13px; cursor: pointer;">Ma position</button>
+                        </div>
                         {{ form_errors(form.lieu) }}
+                        <div id="lieu-map-wrapper" style="display:none; margin-top: 12px;">
+                            <span id="lieu-map-close" style="display: block; text-align: right; font-size: 12px; color: #6b7280; cursor: pointer; margin-bottom: 4px;">✕ Fermer la carte</span>
+                            <div id="lieu-map" style="width: 100%; height: 300px; border-radius: 10px; border: 2px solid #6366f1;"></div>
+                            <p style="margin-top:6px; font-size:12px; color:#6b7280;">Cliquez sur la carte pour choisir votre lieu.</p>
+                        </div>
+                        <p id="lieu-status" style="margin-top: 6px; font-size: 12px; color: #059669; font-weight:600;"></p>
                     </div>
                 </div>
 
@@ -101,66 +137,312 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('propositionForm');
-    if (!form) return;
+    // ===== VARIABLES GLOBALES CARTE =====
+    var _gMap = null;
+    var _gMarker = null;
+    var _gGeocoder = null;
+    var _gAutocomplete = null;
+    var _mapsReady = false;
+    // Coordonnées sélectionnées (null = pas encore choisi)
+    var _selLat = null;
+    var _selLng = null;
+    var _selAddr = '';
+    // Lieu existant depuis la base de données
+    var _existingLieu = "{{ proposition_reunion.lieu|e('js') }}";
 
-    form.addEventListener('submit', (e) => {
-      const dateField = form.querySelector('input[name="proposition_reunion[dateReunion]"]');
-      const startField = form.querySelector('input[name="proposition_reunion[heureDebut]"]');
-      const endField   = form.querySelector('input[name="proposition_reunion[heureFin]"]');
-      if (!dateField || !startField || !endField) return;
+    // ===== INITIALISATION GOOGLE MAPS =====
+    window.initGoogleMaps = function () {
+        _mapsReady = true;
+        _gGeocoder = new google.maps.Geocoder();
 
-      const dateVal = dateField.value;
-      const startVal = startField.value;
-      const endVal = endField.value;
-      if (!dateVal || !startVal || !endVal) return;
-
-      const [y,m,d] = dateVal.split('-').map(Number);
-      const [sh,sm] = startVal.split(':').map(Number);
-      const [eh,em] = endVal.split(':').map(Number);
-      const start = new Date(y, m-1, d, sh, sm, 0);
-      const end   = new Date(y, m-1, d, eh, em, 0);
-      const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const dateOnly = new Date(y, m-1, d);
-
-      const errors = [];
-
-      if (dateOnly < today) {
-        errors.push('La date ne peut pas être dans le passé.');
-      }
-
-      if (dateOnly.getTime() === today.getTime()) {
-        const minStart = new Date(now.getTime() + 60*60*1000);
-        if (start < minStart) {
-          errors.push('Pour aujourd\'hui, l\'heure de début doit être au moins +1h.');
+        // Autocomplete sur le champ visible
+        var displayInput = document.getElementById('lieu-display');
+        if (displayInput) {
+            _gAutocomplete = new google.maps.places.Autocomplete(displayInput, { types: ['geocode'] });
+            _gAutocomplete.addListener('place_changed', function () {
+                var place = _gAutocomplete.getPlace();
+                if (place && place.geometry) {
+                    var lat = place.geometry.location.lat();
+                    var lng = place.geometry.location.lng();
+                    var addr = place.formatted_address || place.name || displayInput.value || '';
+                    _openMap(lat, lng);
+                    _saveLocation(addr, lat, lng);
+                }
+            });
         }
-      }
 
-      let endForDiff = end;
-      if (endForDiff <= start) {
-        endForDiff = new Date(endForDiff.getTime() + 24*60*60*1000); // overnight -> next day
-      }
-      const diffMinutes = Math.round((endForDiff - start) / 60000);
-      if (diffMinutes <= 0) {
-        errors.push('L\'heure de fin doit être après l\'heure de début.');
-      } else {
-        if (diffMinutes < 30) errors.push('La durée doit être au moins de 30 minutes.');
-        if (diffMinutes > 300) errors.push('La durée maximale est de 5 heures.');
-      }
+        // Charger le lieu existant depuis la BDD
+        // NE PAS écraser si l'utilisateur a déjà soumis une nouvelle valeur
+        // (lors d'un rechargement Symfony après erreur de validation)
+        var currentHidden = document.getElementById('lieu-symfony-input');
+        var alreadyChanged = currentHidden && currentHidden.value && currentHidden.value !== _existingLieu;
 
-      if (errors.length) {
-        e.preventDefault();
-        if (errorContainer) {
-          errorContainer.innerHTML = '<div class="alert alert-danger" role="alert">' + errors.join('<br>') + '</div>';
-          errorContainer.scrollIntoView({behavior:'smooth'});
+        if (!alreadyChanged && _existingLieu) {
+            if (_existingLieu.indexOf('||') !== -1) {
+                var parts = _existingLieu.split('||');
+                var addr = parts[0].trim();
+                var coordStr = parts[1].trim();
+                var latLng = coordStr.split(',');
+                var lat = parseFloat(latLng[0]);
+                var lng = parseFloat(latLng[1]);
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    _saveLocation(addr, lat, lng);
+                    _openMap(lat, lng);
+                }
+            }
+            // Si pas de coordonnées (texte seul), on affiche juste le texte — pas de carte auto
+        } else if (alreadyChanged && currentHidden.value) {
+            // Valeur soumise différente (rechargement après erreur) — lire les coords si disponibles
+            var submittedVal = currentHidden.value;
+            var displayInput = document.getElementById('lieu-display');
+            if (submittedVal.indexOf('||') !== -1) {
+                var sp = submittedVal.split('||');
+                var sAddr = sp[0].trim();
+                var sCoordsStr = sp[1].trim();
+                var sLatLng = sCoordsStr.split(',');
+                var sLat = parseFloat(sLatLng[0]);
+                var sLng = parseFloat(sLatLng[1]);
+                if (!isNaN(sLat) && !isNaN(sLng)) {
+                    _selLat = sLat; _selLng = sLng; _selAddr = sAddr;
+                    if (displayInput) displayInput.value = sAddr || (sLat.toFixed(6) + ', ' + sLng.toFixed(6));
+                    _openMap(sLat, sLng);
+                }
+            } else {
+                // Coordonnées seules (sans adresse)
+                var sParts = submittedVal.split(',');
+                if (sParts.length >= 2) {
+                    var sLat2 = parseFloat(sParts[0]);
+                    var sLng2 = parseFloat(sParts[1]);
+                    if (!isNaN(sLat2) && !isNaN(sLng2)) {
+                        _selLat = sLat2; _selLng = sLng2; _selAddr = '';
+                        if (displayInput) displayInput.value = sLat2.toFixed(6) + ', ' + sLng2.toFixed(6);
+                        _openMap(sLat2, sLng2);
+                    }
+                } else if (displayInput && !displayInput.value) {
+                    displayInput.value = submittedVal;
+                }
+            }
+        }
+    };
+
+    // Ouvrir/afficher la carte à lat/lng
+    function _openMap(lat, lng) {
+        var wrapper = document.getElementById('lieu-map-wrapper');
+        var mapDiv  = document.getElementById('lieu-map');
+        if (!wrapper || !mapDiv) return;
+        wrapper.style.display = 'block';
+
+        if (!_gMap) {
+            _gMap = new google.maps.Map(mapDiv, {
+                center: { lat: lat, lng: lng },
+                zoom: 15,
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: false,
+                clickableIcons: false
+            });
+            _gMap.addListener('click', function (e) {
+                var clat = e.latLng.lat();
+                var clng = e.latLng.lng();
+                _placeMarker(clat, clng);
+                _reverseGeocode(clat, clng);
+            });
         } else {
-          alert(errors.join('\n'));
+            _gMap.setCenter({ lat: lat, lng: lng });
+            _gMap.setZoom(15);
         }
-      }
+        _placeMarker(lat, lng);
+    }
+
+    function _placeMarker(lat, lng) {
+        if (!_gMap) return;
+        if (_gMarker) _gMarker.setMap(null);
+        _gMarker = new google.maps.Marker({
+            position: { lat: lat, lng: lng },
+            map: _gMap,
+            animation: google.maps.Animation.DROP
+        });
+    }
+
+    // Sauvegarder la position sélectionnée (met à jour toutes les variables et l'UI)
+    function _saveLocation(addr, lat, lng) {
+        _selLat  = lat;
+        _selLng  = lng;
+        _selAddr = addr || '';
+
+        // Champ visible
+        var displayInput = document.getElementById('lieu-display');
+        if (displayInput) displayInput.value = _selAddr || (lat.toFixed(6) + ', ' + lng.toFixed(6));
+
+        // Champ Symfony caché — toujours format adresse||lat,lng
+        var hiddenInput = document.getElementById('lieu-symfony-input');
+        if (hiddenInput) {
+            var coordStr = lat.toFixed(6) + ',' + lng.toFixed(6);
+            var displayStr = _selAddr || (lat.toFixed(6) + ', ' + lng.toFixed(6));
+            hiddenInput.value = displayStr + '||' + coordStr;
+        }
+
+        // Status
+        var statusEl = document.getElementById('lieu-status');
+        if (statusEl) statusEl.textContent = '✅ Lieu enregistré : ' + (_selAddr || lat.toFixed(6) + ', ' + lng.toFixed(6));
+    }
+
+    function _reverseGeocode(lat, lng) {
+        if (_gGeocoder) {
+            _gGeocoder.geocode({ location: { lat: lat, lng: lng } }, function (results, status) {
+                if (status === 'OK' && results[0]) {
+                    _saveLocation(results[0].formatted_address, lat, lng);
+                } else {
+                    _saveLocation('', lat, lng);
+                }
+            });
+        } else {
+            _saveLocation('', lat, lng);
+        }
+    }
+
+    // ===== ÉVÉNEMENTS DOM =====
+    document.addEventListener('DOMContentLoaded', function () {
+        var openMapBtn = document.getElementById('btn-open-map');
+        var locateBtn  = document.getElementById('lieu-use-my-position');
+        var closeBtn   = document.getElementById('lieu-map-close');
+
+        // Bouton "Carte" : ouvre la carte sur Tunis par défaut
+        if (openMapBtn) {
+            openMapBtn.addEventListener('click', function () {
+                if (!_mapsReady) {
+                    alert('Google Maps est en cours de chargement, veuillez réessayer dans un instant.');
+                    return;
+                }
+                var defaultLat = 36.8065, defaultLng = 10.1815;
+                if (_selLat !== null) {
+                    _openMap(_selLat, _selLng);
+                } else {
+                    _openMap(defaultLat, defaultLng);
+                }
+            });
+        }
+
+        // Bouton "Ma position"
+        if (locateBtn) {
+            locateBtn.addEventListener('click', function () {
+                if (!_mapsReady) {
+                    alert('Google Maps est en cours de chargement, veuillez réessayer dans un instant.');
+                    return;
+                }
+                if (!navigator.geolocation) {
+                    _openMap(36.8065, 10.1815);
+                    return;
+                }
+                locateBtn.disabled = true;
+                locateBtn.textContent = '...';
+                navigator.geolocation.getCurrentPosition(
+                    function (pos) {
+                        locateBtn.disabled = false;
+                        locateBtn.textContent = 'Ma position';
+                        _openMap(pos.coords.latitude, pos.coords.longitude);
+                        _reverseGeocode(pos.coords.latitude, pos.coords.longitude);
+                    },
+                    function () {
+                        locateBtn.disabled = false;
+                        locateBtn.textContent = 'Ma position';
+                        _openMap(36.8065, 10.1815);
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            });
+        }
+
+        // Fermer la carte
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function () {
+                document.getElementById('lieu-map-wrapper').style.display = 'none';
+            });
+        }
+
+        // Synchronisation en temps réel : si l'utilisateur tape manuellement, reset les coords carte
+        var displayInputSync = document.getElementById('lieu-display');
+        var hiddenInputSync  = document.getElementById('lieu-symfony-input');
+        if (displayInputSync && hiddenInputSync) {
+            displayInputSync.addEventListener('input', function () {
+                // Toujours synchroniser vers le champ caché et annuler les coords sélectionnées
+                _selLat = null;
+                _selLng = null;
+                _selAddr = '';
+                hiddenInputSync.value = displayInputSync.value.trim();
+            });
+        }
+
+        // ===== SOUMISSION DU FORMULAIRE =====
+        var form = document.getElementById('propositionForm');
+        if (!form) return;
+
+        form.addEventListener('submit', function (e) {
+            // Synchroniser lieu-display → lieu-symfony-input si pas de coordonnées carte
+            var hiddenInput = document.getElementById('lieu-symfony-input');
+            var displayInput = document.getElementById('lieu-display');
+            if (hiddenInput && _selLat === null && displayInput && displayInput.value.trim()) {
+                hiddenInput.value = displayInput.value.trim();
+            }
+
+            // Validation des dates/heures
+            var dateField    = form.querySelector('input[name="proposition_reunion[dateReunion]"]');
+            var voteEndField = form.querySelector('input[name="proposition_reunion[dateFinVote]"]');
+            var startField   = form.querySelector('input[name="proposition_reunion[heureDebut]"]');
+            var endField     = form.querySelector('input[name="proposition_reunion[heureFin]"]');
+            if (!dateField || !startField || !endField) return;
+
+            var dateVal  = dateField.value;
+            var startVal = startField.value;
+            var endVal   = endField.value;
+            if (!dateVal || !startVal || !endVal) return;
+
+            var dateParts  = dateVal.split('-').map(Number);
+            var startParts = startVal.split(':').map(Number);
+            var endParts   = endVal.split(':').map(Number);
+            var y = dateParts[0], m = dateParts[1], d = dateParts[2];
+            var start = new Date(y, m-1, d, startParts[0], startParts[1], 0);
+            var end   = new Date(y, m-1, d, endParts[0],   endParts[1],   0);
+            var now   = new Date();
+            var today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            var dateOnly = new Date(y, m-1, d);
+
+            var errors = [];
+            var errorContainer = document.getElementById('form-errors');
+            if (errorContainer) errorContainer.innerHTML = '';
+
+            if (dateOnly < today) errors.push('La date ne peut pas être dans le passé.');
+
+            var voteEndVal = voteEndField ? voteEndField.value : '';
+            if (voteEndVal) {
+                if (new Date(voteEndVal) < now) errors.push('La fin du vote doit être dans le futur.');
+            }
+
+            // En mode édition : ne pas vérifier l'heure de début (+1h) pour ne pas bloquer
+            // une proposition existante dont l'heure n'est pas modifiée
+
+            var endForDiff = end;
+            if (endForDiff <= start) endForDiff = new Date(endForDiff.getTime() + 24*60*60*1000);
+            var diffMinutes = Math.round((endForDiff - start) / 60000);
+            if (diffMinutes <= 0) {
+                errors.push("L'heure de fin doit être après l'heure de début.");
+            } else {
+                if (diffMinutes < 30)  errors.push('La durée doit être au moins de 30 minutes.');
+                if (diffMinutes > 300) errors.push('La durée maximale est de 5 heures.');
+            }
+
+            if (errors.length) {
+                e.preventDefault();
+                if (errorContainer) {
+                    errorContainer.innerHTML = '<div class="alert alert-danger" role="alert">' + errors.join('<br>') + '</div>';
+                    errorContainer.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert(errors.join('\n'));
+                }
+            }
+        });
     });
-  });
 </script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places&callback=initGoogleMaps" async defer></script>
 </main>
 {% endblock %}

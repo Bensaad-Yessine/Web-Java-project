@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/front/groupe/projet')]
+#[Route('/front')]
 final class FrontGroupeProjetController extends AbstractController
 {
     #[Route('', name: 'front_groupe_projet_index', methods: ['GET', 'POST'])]
@@ -52,22 +52,33 @@ final class FrontGroupeProjetController extends AbstractController
             return $sortOrder === 'ASC' ? $result : -$result;
         });
 
+        // Pagination
+        $limit = 3;
+        $totalGroupes = count($groupesProjets);
+        $totalPages = (int) ceil($totalGroupes / $limit);
+        $page = max(1, min((int) $request->get('page', 1), $totalPages ?: 1));
+        $offset = ($page - 1) * $limit;
+        $groupesProjetsPage = array_slice(array_values($groupesProjets), $offset, $limit);
+
         if ($request->isXmlHttpRequest()) {
             $html = '';
-            foreach ($groupesProjets as $groupe) {
+            foreach ($groupesProjetsPage as $groupe) {
                 $html .= $this->renderView('front/groupe/_group_card.html.twig', ['groupe' => $groupe]);
             }
             return $this->json([
                 'success' => true,
                 'html' => $html,
-                'count' => count($groupesProjets),
+                'count' => $totalGroupes,
             ]);
         }
 
         return $this->render('front/groupe/index.html.twig', [
-            'groupe_projets' => $groupesProjets,
-            'current_page' => 'groupes', // <-- new
-
+            'groupe_projets' => $groupesProjetsPage,
+            'total_groupes' => $totalGroupes,
+            'current_page' => $page,
+            'total_pages' => $totalPages,
+            'limit' => $limit,
+            'tasks' => [],
         ]);
     }
 
@@ -103,6 +114,7 @@ final class FrontGroupeProjetController extends AbstractController
         return $this->render('front/groupe/new.html.twig', [
             'groupe_projet' => $groupeProjet,
             'form' => $form,
+            'tasks' => [],
         ]);
     }
 
@@ -133,16 +145,36 @@ final class FrontGroupeProjetController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($propositionReunion);
-            $entityManager->flush();
-            $this->addFlash('success', 'Proposition de réunion créée avec succès!');
-            return $this->redirectToRoute('front_groupe_projet_show', ['id' => $groupeProjet->getId()], Response::HTTP_SEE_OTHER);
+            // PHP Assertions for business logic validation
+            try {
+                $titre = $propositionReunion->getTitre();
+                $description = $propositionReunion->getDescription();
+                
+                // Business logic assertions - min lengths
+                assert(strlen(trim($titre ?? '')) >= 3, "Le titre doit contenir au moins 3 caractères");
+                assert(strlen(trim($description ?? '')) >= 10, "La description doit contenir au moins 10 caractères");
+                
+                // All assertions passed, save the entity
+                $entityManager->persist($propositionReunion);
+                $entityManager->flush();
+                $this->addFlash('success', 'Proposition de réunion créée avec succès!');
+                return $this->redirectToRoute('front_proposition_reunion_show', ['id' => $propositionReunion->getId()], Response::HTTP_SEE_OTHER);
+            } catch (\AssertionError $e) {
+                $this->addFlash('error', $e->getMessage());
+            }
+        } elseif ($form->isSubmitted() && !$form->isValid()) {
+            // Form validation failed - collect errors
+            foreach ($form->getErrors(true) as $error) {
+                $this->addFlash('error', $error->getMessage());
+            }
         }
 
         return $this->render('front/proposition/new.html.twig', [
             'groupe_projet' => $groupeProjet,
             'proposition_reunion' => $propositionReunion,
             'form' => $form,
+            'tasks' => [],
+            'google_maps_api_key' => $_ENV['GOOGLE_MAPS_API_KEY'] ?? '',
         ]);
     }
 
@@ -160,6 +192,7 @@ final class FrontGroupeProjetController extends AbstractController
         return $this->render('front/groupe/show.html.twig', [
             'groupe_projet' => $groupeProjet,
             'propositions' => $propositions,
+            'tasks' => [],
         ]);
     }
 
@@ -189,6 +222,7 @@ final class FrontGroupeProjetController extends AbstractController
         return $this->render('front/groupe/edit.html.twig', [
             'groupe_projet' => $groupeProjet,
             'form' => $form,
+            'tasks' => [],
         ]);
     }
 
@@ -224,18 +258,13 @@ final class FrontGroupeProjetController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        // Récupérer toutes les propositions des groupes dont l'utilisateur fait partie
-        $propositions = $propositionRepo->createQueryBuilder('p')
-            ->join('p.idGroupe', 'g')
-            ->join('g.idUser', 'u')
-            ->where('u.id = :userId')
-            ->setParameter('userId', $user->getId())
-            ->orderBy('p.dateCreation', 'DESC')
-            ->getQuery()
-            ->getResult();
+        $propositionsActives  = $propositionRepo->findActiveByUser($user);
+        $propositionsArchives = $propositionRepo->findArchivedByUser($user);
 
         return $this->render('front/proposition/index.html.twig', [
-            'propositions' => $propositions,
+            'propositions'          => $propositionsActives,
+            'propositions_archives' => $propositionsArchives,
+            'tasks' => [],
         ]);
     }
 
@@ -253,6 +282,8 @@ final class FrontGroupeProjetController extends AbstractController
         return $this->render('front/proposition/show.html.twig', [
             'proposition_reunion' => $proposition,
             'groupe_projet' => $groupeProjet,
+            'tasks' => [],
+            'google_maps_api_key' => $_ENV['GOOGLE_MAPS_API_KEY'] ?? '',
         ]);
     }
 
@@ -285,6 +316,8 @@ final class FrontGroupeProjetController extends AbstractController
             'proposition_reunion' => $proposition,
             'groupe_projet' => $groupeProjet,
             'form' => $form,
+            'tasks' => [],
+            'google_maps_api_key' => $_ENV['GOOGLE_MAPS_API_KEY'] ?? '',
         ]);
     }
 

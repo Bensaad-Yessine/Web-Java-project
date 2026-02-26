@@ -19,11 +19,10 @@ class ClasseType extends AbstractType
             ->add('anneeuniversitaire')
             ->add('matiereClasses', EntityType::class, [
                 'class' => MatiereClasse::class,
-                'choice_label' => 'id', // or any property of MatiereClasse
+                'choice_label' => 'id',
                 'multiple' => true,
                 'expanded' => false,
             ])
-            
         ;
     }
 

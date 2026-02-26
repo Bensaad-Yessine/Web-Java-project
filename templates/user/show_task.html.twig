@@ -817,7 +817,7 @@
                     </div>
                                         <!-- Action Buttons -->
                     <div>
-                        <form method="post" action="{{ path('app_task_show', {'id': task.id}) }}" class="action-buttons-form">
+                        <form method="post" action="{{ path('app_tache_action_user', {'id': task.id}) }}" class="action-buttons-form">
                             <div class="btn-group-vertical" role="group" aria-label="Actions de la tâche">
                                 <!-- Start Button -->
                                 {% if task.statut != 'En cours' and task.statut != 'EN_COURS' and task.statut != 'Terminé' and task.statut != 'TERMINEE' and task.statut != 'Abandonné' %}
@@ -976,7 +976,7 @@
                             </svg>
                             Modifier
                         </a>
-                        <form method="post" action="{{ path('app_tache_delete', {'id': task.id}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?');">
+                        <form method="post" action="{{ path('app_task_delete', {'id': task.id}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?');">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ task.id) }}">
                             <button class="btn" style="background: var(--danger);">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

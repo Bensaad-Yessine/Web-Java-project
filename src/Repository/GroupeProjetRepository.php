@@ -19,7 +19,6 @@ class GroupeProjetRepository extends ServiceEntityRepository
 
     /**
      * Groupes dont l'utilisateur fait partie (un membre ne voit que ses groupes).
-     * Optimized with eager loading to prevent N+1 queries
      *
      * @return GroupeProjet[]
      */
@@ -27,11 +26,6 @@ class GroupeProjetRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('g')
             ->innerJoin('g.idUser', 'u')
-            ->addSelect('u')
-            ->leftJoin('g.createdBy', 'cb')
-            ->addSelect('cb')
-            ->leftJoin('g.idReunion', 'r')
-            ->addSelect('r')
             ->andWhere('u.id = :userId')
             ->setParameter('userId', $user->getId())
             ->orderBy('g.CreatedAt', 'DESC')
@@ -63,59 +57,4 @@ class GroupeProjetRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-    /**
-     * Finds groups based on filters.
-     */
-    public function findWithFilters(
-        ?string $search = null,
-        ?string $matiere = null,
-        ?string $statut = null,
-        string $sort = 'id',
-        string $direction = 'asc'
-    ): array {
-        $qb = $this->createQueryBuilder('g');
-
-        if ($search) {
-            $qb->andWhere('g.nomProjet LIKE :search OR g.description LIKE :search OR g.matiere LIKE :search')
-               ->setParameter('search', '%' . $search . '%');
-        }
-
-        if ($matiere) {
-            $qb->andWhere('g.matiere = :matiere')
-               ->setParameter('matiere', $matiere);
-        }
-
-        if ($statut) {
-            $qb->andWhere('g.statut = :statut')
-               ->setParameter('statut', $statut);
-        }
-
-        $validSorts = ['id', 'nomProjet', 'matiere', 'statut', 'nbrMembre', 'CreatedAt'];
-        if (in_array($sort, $validSorts)) {
-            $dbSort = $sort;
-            // Map sort keys to DB fields if necessary
-            $qb->orderBy('g.' . $dbSort, strtoupper($direction));
-        }
-
-        return $qb->getQuery()->getResult();
-    }
-
-    /**
-     * Find all groups with eager loading to prevent N+1 queries
-     * 
-     * @return GroupeProjet[]
-     */
-    public function findAllOptimized(): array
-    {
-        return $this->createQueryBuilder('g')
-            ->leftJoin('g.idUser', 'u')
-            ->addSelect('u')
-            ->leftJoin('g.createdBy', 'cb')
-            ->addSelect('cb')
-            ->leftJoin('g.idReunion', 'r')
-            ->addSelect('r')
-            ->orderBy('g.CreatedAt', 'DESC')
-            ->getQuery()
-            ->getResult();
-    }
 }

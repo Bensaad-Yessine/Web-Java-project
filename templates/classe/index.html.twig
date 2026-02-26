@@ -294,6 +294,7 @@
           </li>
           
           <!-- Utilisateurs -->
+          {% if is_granted('ROLE_ADMIN') %}
           <li class="nav-item menu-items">
             <a class="nav-link" href="{{ path('app_user_index') }}">
               <span class="menu-icon">
@@ -302,10 +303,20 @@
               <span class="menu-title">Utilisateurs</span>
             </a>
           </li>
+          {% else %}
+          <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_user_profile') }}">
+              <span class="menu-icon">
+                <i class="mdi mdi-account-circle"></i>
+              </span>
+              <span class="menu-title">Mon Profil</span>
+            </a>
+          </li>
+          {% endif %}
           
           <!-- Matières -->
           <li class="nav-item menu-items">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ path('app_matiere_classe_index') }}">
               <span class="menu-icon">
                 <i class="mdi mdi-book-open-page-variant"></i>
               </span>
@@ -409,7 +420,7 @@
             <ul class="navbar-nav w-100">
               <li class="nav-item w-100">
                 <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                  <input type="text" class="form-control" placeholder="Rechercher une classe..." id="searchInput">
+                  <input type="text" class="form-control" placeholder="Rechercher une classe..." id="searchInput" name="nom" value="{{ nom|default('') }}">
                 </form>
               </li>
             </ul>
@@ -744,26 +755,26 @@
                         </a>
                       </div>
                     {% else %}
-                      <div class="table-responsive">
+                      <div class="table-responsive" id="classeTableContainer">
                         <table class="table table-hover" id="classesTable">
                           <thead>
                             <tr>
                               <th>ID</th>
                               <th>
-                                <a href="{{ path('app_classe_index', {sort: sort == 'nom_asc' ? 'nom_desc' : 'nom_asc'}) }}" class="text-decoration-none">
+                                <a href="{{ path('app_classe_index', {sort: sort == 'nom_asc' ? 'nom_desc' : 'nom_asc'}) }}" class="text-decoration-none sort-link" data-sort="{{ sort == 'nom_asc' ? 'nom_desc' : 'nom_asc' }}">
                                   Classe
                                   {% if sort == 'nom_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'nom_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
                                 </a>
                               </th>
                               <th>Nom Complet</th>
                               <th>
-                                <a href="{{ path('app_classe_index', {sort: sort == 'niveau_asc' ? 'niveau_desc' : 'niveau_asc'}) }}" class="text-decoration-none">
+                                <a href="{{ path('app_classe_index', {sort: sort == 'niveau_asc' ? 'niveau_desc' : 'niveau_asc'}) }}" class="text-decoration-none sort-link" data-sort="{{ sort == 'niveau_asc' ? 'niveau_desc' : 'niveau_asc' }}">
                                   Niveau
                                   {% if sort == 'niveau_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'niveau_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
                                 </a>
                               </th>
                               <th>
-                                <a href="{{ path('app_classe_index', {sort: sort == 'anneeuniversitaire_asc' ? 'anneeuniversitaire_desc' : 'anneeuniversitaire_asc'}) }}" class="text-decoration-none">
+                                <a href="{{ path('app_classe_index', {sort: sort == 'anneeuniversitaire_asc' ? 'anneeuniversitaire_desc' : 'anneeuniversitaire_asc'}) }}" class="text-decoration-none sort-link" data-sort="{{ sort == 'anneeuniversitaire_asc' ? 'anneeuniversitaire_desc' : 'anneeuniversitaire_asc' }}">
                                   Année Universitaire
                                   {% if sort == 'anneeuniversitaire_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'anneeuniversitaire_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
                                 </a>

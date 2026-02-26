@@ -1,10 +1,8 @@
-{% extends 'front/base.html.twig' %}
+{% extends 'user/FrontOffice.html.twig' %}
 
 {% block title %}Propositions de réunion - ESPRIT{% endblock %}
 
-{% set current_page = 'groupes' %}
-
-{% block content %}
+{% block body %}
 <main class="main">
 <header class="header">
     <div>
@@ -12,8 +10,8 @@
         <p class="muted">Consultez toutes les propositions de réunion de vos groupes</p>
     </div>
     <div class="session-display">
-        <div>Total propositions</div>
-        <div>{{ propositions|length }}</div>
+        <div>Total</div>
+        <div>{{ propositions|length + propositions_archives|length }}</div>
     </div>
 </header>
 
@@ -27,7 +25,7 @@
 
 <div class="profile-container">
     <!-- Toolbar -->
-    <div style="margin-bottom: 32px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+    <div style="margin-bottom: 24px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
         <input 
             type="text" 
             id="searchInput" 
@@ -35,11 +33,10 @@
             style="flex: 1; min-width: 250px; padding: 14px 20px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 15px; transition: all var(--transition);"
             onkeyup="filterPropositions()"
         >
-        
         <select 
             id="filterStatus" 
             onchange="filterByStatus()" 
-            style="padding: 14px 20px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 15px; background: white; cursor: pointer; transition: all var(--transition);"
+            style="padding: 14px 20px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 15px; background: white; cursor: pointer;"
         >
             <option value="">Tous les statuts</option>
             <option value="En attente">En attente</option>
@@ -47,8 +44,7 @@
             <option value="Annulée">Annulée</option>
             <option value="Reportée">Reportée</option>
         </select>
-
-        <a href="{{ path('front_groupe_projet_index') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: white; color: var(--gray-700); text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; border: 1px solid var(--gray-300); transition: all var(--transition);">
+        <a href="{{ path('front_groupe_projet_index') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: white; color: var(--gray-700); text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; border: 1px solid var(--gray-300);">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
             </svg>
@@ -56,80 +52,191 @@
         </a>
     </div>
 
-    <!-- Propositions List -->
-    <div style="display:flex; gap:12px; align-items:center; margin-bottom:18px;">
-        <label style="font-weight:600;">Trier :</label>
-        <select id="sortSelect" style="padding:10px; border-radius:8px;">
-            <option value="dateCreation|desc">Plus récentes</option>
-            <option value="dateCreation|asc">Plus anciennes</option>
-            <option value="dateReunion|asc">Date réunion (plus proche)</option>
-            <option value="dateReunion|desc">Date réunion (plus lointaine)</option>
-        </select>
+    <!-- Onglets -->
+    <div style="display: flex; gap: 0; margin-bottom: 24px; border-bottom: 2px solid var(--gray-200);">
+        <button id="tab-actives" onclick="switchTab('actives')"
+            style="padding: 12px 28px; font-size: 15px; font-weight: 600; border: none; background: none; cursor: pointer; border-bottom: 3px solid var(--red-500); color: var(--red-600); margin-bottom: -2px; transition: all 0.2s;">
+            📅 À venir
+            <span style="margin-left: 8px; background: var(--red-500); color: white; border-radius: 20px; padding: 2px 10px; font-size: 13px;">{{ propositions|length }}</span>
+        </button>
+        <button id="tab-archives" onclick="switchTab('archives')"
+            style="padding: 12px 28px; font-size: 15px; font-weight: 600; border: none; background: none; cursor: pointer; border-bottom: 3px solid transparent; color: var(--gray-500); margin-bottom: -2px; transition: all 0.2s;">
+            🗂️ Archives
+            <span style="margin-left: 8px; background: var(--gray-400); color: white; border-radius: 20px; padding: 2px 10px; font-size: 13px;">{{ propositions_archives|length }}</span>
+        </button>
     </div>
 
-    <div id="propositionsContainer" style="display: grid; gap: 20px;">
-        {{ include('proposition_reunion/_list.html.twig', { proposition_reunions: proposition_reunions }) }}
+    {# ── ONGLET ACTIVES ── #}
+    <div id="section-actives">
+        <div id="propositionsContainer" style="display: grid; gap: 20px;">
+            {% for proposition in propositions %}
+                {{ _self.proposition_card(proposition) }}
+            {% else %}
+                <div class="card" style="text-align: center; padding: 60px 20px;">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--gray-300)" stroke-width="1.5" style="margin: 0 auto 20px;">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    <h3 style="font-size: 20px; color: var(--gray-600); margin-bottom: 8px;">Aucune réunion à venir</h3>
+                    <p style="color: var(--gray-400); margin-bottom: 24px;">Toutes vos réunions sont terminées ou aucune n'a encore été créée.</p>
+                    <a href="{{ path('front_groupe_projet_index') }}" class="btn btn-primary">Retour aux groupes</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {# ── ONGLET ARCHIVES ── #}
+    <div id="section-archives" style="display: none;">
+        {% if propositions_archives|length > 0 %}
+            <div style="margin-bottom: 20px; padding: 14px 20px; background: var(--gray-50); border-radius: var(--radius-lg); border: 1px solid var(--gray-200); display: flex; align-items: center; gap: 12px; color: var(--gray-600); font-size: 14px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink: 0;">
+                    <polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/>
+                </svg>
+                Ces réunions sont passées. Elles sont conservées en lecture seule pour historique.
+            </div>
+            <div style="display: grid; gap: 20px;">
+                {% for proposition in propositions_archives %}
+                    {{ _self.proposition_card(proposition, true) }}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="card" style="text-align: center; padding: 60px 20px;">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--gray-300)" stroke-width="1.5" style="margin: 0 auto 20px;">
+                    <polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/>
+                </svg>
+                <h3 style="font-size: 20px; color: var(--gray-600); margin-bottom: 8px;">Aucune archive</h3>
+                <p style="color: var(--gray-400);">Les réunions passées apparaîtront ici automatiquement.</p>
+            </div>
+        {% endif %}
     </div>
 </div>
 </main>
 
+{# ── MACRO carte proposition ── #}
+{% macro proposition_card(proposition, archived) %}
+    {% set archived = archived ?? false %}
+    <div class="card proposition-item" 
+         data-status="{{ proposition.status }}" 
+         data-title="{{ proposition.titre|lower }}" 
+         data-groupe="{{ proposition.idGroupe.nomProjet|lower }}"
+         style="border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); transition: all var(--transition); border-left: 4px solid {% if archived %}var(--gray-400){% elseif proposition.status == 'Confirmée' %}var(--green-500){% elseif proposition.status == 'Annulée' %}var(--red-500){% elseif proposition.status == 'Reportée' %}var(--orange-500){% else %}var(--blue-500){% endif %}; {% if archived %}opacity: 0.82;{% endif %}">
+        <div style="padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: start; gap: 16px; flex-wrap: wrap; margin-bottom: 16px;">
+                <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                        {% if archived %}
+                            <span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; background: var(--gray-100); color: var(--gray-600); font-size: 12px; font-weight: 600;">
+                                🗂️ Archivée
+                            </span>
+                        {% endif %}
+                        <h3 style="font-size: 18px; font-weight: 700; color: {% if archived %}var(--gray-500){% else %}var(--gray-900){% endif %}; margin: 0;">
+                            {{ proposition.titre|default('Sans titre') }}
+                        </h3>
+                    </div>
+                    <p style="color: var(--gray-600); margin: 0 0 4px 0; font-size: 14px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 5px;">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        {{ proposition.idGroupe.nomProjet }} · {{ proposition.idGroupe.matiere }}
+                    </p>
+                </div>
+                <span style="padding: 6px 14px; border-radius: var(--radius); font-size: 13px; font-weight: 600; background: {% if archived %}var(--gray-100){% elseif proposition.status == 'Confirmée' %}var(--green-100){% elseif proposition.status == 'Annulée' %}var(--red-100){% elseif proposition.status == 'Reportée' %}var(--orange-100){% else %}var(--blue-100){% endif %}; color: {% if archived %}var(--gray-600){% elseif proposition.status == 'Confirmée' %}var(--green-900){% elseif proposition.status == 'Annulée' %}var(--red-900){% elseif proposition.status == 'Reportée' %}var(--orange-900){% else %}var(--blue-900){% endif %};">
+                    {{ proposition.status|default('En attente') }}
+                </span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 16px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 38px; height: 38px; border-radius: var(--radius); background: {% if archived %}var(--gray-100){% else %}var(--blue-100){% endif %}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{% if archived %}var(--gray-500){% else %}var(--blue-600){% endif %}" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--gray-400); margin-bottom: 2px;">Date</div>
+                        <div style="font-size: 14px; font-weight: 600; color: {% if archived %}var(--gray-500){% else %}var(--gray-900){% endif %};">
+                            {{ proposition.dateReunion ? proposition.dateReunion|date('d/m/Y') : '-' }}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 38px; height: 38px; border-radius: var(--radius); background: {% if archived %}var(--gray-100){% else %}var(--purple-100){% endif %}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{% if archived %}var(--gray-500){% else %}var(--purple-600){% endif %}" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--gray-400); margin-bottom: 2px;">Horaire</div>
+                        <div style="font-size: 14px; font-weight: 600; color: {% if archived %}var(--gray-500){% else %}var(--gray-900){% endif %};">
+                            {{ proposition.heureDebut ? proposition.heureDebut|date('H:i') : '-' }} – {{ proposition.heureFin ? proposition.heureFin|date('H:i') : '-' }}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="width: 38px; height: 38px; border-radius: var(--radius); background: {% if archived %}var(--gray-100){% else %}var(--orange-100){% endif %}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{% if archived %}var(--gray-500){% else %}var(--orange-600){% endif %}" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div style="font-size: 11px; color: var(--gray-400); margin-bottom: 2px;">Lieu</div>
+                        <div style="font-size: 14px; font-weight: 600; color: {% if archived %}var(--gray-500){% else %}var(--gray-900){% endif %};">
+                            {{ proposition.lieu|default('—') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; padding-top: 16px; border-top: 1px solid var(--gray-100);">
+                <a href="{{ path('front_proposition_reunion_show', {'id': proposition.id}) }}" 
+                   style="flex: 1; padding: 11px; background: {% if archived %}var(--gray-100){% else %}linear-gradient(135deg, var(--red-500), var(--orange-500)){% endif %}; color: {% if archived %}var(--gray-600){% else %}white{% endif %}; text-decoration: none; border-radius: var(--radius); font-weight: 600; font-size: 14px; text-align: center; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: {% if archived %}1px solid var(--gray-200){% else %}none{% endif %};">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    Voir les détails
+                </a>
+                {% if not archived %}
+                    <a href="{{ path('front_proposition_reunion_edit', {'id': proposition.id}) }}" 
+                       style="padding: 11px 18px; background: white; color: var(--orange-600); text-decoration: none; border: 1px solid var(--orange-300); border-radius: var(--radius); font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        Modifier
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
 <script>
-(function(){
-    const container = document.getElementById('propositionsContainer');
-    const searchInput = document.getElementById('searchInput');
-    const statusSelect = document.getElementById('filterStatus');
-    const sortSelect = document.getElementById('sortSelect');
-    const url = '{{ path('app_proposition_reunion_ajax_filter', {'groupeId': groupe_projet.id}) }}';
+function switchTab(tab) {
+    const isActives = tab === 'actives';
+    document.getElementById('section-actives').style.display  = isActives ? '' : 'none';
+    document.getElementById('section-archives').style.display = isActives ? 'none' : '';
 
-    let timer;
-    const debounce = (fn, delay = 350) => (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => fn(...args), delay);
-    };
+    const tActives  = document.getElementById('tab-actives');
+    const tArchives = document.getElementById('tab-archives');
+    tActives.style.borderBottomColor  = isActives ? 'var(--red-500)' : 'transparent';
+    tActives.style.color              = isActives ? 'var(--red-600)' : 'var(--gray-500)';
+    tArchives.style.borderBottomColor = isActives ? 'transparent' : 'var(--gray-500)';
+    tArchives.style.color             = isActives ? 'var(--gray-500)' : 'var(--gray-800)';
+}
 
-    function buildParams() {
-        const params = new URLSearchParams();
-        if (searchInput && searchInput.value.trim()) params.append('search', searchInput.value.trim());
-        if (statusSelect && statusSelect.value) params.append('status', statusSelect.value);
-        if (sortSelect && sortSelect.value) {
-            const [s, d] = sortSelect.value.split('|');
-            params.append('sort', s);
-            params.append('direction', d);
-        }
-        return params.toString();
-    }
+function filterPropositions() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('.proposition-item').forEach(item => {
+        const title  = item.dataset.title  || '';
+        const groupe = item.dataset.groupe || '';
+        item.style.display = (title.includes(search) || groupe.includes(search)) ? '' : 'none';
+    });
+}
 
-    async function fetchAndRender() {
-        if (!container) return;
-
-        if (window.__propPropositionsAbort) window.__propPropositionsAbort.abort();
-        window.__propPropositionsAbort = new AbortController();
-
-        container.innerHTML = '<div class="card" style="padding:20px; text-align:center;"><div class="spinner-border text-primary" role="status"></div><div class="mt-2 text-muted">Chargement...</div></div>';
-
-        try {
-            const resp = await fetch(url + '?' + buildParams(), {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                signal: window.__propPropositionsAbort.signal
-            });
-
-            if (!resp.ok) throw new Error('Network error');
-
-            const data = await resp.json();
-            container.innerHTML = data.html || '';
-        } catch (e) {
-            if (e.name === 'AbortError') return;
-            console.error('proposition reload failed', e);
-            container.innerHTML = '<div class="card" style="padding:20px; text-align:center; color:#c00;">Erreur lors du chargement</div>';
-        }
-    }
-
-    const debounced = debounce(fetchAndRender, 350);
-
-    if (searchInput) searchInput.addEventListener('input', debounced);
-    if (statusSelect) statusSelect.addEventListener('change', fetchAndRender);
-    if (sortSelect) sortSelect.addEventListener('change', fetchAndRender);
-
-})();
+function filterByStatus() {
+    const status = document.getElementById('filterStatus').value;
+    document.querySelectorAll('.proposition-item').forEach(item => {
+        item.style.display = (!status || item.dataset.status === status) ? '' : 'none';
+    });
+}
 </script>
 {% endblock %}

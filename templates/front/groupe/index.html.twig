@@ -1,65 +1,55 @@
-{% extends 'front/base.html.twig' %}
+{% extends 'user/FrontOffice.html.twig' %}
 
 {% block title %}Gestion de Groupe - ESPRIT{% endblock %}
 
-{% set current_page = 'groupes' %}
-
-{% block content %}
+{% block body %}
 <main class="main">
 <header class="header">
     <div>
         <h1 class="h1">Gestion de Groupe</h1>
         <p class="muted">Gérez vos groupes de projet et collaborez avec vos camarades</p>
     </div>
-    <a href="{{ path('front_groupe_projet_new') }}" class="btn" style="display: inline-flex; align-items: center; gap: 8px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-        Nouveau Groupe
-    </a>
+    <div class="session-display">
+        <div>Total groupes</div>
+        <div>{{ total_groupes }}</div>
+    </div>
 </header>
 
 <!-- Flash Messages -->
 {% for label, messages in app.flashes %}
     {% for message in messages %}
-        <div class="alert alert-{{ label }}" style="margin-bottom: 20px; padding: 16px 20px; border-radius: 12px; background: {% if label == 'success' %}#D1FAE5{% elseif label == 'error' %}#FEE2E2{% else %}#DBEAFE{% endif %}; border: 1px solid {% if label == 'success' %}#6EE7B7{% elseif label == 'error' %}#FCA5A5{% else %}#93C5FD{% endif %}; color: {% if label == 'success' %}#065F46{% elseif label == 'error' %}#7F1D1D{% else %}#1E40AF{% endif %}; border-radius: var(--radius-lg);">
+        <div class="alert alert-{{ label }}" style="margin-bottom: 20px; padding: 16px 20px; border-radius: 12px; background: {% if label == 'success' %}var(--green-50){% elseif label == 'error' %}var(--red-50){% else %}var(--blue-50){% endif %}; border: 1px solid {% if label == 'success' %}var(--green-200){% elseif label == 'error' %}var(--red-200){% else %}var(--blue-200){% endif %}; color: {% if label == 'success' %}var(--green-900){% elseif label == 'error' %}var(--red-900){% else %}var(--blue-900){% endif %};">
             {{ message }}
         </div>
     {% endfor %}
 {% endfor %}
 
-<!-- Toolbar -->
-<div class="toolbar-section" style="margin-bottom: 32px; background: white; padding: 24px; border-radius: var(--radius-xl); border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm);">
-    <div style="display: flex; gap: 12px; margin-bottom: 16px; align-items: center;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--gray-500);">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-        <span style="font-size: 14px; font-weight: 600; color: var(--gray-700);">Filtres et Recherche</span>
-    </div>
-    
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+<div class="profile-container">
+    <!-- Toolbar -->
+    <div style="margin-bottom: 24px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; align-items: center;">
         <input 
             type="text" 
             id="searchInput" 
-            placeholder="Rechercher un groupe..." 
-            style="padding: 12px 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 14px; transition: all var(--transition); background: var(--gray-50);"
+            placeholder="🔍 Rechercher un groupe..." 
+            style="padding: 14px 20px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 15px; transition: all var(--transition);"
             onkeyup="filterGroups()"
             aria-label="Rechercher un groupe"
-            onfocus="this.style.borderColor='var(--primary-red)'; this.style.background='white';"
-            onblur="this.style.borderColor='var(--gray-200)'; this.style.background='var(--gray-50)';"
         >
         
         <select 
             id="statusFilter" 
             onchange="filterGroups()" 
-            style="padding: 12px 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 14px; background: var(--gray-50); cursor: pointer; transition: all var(--transition);"
+            style="padding: 14px 20px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 15px; background: white; cursor: pointer; transition: all var(--transition);"
             aria-label="Filtrer par statut"
         >
             <option value="">Tous les statuts</option>
             <option value="Actif">Actif</option>
             <option value="Non actif">Non actif</option>
             <option value="En pause">En pause</option>
+            <option value="Annulé">Annulé</option>
             <option value="Terminé">Terminé</option>
+            <option value="Effectué">Effectué</option>
+            <option value="Pas effectué">Pas effectué</option>
         </select>
 
         {% set matieres = [] %}
@@ -71,7 +61,7 @@
         <select 
             id="matiereFilter" 
             onchange="filterGroups()" 
-            style="padding: 12px 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 14px; background: var(--gray-50); cursor: pointer; transition: all var(--transition);"
+            style="padding: 14px 20px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 15px; background: white; cursor: pointer; transition: all var(--transition);"
             aria-label="Filtrer par matière"
         >
             <option value="">Toutes les matières</option>
@@ -83,37 +73,87 @@
         <select 
             id="sortBy" 
             onchange="sortGroups()" 
-            style="padding: 12px 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 14px; background: var(--gray-50); cursor: pointer; transition: all var(--transition);"
+            style="padding: 14px 20px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); font-size: 15px; background: white; cursor: pointer; transition: all var(--transition);"
             aria-label="Trier par"
         >
             <option value="createdAt">Trier par date</option>
             <option value="id">Trier par ID</option>
             <option value="members">Trier par membres</option>
         </select>
-    </div>
-</div>
 
-<!-- Groups Grid -->
-<div id="groupsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
-    {% for groupe in groupe_projets %}
-        {% include 'front/groupe/_group_card.html.twig' with {'groupe': groupe} %}
-    {% else %}
-        <div style="grid-column: 1 / -1; text-align: center; padding: 80px 20px; background: white; border-radius: var(--radius-xl); border: 2px dashed var(--gray-200);">
-            <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="var(--gray-300)" stroke-width="1.5" style="margin: 0 auto 20px;">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        <a href="{{ path('front_groupe_projet_new') }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, var(--red-500), var(--orange-500)); color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: all var(--transition); box-shadow: var(--shadow-sm);" title="Créer un nouveau groupe">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
-            <h3 style="font-size: 24px; color: var(--gray-600); margin-bottom: 12px; font-weight: 700;">Aucun groupe pour le moment</h3>
-            <p style="color: var(--gray-500); margin-bottom: 28px; font-size: 15px; line-height: 1.6;">Vous ne faites partie d'aucun groupe. Créez votre premier groupe ou attendez qu'un autre membre vous y ajoute.</p>
-            <a href="{{ path('front_groupe_projet_new') }}" class="btn" style="display: inline-flex; align-items: center; gap: 8px;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            Nouveau Groupe
+        </a>
+    </div>
+
+    <!-- Groups Grid -->
+    <div id="groupsContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px;">
+        {% for groupe in groupe_projets %}
+            {% include 'front/groupe/_group_card.html.twig' with {'groupe': groupe} %}
+        {% else %}
+            <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--gray-300)" stroke-width="1.5" style="margin: 0 auto 20px;">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
                 </svg>
-                Créer un groupe
+                <h3 style="font-size: 20px; color: var(--gray-600); margin-bottom: 8px;">Aucun groupe</h3>
+                <p style="color: var(--gray-400); margin-bottom: 24px;">Vous ne faites partie d'aucun groupe pour le moment. Créez un groupe ou attendez qu'un autre membre vous y ajoute.</p>
+                <a href="{{ path('front_groupe_projet_new') }}" class="btn btn-primary">Créer un groupe</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if total_pages > 1 %}
+    <div style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 36px; flex-wrap: wrap;">
+        {# Bouton précédent #}
+        {% if current_page > 1 %}
+            <a href="{{ path('front_groupe_projet_index', {'page': current_page - 1}) }}"
+               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: white; border: 1px solid var(--gray-200); color: var(--gray-700); text-decoration: none; font-weight: 600; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.06);"
+               title="Page précédente">
+                ‹
             </a>
-        </div>
-    {% endfor %}
+        {% else %}
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: var(--gray-50); border: 1px solid var(--gray-100); color: var(--gray-300); cursor: not-allowed;">
+                ‹
+            </span>
+        {% endif %}
+
+        {# Pages numérotées #}
+        {% for p in 1..total_pages %}
+            {% if p == current_page %}
+                <span style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, var(--red-500), var(--orange-500)); color: white; font-weight: 700; font-size: 15px; box-shadow: 0 2px 8px rgba(239,68,68,0.3);">
+                    {{ p }}
+                </span>
+            {% else %}
+                <a href="{{ path('front_groupe_projet_index', {'page': p}) }}"
+                   style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: white; border: 1px solid var(--gray-200); color: var(--gray-700); text-decoration: none; font-weight: 600; font-size: 15px; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+                    {{ p }}
+                </a>
+            {% endif %}
+        {% endfor %}
+
+        {# Bouton suivant #}
+        {% if current_page < total_pages %}
+            <a href="{{ path('front_groupe_projet_index', {'page': current_page + 1}) }}"
+               style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: white; border: 1px solid var(--gray-200); color: var(--gray-700); text-decoration: none; font-weight: 600; transition: all 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.06);"
+               title="Page suivante">
+                ›
+            </a>
+        {% else %}
+            <span style="display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: var(--gray-50); border: 1px solid var(--gray-100); color: var(--gray-300); cursor: not-allowed;">
+                ›
+            </span>
+        {% endif %}
+
+        <span style="margin-left: 12px; font-size: 13px; color: var(--gray-500);">
+            Page {{ current_page }} sur {{ total_pages }} · {{ total_groupes }} groupe(s)
+        </span>
+    </div>
+    {% endif %}
 </div>
 </main>
 
@@ -174,11 +214,11 @@ function sortGroups() {
     transition: all var(--transition);
     cursor: pointer;
     border: none;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .btn-primary {
-    background: var(--primary-gradient);
+    background: linear-gradient(135deg, var(--red-500), var(--orange-500));
     color: white;
     box-shadow: var(--shadow-sm);
 }
@@ -186,16 +226,6 @@ function sortGroups() {
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
-}
-
-select, input {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-select:focus, input:focus {
-    outline: none;
-    border-color: var(--primary-red) !important;
-    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 </style>
 {% endblock %}

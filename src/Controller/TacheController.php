@@ -21,33 +21,18 @@ final class TacheController extends AbstractController
     {
         $titre = $request->query->get('titre');
         $email = $request->query->get('email');
-        $sortParam  = $request->query->get('sort', 'dateDebut|desc');
+        $sort  = $request->query->get('sort', 'desc');
 
         // ✅ ADD filters (that was the missing part)
         $type     = $request->query->get('type');
         $statut   = $request->query->get('statut');
         $priorite = $request->query->get('priorite');
 
-        // parse sort param which can be either a direction (legacy) or field|direction
-        $sortField = 'dateDebut';
-        $direction = 'DESC';
-        if ($sortParam) {
-            if (strpos($sortParam, '|') !== false) {
-                [$f, $d] = explode('|', $sortParam, 2);
-                $sortField = $f ?: $sortField;
-                $direction = strtolower($d) === 'asc' ? 'ASC' : 'DESC';
-            } else {
-                // legacy: only direction provided
-                $direction = strtolower($sortParam) === 'asc' ? 'ASC' : 'DESC';
-            }
-        }
-
-        // ✅ same method, now pass sort field + direction
+        // ✅ same method, just pass more params
         $taches = $repo->searchAjax(
             $titre,
             $email,
-            $sortField,
-            $direction,
+            $sort,
             $type,
             $statut,
             $priorite
@@ -65,7 +50,7 @@ final class TacheController extends AbstractController
             'taches'  => $taches,
             'titre'   => $titre,
             'email'   => $email,
-            'sort'    => $sortField . '|' . (strtolower($direction) === 'asc' ? 'asc' : 'desc'),
+            'sort'    => $sort,
             'type'    => $type,
             'statut'  => $statut,
             'priorite'=> $priorite,
@@ -229,7 +214,7 @@ final class TacheController extends AbstractController
     }
 
     //suivi tache history
-    #[Route('/{id}/action', name: 'app_tache_action_user', methods: ['POST'])]
+    #[Route('/{id}/action-user', name: 'app_tache_action_user', methods: ['POST'])]
     public function actionUser(Request $request, Tache $tache, EntityManagerInterface $em): Response
     {
         $newStatus = $request->request->get('action');
@@ -247,6 +232,8 @@ final class TacheController extends AbstractController
 
             // 2️⃣ Update the Tache status
             $tache->setStatut($newStatus);
+            $tache->setUpdatedAt(new \DateTimeImmutable());
+
 
             $em->flush();
 
