@@ -202,12 +202,14 @@ public function myTasks(
     AlertEngineService $alertService
 ): Response {
 
-    // $alertService->run();
+    
     $user = $this->getUser();
     if (!$user) {
         throw $this->createAccessDeniedException();
     }
 
+    $alertService->runForUser($user->getId());
+    
     // Get tasks lists
     $activeStatuses = ['A_FAIRE', 'EN_COURS', 'EN_RETARD', 'PAUSED'];
     $archivedStatuses = ['TERMINE', 'ABANDON'];

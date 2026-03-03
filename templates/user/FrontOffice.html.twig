@@ -1985,10 +1985,22 @@
                             let buttonsHtml = '';
                             if (n.type === 'WARNING' && n.taskId) {
                                 buttonsHtml = `
-                                    <div style="display: flex; gap: 5px; margin-top: 8px;">
-                                        <button class="notif-action-btn finish" onclick="event.stopPropagation(); finishTask(${n.taskId}, ${n.id})">✔ Terminer</button>
-                                        <button class="notif-action-btn abandon" onclick="event.stopPropagation(); abandonTask(${n.taskId}, ${n.id})">✖ Abandonner</button>
-                                    </div>
+                                    <form method="post" action="/tache/${n.taskId}/action-user" 
+                                        style="display:flex; gap:5px; margin-top:8px;"
+                                        onClick="event.stopPropagation();">
+
+                                        <button type="submit" name="action" value="TERMINE"
+                                            class="notif-action-btn finish">
+                                            ✔ Terminer
+                                        </button>
+
+                                        <button type="submit" name="action" value="ABANDON"
+                                            class="notif-action-btn abandon"
+                                            onclick="return confirm('Êtes-vous sûr de vouloir abandonner cette tâche ?');">
+                                            ✖ Abandonner
+                                        </button>
+
+                                    </form>
                                 `;
                             }
 
