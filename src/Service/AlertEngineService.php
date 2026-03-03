@@ -23,6 +23,9 @@ class AlertEngineService
 
     public function run(): void
     {
+        // Set timezone for alert logic
+        date_default_timezone_set('Africa/Tunis');
+
         // --- Active statuses (all users)
         $activeStatuses = ['A_FAIRE', 'EN_COURS', 'EN_RETARD', 'PAUSED'];
 
@@ -52,7 +55,7 @@ class AlertEngineService
 
     private function processTask($task): void
     {
-        $now = new \DateTime();
+        $now = new \DateTime(); // Now uses Africa/Tunis timezone as set in run()
         $status = $task->getStatut();
 
         // Skip if task is finished or abandoned

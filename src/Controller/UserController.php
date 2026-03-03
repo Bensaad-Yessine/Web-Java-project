@@ -24,7 +24,8 @@ use App\Service\StatisticsService;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 use App\Service\WeatherAIService;
-
+use App\Service\AlertEngineService;
+use App\Service\TaskPredictorService;
 
 #[Route('/user')]
 class UserController extends AbstractController
@@ -194,10 +195,14 @@ class UserController extends AbstractController
 
 #[Route('/dashboard/my-tasks', name: 'app_my_tasks', methods: ['GET'])]
 public function myTasks(
+    Request $request,
     TacheRepository $tacheRepository,
     StatisticsService $statsService,
-    ChartBuilderInterface $chartBuilder
+    ChartBuilderInterface $chartBuilder,
+    AlertEngineService $alertService
 ): Response {
+
+    // $alertService->run();
     $user = $this->getUser();
     if (!$user) {
         throw $this->createAccessDeniedException();
@@ -429,23 +434,26 @@ public function myTasks(
             ], 400);
         }
     }
+
     #[Route('/dashboard/task/add', name: 'app_task_add', methods: ['GET', 'POST'])]
-    public function addTask(Request $request, EntityManagerInterface $em): Response
+    public function addTask(Request $request, EntityManagerInterface $em, TaskPredictorService $predictor): Response
     {
         $user = $this->getUser();
-        
         if (!$user) {
             throw $this->createAccessDeniedException();
         }
 
         $tache = new Tache();
-        $tache->setUser($user); // Automatically set current user
-        
+        $tache->setUser($user);
+
         $form = $this->createForm(FrontOfficeTacheType::class, $tache);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // --------------------------
             // Map frontend values to entity values
+            // --------------------------
             $typeMap = [
                 'course' => 'MANUEL',
                 'exam' => 'REVISION',
@@ -462,25 +470,16 @@ public function myTasks(
             ];
 
             $statusMap = [
-                'pending' => 'A_FAIRE',
+                'pending'     => 'A_FAIRE',
                 'in_progress' => 'EN_COURS',
-                'completed' => 'TERMINEE'
+                'completed'   => 'TERMINEE',
+                'abandon'     => 'ABANDON'   // new status added
             ];
 
-            // Map the values
-            $formType = $tache->getType();
-            $entityType = $typeMap[$formType] ?? 'MANUEL';
-            $tache->setType($entityType);
+            $tache->setType($typeMap[$tache->getType()] ?? 'MANUEL');
+            $tache->setPriorite($priorityMap[$tache->getPriorite()] ?? 'MOYEN');
+            $tache->setStatut($statusMap[$tache->getStatut()] ?? 'A_FAIRE');
 
-            $formPriority = $tache->getPriorite();
-            $entityPriority = $priorityMap[$formPriority] ?? 'MOYEN';
-            $tache->setPriorite($entityPriority);
-
-            $formStatus = $tache->getStatut();
-            $entityStatus = $statusMap[$formStatus] ?? 'A_FAIRE';
-            $tache->setStatut($entityStatus);
-
-            // Ensure required fields are set
             if (!$tache->getDateDebut()) {
                 $tache->setDateDebut(new \DateTime());
             }
@@ -490,10 +489,21 @@ public function myTasks(
             if (!$tache->getDureeEstimee()) {
                 $tache->setDureeEstimee(60);
             }
-            
             if (!$tache->getCreatedAt()) {
                 $tache->setCreatedAt(new \DateTimeImmutable());
             }
+
+            // --------------------------
+            // Persist task first to get ID
+            // --------------------------
+            $em->persist($tache);
+            $em->flush();
+
+            // --------------------------
+            // Get completion probability from service
+            // --------------------------
+            $completionProbability = $predictor->predict($tache);
+            $tache->setPrediction($completionProbability);
 
             $em->persist($tache);
             $em->flush();
