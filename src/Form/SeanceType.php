@@ -96,12 +96,19 @@ class SeanceType extends AbstractType
                 'widget' => 'single_text',
                 'attr' => ['class' => 'form-control'],
                 'required' => true,
+                'help' => 'Sélectionnez un horaire valide : 09:00, 10:45, 13:30 ou 15:15.',
+                // limit minutes to 00 or 45 for start times
+                'minutes' => [0, 45],
+                'hours' => range(8, 16),
             ])
             ->add('heureFin', DateTimeType::class, [
                 'label' => 'Heure de fin',
                 'widget' => 'single_text',
                 'attr' => ['class' => 'form-control'],
                 'required' => true,
+                'help' => 'Doit correspondre à l’un des horaires : 10:30, 12:15, 15:00 ou 16:45.',
+                'minutes' => [0, 15, 30, 45],
+                'hours' => range(9, 17),
             ])
             ->add('salle', EntityType::class, [
                 'class' => Salle::class,

@@ -89,5 +89,35 @@ class SalleRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function getSallesByBlocOrdered(string $bloc): array
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.block = :bloc')
+            ->setParameter('bloc', $bloc)
+            ->orderBy('s.etage', 'ASC')
+            ->addOrderBy('s.number', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getEtagesForBlocStats(string $bloc): array
+    {
+        $rows = $this->createQueryBuilder('s')
+            ->select('s.etage AS etage, COUNT(s.id) AS total')
+            ->andWhere('s.block = :bloc')
+            ->setParameter('bloc', $bloc)
+            ->groupBy('s.etage')
+            ->orderBy('s.etage', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(static function (array $row): array {
+            return [
+                'etage' => (int) $row['etage'],
+                'total' => (int) $row['total'],
+            ];
+        }, $rows);
+    }
 }
 

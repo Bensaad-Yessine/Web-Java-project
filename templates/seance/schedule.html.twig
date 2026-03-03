@@ -588,6 +588,16 @@
     .calendar-event[data-day="Vendredi"] { border-left-color: #8B5CF6; }
     .calendar-event[data-day="Samedi"] { border-left-color: #EC4899; }
 
+    /* Séance de révision personnelle — violet avec bordure pointillée */
+    .calendar-event.event-revision {
+        border-left: 4px dashed #5B21B6 !important;
+        background: #7C3AED !important;
+        opacity: 0.92;
+    }
+    .calendar-event.event-revision .event-title { color: #fff; font-style: italic; }
+    .calendar-event.event-revision .event-time  { color: #DDD6FE; }
+    .calendar-event.event-revision .event-location { color: #EDE9FE; }
+
     .event-title {
         font-weight: 600;
         color: var(--gray-800);
@@ -743,7 +753,226 @@
 
     .icon-sm { width: 14px; height: 14px; }
     .icon-md { width: 18px; height: 18px; }
+
+    /* ===== BOUTON PDF ===== */
+    .btn-pdf {
+        padding: 12px 24px;
+        border-radius: var(--radius-lg);
+        border: none;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all var(--transition);
+        box-shadow: 0 4px 12px rgba(26,26,46,0.3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-pdf:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(26,26,46,0.45);
+    }
+    .btn-pdf:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* ===== STATISTIQUES AVANCÉES ===== */
+    .stats-advanced {
+        margin-top: 32px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    @media (max-width: 900px) {
+        .stats-advanced { grid-template-columns: 1fr; }
+    }
+
+    .stats-panel {
+        background: white;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--gray-200);
+        box-shadow: var(--shadow-sm);
+        padding: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+    .stats-panel::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: var(--primary-gradient);
+    }
+    .stats-panel-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Chart barres */
+    .bar-chart {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .bar-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .bar-label {
+        width: 80px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--gray-700);
+        flex-shrink: 0;
+        text-align: right;
+    }
+    .bar-track {
+        flex: 1;
+        height: 28px;
+        background: var(--gray-100);
+        border-radius: 6px;
+        overflow: hidden;
+        position: relative;
+    }
+    .bar-fill {
+        height: 100%;
+        border-radius: 6px;
+        transition: width 1s cubic-bezier(0.4,0,0.2,1);
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 8px;
+        font-size: 11px;
+        font-weight: 700;
+        color: white;
+        min-width: 28px;
+    }
+    .bar-value {
+        width: 40px;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--gray-700);
+        text-align: left;
+        flex-shrink: 0;
+    }
+
+    /* Donut chart */
+    .donut-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+    .donut-svg { flex-shrink: 0; }
+    .donut-legend {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .donut-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+    }
+    .donut-legend-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 3px;
+        flex-shrink: 0;
+    }
+    .donut-legend-label { color: var(--gray-700); font-weight: 500; }
+    .donut-legend-pct { color: var(--gray-500); font-size: 12px; margin-left: auto; padding-left: 8px; }
+
+    /* Heatmap jours */
+    .heatmap-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+        margin-top: 4px;
+    }
+    .heatmap-cell {
+        aspect-ratio: 1;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        transition: transform var(--transition);
+    }
+    .heatmap-cell:hover { transform: scale(1.08); }
+    .heatmap-cell .hm-day { color: rgba(255,255,255,0.85); font-size: 10px; margin-bottom: 2px; }
+    .heatmap-cell .hm-count { color: white; font-size: 20px; font-weight: 800; }
+    .heatmap-cell .hm-hours { color: rgba(255,255,255,0.75); font-size: 10px; }
+
+    /* KPI ribbon */
+    .kpi-ribbon {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 4px;
+    }
+    .kpi-item {
+        background: var(--gray-50);
+        border-radius: 10px;
+        padding: 14px 12px;
+        text-align: center;
+        border: 1px solid var(--gray-200);
+        transition: all var(--transition);
+    }
+    .kpi-item:hover { background: var(--primary-red-light); border-color: var(--primary-red); }
+    .kpi-item:hover .kpi-val { color: var(--primary-red); }
+    .kpi-val {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--gray-900);
+        line-height: 1;
+    }
+    .kpi-lbl {
+        font-size: 11px;
+        color: var(--gray-500);
+        margin-top: 4px;
+    }
+
+    /* PDF overlay */
+    #pdf-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 16px;
+    }
+    #pdf-overlay.active { display: flex; }
+    #pdf-overlay p { color: white; font-size: 16px; font-weight: 600; }
+    .pdf-spinner {
+        width: 48px; height: 48px;
+        border: 5px solid rgba(255,255,255,0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 </style>
+
+<!-- libs PDF -->
+<script src="{{ asset('assets/jspdf.umd.min.js') }}"></script>
+<script src="{{ asset('assets/html2canvas.min.js') }}"></script>
 
 <div class="app-shell">
     {# ===== SIDEBAR (identique) ===== #}
@@ -894,6 +1123,16 @@
                         </svg>
                         {{ "now"|date("d/m/Y") }}
                     </div>
+                    <button class="btn-pdf" id="btnExportPdf" onclick="exportPDF()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                        Exporter PDF
+                    </button>
                 </div>
             </header>
 
@@ -935,6 +1174,176 @@
                         <div class="stat-label">⏱️ Heures totales</div>
                     </div>
                 </div>
+
+                {# ===== STATISTIQUES AVANCÉES ===== #}
+                {% set joursListe = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'] %}
+                {% set typesList  = ['Cours','TD','TP','Révision'] %}
+                {% set modesList  = ['Présentiel','Distanciel','Hybride'] %}
+                {% set typeColors = {'Cours':'#DC2626','TD':'#F59E0B','TP':'#10B981','Révision':'#7C3AED'} %}
+                {% set modeColors = {'Présentiel':'#3B82F6','Distanciel':'#EC4899','Hybride':'#F59E0B'} %}
+                {% set dayColors2 = {'Lundi':'#DC2626','Mardi':'#F59E0B','Mercredi':'#10B981','Jeudi':'#3B82F6','Vendredi':'#8B5CF6','Samedi':'#EC4899'} %}
+
+                {# Comptages #}
+                {% set countByJour  = {} %}
+                {% set heuresByJour = {} %}
+                {% set countByType  = {} %}
+                {% set countByMode  = {} %}
+                {% set totalH = 0 %}
+
+                {% for s in seances %}
+                    {% set j = s.jour %}
+                    {% set h = s.heureDebut and s.heureFin ? ((s.heureFin|date('U') - s.heureDebut|date('U')) / 3600) : 0 %}
+                    {% set countByJour  = countByJour|merge({(j): (countByJour[j]  is defined ? countByJour[j]  + 1 : 1)}) %}
+                    {% set heuresByJour = heuresByJour|merge({(j): (heuresByJour[j] is defined ? heuresByJour[j] + h : h)}) %}
+                    {% set t = s.typeSeance %}
+                    {% set countByType  = countByType|merge({(t): (countByType[t]  is defined ? countByType[t]  + 1 : 1)}) %}
+                    {% set m = s.mode %}
+                    {% set countByMode  = countByMode|merge({(m): (countByMode[m]  is defined ? countByMode[m]  + 1 : 1)}) %}
+                    {% set totalH = totalH + h %}
+                {% endfor %}
+                {% set maxJour = 1 %}
+                {% for j in joursListe %}
+                    {% if countByJour[j] is defined and countByJour[j] > maxJour %}{% set maxJour = countByJour[j] %}{% endif %}
+                {% endfor %}
+
+                <div class="stats-advanced" id="statsSection">
+
+                    {# Panel 1 : Heatmap par jour #}
+                    <div class="stats-panel">
+                        <div class="stats-panel-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            Charge par jour
+                        </div>
+                        <div class="heatmap-grid">
+                            {% for jour in joursListe %}
+                                {% set cnt = countByJour[jour] is defined ? countByJour[jour] : 0 %}
+                                {% set hrs = heuresByJour[jour] is defined ? heuresByJour[jour]|round(1) : 0 %}
+                                {% set opacity = cnt > 0 ? (0.4 + (cnt / maxJour) * 0.6) : 0.12 %}
+                                <div class="heatmap-cell"
+                                     style="background: {{ dayColors2[jour] }}; opacity: {{ opacity }}; {% if cnt == 0 %}filter: grayscale(1);{% endif %}"
+                                     title="{{ jour }} : {{ cnt }} séance{{ cnt > 1 ? 's' : '' }}, {{ hrs }}h">
+                                    <span class="hm-day">{{ jour|slice(0,3) }}</span>
+                                    <span class="hm-count" style="opacity:1;color:white;">{{ cnt }}</span>
+                                    <span class="hm-hours">{{ hrs }}h</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="kpi-ribbon" style="margin-top:20px;">
+                            <div class="kpi-item">
+                                <div class="kpi-val">{{ seances|length }}</div>
+                                <div class="kpi-lbl">Séances</div>
+                            </div>
+                            <div class="kpi-item">
+                                <div class="kpi-val">{{ totalH|round(1) }}</div>
+                                <div class="kpi-lbl">Heures total</div>
+                            </div>
+                            <div class="kpi-item">
+                                <div class="kpi-val">{{ seances|length > 0 ? (totalH / seances|length)|round(1) : 0 }}</div>
+                                <div class="kpi-lbl">h / séance</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Panel 2 : Barres par jour #}
+                    <div class="stats-panel">
+                        <div class="stats-panel-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+                            Séances par jour (barres)
+                        </div>
+                        <div class="bar-chart">
+                            {% for jour in joursListe %}
+                                {% set cnt = countByJour[jour] is defined ? countByJour[jour] : 0 %}
+                                {% set pct = maxJour > 0 ? (cnt / maxJour * 100)|round : 0 %}
+                                <div class="bar-row">
+                                    <span class="bar-label">{{ jour|slice(0,3) }}</span>
+                                    <div class="bar-track">
+                                        <div class="bar-fill"
+                                             style="width:{{ pct > 0 ? pct : 0 }}%; background: {{ dayColors2[jour] }};"
+                                             data-width="{{ pct }}">
+                                            {% if cnt > 0 %}{{ cnt }}{% endif %}
+                                        </div>
+                                    </div>
+                                    <span class="bar-value">{{ cnt }} séance{{ cnt > 1 ? 's' : '' }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {# Panel 3 : Donut type de séance #}
+                    <div class="stats-panel">
+                        <div class="stats-panel-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/></svg>
+                            Répartition par type
+                        </div>
+                        <div class="donut-wrapper">
+                            <svg class="donut-svg" width="120" height="120" viewBox="0 0 42 42" id="donutType">
+                                <circle cx="21" cy="21" r="15.9" fill="transparent" stroke="#E5E7EB" stroke-width="4"/>
+                                {# Segments générés en JS #}
+                            </svg>
+                            <div class="donut-legend" id="legendType">
+                                {% for type in typesList %}
+                                    {% set cnt = countByType[type] is defined ? countByType[type] : 0 %}
+                                    {% if cnt > 0 %}
+                                    <div class="donut-legend-item">
+                                        <span class="donut-legend-dot" style="background:{{ typeColors[type] ?? '#9CA3AF' }};"></span>
+                                        <span class="donut-legend-label">{{ type }}</span>
+                                        <span class="donut-legend-pct">{{ seances|length > 0 ? (cnt / seances|length * 100)|round : 0 }}%</span>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {# Données JSON pour JS #}
+                        <script>
+                        const donutTypeData = [
+                            {% for type in typesList %}
+                            {% set cnt = countByType[type] is defined ? countByType[type] : 0 %}
+                            {% if cnt > 0 %}
+                            { label: "{{ type }}", count: {{ cnt }}, color: "{{ typeColors[type] ?? '#9CA3AF' }}" },
+                            {% endif %}
+                            {% endfor %}
+                        ];
+                        </script>
+                    </div>
+
+                    {# Panel 4 : Donut mode #}
+                    <div class="stats-panel">
+                        <div class="stats-panel-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                            Répartition par mode
+                        </div>
+                        <div class="donut-wrapper">
+                            <svg class="donut-svg" width="120" height="120" viewBox="0 0 42 42" id="donutMode">
+                                <circle cx="21" cy="21" r="15.9" fill="transparent" stroke="#E5E7EB" stroke-width="4"/>
+                            </svg>
+                            <div class="donut-legend" id="legendMode">
+                                {% for mode in modesList %}
+                                    {% set cnt = countByMode[mode] is defined ? countByMode[mode] : 0 %}
+                                    {% if cnt > 0 %}
+                                    <div class="donut-legend-item">
+                                        <span class="donut-legend-dot" style="background:{{ modeColors[mode] ?? '#9CA3AF' }};"></span>
+                                        <span class="donut-legend-label">{{ mode }}</span>
+                                        <span class="donut-legend-pct">{{ seances|length > 0 ? (cnt / seances|length * 100)|round : 0 }}%</span>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <script>
+                        const donutModeData = [
+                            {% for mode in modesList %}
+                            {% set cnt = countByMode[mode] is defined ? countByMode[mode] : 0 %}
+                            {% if cnt > 0 %}
+                            { label: "{{ mode }}", count: {{ cnt }}, color: "{{ modeColors[mode] ?? '#9CA3AF' }}" },
+                            {% endif %}
+                            {% endfor %}
+                        ];
+                        </script>
+                    </div>
+
+                </div>
+                {# FIN stats avancées #}
+
             {% endif %}
 
             {# === CALENDRIER HEBDOMADAIRE === #}
@@ -948,7 +1357,14 @@
                                 <line x1="8" y1="2" x2="8" y2="6"/>
                                 <line x1="3" y1="10" x2="21" y2="10"/>
                             </svg>
-                            Semaine du {{ "now"|date("d/m/Y") }}
+                            Semaine du {{ mondayDate }} au {{ saturdayDate }}
+                            {% if weekOffset == 0 %}
+                                <span style="font-size:12px;background:#FEE2E2;color:#DC2626;padding:2px 10px;border-radius:12px;margin-left:8px;font-weight:600;">Cette semaine</span>
+                            {% elseif weekOffset > 0 %}
+                                <span style="font-size:12px;background:#DBEAFE;color:#2563EB;padding:2px 10px;border-radius:12px;margin-left:8px;font-weight:600;">+{{ weekOffset }} semaine{{ weekOffset > 1 ? 's' : '' }}</span>
+                            {% else %}
+                                <span style="font-size:12px;background:#F3F4F6;color:#6B7280;padding:2px 10px;border-radius:12px;margin-left:8px;font-weight:600;">{{ weekOffset }} semaine{{ weekOffset < -1 ? 's' : '' }}</span>
+                            {% endif %}
                         </h2>
                         <div class="calendar-legend">
                             <span class="legend-item"><span class="legend-color" style="background: #DC2626;"></span> Lundi</span>
@@ -957,24 +1373,25 @@
                             <span class="legend-item"><span class="legend-color" style="background: #3B82F6;"></span> Jeudi</span>
                             <span class="legend-item"><span class="legend-color" style="background: #8B5CF6;"></span> Vendredi</span>
                             <span class="legend-item"><span class="legend-color" style="background: #EC4899;"></span> Samedi</span>
+                            <span class="legend-item"><span class="legend-color" style="background: #7C3AED; border: 2px dashed #5B21B6;"></span> 📖 Révision</span>
                         </div>
                     </div>
                     <div class="week-nav">
-                        <button class="week-nav-btn" id="prevWeek">
+                        <a href="{{ path('app_seance_by_classe', {'id': classe.id, 'week': weekOffset - 1}) }}" class="week-nav-btn" id="prevWeek">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M15 18l-6-6 6-6"/>
                             </svg>
                             Semaine précédente
-                        </button>
-                        <button class="week-nav-btn active" id="currentWeek">
+                        </a>
+                        <a href="{{ path('app_seance_by_classe', {'id': classe.id, 'week': 0}) }}" class="week-nav-btn {% if weekOffset == 0 %}active{% endif %}" id="currentWeek">
                             Aujourd'hui
-                        </button>
-                        <button class="week-nav-btn" id="nextWeek">
+                        </a>
+                        <a href="{{ path('app_seance_by_classe', {'id': classe.id, 'week': weekOffset + 1}) }}" class="week-nav-btn" id="nextWeek">
                             Semaine suivante
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M9 18l6-6-6-6"/>
                             </svg>
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -1001,75 +1418,89 @@
                                 {% endfor %}
                             </div>
 
-                            {# Colonnes des jours - CORRECTION: Plus d'appel à date_modify #}
+                            {# Colonnes des jours #}
                             <div class="day-columns">
                                 {% set jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'] %}
-                                {% set jours_ordre = {'Lundi': 1, 'Mardi': 2, 'Mercredi': 3, 'Jeudi': 4, 'Vendredi': 5, 'Samedi': 6} %}
-                                
+                                {% set dayColors = {'Lundi':'#DC2626','Mardi':'#F59E0B','Mercredi':'#10B981','Jeudi':'#3B82F6','Vendredi':'#8B5CF6','Samedi':'#EC4899'} %}
+
                                 {% for jour in jours %}
+                                    {% set jourDate = weekDays[jour] is defined ? weekDays[jour] : '' %}
+                                    {# Séances de ce jour : filtrer par la DATE RÉELLE de heureDebut, pas le champ "jour" #}
+                                    {% set seancesJour = [] %}
+                                    {% for s in seancesWithDate %}
+                                        {% if s.heureDebut and s.heureDebut|date('Y-m-d') == jourDate %}
+                                            {% set seancesJour = seancesJour|merge([s]) %}
+                                        {% endif %}
+                                    {% endfor %}
+
                                     <div class="day-column" data-day="{{ jour }}">
-                                        <div class="day-header">
+                                        <div class="day-header" style="border-bottom: 3px solid {{ dayColors[jour] }};">
                                             <span class="day-name">{{ jour }}</span>
-                                            {# On affiche juste le jour sans la date pour éviter l'erreur #}
-                                            <span class="day-date">{{ jour|slice(0, 3) }}</span>
+                                            <span class="day-date" style="font-size:11px;color:#6B7280;">
+                                                {% if jourDate %}
+                                                    {{ jourDate|date('d/m') }}
+                                                {% else %}
+                                                    {{ jour|slice(0,3) }}
+                                                {% endif %}
+                                            </span>
                                         </div>
-                                        
-                                        {# Cellules horaires #}
-                                      {# Cellules horaires #}
-{% for hour in 8..19 %}
-    <div class="day-cell" data-hour="{{ hour }}" data-day="{{ jour }}">
-        {# Placer les séances correspondantes #}
-        {% for seance in seances %}
-            {% if seance.jour == jour and seance.heureDebut and seance.heureFin %}
-                {% set debut = seance.heureDebut|date('U') %}
-                {% set fin = seance.heureFin|date('U') %}
-                {% set heureDebut = seance.heureDebut|date('H') %}
-                {% set minuteDebut = seance.heureDebut|date('i') %}
-                {% set dureeMinutes = (fin - debut) / 60 %}
-                
-                {# Calcul de la position #}
-                {% if heureDebut == hour %}
-                    {% set topPosition = (minuteDebut / 60) * 100 %}
-                    {% set heightEvent = (dureeMinutes / 60) * 100 %}
-                    
-                    {# Préparer les données de la séance pour le modal - CORRECTION ICI #}
-                    {% set seanceData = {
-                        'matiere': seance.matiere,
-                        'type': seance.type|default('Cours'),
-                        'jour': seance.jour,
-                        'heureDebut': seance.heureDebut ? seance.heureDebut|date('H:i') : null,
-                        'heureFin': seance.heureFin ? seance.heureFin|date('H:i') : null,
-                        'salle': seance.salle ? {'name': seance.salle.name} : null
-                    } %}
-                    
-                    <div class="calendar-event" 
-                         data-day="{{ jour }}"
-                         data-seance-id="{{ seance.id }}"
-                         style="top: {{ topPosition }}%; height: {{ heightEvent }}%;"
-                         onclick='openSeanceModal({{ seanceData|json_encode|raw }})'>
-                        
-                        <div class="event-title">{{ seance.matiere }}</div>
-                        <div class="event-time">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12 6 12 12 16 14"/>
-                            </svg>
-                            {{ seance.heureDebut|date('H:i') }} - {{ seance.heureFin|date('H:i') }}
-                        </div>
-                        <div class="event-location">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="7" width="18" height="13" rx="2" ry="2"/>
-                                <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                            </svg>
-                            {{ seance.salle ? seance.salle.name : 'Salle non définie' }}
-                        </div>
-                        <span class="event-type">{{ seance.type|default('Cours')|slice(0, 3) }}</span>
-                    </div>
-                {% endif %}
-            {% endif %}
-        {% endfor %}
-    </div>
-{% endfor %}
+
+                                        {% for hour in 8..19 %}
+                                            <div class="day-cell" data-hour="{{ hour }}" data-day="{{ jour }}">
+                                                {% for seance in seancesJour %}
+                                                    {% if seance.heureDebut and seance.heureFin %}
+                                                        {% set heureDebut = seance.heureDebut|date('H')|number_format %}
+                                                        {% set minuteDebut = seance.heureDebut|date('i')|number_format %}
+                                                        {% if heureDebut == hour %}
+                                                            {% set debut = seance.heureDebut|date('U') %}
+                                                            {% set fin = seance.heureFin|date('U') %}
+                                                            {% set dureeMinutes = (fin - debut) / 60 %}
+                                                            {% set topPosition = (minuteDebut / 60) * 100 %}
+                                                            {% set heightEvent = (dureeMinutes / 60) * 100 %}
+
+                                                            {% set isRevision = seance.typeSeance == 'Révision' %}
+                                                            {% set bgColor = isRevision ? '#7C3AED' : dayColors[jour] %}
+
+                                                            {% set seanceData = {
+                                                                'id': seance.id,
+                                                                'matiere': seance.matiere ? seance.matiere.nom : 'N/A',
+                                                                'typeSeance': seance.typeSeance,
+                                                                'jour': seance.jour,
+                                                                'heureDebut': seance.heureDebut|date('H:i'),
+                                                                'heureFin': seance.heureFin|date('H:i'),
+                                                                'salle': seance.salle ? {'name': seance.salle.name} : null,
+                                                                'date': jourDate
+                                                            } %}
+
+                                                            <div class="calendar-event{% if isRevision %} event-revision{% endif %}"
+                                                                 data-day="{{ jour }}"
+                                                                 data-seance-id="{{ seance.id }}"
+                                                                 style="top: {{ topPosition }}%; height: {{ heightEvent }}%; background: {{ bgColor }}; border-left: 4px solid {{ bgColor }};"
+                                                                 onclick='openSeanceModal({{ seanceData|json_encode|raw }})'>
+                                                                <div class="event-title">
+                                                                    {% if isRevision %}📖 Révision{% else %}{{ seance.matiere ? seance.matiere.nom : 'N/A' }}{% endif %}
+                                                                </div>
+                                                                <div class="event-time">
+                                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                        <circle cx="12" cy="12" r="10"/>
+                                                                        <polyline points="12 6 12 12 16 14"/>
+                                                                    </svg>
+                                                                    {{ seance.heureDebut|date('H:i') }} - {{ seance.heureFin|date('H:i') }}
+                                                                </div>
+                                                                <div class="event-location">
+                                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                                        <rect x="3" y="7" width="18" height="13" rx="2" ry="2"/>
+                                                                        <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                                                    </svg>
+                                                                    {{ seance.salle ? seance.salle.name : 'N/A' }}
+                                                                </div>
+                                                                <span class="event-type">{% if isRevision %}Rév{% else %}{{ seance.typeSeance|slice(0,3) }}{% endif %}</span>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        {% endfor %}
                                     </div>
                                 {% endfor %}
                             </div>
@@ -1123,6 +1554,7 @@
                                 <span id="modalDuree"></span>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -1134,29 +1566,63 @@
     </main>
 </div>
 
+<div id="pdf-overlay">
+    <div class="pdf-spinner"></div>
+    <p>Génération du PDF en cours…</p>
+</div>
+
 <script>
-    // Fonctions pour la modal
+    function buildDonut(svgId, data) {
+        const svg = document.getElementById(svgId);
+        if (!svg || !data || !data.length) return;
+        const total   = data.reduce((s, d) => s + d.count, 0);
+        const r       = 15.9;
+        const circ    = 2 * Math.PI * r;
+        let offset    = circ * 0.25; // départ en haut (-90°)
+
+        data.forEach(item => {
+            const pct   = item.count / total;
+            const dash  = pct * circ;
+            const gap   = circ - dash;
+            const seg   = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            seg.setAttribute('cx', 21);
+            seg.setAttribute('cy', 21);
+            seg.setAttribute('r',  r);
+            seg.setAttribute('fill', 'transparent');
+            seg.setAttribute('stroke', item.color);
+            seg.setAttribute('stroke-width', 4);
+            seg.setAttribute('stroke-dasharray', `${dash} ${gap}`);
+            seg.setAttribute('stroke-dashoffset', -offset + circ * 0.25);
+            seg.style.transition = 'stroke-dasharray 1s ease';
+            svg.appendChild(seg);
+            offset += dash;
+        });
+
+        // Label centre
+        const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        txt.setAttribute('x', 21); txt.setAttribute('y', 21);
+        txt.setAttribute('text-anchor', 'middle');
+        txt.setAttribute('dominant-baseline', 'middle');
+        txt.setAttribute('font-size', '6');
+        txt.setAttribute('font-weight', 'bold');
+        txt.setAttribute('fill', '#374151');
+        txt.textContent = total;
+        svg.appendChild(txt);
+    }
+
+    // ── Modal séance ────────────────────────────────────────────────────────
     function openSeanceModal(seanceData) {
         const modal = document.getElementById('seanceModal');
-        
-        // Remplir les informations
         document.getElementById('modalMatiere').textContent = seanceData.matiere || 'Matière non définie';
-        document.getElementById('modalType').textContent = seanceData.type || 'Cours';
-        
-        const jourHeure = `${seanceData.jour || ''} ${seanceData.heureDebut || '--:--'} - ${seanceData.heureFin || '--:--'}`;
-        document.getElementById('modalJourHeure').textContent = jourHeure;
-        
+        document.getElementById('modalType').textContent    = seanceData.typeSeance || 'Cours';
+        const dateStr = seanceData.date
+            ? new Date(seanceData.date + 'T00:00:00').toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long', year:'numeric'})
+            : seanceData.jour;
+        document.getElementById('modalJourHeure').textContent =
+            dateStr + ' · ' + (seanceData.heureDebut || '--:--') + ' – ' + (seanceData.heureFin || '--:--');
         const salle = seanceData.salle ? (seanceData.salle.name || 'Non définie') : 'Non définie';
         document.getElementById('modalSalle').textContent = salle;
-        
-        // Calcul approximatif de la durée (à adapter selon votre structure de données)
-        if (seanceData.heureDebut && seanceData.heureFin) {
-            // Version simplifiée - dans un cas réel, il faudrait calculer la différence
-            document.getElementById('modalDuree').textContent = '1.5 heures';
-        } else {
-            document.getElementById('modalDuree').textContent = 'Durée non définie';
-        }
-        
+        document.getElementById('modalDuree').textContent = '1h30';
         modal.classList.add('active');
     }
 
@@ -1164,49 +1630,129 @@
         document.getElementById('seanceModal').classList.remove('active');
     }
 
-    // Fermer la modal en cliquant en dehors
     window.onclick = function(event) {
         const modal = document.getElementById('seanceModal');
-        if (event.target === modal) {
-            modal.classList.remove('active');
+        if (event.target === modal) modal.classList.remove('active');
+    };
+
+    // ── Export PDF ─────────────────────────────────────────────────────────
+    async function exportPDF() {
+        const btn = document.getElementById('btnExportPdf');
+        const overlay = document.getElementById('pdf-overlay');
+        btn.disabled = true;
+        overlay.classList.add('active');
+
+        try {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+            const pageW = pdf.internal.pageSize.getWidth();
+            const pageH = pdf.internal.pageSize.getHeight();
+
+            // ── Page 1 : Calendrier ──
+            const calEl = document.querySelector('.calendar-container');
+            if (calEl) {
+                const canvas1 = await html2canvas(calEl, { scale: 1.8, useCORS: true, backgroundColor: '#ffffff' });
+                const img1    = canvas1.toDataURL('image/png');
+                const ratio1  = canvas1.width / canvas1.height;
+                const iW1     = pageW - 20;
+                const iH1     = iW1 / ratio1;
+
+                // En-tête page 1
+                pdf.setFillColor(220, 38, 38);
+                pdf.rect(0, 0, pageW, 14, 'F');
+                pdf.setTextColor(255, 255, 255);
+                pdf.setFontSize(13);
+                pdf.setFont('helvetica', 'bold');
+                pdf.text('ESPRIT – Emploi du temps · {{ classe.nom }}', 10, 9);
+                pdf.setFontSize(9);
+                pdf.setFont('helvetica', 'normal');
+                pdf.text('Semaine du {{ mondayDate }} au {{ saturdayDate }}', pageW - 10, 9, { align: 'right' });
+
+                const calY = 18;
+                if (iH1 + calY <= pageH - 10) {
+                    pdf.addImage(img1, 'PNG', 10, calY, iW1, iH1);
+                } else {
+                    const scaledH = pageH - calY - 10;
+                    pdf.addImage(img1, 'PNG', 10, calY, iW1, scaledH);
+                }
+
+                // Pied de page
+                pdf.setTextColor(150, 150, 150);
+                pdf.setFontSize(8);
+                pdf.text('Généré le {{ "now"|date("d/m/Y à H:i") }}', pageW / 2, pageH - 4, { align: 'center' });
+            }
+
+            // ── Page 2 : Statistiques ──
+            const statsEl = document.getElementById('statsSection');
+            if (statsEl) {
+                pdf.addPage();
+                const canvas2 = await html2canvas(statsEl, { scale: 1.8, useCORS: true, backgroundColor: '#f9fafb' });
+                const img2    = canvas2.toDataURL('image/png');
+                const ratio2  = canvas2.width / canvas2.height;
+                const iW2     = pageW - 20;
+                const iH2     = iW2 / ratio2;
+
+                pdf.setFillColor(220, 38, 38);
+                pdf.rect(0, 0, pageW, 14, 'F');
+                pdf.setTextColor(255, 255, 255);
+                pdf.setFontSize(13);
+                pdf.setFont('helvetica', 'bold');
+                pdf.text('ESPRIT – Statistiques hebdomadaires · {{ classe.nom }}', 10, 9);
+                pdf.setFontSize(9);
+                pdf.setFont('helvetica', 'normal');
+                pdf.text('Semaine du {{ mondayDate }} au {{ saturdayDate }}', pageW - 10, 9, { align: 'right' });
+
+                const statsY = 18;
+                if (iH2 + statsY <= pageH - 10) {
+                    pdf.addImage(img2, 'PNG', 10, statsY, iW2, iH2);
+                } else {
+                    const scaledH2 = pageH - statsY - 10;
+                    pdf.addImage(img2, 'PNG', 10, statsY, iW2, scaledH2);
+                }
+                pdf.setTextColor(150, 150, 150);
+                pdf.setFontSize(8);
+                pdf.text('Généré le {{ "now"|date("d/m/Y à H:i") }}', pageW / 2, pageH - 4, { align: 'center' });
+            }
+
+            pdf.save('emploi_du_temps_{{ classe.nom|replace({" ":"_"}) }}_{{ mondayDate|replace({"/":"_"}) }}.pdf');
+        } catch(e) {
+            console.error('PDF error:', e);
+            alert('Erreur lors de la génération du PDF : ' + e.message);
+        } finally {
+            btn.disabled = false;
+            overlay.classList.remove('active');
         }
     }
 
-    // Navigation et activation des liens
+    // ── Init ────────────────────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', function() {
-        const currentPath = window.location.pathname;
-        const navLinks = document.querySelectorAll('.nav a');
-        
-        navLinks.forEach(link => {
-            if (link.getAttribute('href') === currentPath) {
-                link.classList.add('active');
-            }
+        // Construire les donuts
+        if (typeof donutTypeData !== 'undefined') buildDonut('donutType', donutTypeData);
+        if (typeof donutModeData !== 'undefined') buildDonut('donutMode', donutModeData);
+
+        // Animation barres
+        document.querySelectorAll('.bar-fill').forEach(bar => {
+            const w = bar.dataset.width || 0;
+            bar.style.width = '0%';
+            setTimeout(() => { bar.style.width = w + '%'; }, 200);
         });
 
-        // Gestionnaires pour les boutons de semaine (à implémenter selon vos besoins)
-        const prevBtn = document.getElementById('prevWeek');
-        const nextBtn = document.getElementById('nextWeek');
-        const todayBtn = document.getElementById('currentWeek');
+        // Animation heatmap
+        document.querySelectorAll('.heatmap-cell').forEach((cell, i) => {
+            cell.style.opacity = '0';
+            cell.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                cell.style.transition = 'all 0.4s ease';
+                cell.style.opacity = cell.dataset.opacity || '';
+                cell.style.transform = '';
+            }, 100 + i * 60);
+        });
 
-        if (prevBtn) {
-            prevBtn.addEventListener('click', function() {
-                // Redirection vers la semaine précédente
-                // window.location.href = "{{ path('app_seance_by_classe', {'id': classe.id}) }}?week=-1";
-                console.log('Semaine précédente');
-            });
-        }
-
-        if (nextBtn) {
-            nextBtn.addEventListener('click', function() {
-                console.log('Semaine suivante');
-            });
-        }
-
-        if (todayBtn) {
-            todayBtn.addEventListener('click', function() {
-                console.log('Semaine actuelle');
-            });
-        }
+        // Nav active
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.nav a').forEach(link => {
+            if (link.getAttribute('href') === currentPath) link.classList.add('active');
+        });
     });
 </script>
 

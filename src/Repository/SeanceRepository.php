@@ -49,6 +49,7 @@ class SeanceRepository extends ServiceEntityRepository
         ?string $jour = null,
         ?string $typeSeance = null,
         ?string $mode = null,
+        ?int $salleId = null,
         ?int $classeId = null,
         ?int $matiereId = null,
         string $sort = 'id',
@@ -79,6 +80,11 @@ class SeanceRepository extends ServiceEntityRepository
                ->setParameter('mode', $mode);
         }
 
+        if ($salleId) {
+            $qb->andWhere('s.salle = :salleId')
+               ->setParameter('salleId', $salleId);
+        }
+
         if ($classeId) {
             $qb->andWhere('s.classe = :classeId')
                ->setParameter('classeId', $classeId);
@@ -95,5 +101,25 @@ class SeanceRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return Seance[] Returns seances for a class within a date range
+     */
+    public function findByClasseAndWeek(
+        \App\Entity\Classe $classe,
+        \DateTimeInterface $startWeek,
+        \DateTimeInterface $endWeek
+    ): array {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.classe = :classe')
+            ->andWhere('s.heureDebut >= :start')
+            ->andWhere('s.heureDebut <= :end')
+            ->setParameter('classe', $classe)
+            ->setParameter('start', $startWeek)
+            ->setParameter('end', $endWeek)
+            ->orderBy('s.heureDebut', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

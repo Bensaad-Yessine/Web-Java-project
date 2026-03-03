@@ -150,7 +150,7 @@ public function findByObjectifOrdered(int $objectifId): array
 
 public function getAggregatedStats(int $objectifId): array
 {
-    return $this->createQueryBuilder('s')
+    $result = $this->createQueryBuilder('s')
         ->select(
             'COUNT(s.id) as nbSuivis',
             'AVG(s.score) as avgScore',
@@ -165,6 +165,18 @@ public function getAggregatedStats(int $objectifId): array
         ->setParameter('oid', $objectifId)
         ->getQuery()
         ->getSingleResult();
+    
+    // Ensure all values are numeric and handle null
+    return [
+        'nbSuivis' => (int) ($result['nbSuivis'] ?? 0),
+        'avgScore' => (float) ($result['avgScore'] ?? 0),
+        'minScore' => (float) ($result['minScore'] ?? 0),
+        'maxScore' => (float) ($result['maxScore'] ?? 0),
+        'avgSleep' => (float) ($result['avgSleep'] ?? 0),
+        'avgEnergy' => (float) ($result['avgEnergy'] ?? 0),
+        'avgStress' => (float) ($result['avgStress'] ?? 0),
+        'avgFood' => (float) ($result['avgFood'] ?? 0),
+    ];
 }
 
 public function getHumeurDistribution(int $objectifId): array

@@ -1,3 +1,4 @@
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Gestion des Séances{% endblock %}
@@ -829,6 +830,7 @@
                                                 <td>
                                                     <div class="action-buttons">
                                                         <a href="{{ path('app_seance_show', {'id': seance.id}) }}" class="btn btn-sm btn-info" title="Voir"><i class="mdi mdi-eye"></i></a>
+                                                        <a href="{{ path('app_attendance_qr_display', {'id': seance.id}) }}" class="btn btn-sm btn-primary" title="QR Présence"><i class="mdi mdi-qrcode"></i></a>
                                                         <a href="{{ path('app_seance_edit', {'id': seance.id}) }}" class="btn btn-sm btn-warning" title="Modifier"><i class="mdi mdi-pencil"></i></a>
                                                         <button type="button" class="btn btn-sm btn-danger delete-btn" 
                                                                 data-id="{{ seance.id }}" 

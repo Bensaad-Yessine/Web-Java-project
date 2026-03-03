@@ -246,6 +246,8 @@ public function show(
 
     // 1) DATA series (Line)
     $suivis = $repo->findBy(['objectif' => $objectif], ['dateSaisie' => 'ASC']);
+    $hasSuivis = !empty($suivis);
+    
     $labels = [];
     $scores = [];
     foreach ($suivis as $s) {
@@ -253,64 +255,86 @@ public function show(
         $scores[] = $s->getScore();
     }
 
-    $scoreChart = $chartBuilder->createChart(Chart::TYPE_LINE);
-    $scoreChart->setData([
-        'labels' => $labels,
-        'datasets' => [[
-            'label' => 'Score',
-            'data' => $scores,
-            'tension' => 0.3,
-        ]],
-    ]);
-    $scoreChart->setOptions([
-    'responsive' => true,
-    'maintainAspectRatio' => false,
-]);
+    $scoreChart = null;
+    $indicatorsChart = null;
+    $moodChart = null;
 
+    if ($hasSuivis) {
+        $scoreChart = $chartBuilder->createChart(Chart::TYPE_LINE);
+        $scoreChart->setData([
+            'labels' => $labels,
+            'datasets' => [[
+                'label' => 'Score',
+                'data' => $scores,
+                'tension' => 0.3,
+                'borderColor' => 'rgb(59, 130, 246)',
+                'backgroundColor' => 'rgba(59, 130, 246, 0.1)',
+            ]],
+        ]);
+        $scoreChart->setOptions([
+            'responsive' => true,
+            'maintainAspectRatio' => false,
+        ]);
 
-    // 2) ANALYTICS (Bar + Pie)
-    $analytics = $analyticsService->build($objectif);
+        // 2) ANALYTICS (Bar + Pie)
+        $analytics = $analyticsService->build($objectif);
 
-    $indicators = $analytics['indicatorsAvg'] ?? [
-        'sommeil' => 0, 'energie' => 0, 'stress' => 0, 'alimentation' => 0
-    ];
+        $indicators = $analytics['indicatorsAvg'] ?? [
+            'sommeil' => 0, 'energie' => 0, 'stress' => 0, 'alimentation' => 0
+        ];
 
-    $indicatorsChart = $chartBuilder->createChart(Chart::TYPE_BAR);
-    $indicatorsChart->setData([
-        'labels' => ['Sommeil', 'Énergie', 'Stress', 'Alimentation'],
-        'datasets' => [[
-            'label' => 'Moyenne /10',
-            'data' => [
-                $indicators['sommeil'] ?? 0,
-                $indicators['energie'] ?? 0,
-                $indicators['stress'] ?? 0,
-                $indicators['alimentation'] ?? 0,
-            ],
-        ]],
-    ]);
-    $indicatorsChart->setOptions([
-    'responsive' => true,
-    'maintainAspectRatio' => false,
-]);
+        $indicatorsChart = $chartBuilder->createChart(Chart::TYPE_BAR);
+        $indicatorsChart->setData([
+            'labels' => ['Sommeil', 'Énergie', 'Stress', 'Alimentation'],
+            'datasets' => [[
+                'label' => 'Moyenne /10',
+                'data' => [
+                    $indicators['sommeil'] ?? 0,
+                    $indicators['energie'] ?? 0,
+                    $indicators['stress'] ?? 0,
+                    $indicators['alimentation'] ?? 0,
+                ],
+                'backgroundColor' => [
+                    'rgba(139, 92, 246, 0.8)',
+                    'rgba(34, 197, 94, 0.8)',
+                    'rgba(239, 68, 68, 0.8)',
+                    'rgba(249, 115, 22, 0.8)',
+                ],
+            ]],
+        ]);
+        $indicatorsChart->setOptions([
+            'responsive' => true,
+            'maintainAspectRatio' => false,
+        ]);
 
-    $moods = $analytics['humeurDistribution'] ?? [];
-    $moodLabels = array_map(fn($m) => $m['humeur'] ?? '—', $moods);
-    $moodValues = array_map(fn($m) => $m['total'] ?? 0, $moods);
+        $moods = $analytics['humeurDistribution'] ?? [];
+        $moodLabels = array_map(fn($m) => $m['humeur'] ?? '—', $moods);
+        $moodValues = array_map(fn($m) => $m['total'] ?? 0, $moods);
 
-    $moodChart = $chartBuilder->createChart(Chart::TYPE_PIE);
-    $moodChart->setData([
-        'labels' => $moodLabels,
-        'datasets' => [[
-            'data' => $moodValues,
-        ]],
-    ]);
-    $moodChart->setOptions([
-    'responsive' => true,
-    'maintainAspectRatio' => false,
-]);
+        if (!empty($moodLabels)) {
+            $moodChart = $chartBuilder->createChart(Chart::TYPE_PIE);
+            $moodChart->setData([
+                'labels' => $moodLabels,
+                'datasets' => [[
+                    'data' => $moodValues,
+                    'backgroundColor' => [
+                        'rgba(34, 197, 94, 0.8)',
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(249, 115, 22, 0.8)',
+                        'rgba(239, 68, 68, 0.8)',
+                    ],
+                ]],
+            ]);
+            $moodChart->setOptions([
+                'responsive' => true,
+                'maintainAspectRatio' => false,
+            ]);
+        }
+    }
 
     return $this->render('front/objectif_sante/show.html.twig', [
         'objectif_sante' => $objectif,
+        'hasSuivis' => $hasSuivis,
 
         // charts (UX bundle)
         'scoreChart' => $scoreChart,

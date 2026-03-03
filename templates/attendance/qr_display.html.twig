@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>QR Code Présence – {{ seance.matiere ? seance.matiere.nom : 'Séance' }} – ESPRIT</title>
+
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+
+    <!-- QR Code lib (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+    <style>
+        body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        .qr-page { max-width: 680px; margin: 30px auto; padding: 0 16px 40px; }
+
+        .qr-card {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(0,0,0,.12);
+            overflow: hidden;
+        }
+        .qr-card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 24px 32px 20px;
+            color: #fff;
+        }
+        .qr-card-header h1 { font-size: 1.5rem; font-weight: 700; margin: 0 0 6px; }
+        .qr-card-header p  { margin: 0; opacity: .85; font-size: .95rem; }
+
+        .qr-card-body { padding: 32px; text-align: center; }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 28px;
+            text-align: left;
+        }
+        .info-item {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 12px 14px;
+            border-left: 3px solid #667eea;
+        }
+        .info-item .label { font-size: .72rem; color: #888; text-transform: uppercase; letter-spacing: .04em; }
+        .info-item .value { font-size: 1rem; font-weight: 600; color: #333; margin-top: 2px; }
+
+        /* Badge actif */
+        .qr-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: .9rem;
+            font-weight: 600;
+            background: #e8f5e9;
+            color: #2e7d32;
+            margin-bottom: 24px;
+        }
+        .pulse-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #43a047;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+        /* QR wrapper */
+        #qr-wrapper {
+            display: inline-block;
+            padding: 18px;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 20px rgba(102,126,234,.25);
+            margin-bottom: 28px;
+        }
+        /* qrcodejs2 génère un <canvas> ou <img> à l'intérieur */
+        #qr-wrapper img,
+        #qr-wrapper canvas { display: block; }
+
+        /* Boutons */
+        .btn-print {
+            background: linear-gradient(135deg,#667eea,#764ba2);
+            color: #fff;
+            border: none;
+            padding: 11px 28px;
+            border-radius: 50px;
+            font-size: .95rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 6px 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform .15s, box-shadow .15s;
+        }
+        .btn-print:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(102,126,234,.4); }
+
+        .btn-dashboard {
+            background: #fff;
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 9px 24px;
+            border-radius: 50px;
+            font-size: .95rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 6px 10px;
+            transition: background .15s;
+        }
+        .btn-dashboard:hover { background: #f0f4ff; }
+
+        .btn-back {
+            background: #fff;
+            color: #555;
+            border: 1px solid #ddd;
+            padding: 9px 22px;
+            border-radius: 50px;
+            font-size: .9rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        /* Zone imprimable */
+        @media print {
+            body * { visibility: hidden !important; }
+            #print-area, #print-area * { visibility: visible !important; }
+            #print-area {
+                position: fixed; inset: 0;
+                display: flex !important;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background: #fff;
+            }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+<div class="qr-page no-print">
+
+    <a href="{{ path('app_seance_show', {id: seance.id}) }}" class="btn-back">
+        <i class="mdi mdi-arrow-left"></i> Retour à la séance
+    </a>
+
+    <div class="qr-card">
+        <div class="qr-card-header">
+            <h1><i class="mdi mdi-qrcode-scan"></i> QR Code Présence</h1>
+            <p>Affichez ou imprimez ce code – il est permanent pour cette séance</p>
+        </div>
+
+        <div class="qr-card-body">
+
+            <!-- Info séance -->
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="label">Matière</div>
+                    <div class="value">{{ seance.matiere ? seance.matiere.nom : '–' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Classe</div>
+                    <div class="value">{{ seance.classe ? seance.classe.nom : '–' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Salle</div>
+                    <div class="value">{{ seance.salle ? seance.salle.name : '–' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Date</div>
+                    <div class="value">{{ seance.heureDebut ? seance.heureDebut|date('d/m/Y') : '–' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Début</div>
+                    <div class="value">{{ seance.heureDebut ? seance.heureDebut|date('H:i') : '–' }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="label">Fin</div>
+                    <div class="value">{{ seance.heureFin ? seance.heureFin|date('H:i') : '–' }}</div>
+                </div>
+            </div>
+
+            <!-- Badge actif -->
+            <div class="qr-status-badge">
+                <span class="pulse-dot"></span>
+                QR actif – Scan illimité
+            </div>
+
+            <!-- QR Code généré en JS local -->
+            <div id="qr-wrapper">
+                <div id="qr-canvas"></div>
+            </div>
+
+            <!-- Boutons -->
+            <div>
+                <button class="btn-print no-print" onclick="window.print()">
+                    <i class="mdi mdi-printer"></i> Imprimer / Poster
+                </button>
+                <a href="{{ path('app_attendance_dashboard', {id: seance.id}) }}" class="btn-dashboard no-print">
+                    <i class="mdi mdi-account-multiple-check"></i> Voir les présences
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Zone imprimable -->
+<div id="print-area" style="display:none;">
+    <h2 style="color:#333;font-family:'Segoe UI',sans-serif;margin-bottom:8px;">
+        Présence – {{ seance.matiere ? seance.matiere.nom : 'Séance #'~seance.id }}
+    </h2>
+    <p style="color:#555;font-family:'Segoe UI',sans-serif;margin-bottom:16px;">
+        {{ seance.classe ? seance.classe.nom : '' }} &nbsp;|&nbsp;
+        Salle {{ seance.salle ? seance.salle.name : '' }} &nbsp;|&nbsp;
+        {{ seance.heureDebut ? seance.heureDebut|date('d/m/Y H:i') : '' }}
+    </p>
+    <div id="qr-print"></div>
+    <p style="margin-top:12px;color:#888;font-size:.85rem;font-family:'Segoe UI',sans-serif;">
+        Scannez avec votre téléphone pour marquer votre présence
+    </p>
+</div>
+
+<script>
+{% if seance.qrToken %}
+const QR_TOKEN = {{ seance.qrToken | json_encode | raw }};
+{% else %}
+const QR_TOKEN = null;
+{% endif %}
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Forcer localhost pour la cohérence des URLs de scan
+    if (location.hostname === '127.0.0.1') {
+        location.href = location.href.replace('127.0.0.1', 'localhost');
+        return;
+    }
+
+    const wrapper = document.getElementById('qr-wrapper');
+
+    if (!QR_TOKEN) {
+        wrapper.innerHTML = '<p style="color:#e53935;padding:20px;">Erreur : aucun token QR généré. Rechargez la page.</p>';
+        return;
+    }
+
+    if (typeof QRCode === 'undefined') {
+        wrapper.innerHTML = '<p style="color:#e53935;padding:20px;">Erreur : bibliothèque QR non chargée.</p>';
+        return;
+    }
+
+    const scanUrl = window.location.origin + '/attendance/scan?token=' + encodeURIComponent(QR_TOKEN);
+
+    // QR principal (affiché à l'écran)
+    new QRCode(document.getElementById('qr-canvas'), {
+        text:           scanUrl,
+        width:          280,
+        height:         280,
+        colorDark:      '#1a1a2e',
+        colorLight:     '#ffffff',
+        correctLevel:   QRCode.CorrectLevel.M,
+    });
+
+    // QR pour l'impression
+    new QRCode(document.getElementById('qr-print'), {
+        text:           scanUrl,
+        width:          300,
+        height:         300,
+        colorDark:      '#000000',
+        colorLight:     '#ffffff',
+        correctLevel:   QRCode.CorrectLevel.M,
+    });
+});
+
+window.addEventListener('beforeprint', function () {
+    const pa = document.getElementById('print-area');
+    pa.style.display      = 'flex';
+    pa.style.flexDirection = 'column';
+    pa.style.alignItems   = 'center';
+});
+window.addEventListener('afterprint', function () {
+    document.getElementById('print-area').style.display = 'none';
+});
+</script>
+</body>
+</html>

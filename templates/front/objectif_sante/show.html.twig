@@ -1282,6 +1282,7 @@
 
   <div class="card-content">
 
+    {% if hasSuivis %}
     <div class="charts-grid">
 
       {# 1) Score en FULL WIDTH #}
@@ -1307,6 +1308,7 @@
       </div>
 
       {# 3) Humeur (colonne droite) #}
+      {% if moodChart %}
       <div class="chart-item">
         <div class="chart-head">
           <div class="chart-title">Répartition de l’humeur</div>
@@ -1316,8 +1318,20 @@
           {{ render_chart(moodChart) }}
         </div>
       </div>
+      {% endif %}
 
     </div>
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px; color: var(--gray-500);">
+      <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
+      <div style="font-size: 18px; font-weight: 600; color: var(--gray-700); margin-bottom: 8px;">
+        Aucune donnée disponible
+      </div>
+      <div style="font-size: 14px;">
+        Les graphiques s'afficheront une fois que des suivis seront enregistrés.
+      </div>
+    </div>
+    {% endif %}
   </div>
 </div>
               {# ===================== Coaching Summary Card ===================== #}

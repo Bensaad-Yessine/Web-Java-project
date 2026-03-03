@@ -25,21 +25,18 @@ class Salle
     )]
     private ?string $block = null;
 
-    // Number: 1..40 (1er étage 1..10, 2ème 11..20, 3ème 21..30, 4ème 31..40)
+    // Numéro de salle : 1..9 (pour chaque étage)
     #[ORM\Column]
     #[Assert\NotNull(message: "Le numéro est obligatoire.")]
-    #[Assert\Regex(
-        pattern: "/^\d+$/",
-        message: "Veuillez n'utiliser que des chiffres pour le numéro de salle."
-    )]
+    #[Assert\Positive(message: "Le numéro doit être positif.")]
     #[Assert\Range(
         min: 1,
-        max: 999,
+        max: 9,
         notInRangeMessage: "Le numéro doit être entre {{ min }} et {{ max }}."
     )]
-    private $number = null;
+    private ?int $number = null;
 
-    // Name dérivé: block + number (ex: J38)
+    // Nom dérivé automatiquement : bloc + étage + numéro (ex : A37 pour bloc A, étage 3, numéro 7)
     #[ORM\Column(length: 10)]
     private ?string $name = null;
 
@@ -49,14 +46,11 @@ class Salle
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column]
-    #[Assert\NotNull(message: "Le statut de disponibilité est obligatoire.")]
-    private ?bool $disponibilite = true;
 
     #[ORM\Column]
     #[Assert\NotNull(message: "L'étage est obligatoire.")]
     #[Assert\Range(
-        min: 1,
+        min: 0,
         max: 4,
         notInRangeMessage: "L'étage doit être entre {{ min }} et {{ max }}."
     )]
@@ -74,6 +68,9 @@ class Salle
         notInRangeMessage: "La capacité doit être entre {{ min }} et {{ max }}."
     )]
     private $capacite = null;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => true])]
+    private ?bool $disponibilite = true;
 
     public function getId(): ?int
     {
@@ -103,7 +100,7 @@ class Salle
         return $this->number;
     }
 
-    public function setNumber($number): static
+    public function setNumber(?int $number): static
     {
         $this->number = $number;
         $this->updateName();
@@ -122,11 +119,11 @@ class Salle
         return $this;
     }
 
-    // ✅ Génère automatiquement le name (ex: J38)
+    // ✅ Génère automatiquement le nom (bloc + étage + numéro, ex: A37)
     private function updateName(): void
     {
-        if ($this->block !== null && $this->number !== null) {
-            $this->name = $this->block . $this->number;
+        if ($this->block !== null && $this->etage !== null && $this->number !== null) {
+            $this->name = $this->block . $this->etage . $this->number;
         }
     }
 
@@ -182,17 +179,6 @@ class Salle
         return $this;
     }
 
-    public function isDisponibilite(): ?bool
-    {
-        return $this->disponibilite;
-    }
-
-    public function setDisponibilite(bool $disponibilite): static
-    {
-        $this->disponibilite = $disponibilite;
-
-        return $this;
-    }
 
     public function getEtage(): ?int
     {
@@ -202,6 +188,18 @@ class Salle
     public function setEtage(int $etage): static
     {
         $this->etage = $etage;
+
+        return $this;
+    }
+
+    public function isDisponibilite(): ?bool
+    {
+        return $this->disponibilite;
+    }
+
+    public function setDisponibilite(?bool $disponibilite): static
+    {
+        $this->disponibilite = $disponibilite;
 
         return $this;
     }
