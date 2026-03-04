@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\TaskPredictorService;
 use App\Repository\PreferenceAlerteRepository;
 use App\Service\WeatherAIService;
 use App\Service\StatisticsService;
@@ -32,6 +33,8 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Validator\Constraints\Json;   
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
 
 #[Route('/user')]
 class UserController extends AbstractController
@@ -700,83 +703,87 @@ class UserController extends AbstractController
     }
 
 #[Route('/dashboard/task/add', name: 'app_task_add', methods: ['GET', 'POST'])]
-public function addTask(Request $request, EntityManagerInterface $em): Response
-{
-    $user = $this->getUser();
-    
-    if (!$user) {
-        throw $this->createAccessDeniedException();
+    public function addTask(Request $request, EntityManagerInterface $em, TaskPredictorService $predictor): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $tache = new Tache();
+        $tache->setUser($user);
+
+        $form = $this->createForm(FrontOfficeTacheType::class, $tache);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // --------------------------
+            // Map frontend values to entity values
+            // --------------------------
+            $typeMap = [
+                'course' => 'MANUEL',
+                'exam' => 'REVISION',
+                'meeting' => 'REUNION',
+                'personal' => 'MANUEL',
+                'project' => 'MANUEL',
+                'assignment' => 'MANUEL'
+            ];
+
+            $priorityMap = [
+                'low' => 'FAIBLE',
+                'medium' => 'MOYEN',
+                'high' => 'ELEVEE'
+            ];
+
+            $statusMap = [
+                'pending'     => 'A_FAIRE',
+                'in_progress' => 'EN_COURS',
+                'completed'   => 'TERMINEE',
+                'abandon'     => 'ABANDON'   // new status added
+            ];
+
+            $tache->setType($typeMap[$tache->getType()] ?? 'MANUEL');
+            $tache->setPriorite($priorityMap[$tache->getPriorite()] ?? 'MOYEN');
+            $tache->setStatut($statusMap[$tache->getStatut()] ?? 'A_FAIRE');
+
+            if (!$tache->getDateDebut()) {
+                $tache->setDateDebut(new \DateTime());
+            }
+            if (!$tache->getDateFin()) {
+                $tache->setDateFin((new \DateTime())->modify('+1 hour'));
+            }
+            if (!$tache->getDureeEstimee()) {
+                $tache->setDureeEstimee(60);
+            }
+            if (!$tache->getCreatedAt()) {
+                $tache->setCreatedAt(new \DateTimeImmutable());
+            }
+
+            // --------------------------
+            // Persist task first to get ID
+            // --------------------------
+            $em->persist($tache);
+            $em->flush();
+
+            // --------------------------
+            // Get completion probability from service
+            // --------------------------
+            $completionProbability = $predictor->predict($tache);
+            $tache->setPrediction($completionProbability);
+
+            $em->persist($tache);
+            $em->flush();
+
+            $this->addFlash('success', 'Task created successfully!');
+            return $this->redirectToRoute('app_my_tasks');
+        }
+
+        return $this->render('user/add_task.html.twig', [
+            'form' => $form->createView(),
+            'is_edit' => false,
+        ]);
     }
-
-    $tache = new Tache();
-    $tache->setUser($user); // Automatically set current user
-    
-    $form = $this->createForm(FrontOfficeTacheType::class, $tache);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        // Map frontend values to entity values
-        $typeMap = [
-            'course' => 'MANUEL',
-            'exam' => 'REVISION',
-            'meeting' => 'REUNION',
-            'personal' => 'MANUEL',
-            'project' => 'MANUEL',
-            'assignment' => 'MANUEL'
-        ];
-
-        $priorityMap = [
-            'low' => 'FAIBLE',
-            'medium' => 'MOYEN',
-            'high' => 'ELEVEE'
-        ];
-
-        $statusMap = [
-            'pending' => 'A_FAIRE',
-            'in_progress' => 'EN_COURS',
-            'completed' => 'TERMINEE'
-        ];
-
-        // Map the values
-        $formType = $tache->getType();
-        $entityType = $typeMap[$formType] ?? 'MANUEL';
-        $tache->setType($entityType);
-
-        $formPriority = $tache->getPriorite();
-        $entityPriority = $priorityMap[$formPriority] ?? 'MOYEN';
-        $tache->setPriorite($entityPriority);
-
-        $formStatus = $tache->getStatut();
-        $entityStatus = $statusMap[$formStatus] ?? 'A_FAIRE';
-        $tache->setStatut($entityStatus);
-
-        // Ensure required fields are set
-        if (!$tache->getDateDebut()) {
-            $tache->setDateDebut(new \DateTime());
-        }
-        if (!$tache->getDateFin()) {
-            $tache->setDateFin((new \DateTime())->modify('+1 hour'));
-        }
-        if (!$tache->getDureeEstimee()) {
-            $tache->setDureeEstimee(60);
-        }
-        
-        if (!$tache->getCreatedAt()) {
-            $tache->setCreatedAt(new \DateTimeImmutable());
-        }
-
-        $em->persist($tache);
-        $em->flush();
-
-        $this->addFlash('success', 'Task created successfully!');
-        return $this->redirectToRoute('app_my_tasks');
-    }
-
-    return $this->render('user/add_task.html.twig', [
-        'form' => $form->createView(),
-        'is_edit' => false,
-    ]);
-}
 
 #[Route('/dashboard/task/{id}/edit', name: 'app_task_edit', methods: ['GET', 'POST'])]
 public function editTask(Request $request, Tache $tache, EntityManagerInterface $em): Response
@@ -974,16 +981,23 @@ public function showPreferencesbyUser(PreferenceAlerteRepository $preferenceAler
         // 5. Optional: redirect or return JSON
         return $this->redirectToRoute('front_preference_alerte_show', ['id' => $user->getId()]); 
     }
-    #[Route('/dashboard/my-tasks', name: 'app_my_tasks', methods: ['GET'])]
+   #[Route('/dashboard/my-tasks', name: 'app_my_tasks', methods: ['GET'])]
 public function myTasks(
+    Request $request,
     TacheRepository $tacheRepository,
-    StatisticsService $statsService
+    StatisticsService $statsService,
+    ChartBuilderInterface $chartBuilder,
+    AlertEngineService $alertService
 ): Response {
+
+    
     $user = $this->getUser();
     if (!$user) {
         throw $this->createAccessDeniedException();
     }
 
+    $alertService->runForUser($user->getId());
+    
     // Get tasks lists
     $activeStatuses = ['A_FAIRE', 'EN_COURS', 'EN_RETARD', 'PAUSED'];
     $archivedStatuses = ['TERMINE', 'ABANDON'];
@@ -1002,6 +1016,8 @@ public function myTasks(
     $stats = $statsService->getUserStats($user);
 
     // ----- Chart 1: Status distribution -----
+    $statusChart = $chartBuilder->createChart(Chart::TYPE_BAR);
+    
     $todoTasks = $stats['counts']['total'] 
         - $stats['counts']['completed'] 
         - $stats['counts']['abandoned']
@@ -1009,7 +1025,7 @@ public function myTasks(
         - $stats['counts']['overdue']
         - $stats['counts']['paused'];
     
-    $statusChartData = [
+    $statusChart->setData([
         'labels' => ['À faire', 'En cours', 'Terminées', 'Abandonnées', 'En retard', 'En pause'],
         'datasets' => [
             [
@@ -1032,15 +1048,17 @@ public function myTasks(
                 ],
             ],
         ],
-    ];
+    ]);
 
     // ----- Chart 2: Priority distribution -----
+    $priorityChart = $chartBuilder->createChart(Chart::TYPE_DOUGHNUT);
+    
     $highPriority = $stats['counts']['highPriority'] ?? 0;
     $remaining = max(0, $stats['counts']['total'] - $highPriority);
     $mediumPriority = (int)($remaining * 0.6);
     $lowPriority = $remaining - $mediumPriority;
     
-    $priorityChartData = [
+    $priorityChart->setData([
         'labels' => ['Haute', 'Moyenne', 'Faible'],
         'datasets' => [
             [
@@ -1049,9 +1067,11 @@ public function myTasks(
                 'data' => [$highPriority, $mediumPriority, $lowPriority],
             ],
         ],
-    ];
+    ]);
 
     // ----- Chart 3: Progress over time (NEW) -----
+    $progressChart = $chartBuilder->createChart(Chart::TYPE_LINE);
+
     // Get progress data for the last 30 days
     $progressData = $tacheRepository->getDailyTaskStats($user, 30);
     
@@ -1069,7 +1089,7 @@ public function myTasks(
         $abandoned[] = $data['abandoned'];
     }
     
-    $progressChartData = [
+    $progressChart->setData([
         'labels' => $labels,
         'datasets' => [
             [
@@ -1097,15 +1117,15 @@ public function myTasks(
                 'fill' => true
             ]
         ],
-    ];
+    ]);
 
     return $this->render('user/my_task.html.twig', [
         'activeTasks'     => $activeTasks,
         'archivedTasks'   => $archivedTasks,
         'stats'           => $stats,
-        'statusChart'     => $statusChartData,
-        'priorityChart'   => $priorityChartData,
-        'progressChart'   => $progressChartData,
+        'statusChart'     => $statusChart,
+        'priorityChart'   => $priorityChart,
+        'progressChart'   => $progressChart,
         // Add these lines:
         'progressLabels'  => $labels,
         'progressCreated' => $created,

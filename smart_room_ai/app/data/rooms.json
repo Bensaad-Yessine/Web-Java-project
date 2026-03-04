@@ -1,0 +1,107 @@
+[
+  {
+    "id": "A101",
+    "bloc": "A",
+    "etage": 1,
+    "capacite": 15,
+    "is_available": true
+  },
+  {
+    "id": "A102",
+    "bloc": "A",
+    "etage": 1,
+    "capacite": 20,
+    "is_available": true
+  },
+  {
+    "id": "B204",
+    "bloc": "B",
+    "etage": 2,
+    "capacite": 25,
+    "is_available": true
+  },
+  {
+    "id": "B205",
+    "bloc": "B",
+    "etage": 2,
+    "capacite": 30,
+    "is_available": true
+  },
+  {
+    "id": "C301",
+    "bloc": "C",
+    "etage": 3,
+    "capacite": 18,
+    "is_available": true
+  },
+  {
+    "id": "C302",
+    "bloc": "C",
+    "etage": 3,
+    "capacite": 22,
+    "is_available": true
+  },
+  {
+    "id": "D201",
+    "bloc": "D",
+    "etage": 2,
+    "capacite": 35,
+    "is_available": true
+  },
+  {
+    "id": "E101",
+    "bloc": "E",
+    "etage": 1,
+    "capacite": 12,
+    "is_available": true
+  },
+  {
+    "id": "F401",
+    "bloc": "F",
+    "etage": 4,
+    "capacite": 40,
+    "is_available": true
+  },
+  {
+    "id": "G202",
+    "bloc": "G",
+    "etage": 2,
+    "capacite": 28,
+    "is_available": true
+  },
+  {
+    "id": "H301",
+    "bloc": "H",
+    "etage": 3,
+    "capacite": 16,
+    "is_available": true
+  },
+  {
+    "id": "I102",
+    "bloc": "I",
+    "etage": 1,
+    "capacite": 24,
+    "is_available": true
+  },
+  {
+    "id": "J201",
+    "bloc": "J",
+    "etage": 2,
+    "capacite": 32,
+    "is_available": true
+  },
+  {
+    "id": "K101",
+    "bloc": "K",
+    "etage": 1,
+    "capacite": 14,
+    "is_available": true
+  },
+  {
+    "id": "K102",
+    "bloc": "K",
+    "etage": 1,
+    "capacite": 26,
+    "is_available": true
+  }
+]

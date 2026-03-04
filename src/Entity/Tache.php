@@ -84,6 +84,9 @@ class Tache
     #[ORM\OneToMany(mappedBy: 'tache', targetEntity: SuiviTache::class, cascade: ['persist', 'remove'])]
     private Collection $suivis;
 
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $prediction = null;
+
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $createdAt = null;
 
@@ -276,6 +279,18 @@ class Tache
         }
         
         $this->setUpdatedAt(new \DateTimeImmutable());
+    }
+
+    public function getPrediction(): ?float
+    {
+        return $this->prediction;
+    }
+    
+    public function setPrediction(?float $prediction): static
+    {
+        $this->prediction = $prediction;
+
+        return $this;
     }
 
 }

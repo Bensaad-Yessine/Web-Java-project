@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\SuiviTache;
+use App\Entity\Notification;
+use App\Repository\NotificationRepository;
 
 #[Route('/tache')]
 final class TacheController extends AbstractController
@@ -215,10 +217,19 @@ final class TacheController extends AbstractController
 
     //suivi tache history
     #[Route('/{id}/action-user', name: 'app_tache_action_user', methods: ['POST'])]
-    public function actionUser(Request $request, Tache $tache, EntityManagerInterface $em): Response
+    public function actionUser(Request $request, Tache $tache, EntityManagerInterface $em, NotificationRepository $notificationRepository): Response
     {
         $newStatus = $request->request->get('action');
         $currentStatus = $tache->getStatut();
+
+        // Delete notifications if action is TERMINE or ABANDON
+        if (in_array($newStatus, ['TERMINE', 'ABANDON'])) {
+            $notifications = $notificationRepository->findBy(['tache' => $tache]);
+            foreach ($notifications as $notification) {
+                $em->remove($notification);
+            }
+            $em->flush();
+        }
 
         if ($newStatus && $newStatus !== $currentStatus) {
             // 1️⃣ Create SuiviTache entry
@@ -233,7 +244,6 @@ final class TacheController extends AbstractController
             // 2️⃣ Update the Tache status
             $tache->setStatut($newStatus);
             $tache->setUpdatedAt(new \DateTimeImmutable());
-
 
             $em->flush();
 
@@ -283,4 +293,15 @@ final class TacheController extends AbstractController
         ]);
     }
 
+    //delete notification
+    #[Route('/{id}/notification', name: 'app_tache_notification', methods: ['POST'])]
+    public function deleteNotification(Request $request, Tache $tache, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$tache->getId(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($tache);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_tache_index', [], Response::HTTP_SEE_OTHER);
+    }
 }

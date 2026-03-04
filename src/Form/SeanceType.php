@@ -128,8 +128,8 @@ class SeanceType extends AbstractType
                     return 'Salle #' . $salle->getId();
                 },
                 'label' => 'Salle',
-                'placeholder' => 'Sélectionnez une salle',
-                'required' => true,
+                'placeholder' => 'Sélectionnez une salle (optionnel - IA recommandera)',
+                'required' => false,
             ]);
     }
 

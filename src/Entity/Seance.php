@@ -41,8 +41,7 @@ class Seance
     private ?string $mode = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: "La salle est obligatoire.")]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Salle $salle = null;
 
     // CHANGE THESE FROM DATE_MUTABLE TO DATETIME_MUTABLE
@@ -177,6 +176,32 @@ class Seance
     public function setClasse(?Classe $classe): static
     {
         $this->classe = $classe;
+        return $this;
+    }
+
+    // Méthodes pour l'IA (utilisent les propriétés existantes)
+    public function getDuree(): ?int
+    {
+        if ($this->heureDebut && $this->heureFin) {
+            return ($this->heureFin->getTimestamp() - $this->heureDebut->getTimestamp()) / 60;
+        }
+        return 90; // Durée par défaut
+    }
+
+    public function setDuree(?int $duree): static
+    {
+        // Ne stocke pas la durée, elle est calculée depuis heureDebut/heureFin
+        return $this;
+    }
+
+    public function getGroupe(): ?string
+    {
+        return $this->classe?->getNom();
+    }
+
+    public function setGroupe(?string $groupe): static
+    {
+        // Ne stocke pas de groupe séparé, utilise la propriété classe
         return $this;
     }
 

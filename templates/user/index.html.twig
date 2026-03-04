@@ -963,7 +963,7 @@
                                 <td>{{ user.dateDeNaissance ? user.dateDeNaissance|date('d/m/Y') : '—' }}</td>
                                 <td>
                                   {% if user.classe %}
-                                    <span class="badge badge-light">{{ user.classe.nom }}</span>
+                                    <span class="badge bg-danger">{{ user.classe.nom }}</span>
                                   {% else %}
                                     <span class="text-muted">—</span>
                                   {% endif %}

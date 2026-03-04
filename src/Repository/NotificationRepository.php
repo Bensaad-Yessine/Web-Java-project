@@ -28,10 +28,12 @@ class NotificationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    // Only return unread notifications for display
     public function findAllByUser(User $user): array
     {
         return $this->createQueryBuilder('n')
             ->andWhere('n.user = :user')
+            ->andWhere('n.isRead = false')
             ->setParameter('user', $user)
             ->orderBy('n.createdAt', 'DESC')
             ->getQuery()

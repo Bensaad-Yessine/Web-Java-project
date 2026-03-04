@@ -1,0 +1,1 @@
+# Smart Room AI Application

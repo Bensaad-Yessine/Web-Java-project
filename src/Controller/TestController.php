@@ -11,7 +11,11 @@ class TestController extends AbstractController
     #[Route('/test-alert', name: 'test_alert')]
     public function index(AlertEngineService $alertService): Response
     {
-        $alertService->run();
+        $user = $this->getUser();
+        if (!$user) {
+            throw $this->createAccessDeniedException();
+        }
+        $alertService->runForUser($user->getId());
         return new Response('Alert service executed!');
     }
 }

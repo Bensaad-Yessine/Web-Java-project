@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service;
 
 use App\Repository\TacheRepository;
@@ -8,7 +9,6 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use App\Entity\Notification;
 use App\Repository\PreferenceAlerteRepository;
-use App\Repository\SuiviTacheRepository;
 
 class AlertEngineService
 {
@@ -16,30 +16,76 @@ class AlertEngineService
         private TacheRepository $tacheRepository,
         private NotificationRepository $notificationRepository,
         private PreferenceAlerteRepository $preferenceRepo,
-        private SuiviTacheRepository $suiviRepository,
         private EntityManagerInterface $em,
         private MailerInterface $mailer
     ) {}
 
-    public function run(): void
+    public function runForUser(int $userId): void
     {
-        // --- Active statuses (all users)
+        date_default_timezone_set('Africa/Tunis');
+
+        $now = new \DateTime();
+        $oneDayAgo = (new \DateTime())->modify('-1 day');
+
         $activeStatuses = ['A_FAIRE', 'EN_COURS', 'EN_RETARD', 'PAUSED'];
 
-        // Fetch all active tasks for all users
+        // 1️⃣ Fetch active tasks for this user only
         $tasks = $this->tacheRepository->createQueryBuilder('t')
+            ->join('t.user', 'u')
+            ->andWhere('u.id = :userId')
             ->andWhere('t.statut IN (:statuses)')
+            ->setParameter('userId', $userId)
             ->setParameter('statuses', $activeStatuses)
-            ->orderBy('t.id', 'DESC')
             ->getQuery()
             ->getResult();
 
+        if (!$tasks) {
+            return;
+        }
+
+        // 2️⃣ Fetch recent notifications for this user (last 24h only)
+        $recentNotifications = $this->notificationRepository->createQueryBuilder('n')
+            ->join('n.user', 'u')
+            ->andWhere('u.id = :userId')
+            ->andWhere('n.createdAt >= :oneDayAgo')
+            ->setParameter('userId', $userId)
+            ->setParameter('oneDayAgo', $oneDayAgo)
+            ->getQuery()
+            ->getResult();
+
+        // 3️⃣ Index notifications in memory (taskId + type + email)
+        $notificationIndex = [];
+
+        foreach ($recentNotifications as $notif) {
+            $taskId = $notif->getTache()->getId();
+            $type = $notif->getType();
+            $isEmail = $notif->getEmail();
+
+            $notificationIndex[$taskId][$type][$isEmail ? 'email' : 'site'] = true;
+        }
+
+        // 4️⃣ Process tasks
         foreach ($tasks as $task) {
-            $this->processTask($task);
+
+            $deadline = $task->getDateFin();
+            if (!$deadline) {
+                continue;
+            }
+
+            $remainingTime = $deadline->getTimestamp() - $now->getTimestamp();
+
+            if ($remainingTime < 3600 && $remainingTime > 0) {
+                $this->handleAlert($task, 'near', $notificationIndex);
+            }
+
+            if ($remainingTime < 0) {
+                $this->handleAlert($task, 'overdue', $notificationIndex);
+            }
         }
 
         $this->em->flush();
     }
+
     private function formatPriority(string $priority): string
     {
         return match ($priority) {
@@ -50,33 +96,11 @@ class AlertEngineService
         };
     }
 
-    private function processTask($task): void
-    {
-        $now = new \DateTime();
-        $status = $task->getStatut();
-
-        // Skip if task is finished or abandoned
-        if ($status === 'TERMINE' || $status === 'ABANDON') {
-            return;
-        }
-
-        $deadline = $task->getDateFin();
-        $remainingTime = $deadline->getTimestamp() - $now->getTimestamp();
-
-        // Alert if less than 1 hour remaining (and not yet passed)
-        if ($remainingTime < 3600 && $remainingTime > 0) {
-            $this->createAlert($task, 'near');
-        }
-
-        // Alert if deadline passed and not finished
-        if ($remainingTime < 0) {
-            $this->createAlert($task, 'overdue');
-        }
-    }
-
-    private function createAlert($task, string $condition): void
+    private function handleAlert($task, string $condition, array $notificationIndex): void
     {
         $user = $task->getUser();
+        $taskId = $task->getId();
+
         $preference = $this->preferenceRepo->findOneBy(['etudiant' => $user]);
         $emailActive = $preference ? $preference->isEmailActif() : true;
         $siteNotifActive = $preference ? $preference->isSiteNotifActive() : true;
@@ -86,62 +110,53 @@ class AlertEngineService
         $deadline = $task->getDateFin()->format('d/m/Y H:i');
 
         if ($condition === 'near') {
-            $message = sprintf(
-                "⏰ Rappel : La tâche \"%s\" (priorité %s) expire bientôt ! Date limite : %s.",
-                $taskTitle,
-                $priority,
-                $deadline
-            );
+            $message = "⏰ Rappel : La tâche \"$taskTitle\" (priorité $priority) expire bientôt ! Date limite : $deadline.";
             $type = 'INFO';
             $emailSubject = 'Rappel : tâche proche de l\'échéance';
-        } else { // overdue
-            $message = sprintf(
-                "⚠️ Alerte : La tâche \"%s\" (priorité %s) est en retard ! Date limite était : %s.",
-                $taskTitle,
-                $priority,
-                $deadline
-            );
+        } else {
+            $message = "⚠️ Alerte : La tâche \"$taskTitle\" (priorité $priority) est en retard ! Date limite était : $deadline.";
             $type = 'WARNING';
             $emailSubject = 'Tâche en retard';
         }
 
-        // In-App Notification (with duplicate check)
-        if ($siteNotifActive) {
-            $existing = $this->notificationRepository->findOneBy([
-                'user' => $user,
-                'tache' => $task,
-                'type' => $type,
-            ], ['createdAt' => 'DESC']);
+        // 🚀 In-App Notification (NO DB QUERY HERE)
+        if ($siteNotifActive && empty($notificationIndex[$taskId][$type]['site'])) {
 
-            $oneDayAgo = (new \DateTime())->modify('-1 day');
-            if (!$existing || $existing->getCreatedAt() < $oneDayAgo) {
-                $notification = new Notification();
-                $notification->setUser($user);
-                $notification->setTache($task);
-                $notification->setMessage($message);
-                $notification->setType($type);
-                $this->em->persist($notification);
-            }
+            $notification = new Notification();
+            $notification->setUser($user)
+                         ->setTache($task)
+                         ->setMessage($message)
+                         ->setType($type)
+                         ->setEmail(false);
+
+            $this->em->persist($notification);
         }
 
-        // Email
-        if ($emailActive) {
-            $emailBody = $message . "\n\n";
-            $emailBody .= "Détails de la tâche :\n";
-            $emailBody .= "- Titre : " . $taskTitle . "\n";
-            $emailBody .= "- Priorité : " . $priority . "\n";
-            $emailBody .= "- Date limite : " . $deadline . "\n";
+        // 🚀 Email Notification (NO DB QUERY HERE)
+        if ($emailActive && empty($notificationIndex[$taskId][$type]['email'])) {
+
+            $emailBody = $message . "\n\nDétails de la tâche :\n- Titre : $taskTitle\n- Priorité : $priority\n- Date limite : $deadline";
+
             if ($task->getDescription()) {
-                $emailBody .= "- Description : " . $task->getDescription() . "\n";
+                $emailBody .= "\n- Description : " . $task->getDescription();
             }
 
-            $email = (new Email())
+            $emailObj = (new Email())
                 ->from('tahayassinesnoussi05@gmail.com')
                 ->to($user->getEmail())
                 ->subject($emailSubject)
                 ->text($emailBody);
 
-            $this->mailer->send($email);
+            $this->mailer->send($emailObj);
+
+            $notificationEmail = new Notification();
+            $notificationEmail->setUser($user)
+                              ->setTache($task)
+                              ->setMessage($message)
+                              ->setType($type)
+                              ->setEmail(true);
+
+            $this->em->persist($notificationEmail);
         }
     }
 }

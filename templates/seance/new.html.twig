@@ -1048,26 +1048,67 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Section 4: Location -->
+                                <!-- Section 4: Location (IA) -->
                                 <div class="form-section">
                                     <div class="section-header">
                                         <div class="section-icon">
-                                            <i class="mdi mdi-map-marker-outline"></i>
+                                            <i class="mdi mdi-brain"></i>
                                         </div>
                                         <div>
-                                            <h4 class="section-title">Localisation</h4>
-                                            <p class="section-subtitle">Attribuez une salle à la séance</p>
+                                            <h4 class="section-title">Localisation optimisée par IA</h4>
+                                            <p class="section-subtitle">L'intelligence artificielle choisira la salle idéale</p>
                                         </div>
                                     </div>
                                     
                                     <div class="form-grid">
                                         <div class="form-group">
-                                            {{ form_label(form.salle, null, {'label_attr': {'class': 'required'}}) }}
+                                            <div style="background: linear-gradient(135deg,#f8f9ff,#e8f0fe); padding: 20px; border-radius: 10px; border: 2px solid #667eea;">
+                                                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                    <i class="mdi mdi-lightbulb-on" style="color: #667eea; font-size: 24px; margin-right: 10px;"></i>
+                                                    <h6 style="color: #333; margin: 0;">Salle recommandée automatiquement</h6>
+                                                </div>
+                                                <p style="color: #666; margin: 0; font-size: 14px;">
+                                                    L'IA analysera votre séance et proposera la salle optimale 
+                                                    en fonction du nombre d'étudiants attendus et des disponibilités.
+                                                </p>
+                                            </div>
+                                            
+                                            <!-- Champ caché pour la salle (sera rempli par l'IA) -->
                                             {{ form_widget(form.salle, {'attr': {
-                                                'class': 'form-select'
+                                                'style': 'display: none;'
                                             }}) }}
-                                            {{ form_errors(form.salle) }}
-                                            <span class="help-text">Salle attribuée à cette séance</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- AI Prediction Section -->
+                                <div class="ai-prediction-section" style="margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 10px; border: 2px dashed #667eea;">
+                                    <div class="text-center">
+                                        <h5 style="color: #667eea; margin-bottom: 15px;">
+                                            <i class="mdi mdi-brain me-2"></i>Optimisation par IA
+                                        </h5>
+                                        <p style="color: #666; margin-bottom: 15px;">Laissez l'IA vous aider à choisir la salle idéale</p>
+                                        
+                                        <button type="button" id="ai-optimize-btn" class="btn btn-gradient-ai" 
+                                                style="background: linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;padding:10px 20px;border-radius:5px;">
+                                            <i class="mdi mdi-magic-staff me-2"></i>Optimiser avec l'IA
+                                        </button>
+                                        
+                                        <div id="ai-prediction-result" style="margin-top: 20px; display: none;">
+                                            <div class="prediction-card" style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #667eea;">
+                                                <!-- Résultat de la prédiction sera inséré ici -->
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="ai-recommendation-result" style="margin-top: 15px; display: none;">
+                                            <!-- Résultat de la recommandation sera inséré ici -->
+                                        </div>
+                                        
+                                        <div id="ai-loading" style="display: none; margin-top: 15px;">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="sr-only">Analyse en cours...</span>
+                                            </div>
+                                            <p style="margin-top: 10px; color: #667eea;">L'IA analyse votre séance...</p>
                                         </div>
                                     </div>
                                 </div>
@@ -1339,6 +1380,277 @@
             }, 300);
         }
     });
+
+    // ============ AI OPTIMIZATION SCRIPT ============
+    document.getElementById('ai-optimize-btn').addEventListener('click', async function() {
+        const btn = this;
+        const resultDiv = document.getElementById('ai-prediction-result');
+        const recommendationDiv = document.getElementById('ai-recommendation-result');
+        const loadingDiv = document.getElementById('ai-loading');
+        
+        // Collect form data avec vérification complète
+        const form = document.querySelector('form');
+        const formData = new FormData(form);
+        
+        // Afficher TOUS les champs disponibles dans le formulaire pour debugging
+        console.log('=== DEBUG COMPLET DU FORMULAIRE ===');
+        console.log('Nombre de champs dans FormData:', formData.entries.length);
+        for (let [key, value] of formData.entries()) {
+            console.log(`FormData[${key}]: "${value}" (type: ${typeof value}, length: ${value.length})`);
+        }
+        
+        // Vérifier les champs directement par leur ID
+        console.log('\n=== VERIFICATION PAR ID ===');
+        const jourInput = document.getElementById('{{ form.jour.vars.id }}');
+        const heureDebutInput = document.getElementById('{{ form.heureDebut.vars.id }}');
+        const heureFinInput = document.getElementById('{{ form.heureFin.vars.id }}');
+        const typeSeanceInput = document.getElementById('{{ form.typeSeance.vars.id }}');
+        const modeInput = document.getElementById('{{ form.mode.vars.id }}');
+        const matiereInput = document.getElementById('{{ form.matiere.vars.id }}');
+        const classeInput = document.getElementById('{{ form.classe.vars.id }}');
+        
+        console.log('jourInput:', jourInput ? `value="${jourInput.value}"` : 'NON TROUVÉ');
+        console.log('heureDebutInput:', heureDebutInput ? `value="${heureDebutInput.value}"` : 'NON TROUVÉ');
+        console.log('heureFinInput:', heureFinInput ? `value="${heureFinInput.value}"` : 'NON TROUVÉ');
+        console.log('typeSeanceInput:', typeSeanceInput ? `value="${typeSeanceInput.value}"` : 'NON TROUVÉ');
+        console.log('modeInput:', modeInput ? `value="${modeInput.value}"` : 'NON TROUVÉ');
+        console.log('matiereInput:', matiereInput ? `value="${matiereInput.value}"` : 'NON TROUVÉ');
+        console.log('classeInput:', classeInput ? `value="${classeInput.value}"` : 'NON TROUVÉ');
+        
+        // Récupérer les valeurs directement depuis les champs (plus fiable que FormData)
+        const jour = jourInput ? jourInput.value : '';
+        const heureDebut = heureDebutInput ? heureDebutInput.value : '';
+        const heureFin = heureFinInput ? heureFinInput.value : '';
+        const typeSeance = typeSeanceInput ? typeSeanceInput.value : '';
+        const mode = modeInput ? modeInput.value : '';
+        const matiere = matiereInput ? matiereInput.value : '';
+        const classe = classeInput ? classeInput.value : '';
+        
+        // Debug détaillé des valeurs récupérées
+        console.log('\n=== VALEURS FINALES ===');
+        console.log('Valeurs récupérées:', {
+            jour: `"${jour}"`,
+            heureDebut: `"${heureDebut}"`,
+            heureFin: `"${heureFin}"`,
+            typeSeance: `"${typeSeance}"`,
+            mode: `"${mode}"`,
+            matiere: `"${matiere}"`,
+            classe: `"${classe}"`
+        });
+        
+        // Vérifier les champs vides avec messages spécifiques
+        const missingFields = [];
+        if (!jour || jour === '') missingFields.push('Jour');
+        if (!heureDebut || heureDebut === '') missingFields.push('Heure de début');
+        if (!typeSeance || typeSeance === '') missingFields.push('Type de séance');
+        if (!mode || mode === '') missingFields.push('Mode');
+        if (!matiere || matiere === '') missingFields.push('Matière');
+        if (!classe || classe === '') missingFields.push('Classe');
+        
+        if (missingFields.length > 0) {
+            alert(`Champs manquants:\\n${missingFields.map(f => `- ${f}`).join('\\n')}\\n\\nVeuillez remplir tous les champs obligatoires avant d\'optimiser avec l\'IA.`);
+            return;
+        }
+        
+        // Calculer la durée en minutes
+        const dureeMin = heureDebut && heureFin ? calculateDurationFromDatetime(heureDebut, heureFin) : 90;
+        
+        // Capacité par défaut (l'IA proposera la salle optimale)
+        const salleCapacite = 30; // Valeur par défaut pour l'analyse
+        
+        // Afficher le chargement
+        btn.disabled = true;
+        loadingDiv.style.display = 'block';
+        resultDiv.style.display = 'none';
+        recommendationDiv.style.display = 'none';
+        
+        try {
+            // Extraire l'heure du datetime-local
+            const debutDate = new Date(heureDebut);
+            const heureDebutNum = debutDate.getHours();
+            
+            // Préparer les données pour l'API
+            const seanceData = {
+                jour_semaine: mapJourToNumber(jour),
+                heure_debut: heureDebutNum,
+                duree_min: dureeMin,
+                type_seance: typeSeance,
+                mode: mode,
+                matiere: matiere,
+                groupe: classe, // Utiliser 'classe' au lieu de 'groupe'
+                salle_capacite_initiale: salleCapacite,
+                moy_presence_groupe_30j: 0.75, // Valeurs simulées
+                taux_absence_groupe_30j: 0.25,
+                presence_moyenne_matiere: 0.80,
+                presence_moyenne_creneau: 0.75
+            };
+            
+            // Appeler l'API de prédiction
+            const predictResponse = await fetch('/seance/preview-predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(seanceData)
+            });
+            
+            console.log('Réponse prédiction:', predictResponse.status, predictResponse.statusText);
+            
+            if (!predictResponse.ok) {
+                throw new Error('Erreur lors de la prédiction');
+            }
+            
+            const predictResult = await predictResponse.json();
+            
+            // Afficher la prédiction
+            if (predictResult.success) {
+                displayPrediction(predictResult.data, resultDiv);
+                
+                // Appeler l'API de recommandation
+                const recommendResponse = await fetch('/seance/preview-recommend', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        seance: seanceData,
+                        available_rooms: predictResult.data.available_rooms || []
+                    })
+                });
+                
+                if (recommendResponse.ok) {
+                    const recommendResult = await recommendResponse.json();
+                    if (recommendResult.success) {
+                        displayRecommendation(recommendResult.data, recommendationDiv, formData);
+                    }
+                }
+            } else {
+                throw new Error(predictResult.message || 'Erreur inconnue');
+            }
+            
+        } catch (error) {
+            console.error('Erreur AI:', error);
+            resultDiv.innerHTML = `
+                <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; border: 1px solid #f5c6cb;">
+                    <i class="mdi mdi-alert-circle me-2"></i>
+                    <strong>Erreur:</strong> ${error.message}
+                    <br><small>Vérifiez que l'API Smart Room AI est démarrée (port 8001).</small>
+                </div>
+            `;
+            resultDiv.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            loadingDiv.style.display = 'none';
+        }
+    });
+    
+    function mapJourToNumber(jour) {
+        const mapping = {
+            'Lundi': 1, 'Mardi': 2, 'Mercredi': 3, 'Jeudi': 4, 
+            'Vendredi': 5, 'Samedi': 6, 'Dimanche': 0
+        };
+        return mapping[jour] || 1;
+    }
+    
+    function calculateDurationFromDatetime(debut, fin) {
+        if (!debut || !fin) return 90; // Durée par défaut
+        
+        const startDate = new Date(debut);
+        const endDate = new Date(fin);
+        
+        const durationMs = endDate - startDate;
+        const durationMinutes = Math.floor(durationMs / (1000 * 60));
+        
+        return durationMinutes > 0 ? durationMinutes : 90;
+    }
+    
+    function displayPrediction(data, container) {
+        const confidenceColor = data.confidence > 0.8 ? '#28a745' : data.confidence > 0.6 ? '#ffc107' : '#dc3545';
+        const confidenceIcon = data.confidence > 0.8 ? 'check-circle' : data.confidence > 0.6 ? 'alert' : 'alert-circle';
+        
+        container.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6 style="color: #667eea; margin-bottom: 10px;">
+                        <i class="mdi mdi-chart-line me-2"></i>Prédiction de présence
+                    </h6>
+                    <div style="font-size: 24px; font-weight: bold; color: #333; margin-bottom: 10px;">
+                        ${data.predicted_attendance} <span style="font-size: 14px; color: #666;">étudiants attendus</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                        <i class="mdi mdi-${confidenceIcon}" style="color: ${confidenceColor};"></i>
+                        <span style="color: ${confidenceColor}; font-weight: bold;">
+                            Confiance: ${(data.confidence * 100).toFixed(0)}%
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h6 style="color: #667eea; margin-bottom: 10px;">
+                        <i class="mdi mdi-lightbulb me-2"></i>Facteurs influents
+                    </h6>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        ${data.explanations.map(exp => `
+                            <li style="margin-bottom: 5px; color: #666; font-size: 14px;">
+                                <i class="mdi mdi-chevron-right" style="color: #667eea; font-size: 12px;"></i>
+                                ${exp}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            </div>
+        `;
+        container.style.display = 'block';
+    }
+    
+    function displayRecommendation(data, container, formData) {
+        if (data.recommended_room) {
+            container.innerHTML = `
+                <div style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 8px;">
+                    <h6 style="margin-bottom: 10px;">
+                        <i class="mdi mdi-home-variant me-2"></i>Salle recommandée
+                    </h6>
+                    <div style="font-weight: bold; margin-bottom: 10px;">
+                        ${data.recommended_room.id} - Bloc ${data.recommended_room.bloc}, Étage ${data.recommended_room.etage}
+                        <span class="badge badge-success" style="margin-left: 10px;">${data.recommended_room.capacite} places</span>
+                    </div>
+                    <p style="margin-bottom: 10px; font-size: 14px;">${data.message}</p>
+                    <button type="button" class="btn btn-sm btn-success" onclick="applyRoomRecommendation('${data.recommended_room.id}')">
+                        <i class="mdi mdi-check me-1"></i>Appliquer cette salle
+                    </button>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 15px; border-radius: 8px;">
+                    <i class="mdi mdi-alert me-2"></i>
+                    <strong>Aucune salle optimale trouvée</strong><br>
+                    <small>${data.message}</small>
+                </div>
+            `;
+        }
+        container.style.display = 'block';
+    }
+    
+    function applyRoomRecommendation(roomId) {
+        const salleSelect = document.querySelector('select[name="seance[salle]"]');
+        if (salleSelect) {
+            salleSelect.value = roomId;
+            salleSelect.dispatchEvent(new Event('change'));
+            
+            // Afficher une confirmation visuelle
+            const recommendationDiv = document.getElementById('ai-recommendation-result');
+            const confirmationHtml = `
+                <div style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                    <i class="mdi mdi-check-circle me-2"></i>
+                    <strong>Salle ${roomId} appliquée !</strong><br>
+                    <small>La salle sera enregistrée lors de la création de la séance.</small>
+                </div>
+            `;
+            recommendationDiv.innerHTML += confirmationHtml;
+        }
+    }
 </script>
 </body>
 </html>

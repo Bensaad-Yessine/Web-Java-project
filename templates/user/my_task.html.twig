@@ -1118,6 +1118,220 @@
             width: 100% !important;
             height: auto !important;
         }
+
+        /* Task Prediction Styles */
+        .task-prediction {
+            margin: 1rem 0 0.5rem;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            border-radius: 16px;
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s ease;
+        }
+
+        .task-prediction:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            border-color: var(--primary-light);
+        }
+
+        .probability-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .probability-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .probability-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .probability-icon {
+            width: 16px;
+            height: 16px;
+            color: var(--primary);
+        }
+
+        .probability-value {
+            font-size: 1.1rem;
+            font-weight: 800;
+            padding: 0.25rem 0.75rem;
+            border-radius: 30px;
+            background: white;
+            border: 1px solid var(--gray-200);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .probability-value.high {
+            color: #059669;
+            background: #d1fae5;
+            border-color: #10b981;
+        }
+
+        .probability-value.medium {
+            color: #d97706;
+            background: #fef3c7;
+            border-color: #f59e0b;
+        }
+
+        .probability-value.low {
+            color: #b91c1c;
+            background: #fee2e2;
+            border-color: #ef4444;
+        }
+
+        .progress-bar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 30px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            animation: fillAnimation 0.8s ease-out;
+        }
+
+        @keyframes fillAnimation {
+            from { width: 0; }
+            to { width: var(--target-width); }
+        }
+
+        .progress-bar-fill.high {
+            background: linear-gradient(90deg, #059669, #10b981);
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+        }
+
+        .progress-bar-fill.medium {
+            background: linear-gradient(90deg, #d97706, #f59e0b);
+            box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+        }
+
+        .progress-bar-fill.low {
+            background: linear-gradient(90deg, #b91c1c, #ef4444);
+            box-shadow: 0 2px 8px rgba(185, 28, 28, 0.3);
+        }
+
+        .progress-markers {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 0.25rem;
+            font-size: 0.6rem;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        .marker {
+            position: relative;
+            padding-top: 0.25rem;
+        }
+
+        .marker::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 4px;
+            background: var(--gray-400);
+            border-radius: 1px;
+        }
+
+        .probability-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: white;
+            border: 1px solid var(--gray-200);
+            margin-top: 0.25rem;
+        }
+
+        .probability-status.high {
+            background: #f0fdf4;
+            color: #059669;
+            border-color: #86efac;
+        }
+
+        .probability-status.medium {
+            background: #fffbeb;
+            color: #d97706;
+            border-color: #fcd34d;
+        }
+
+        .probability-status.low {
+            background: #fef2f2;
+            color: #b91c1c;
+            border-color: #fecaca;
+        }
+
+        .status-indicator {
+            font-size: 1rem;
+            font-weight 700;
+        }
+
+        /* No data state */
+        .probability-container.no-data {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            opacity: 0.8;
+        }
+
+        .no-data-message {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            color: var(--gray-500);
+            font-size: 0.85rem;
+            font-style: italic;
+            background: var(--gray-50);
+            border-radius: 12px;
+            border: 1px dashed var(--gray-300);
+        }
+
+        .no-data-icon {
+            font-size: 1.1rem;
+            opacity: 0.7;
+        }
+
+        /* Add a subtle pulse animation for low probability */
+        @keyframes attentionPulse {
+            0% { box-shadow: 0 0 0 0 rgba(185, 28, 28, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(185, 28, 28, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(185, 28, 28, 0); }
+        }
+
+        .probability-status.low {
+            animation: attentionPulse 2s infinite;
+        }
     </style>
 </head>
 <body>
@@ -1187,14 +1401,14 @@
 
                 <div class="nav-section">
                     <div class="nav-section-title">Académique</div>
-                    <a href="{% if app.user and app.user.classe %}{{ path('app_classe_users',{'id': app.user.classe.id}) }}{% else %}#{% endif %}">
+                    <a href="{{ path('app_classe_users',{'id': app.user.classe.id}) }}">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
                             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
                         </svg>
                         Classes
                     </a>
-                    <a href="{{ path('app_matiere_classe_front_index') }}">
+                    <a href="{{ path('app_matiere_classe_by_classe', {'id': app.user.classe.id}) }}">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                         </svg>
@@ -1383,6 +1597,68 @@
                                                     <line x1="3" y1="10" x2="21" y2="10"/>
                                                 </svg>
                                                 <span>Échéance: <strong>{{ task.dateEcheance|date('d/m/Y') }}</strong></span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="task-prediction">
+                                        {% if task.prediction is not null %}
+                                            {% set probability = task.prediction * 100 %}
+                                            {% set probabilityColor = probability >= 70 ? 'high' : (probability >= 40 ? 'medium' : 'low') %}
+                                            
+                                            <div class="probability-container">
+                                                <div class="probability-header">
+                                                    <span class="probability-label">
+                                                        <svg class="probability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <circle cx="12" cy="12" r="10"/>
+                                                            <path d="M12 6v6l4 2"/>
+                                                        </svg>
+                                                        Probabilité de complétion
+                                                    </span>
+                                                    <span class="probability-value {{ probabilityColor }}">
+                                                        {{ probability|number_format(1, '.', ',') }}%
+                                                    </span>
+                                                </div>
+                                                
+                                                <div class="progress-bar-container">
+                                                    <div class="progress-bar-bg">
+                                                        <div class="progress-bar-fill {{ probabilityColor }}" 
+                                                            style="width: {{ probability }}%"></div>
+                                                    </div>
+                                                    
+                                                    <div class="progress-markers">
+                                                        <span class="marker low">0%</span>
+                                                        <span class="marker medium">50%</span>
+                                                        <span class="marker high">100%</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="probability-status {{ probabilityColor }}">
+                                                    {% if probability >= 70 %}
+                                                        <span class="status-indicator">✓</span> Bonnes chances de réussite
+                                                    {% elseif probability >= 40 %}
+                                                        <span class="status-indicator">⚠️</span> Risque modéré - Restez concentré
+                                                    {% else %}
+                                                        <span class="status-indicator">!</span> Nécessite votre attention immédiate
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <div class="probability-container no-data">
+                                                <div class="probability-header">
+                                                    <span class="probability-label">
+                                                        <svg class="probability-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                            <circle cx="12" cy="12" r="10"/>
+                                                            <line x1="12" y1="8" x2="12" y2="12"/>
+                                                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                                        </svg>
+                                                        Probabilité de complétion
+                                                    </span>
+                                                </div>
+                                                <div class="no-data-message">
+                                                    <span class="no-data-icon">📊</span>
+                                                    Analyse en attente de données
+                                                </div>
                                             </div>
                                         {% endif %}
                                     </div>
@@ -1598,611 +1874,671 @@
     </div>
 
     <script>
-        // Toast helper
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast-message');
-            toast.textContent = message;
-            toast.style.opacity = '1';
-            toast.style.background = type === 'success' ? '#10b981' : (type === 'error' ? '#ef4444' : '#333');
-            setTimeout(() => {
-                toast.style.opacity = '0';
-            }, 3000);
-        }
-
-        // Notification functions
-        document.addEventListener('DOMContentLoaded', function() {
-            // Icon click handler
-            document.getElementById('notif-icon')?.addEventListener('click', function(e) {
-                e.preventDefault();
-                const dropdown = document.getElementById('notif-dropdown');
-                const overlay = document.getElementById('blur-overlay');
-                
-                dropdown.classList.toggle('hidden');
-                overlay.style.display = dropdown.classList.contains('hidden') ? 'none' : 'block';
-                
-                if (!dropdown.classList.contains('hidden')) {
-                    fetchNotifications();
-                    positionDropdown(dropdown, this);
-                }
-            });
-
-            // Close dropdown on outside click
-            document.addEventListener('click', function(e) {
-                const dropdown = document.getElementById('notif-dropdown');
-                const icon = document.getElementById('notif-icon');
-                const overlay = document.getElementById('blur-overlay');
-                
-                if (dropdown && icon && !dropdown.contains(e.target) && !icon.contains(e.target)) {
-                    dropdown.classList.add('hidden');
-                    overlay.style.display = 'none';
-                    dropdown.style.top = '';
-                    dropdown.style.left = '';
-                }
-            });
-
-            // Initialize charts
-            initializeCharts();
-            
-            // Initialize weather modal
-            initWeatherModal();
-        });
-
-        function positionDropdown(dropdown, icon) {
-            const iconRect = icon.getBoundingClientRect();
-            const dropdownWidth = dropdown.offsetWidth;
-
-            let left = iconRect.right - dropdownWidth;
-            let top = iconRect.bottom + 5;
-
-            if (left < 10) left = 10;
-            if (left + dropdownWidth > window.innerWidth - 10) {
-                left = window.innerWidth - dropdownWidth - 10;
+            // Toast helper
+            function showToast(message, type = 'info') {
+                const toast = document.getElementById('toast-message');
+                toast.textContent = message;
+                toast.style.opacity = '1';
+                toast.style.background = type === 'success' ? '#10b981' : (type === 'error' ? '#ef4444' : '#333');
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                }, 3000);
             }
-            if (top + dropdown.offsetHeight > window.innerHeight - 10) {
-                top = iconRect.top - dropdown.offsetHeight - 5;
-            }
-            if (top < 10) top = 10;
 
-            dropdown.style.top = top + 'px';
-            dropdown.style.left = left + 'px';
-        }
-
-        function fetchNotifications() {
-            fetch('{{ path("notifications_fetch") }}')
-                .then(res => res.json())
-                .then(data => {
-                    const list = document.getElementById('notif-list');
-                    list.innerHTML = '';
-                    let unreadCount = 0;
-
-                    if (data.length === 0) {
-                        list.innerHTML = '<li style="text-align: center; padding: 2rem; color: #6b7280; font-style: italic; cursor: default;">Aucune notification</li>';
-                        document.getElementById('notif-count').textContent = '0';
-                        return;
+            // Notification functions
+            document.addEventListener('DOMContentLoaded', function() {
+                // Icon click handler
+                document.getElementById('notif-icon')?.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const dropdown = document.getElementById('notif-dropdown');
+                    const overlay = document.getElementById('blur-overlay');
+                    
+                    dropdown.classList.toggle('hidden');
+                    overlay.style.display = dropdown.classList.contains('hidden') ? 'none' : 'block';
+                    
+                    if (!dropdown.classList.contains('hidden')) {
+                        fetchNotifications();
+                        positionDropdown(dropdown, this);
                     }
+                });
 
-                    data.forEach(n => {
-                        if (!n.isRead) unreadCount++;
+                // Close dropdown on outside click
+                document.addEventListener('click', function(e) {
+                    const dropdown = document.getElementById('notif-dropdown');
+                    const icon = document.getElementById('notif-icon');
+                    const overlay = document.getElementById('blur-overlay');
+                    
+                    if (dropdown && icon && !dropdown.contains(e.target) && !icon.contains(e.target)) {
+                        dropdown.classList.add('hidden');
+                        overlay.style.display = 'none';
+                        dropdown.style.top = '';
+                        dropdown.style.left = '';
+                    }
+                });
 
-                        const li = document.createElement('li');
-                        li.className = n.isRead ? 'read' : 'unread';
-                        li.dataset.id = n.id;
+                // Initialize charts
+                initializeCharts();
+                
+                // Initialize weather modal
+                initWeatherModal();
+            });
 
-                        // Build notification content
-                        let buttonsHtml = '';
-                        if (n.type === 'WARNING' && n.taskId) {
-                            buttonsHtml = `
-                                <div style="display: flex; gap: 5px; margin-top: 8px;">
-                                    <button class="notif-action-btn finish" onclick="event.stopPropagation(); finishTask(${n.taskId}, ${n.id})">✔ Terminer</button>
-                                    <button class="notif-action-btn abandon" onclick="event.stopPropagation(); abandonTask(${n.taskId}, ${n.id})">✖ Abandonner</button>
-                                    <button class="notif-action-btn reschedule" onclick="event.stopPropagation(); rescheduleTask(${n.taskId})">🔄 Reporter</button>
-                                </div>
-                            `;
+            function positionDropdown(dropdown, icon) {
+                const iconRect = icon.getBoundingClientRect();
+                const dropdownWidth = dropdown.offsetWidth;
+
+                let left = iconRect.right - dropdownWidth;
+                let top = iconRect.bottom + 5;
+
+                if (left < 10) left = 10;
+                if (left + dropdownWidth > window.innerWidth - 10) {
+                    left = window.innerWidth - dropdownWidth - 10;
+                }
+                if (top + dropdown.offsetHeight > window.innerHeight - 10) {
+                    top = iconRect.top - dropdown.offsetHeight - 5;
+                }
+                if (top < 10) top = 10;
+
+                dropdown.style.top = top + 'px';
+                dropdown.style.left = left + 'px';
+            }
+
+            function fetchNotifications() {
+                fetch('{{ path("notifications_fetch") }}')
+                    .then(res => res.json())
+                    .then(data => {
+                        const list = document.getElementById('notif-list');
+                        list.innerHTML = '';
+                        let unreadCount = 0;
+
+                        if (data.length === 0) {
+                            list.innerHTML = '<li style="text-align: center; padding: 2rem; color: #6b7280; font-style: italic; cursor: default;">Aucune notification</li>';
+                            document.getElementById('notif-count').textContent = '0';
+                            return;
                         }
 
-                        li.innerHTML = `
-                            <div style="display: flex; flex-direction: column; gap: 0.4rem;">
-                                <div style="font-weight: ${n.isRead ? 'normal' : '600'};">${n.message}</div>
-                                <div style="font-size: 0.7rem; color: #6b7280; display: flex; align-items: center; gap: 0.5rem;">
-                                    <span>🕐 ${n.createdAt}</span>
-                                    ${!n.isRead ? '<span style="background: #dc2626; color: white; padding: 0.1rem 0.4rem; border-radius: 12px; font-size: 0.6rem;">Nouveau</span>' : ''}
-                                </div>
-                                ${buttonsHtml}
-                            </div>
-                        `;
+                        data.forEach(n => {
+                            if (!n.isRead) unreadCount++;
 
-                        // Mark as read when clicking on the notification (but not on buttons)
-                        li.addEventListener('click', function(e) {
-                            if (e.target.tagName === 'BUTTON') return;
-                            e.stopPropagation();
-                            if (!n.isRead) {
-                                markAsRead(n.id);
-                                this.classList.remove('unread');
-                                this.classList.add('read');
-                                // Update visual
-                                const titleDiv = this.querySelector('div > div:first-child');
-                                if (titleDiv) titleDiv.style.fontWeight = 'normal';
-                                const badge = this.querySelector('span[style*="background: #dc2626"]');
-                                if (badge) badge.remove();
+                            const li = document.createElement('li');
+                            // Set background color based on read status
+                            li.style.padding = '1rem';
+                            li.style.borderBottom = '1px solid #e5e7eb';
+                            li.style.cursor = 'pointer';
+                            li.style.transition = 'background-color 0.2s';
+                            
+                            // Unread = light red, Read = white
+                            li.style.backgroundColor = n.isRead ? '#ffffff' : '#fee2e2';
+                            
+                            // Add hover effect
+                            li.addEventListener('mouseenter', function() {
+                                this.style.backgroundColor = n.isRead ? '#f9fafb' : '#fecaca';
+                            });
+                            
+                            li.addEventListener('mouseleave', function() {
+                                this.style.backgroundColor = n.isRead ? '#ffffff' : '#fee2e2';
+                            });
+                            
+                            li.dataset.id = n.id;
+
+                            // Build notification content - REMOVED REPORTER BUTTON
+                            let buttonsHtml = '';
+                            if (n.type === 'WARNING' && n.taskId) {
+                                buttonsHtml = `
+                                    <form method="post" action="/tache/${n.taskId}/action-user" 
+                                        style="display:flex; gap:5px; margin-top:8px;"
+                                        onClick="event.stopPropagation();">
+
+                                        <button type="submit" name="action" value="TERMINE"
+                                            class="notif-action-btn finish">
+                                            ✔ Terminer
+                                        </button>
+
+                                        <button type="submit" name="action" value="ABANDON"
+                                            class="notif-action-btn abandon"
+                                            onclick="return confirm('Êtes-vous sûr de vouloir abandonner cette tâche ?');">
+                                            ✖ Abandonner
+                                        </button>
+
+                                    </form>
+                                `;
                             }
+
+                            li.innerHTML = `
+                                <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                                    <div style="font-weight: ${n.isRead ? '400' : '600'};">${n.message}</div>
+                                    <div style="font-size: 0.7rem; color: #6b7280; display: flex; align-items: center; gap: 0.5rem;">
+                                        <span>🕐 ${n.createdAt}</span>
+                                        ${!n.isRead ? '<span style="background: #dc2626; color: white; padding: 0.1rem 0.4rem; border-radius: 12px; font-size: 0.6rem;">Nouveau</span>' : ''}
+                                    </div>
+                                    ${buttonsHtml}
+                                </div>
+                            `;
+
+                            // Mark as read when clicking on the notification (but not on buttons)
+                            li.addEventListener('click', function(e) {
+                                if (e.target.tagName === 'BUTTON') return;
+                                e.stopPropagation();
+                                if (!n.isRead) {
+                                    markAsRead(n.id, this);
+                                }
+                            });
+
+                            list.appendChild(li);
                         });
 
-                        list.appendChild(li);
+                        document.getElementById('notif-count').textContent = unreadCount;
+                    })
+                    .catch(() => {
+                        document.getElementById('notif-list').innerHTML = '<li style="color: #dc2626; padding: 1rem; text-align: center;">Erreur de chargement</li>';
                     });
+            }
 
-                    document.getElementById('notif-count').textContent = unreadCount;
+            function markAsRead(id, element = null) {
+                fetch('{{ path("notifications_mark_read", {"id": "ID_PLACEHOLDER"}) }}'.replace('ID_PLACEHOLDER', id), {
+                    method: 'POST',
+                    headers: { 
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json'
+                    }
                 })
-                .catch(() => {
-                    document.getElementById('notif-list').innerHTML = '<li style="color: #dc2626; padding: 1rem; text-align: center;">Erreur de chargement</li>';
-                });
-        }
-
-        function markAsRead(id) {
-            fetch('{{ path("notifications_mark_read", {"id": "ID_PLACEHOLDER"}) }}'.replace('ID_PLACEHOLDER', id), {
-                method: 'POST',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    const count = parseInt(document.getElementById('notif-count').textContent);
-                    document.getElementById('notif-count').textContent = Math.max(0, count - 1);
-                }
-            })
-            .catch(console.error);
-        }
-
-        function finishTask(taskId, notifId) {
-            performTaskAction('{{ path("task_finish", {"id": "ID_PLACEHOLDER"}) }}'.replace('ID_PLACEHOLDER', taskId), 'Tâche terminée avec succès !', notifId);
-        }
-
-        function abandonTask(taskId, notifId) {
-            performTaskAction('{{ path("task_abandon", {"id": "ID_PLACEHOLDER"}) }}'.replace('ID_PLACEHOLDER', taskId), 'Tâche abandonnée.', notifId);
-        }
-
-        function performTaskAction(url, successMessage, notifId) {
-            fetch(url, { method: 'POST' })
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        showToast(successMessage, 'success');
-                        if (notifId) markAsRead(notifId);
-                        fetchNotifications(); // refresh list
-                    } else {
-                        showToast('Erreur lors de l\'action', 'error');
+                        const count = parseInt(document.getElementById('notif-count').textContent);
+                        document.getElementById('notif-count').textContent = Math.max(0, count - 1);
+                        
+                        // If element is provided, update it visually
+                        if (element) {
+                            // Change background to white
+                            element.style.backgroundColor = '#ffffff';
+                            
+                            // Update font weight
+                            const titleDiv = element.querySelector('div > div:first-child');
+                            if (titleDiv) titleDiv.style.fontWeight = '400';
+                            
+                            // Remove the "Nouveau" badge
+                            const badge = element.querySelector('span[style*="background: #dc2626"]');
+                            if (badge) badge.remove();
+                            
+                            // Update hover effect
+                            element.addEventListener('mouseenter', function() {
+                                this.style.backgroundColor = '#f9fafb';
+                            });
+                            
+                            element.addEventListener('mouseleave', function() {
+                                this.style.backgroundColor = '#ffffff';
+                            });
+                        }
                     }
                 })
-                .catch(() => showToast('Erreur réseau', 'error'));
-        }
-
-        function rescheduleTask(taskId) {
-            alert('Fonctionnalité de report à venir.');
-        }
-
-        // Poll every 30 seconds
-        setInterval(() => {
-            const dropdown = document.getElementById('notif-dropdown');
-            if (dropdown && !dropdown.classList.contains('hidden')) {
-                fetchNotifications();
+                .catch(console.error);
             }
-        }, 30000);
 
-        // Chart initialization
-        function initializeCharts() {
-            // Get stats from the page
-            const totalTasks = parseInt(document.querySelector('.stat-card:first-child .stat-value')?.textContent || '0');
-            const inProgress = parseInt(document.querySelector('.stat-card:nth-child(2) .stat-value')?.textContent || '0');
-            const completed = parseInt(document.querySelector('.stat-card:nth-child(3) .stat-value')?.textContent || '0');
-            const highPriority = parseInt(document.querySelector('.stat-card:nth-child(4) .stat-value')?.textContent || '0');
-            
-            // Calculate other values
-            const pending = Math.max(0, totalTasks - inProgress - completed);
-            const mediumPriority = Math.floor(totalTasks * 0.3); // Example calculation
-            const lowPriority = Math.max(0, totalTasks - highPriority - mediumPriority);
+            function finishTask(taskId, notifId) {
+                performTaskAction('{{ path("task_finish", {"id": "ID_PLACEHOLDER"}) }}'.replace('ID_PLACEHOLDER', taskId), 'Tâche terminée avec succès !', notifId);
+            }
 
-            // Status Chart
-            const statusCtx = document.getElementById('statusChart')?.getContext('2d');
-            if (statusCtx) {
-                // Get all the status counts
-                const inProgress = {{ stats.counts.inProgress|default(0) }};
-                const completed = {{ stats.counts.completed|default(0) }};
-                const abandoned = {{ stats.counts.abandoned|default(0) }};
-                const overdue = {{ stats.counts.overdue|default(0) }};
-                const paused = {{ stats.counts.paused|default(0) }};
-                const totalTasks = {{ stats.counts.total|default(0) }};
+            function abandonTask(taskId, notifId) {
+                performTaskAction('{{ path("task_abandon", {"id": "ID_PLACEHOLDER"}) }}'.replace('ID_PLACEHOLDER', taskId), 'Tâche abandonnée.', notifId);
+            }
+
+            function performTaskAction(url, successMessage, notifId) {
+                // Add timestamp to ensure updatedAt will be updated
+                const data = {
+                    timestamp: new Date().toISOString(),
+                    action: successMessage.includes('terminée') ? 'complete' : 'abandon'
+                };
                 
-                // Calculate "À faire" (total minus all other statuses)
-                const todo = Math.max(0, totalTasks - inProgress - completed - abandoned - overdue - paused);
-                
-                new Chart(statusCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['À faire', 'En cours', 'Terminées', 'Abandonnées', 'En retard', 'En pause'],
-                        datasets: [{
-                            data: [todo, inProgress, completed, abandoned, overdue, paused],
-                            backgroundColor: [
-                                '#f59e0b',  // À faire - orange
-                                '#3b82f6',  // En cours - blue
-                                '#10b981',  // Terminées - green
-                                '#ef4444',  // Abandonnées - RED
-                                '#d97706',  // En retard - dark orange
-                                '#6b7280'   // En pause - gray
-                            ],
-                            borderWidth: 0
-                        }]
+                fetch(url, { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    boxWidth: 12,
-                                    padding: 15
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        const label = context.label || '';
-                                        const value = context.raw || 0;
-                                        const percentage = totalTasks > 0 ? ((value / totalTasks) * 100).toFixed(1) : 0;
-                                        return label + ': ' + value + ' tâche' + (value > 1 ? 's' : '') + ' (' + percentage + '%)';
-                                    }
-                                }
-                            }
-                        },
-                        cutout: '60%'
-                    }
-                });
-            }
-
-            // Priority Chart
-            const priorityCtx = document.getElementById('priorityChart')?.getContext('2d');
-            if (priorityCtx) {
-                new Chart(priorityCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Haute', 'Moyenne', 'Basse'],
-                        datasets: [{
-                            label: 'Nombre de tâches',
-                            data: [highPriority, mediumPriority, lowPriority],
-                            backgroundColor: [
-                                '#ef4444',  // red
-                                '#f59e0b',  // orange
-                                '#10b981'   // green
-                            ],
-                            borderRadius: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        plugins: {
-                            legend: {
-                                display: false
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    display: true,
-                                    color: '#e5e7eb'
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-
-            // NEW: Progress Chart
-            const progressCtx = document.getElementById('progressChart')?.getContext('2d');
-            if (progressCtx) {
-                // Get progress data from Twig
-                const progressLabels = {{ progressLabels|json_encode|raw }};
-                const progressCreated = {{ progressCreated|json_encode|raw }};
-                const progressCompleted = {{ progressCompleted|json_encode|raw }};
-                const progressAbandoned = {{ progressAbandoned|json_encode|raw }};
-                
-                new Chart(progressCtx, {
-                    type: 'line',
-                    data: {
-                        labels: progressLabels,
-                        datasets: [
-                            {
-                                label: 'Tâches créées',
-                                data: progressCreated,
-                                borderColor: '#3b82f6',
-                                backgroundColor: '#3b82f620',
-                                tension: 0.4,
-                                fill: true,
-                                pointBackgroundColor: '#3b82f6',
-                                pointBorderColor: 'white',
-                                pointRadius: 4,
-                                pointHoverRadius: 6
-                            },
-                            {
-                                label: 'Tâches terminées',
-                                data: progressCompleted,
-                                borderColor: '#10b981',
-                                backgroundColor: '#10b98120',
-                                tension: 0.4,
-                                fill: true,
-                                pointBackgroundColor: '#10b981',
-                                pointBorderColor: 'white',
-                                pointRadius: 4,
-                                pointHoverRadius: 6
-                            },
-                            {
-                                label: 'Tâches abandonnées',
-                                data: progressAbandoned,
-                                borderColor: '#ef4444',
-                                backgroundColor: '#ef444420',
-                                tension: 0.4,
-                                fill: true,
-                                pointBackgroundColor: '#ef4444',
-                                pointBorderColor: 'white',
-                                pointRadius: 4,
-                                pointHoverRadius: 6
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: true,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false,
-                        },
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                                labels: {
-                                    boxWidth: 12,
-                                    padding: 15,
-                                    usePointStyle: true,
-                                    pointStyle: 'circle'
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return context.dataset.label + ': ' + context.raw + ' tâche' + (context.raw > 1 ? 's' : '');
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    stepSize: 1,
-                                    precision: 0,
-                                    callback: function(value) {
-                                        return value + ' tâche' + (value > 1 ? 's' : '');
-                                    }
-                                },
-                                grid: {
-                                    color: '#e5e7eb',
-                                    drawBorder: false
-                                }
-                            },
-                            x: {
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    maxRotation: 45,
-                                    minRotation: 45
-                                }
-                            }
-                        },
-                        elements: {
-                            line: {
-                                borderWidth: 2
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        // Weather Modal Function
-        function initWeatherModal() {
-            const weatherBtn = document.getElementById("weatherBtn");
-            const weatherModal = document.getElementById("weatherModal");
-            const closeWeatherModal = document.getElementById("closeWeatherModal");
-            const weatherResult = document.getElementById("weatherResult");
-            
-            // Also get the insights modal and its close button to avoid conflicts
-            const insightsModal = document.getElementById('insightsModal');
-            const blurOverlay = document.getElementById('blur-overlay');
-
-            if (!weatherBtn) return;
-
-            weatherBtn.addEventListener("click", async (e) => {
-                e.preventDefault();
-                
-                // Hide any other open modals/dropdowns
-                if (insightsModal) insightsModal.style.display = 'none';
-                if (blurOverlay) blurOverlay.style.display = 'none';
-                const notifDropdown = document.getElementById('notif-dropdown');
-                if (notifDropdown) notifDropdown.classList.add('hidden');
-                
-                // Show loading state
-                weatherResult.innerHTML = `
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem;">
-                        <div style="width: 48px; height: 48px; border: 3px solid #f3f4f6; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem;"></div>
-                        <p style="color: var(--gray-600);">Chargement des données météo...</p>
-                    </div>
-                `;
-                
-                // Show modal
-                weatherModal.style.display = 'flex';
-
-                try {
-                    let res = await fetch("{{ path('weather_ai') }}");
-                    let data = await res.json();
-
-                    weatherResult.innerHTML = `
-                        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                            <!-- Weather Info Card -->
-                            <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e6f2fc 100%); padding: 1.5rem; border-radius: 16px; border-left: 4px solid #3b82f6;">
-                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                                    <div style="background: #3b82f6; width: 50px; height: 50px; border-radius: 25px; display: flex; align-items: center; justify-content: center;">
-                                        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                                            <circle cx="12" cy="12" r="5"/>
-                                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e3a8a;">Météo Actuelle</h3>
-                                        <p style="color: #3b82f6; font-weight: 500;">${data.weather.description || 'Données météo'}</p>
-                                    </div>
-                                </div>
+                    body: JSON.stringify(data)
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            showToast(successMessage, 'success');
+                            
+                            // Mark the notification as read and update UI
+                            const notificationElement = document.querySelector(`li[data-id="${notifId}"]`);
+                            if (notificationElement) {
+                                // Change background to white
+                                notificationElement.style.backgroundColor = '#ffffff';
                                 
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                    <div style="background: white; padding: 1rem; border-radius: 12px; text-align: center;">
-                                        <div style="font-size: 2rem; font-weight: 800; color: #1e3a8a;">${data.weather.temperature || '--'}°C</div>
-                                        <div style="font-size: 0.8rem; color: var(--gray-500);">Température</div>
-                                    </div>
-                                    <div style="background: white; padding: 1rem; border-radius: 12px; text-align: center;">
-                                        <div style="font-size: 1.2rem; font-weight: 600; color: #1e3a8a;">${data.weather.humidity || '--'}%</div>
-                                        <div style="font-size: 0.8rem; color: var(--gray-500);">Humidité</div>
-                                    </div>
-                                </div>
-                            </div>
+                                // Remove buttons
+                                const buttonsDiv = notificationElement.querySelector('div > div:last-child');
+                                if (buttonsDiv && buttonsDiv.tagName === 'DIV' && buttonsDiv.children.length > 0 && buttonsDiv.children[0].classList.contains('notif-action-btn')) {
+                                    buttonsDiv.remove();
+                                }
+                                
+                                // Update title font weight
+                                const titleDiv = notificationElement.querySelector('div > div:first-child');
+                                if (titleDiv) titleDiv.style.fontWeight = '400';
+                                
+                                // Remove badge
+                                const badge = notificationElement.querySelector('span[style*="background: #dc2626"]');
+                                if (badge) badge.remove();
+                                
+                                // Update hover effect
+                                notificationElement.addEventListener('mouseenter', function() {
+                                    this.style.backgroundColor = '#f9fafb';
+                                });
+                                
+                                notificationElement.addEventListener('mouseleave', function() {
+                                    this.style.backgroundColor = '#ffffff';
+                                });
+                            }
+                            
+                            // Update the unread count
+                            const count = parseInt(document.getElementById('notif-count').textContent);
+                            document.getElementById('notif-count').textContent = Math.max(0, count - 1);
+                            
+                        } else {
+                            showToast('Erreur lors de l\'action', 'error');
+                        }
+                    })
+                    .catch(() => showToast('Erreur réseau', 'error'));
+            }
 
-                            <!-- AI Advice Card -->
-                            <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 1.5rem; border-radius: 16px; border-left: 4px solid #8b5cf6;">
-                                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                                    <div style="background: #8b5cf6; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                                            <path d="M12 2a3 3 0 0 0-3 3c0 1.5 1 4 3 7 2-3 3-5.5 3-7a3 3 0 0 0-3-3z"/>
-                                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
-                                            <path d="M2 12h20"/>
-                                            <path d="M12 22V12"/>
-                                        </svg>
-                                    </div>
-                                    <h3 style="font-size: 1.2rem; font-weight: 600; color: #4c1d95;">Conseil IA Personnalisé</h3>
-                                </div>
-                                <p style="color: var(--gray-700); line-height: 1.6; font-size: 1rem;">
-                                    ${data.ai || 'Aucun conseil disponible pour le moment.'}
-                                </p>
-                            </div>
-
-                            <!-- Additional Info -->
-                            <div style="display: flex; align-items: center; gap: 0.5rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <polyline points="12 6 12 12 16 14"/>
-                                </svg>
-                                <span style="color: var(--gray-500); font-size: 0.8rem;">Mis à jour: ${new Date().toLocaleString('fr-FR')}</span>
-                            </div>
-                        </div>
-                    `;
-                } catch (error) {
-                    console.error('Weather error:', error);
-                    weatherResult.innerHTML = `
-                        <div style="background: #fee2e2; padding: 2rem; border-radius: 12px; text-align: center;">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2" style="margin: 0 auto 1rem;">
-                                <circle cx="12" cy="12" r="10"/>
-                                <line x1="12" y1="8" x2="12" y2="12"/>
-                                <circle cx="12" cy="16" r="0.5" fill="#b91c1c" stroke="none"/>
-                            </svg>
-                            <h3 style="color: #b91c1c; margin-bottom: 0.5rem;">Erreur de chargement</h3>
-                            <p style="color: #7f1d1d;">Impossible de récupérer les données météo. Veuillez réessayer.</p>
-                            <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #b91c1c; color: white; border: none; border-radius: 8px; cursor: pointer;">Réessayer</button>
-                        </div>
-                    `;
+            // Poll every 30 seconds
+            setInterval(() => {
+                const dropdown = document.getElementById('notif-dropdown');
+                if (dropdown && !dropdown.classList.contains('hidden')) {
+                    fetchNotifications();
                 }
-            });
+            }, 30000);
 
-            // Close modal when clicking close button
-            if (closeWeatherModal) {
-                closeWeatherModal.addEventListener('click', () => {
-                    weatherModal.style.display = 'none';
+            // Chart initialization
+            function initializeCharts() {
+                // Get stats from the page
+                const totalTasks = parseInt(document.querySelector('.stat-card:first-child .stat-value')?.textContent || '0');
+                const inProgress = parseInt(document.querySelector('.stat-card:nth-child(2) .stat-value')?.textContent || '0');
+                const completed = parseInt(document.querySelector('.stat-card:nth-child(3) .stat-value')?.textContent || '0');
+                const highPriority = parseInt(document.querySelector('.stat-card:nth-child(4) .stat-value')?.textContent || '0');
+                
+                // Calculate other values
+                const pending = Math.max(0, totalTasks - inProgress - completed);
+                const mediumPriority = Math.floor(totalTasks * 0.3); // Example calculation
+                const lowPriority = Math.max(0, totalTasks - highPriority - mediumPriority);
+
+                // Status Chart
+                const statusCtx = document.getElementById('statusChart')?.getContext('2d');
+                if (statusCtx) {
+                    // Get all the status counts
+                    const inProgress = {{ stats.counts.inProgress|default(0) }};
+                    const completed = {{ stats.counts.completed|default(0) }};
+                    const abandoned = {{ stats.counts.abandoned|default(0) }};
+                    const overdue = {{ stats.counts.overdue|default(0) }};
+                    const paused = {{ stats.counts.paused|default(0) }};
+                    const totalTasks = {{ stats.counts.total|default(0) }};
+                    
+                    // Calculate "À faire" (total minus all other statuses)
+                    const todo = Math.max(0, totalTasks - inProgress - completed - abandoned - overdue - paused);
+                    
+                    new Chart(statusCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['À faire', 'En cours', 'Terminées', 'Abandonnées', 'En retard', 'En pause'],
+                            datasets: [{
+                                data: [todo, inProgress, completed, abandoned, overdue, paused],
+                                backgroundColor: [
+                                    '#f59e0b',  // À faire - orange
+                                    '#3b82f6',  // En cours - blue
+                                    '#10b981',  // Terminées - green
+                                    '#ef4444',  // Abandonnées - RED
+                                    '#d97706',  // En retard - dark orange
+                                    '#6b7280'   // En pause - gray
+                                ],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        boxWidth: 12,
+                                        padding: 15
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.raw || 0;
+                                            const percentage = totalTasks > 0 ? ((value / totalTasks) * 100).toFixed(1) : 0;
+                                            return label + ': ' + value + ' tâche' + (value > 1 ? 's' : '') + ' (' + percentage + '%)';
+                                        }
+                                    }
+                                }
+                            },
+                            cutout: '60%'
+                        }
+                    });
+                }
+
+                // Priority Chart
+                const priorityCtx = document.getElementById('priorityChart')?.getContext('2d');
+                if (priorityCtx) {
+                    new Chart(priorityCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['Haute', 'Moyenne', 'Basse'],
+                            datasets: [{
+                                label: 'Nombre de tâches',
+                                data: [highPriority, mediumPriority, lowPriority],
+                                backgroundColor: [
+                                    '#ef4444',  // red
+                                    '#f59e0b',  // orange
+                                    '#10b981'   // green
+                                ],
+                                borderRadius: 6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        display: true,
+                                        color: '#e5e7eb'
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // NEW: Progress Chart
+                const progressCtx = document.getElementById('progressChart')?.getContext('2d');
+                if (progressCtx) {
+                    // Get progress data from Twig
+                    const progressLabels = {{ progressLabels|json_encode|raw }};
+                    const progressCreated = {{ progressCreated|json_encode|raw }};
+                    const progressCompleted = {{ progressCompleted|json_encode|raw }};
+                    const progressAbandoned = {{ progressAbandoned|json_encode|raw }};
+                    
+                    new Chart(progressCtx, {
+                        type: 'line',
+                        data: {
+                            labels: progressLabels,
+                            datasets: [
+                                {
+                                    label: 'Tâches créées',
+                                    data: progressCreated,
+                                    borderColor: '#3b82f6',
+                                    backgroundColor: '#3b82f620',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointBackgroundColor: '#3b82f6',
+                                    pointBorderColor: 'white',
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                },
+                                {
+                                    label: 'Tâches terminées',
+                                    data: progressCompleted,
+                                    borderColor: '#10b981',
+                                    backgroundColor: '#10b98120',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointBackgroundColor: '#10b981',
+                                    pointBorderColor: 'white',
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                },
+                                {
+                                    label: 'Tâches abandonnées',
+                                    data: progressAbandoned,
+                                    borderColor: '#ef4444',
+                                    backgroundColor: '#ef444420',
+                                    tension: 0.4,
+                                    fill: true,
+                                    pointBackgroundColor: '#ef4444',
+                                    pointBorderColor: 'white',
+                                    pointRadius: 4,
+                                    pointHoverRadius: 6
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            interaction: {
+                                mode: 'index',
+                                intersect: false,
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top',
+                                    labels: {
+                                        boxWidth: 12,
+                                        padding: 15,
+                                        usePointStyle: true,
+                                        pointStyle: 'circle'
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.dataset.label + ': ' + context.raw + ' tâche' + (context.raw > 1 ? 's' : '');
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1,
+                                        precision: 0,
+                                        callback: function(value) {
+                                            return value + ' tâche' + (value > 1 ? 's' : '');
+                                        }
+                                    },
+                                    grid: {
+                                        color: '#e5e7eb',
+                                        drawBorder: false
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        display: false
+                                    },
+                                    ticks: {
+                                        maxRotation: 45,
+                                        minRotation: 45
+                                    }
+                                }
+                            },
+                            elements: {
+                                line: {
+                                    borderWidth: 2
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Weather Modal Function
+            function initWeatherModal() {
+                const weatherBtn = document.getElementById("weatherBtn");
+                const weatherModal = document.getElementById("weatherModal");
+                const closeWeatherModal = document.getElementById("closeWeatherModal");
+                const weatherResult = document.getElementById("weatherResult");
+                
+                // Also get the insights modal and its close button to avoid conflicts
+                const insightsModal = document.getElementById('insightsModal');
+                const blurOverlay = document.getElementById('blur-overlay');
+
+                if (!weatherBtn) return;
+
+                weatherBtn.addEventListener("click", async (e) => {
+                    e.preventDefault();
+                    
+                    // Hide any other open modals/dropdowns
+                    if (insightsModal) insightsModal.style.display = 'none';
+                    if (blurOverlay) blurOverlay.style.display = 'none';
+                    const notifDropdown = document.getElementById('notif-dropdown');
+                    if (notifDropdown) notifDropdown.classList.add('hidden');
+                    
+                    // Show loading state
+                    weatherResult.innerHTML = `
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem;">
+                            <div style="width: 48px; height: 48px; border: 3px solid #f3f4f6; border-top-color: #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem;"></div>
+                            <p style="color: var(--gray-600);">Chargement des données météo...</p>
+                        </div>
+                    `;
+                    
+                    // Show modal
+                    weatherModal.style.display = 'flex';
+
+                    try {
+                        let res = await fetch("{{ path('weather_ai') }}");
+                        let data = await res.json();
+
+                        weatherResult.innerHTML = `
+                            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                                <!-- Weather Info Card -->
+                                <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e6f2fc 100%); padding: 1.5rem; border-radius: 16px; border-left: 4px solid #3b82f6;">
+                                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                        <div style="background: #3b82f6; width: 50px; height: 50px; border-radius: 25px; display: flex; align-items: center; justify-content: center;">
+                                            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                                <circle cx="12" cy="12" r="5"/>
+                                                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 style="font-size: 1.5rem; font-weight: 700; color: #1e3a8a;">Météo Actuelle</h3>
+                                            <p style="color: #3b82f6; font-weight: 500;">${data.weather.description || 'Données météo'}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                        <div style="background: white; padding: 1rem; border-radius: 12px; text-align: center;">
+                                            <div style="font-size: 2rem; font-weight: 800; color: #1e3a8a;">${data.weather.temperature || '--'}°C</div>
+                                            <div style="font-size: 0.8rem; color: var(--gray-500);">Température</div>
+                                        </div>
+                                        <div style="background: white; padding: 1rem; border-radius: 12px; text-align: center;">
+                                            <div style="font-size: 1.2rem; font-weight: 600; color: #1e3a8a;">${data.weather.humidity || '--'}%</div>
+                                            <div style="font-size: 0.8rem; color: var(--gray-500);">Humidité</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- AI Advice Card -->
+                                <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 1.5rem; border-radius: 16px; border-left: 4px solid #8b5cf6;">
+                                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                                        <div style="background: #8b5cf6; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                                <path d="M12 2a3 3 0 0 0-3 3c0 1.5 1 4 3 7 2-3 3-5.5 3-7a3 3 0 0 0-3-3z"/>
+                                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/>
+                                                <path d="M2 12h20"/>
+                                                <path d="M12 22V12"/>
+                                            </svg>
+                                        </div>
+                                        <h3 style="font-size: 1.2rem; font-weight: 600; color: #4c1d95;">Conseil IA Personnalisé</h3>
+                                    </div>
+                                    <p style="color: var(--gray-700); line-height: 1.6; font-size: 1rem;">
+                                        ${data.ai || 'Aucun conseil disponible pour le moment.'}
+                                    </p>
+                                </div>
+
+                                <!-- Additional Info -->
+                                <div style="display: flex; align-items: center; gap: 0.5rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polyline points="12 6 12 12 16 14"/>
+                                    </svg>
+                                    <span style="color: var(--gray-500); font-size: 0.8rem;">Mis à jour: ${new Date().toLocaleString('fr-FR')}</span>
+                                </div>
+                            </div>
+                        `;
+                    } catch (error) {
+                        console.error('Weather error:', error);
+                        weatherResult.innerHTML = `
+                            <div style="background: #fee2e2; padding: 2rem; border-radius: 12px; text-align: center;">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2" style="margin: 0 auto 1rem;">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="8" x2="12" y2="12"/>
+                                    <circle cx="12" cy="16" r="0.5" fill="#b91c1c" stroke="none"/>
+                                </svg>
+                                <h3 style="color: #b91c1c; margin-bottom: 0.5rem;">Erreur de chargement</h3>
+                                <p style="color: #7f1d1d;">Impossible de récupérer les données météo. Veuillez réessayer.</p>
+                                <button onclick="window.location.reload()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #b91c1c; color: white; border: none; border-radius: 8px; cursor: pointer;">Réessayer</button>
+                            </div>
+                        `;
+                    }
+                });
+
+                // Close modal when clicking close button
+                if (closeWeatherModal) {
+                    closeWeatherModal.addEventListener('click', () => {
+                        weatherModal.style.display = 'none';
+                    });
+                }
+
+                // Close modal when clicking outside
+                weatherModal.addEventListener('click', (e) => {
+                    if (e.target === weatherModal) {
+                        weatherModal.style.display = 'none';
+                    }
+                });
+
+                // Close modal with Escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && weatherModal.style.display === 'flex') {
+                        weatherModal.style.display = 'none';
+                    }
                 });
             }
 
-            // Close modal when clicking outside
-            weatherModal.addEventListener('click', (e) => {
-                if (e.target === weatherModal) {
-                    weatherModal.style.display = 'none';
-                }
-            });
+            // Insights Modal
+            const btnInsights = document.getElementById('btnInsights');
+            const modal = document.getElementById('insightsModal');
+            const closeBtn = document.getElementById('closeInsights');
+            const insightsContainer = document.getElementById('insightsContainer');
 
-            // Close modal with Escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && weatherModal.style.display === 'flex') {
-                    weatherModal.style.display = 'none';
-                }
-            });
-        }
+            // Get stats from Twig
+            const total = {{ totalTasks|default(0) }};
+            const completed = {{ completedTasks|default(0) }};
+            const abandoned = {{ abandonedTasks|default(0) }};
+            const inProgress = {{ inProgressTasks|default(0) }};
+            const overdue = {{ overdueTasks|default(0) }};
+            const high = {{ highPriorityTasks|default(0) }};
 
-        // Insights Modal
-        const btnInsights = document.getElementById('btnInsights');
-        const modal = document.getElementById('insightsModal');
-        const closeBtn = document.getElementById('closeInsights');
-        const insightsContainer = document.getElementById('insightsContainer');
+            // Compute additional metrics
+            const successRate = total > 0 ? Math.round((completed / total) * 100) : 0;
+            const productivity = (completed + abandoned + overdue) > 0 
+                ? Math.round((completed / (completed + abandoned + overdue)) * 100) 
+                : 100;
 
-        // Get stats from Twig
-        const total = {{ totalTasks|default(0) }};
-        const completed = {{ completedTasks|default(0) }};
-        const abandoned = {{ abandonedTasks|default(0) }};
-        const inProgress = {{ inProgressTasks|default(0) }};
-        const overdue = {{ overdueTasks|default(0) }};
-        const high = {{ highPriorityTasks|default(0) }};
-
-        // Compute additional metrics
-        const successRate = total > 0 ? Math.round((completed / total) * 100) : 0;
-        const productivity = (completed + abandoned + overdue) > 0 
-            ? Math.round((completed / (completed + abandoned + overdue)) * 100) 
-            : 100;
-
-        if (btnInsights) {
-            btnInsights.addEventListener('click', async (e) => {
-                e.preventDefault();
-                
-                // Show loading state
-                insightsContainer.innerHTML = `
-                    <div style="display: flex; flex-direction: column; gap: 2rem;">
-                        <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--primary);">
-                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                                <div style="background: var(--primary-light); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
-                                        <path d="M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2"/>
-                                        <path d="M3 12h4l2 3 3-6 2 3 3-3 2 3 2-3"/>
-                                        <path d="M3 12v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
-                                    </svg>
-                                </div>
-                                <h3 style="font-size: 1.2rem; font-weight: 600;">Analyse en cours...</h3>
-                            </div>
-                            <p style="color: var(--gray-700);">
-                                <span style="display: flex; align-items: center; gap: 0.5rem;">
-                                    <span style="display: inline-block; width: 16px; height: 16px; border: 2px solid var(--primary-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></span>
-                                    Chargement des insights...
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-                `;
-                modal.style.display = 'flex';
-
-                try {
-                    const response = await fetch('{{ path("user_tasks_insights") }}');
-                    const data = await response.json();
-
+            if (btnInsights) {
+                btnInsights.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    
+                    // Show loading state
                     insightsContainer.innerHTML = `
                         <div style="display: flex; flex-direction: column; gap: 2rem;">
-                            <!-- Weekly Summary -->
                             <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--primary);">
                                 <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
                                     <div style="background: var(--primary-light); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
@@ -2212,91 +2548,120 @@
                                             <path d="M3 12v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
                                         </svg>
                                     </div>
-                                    <h3 style="font-size: 1.2rem; font-weight: 600;">Résumé de la semaine</h3>
+                                    <h3 style="font-size: 1.2rem; font-weight: 600;">Analyse en cours...</h3>
                                 </div>
-                                <p style="color: var(--gray-700);">${data.aiInsights?.weeklyProductivitySummary || 'Aucune donnée disponible pour cette semaine.'}</p>
+                                <p style="color: var(--gray-700);">
+                                    <span style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="display: inline-block; width: 16px; height: 16px; border: 2px solid var(--primary-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite;"></span>
+                                        Chargement des insights...
+                                    </span>
+                                </p>
                             </div>
+                        </div>
+                    `;
+                    modal.style.display = 'flex';
 
-                            <!-- Personalized Advice -->
-                            <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--gray-200);">
-                                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                                    <div style="background: #fef3c7; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2">
-                                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-                                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-                                        </svg>
+                    try {
+                        const response = await fetch('{{ path("user_tasks_insights") }}');
+                        const data = await response.json();
+
+                        insightsContainer.innerHTML = `
+                            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                                <!-- Weekly Summary -->
+                                <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--primary);">
+                                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                                        <div style="background: var(--primary-light); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2">
+                                                <path d="M21 12v-2a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v2"/>
+                                                <path d="M3 12h4l2 3 3-6 2 3 3-3 2 3 2-3"/>
+                                                <path d="M3 12v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/>
+                                            </svg>
+                                        </div>
+                                        <h3 style="font-size: 1.2rem; font-weight: 600;">Résumé de la semaine</h3>
                                     </div>
-                                    <h3 style="font-size: 1.2rem; font-weight: 600;">Conseils personnalisés</h3>
+                                    <p style="color: var(--gray-700);">${data.aiInsights?.weeklyProductivitySummary || 'Aucune donnée disponible pour cette semaine.'}</p>
                                 </div>
-                                <p style="color: var(--gray-700);">${data.aiInsights?.behavioralAdvice || 'Continuez votre bon travail ! Pas de conseils spécifiques pour le moment.'}</p>
-                            </div>
 
-                            <!-- Metrics -->
-                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-                                <div style="background: var(--gray-50); padding: 1rem; border-radius: 12px; text-align: center;">
-                                    <div style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">Productivité</div>
-                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">${productivity}%</div>
+                                <!-- Personalized Advice -->
+                                <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--gray-200);">
+                                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                                        <div style="background: #fef3c7; width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2">
+                                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                                            </svg>
+                                        </div>
+                                        <h3 style="font-size: 1.2rem; font-weight: 600;">Conseils personnalisés</h3>
+                                    </div>
+                                    <p style="color: var(--gray-700);">${data.aiInsights?.behavioralAdvice || 'Continuez votre bon travail ! Pas de conseils spécifiques pour le moment.'}</p>
                                 </div>
-                                <div style="background: var(--gray-50); padding: 1rem; border-radius: 12px; text-align: center;">
-                                    <div style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">Complétées</div>
-                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">${completed}</div>
-                                </div>
-                                <div style="background: var(--gray-50); padding: 1rem; border-radius: 12px; text-align: center;">
-                                    <div style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">Taux réussite</div>
-                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning);">${successRate}%</div>
-                                </div>
-                            </div>
 
-                            <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <polyline points="12 6 12 12 16 14"/>
-                                </svg>
-                                <span style="color: var(--gray-500); font-size: 0.8rem;">Dernière mise à jour: ${new Date().toLocaleString('fr-FR')}</span>
-                            </div>
-                        </div>
-                    `;
-                } catch (error) {
-                    console.error('Insights error:', error);
-                    // Fallback
-                    insightsContainer.innerHTML = `
-                        <div style="display: flex; flex-direction: column; gap: 2rem;">
-                            <div style="background: #fff3cd; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #856404;">
-                                <p style="color: #856404;">Impossible de charger les insights personnalisés. Voici vos statistiques :</p>
-                            </div>
-                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-                                <div style="background: var(--gray-50); padding: 1rem; border-radius: 12px; text-align: center;">
-                                    <div style="font-size: 0.8rem; color: var(--gray-500);">Productivité</div>
-                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">${productivity}%</div>
+                                <!-- Metrics -->
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                                    <div style="background: var(--gray-50); padding: 1rem; border-radius: 12px; text-align: center;">
+                                        <div style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">Productivité</div>
+                                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">${productivity}%</div>
+                                    </div>
+                                    <div style="background: var(--gray-50); padding: 1rem; border-radius: 12px; text-align: center;">
+                                        <div style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">Complétées</div>
+                                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">${completed}</div>
+                                    </div>
+                                    <div style="background: var(--gray-50); padding: 1rem; border-radius: 12px; text-align: center;">
+                                        <div style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 0.5rem;">Taux réussite</div>
+                                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning);">${successRate}%</div>
+                                    </div>
                                 </div>
-                                <div style="background: var(--gray-50); padding: 1rem; border-radius: 12px; text-align: center;">
-                                    <div style="font-size: 0.8rem; color: var(--gray-500);">Complétées</div>
-                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">${completed}</div>
-                                </div>
-                                <div style="background: var(--gray-50); padding: 1rem; border-radius: 12px; text-align: center;">
-                                    <div style="font-size: 0.8rem; color: var(--gray-500);">Taux réussite</div>
-                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning);">${successRate}%</div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-        }
 
-        if (closeBtn) {
-            closeBtn.addEventListener('click', () => {
-                modal.style.display = 'none';
-            });
-        }
+                                <div style="display: flex; align-items: center; justify-content: flex-end; gap: 0.5rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <polyline points="12 6 12 12 16 14"/>
+                                    </svg>
+                                    <span style="color: var(--gray-500); font-size: 0.8rem;">Dernière mise à jour: ${new Date().toLocaleString('fr-FR')}</span>
+                                </div>
+                            </div>
+                        `;
+                    } catch (error) {
+                        console.error('Insights error:', error);
+                        // Fallback
+                        insightsContainer.innerHTML = `
+                            <div style="display: flex; flex-direction: column; gap: 2rem;">
+                                <div style="background: #fff3cd; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #856404;">
+                                    <p style="color: #856404;">Impossible de charger les insights personnalisés. Voici vos statistiques :</p>
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                                    <div style="background: var(--gray-50); padding: 1rem; border-radius: 12px; text-align: center;">
+                                        <div style="font-size: 0.8rem; color: var(--gray-500);">Productivité</div>
+                                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">${productivity}%</div>
+                                    </div>
+                                    <div style="background: var(--gray-50); padding: 1rem; border-radius: 12px; text-align: center;">
+                                        <div style="font-size: 0.8rem; color: var(--gray-500);">Complétées</div>
+                                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">${completed}</div>
+                                    </div>
+                                    <div style="background: var(--gray-50); padding: 1rem; border-radius: 12px; text-align: center;">
+                                        <div style="font-size: 0.8rem; color: var(--gray-500);">Taux réussite</div>
+                                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning);">${successRate}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            }
 
-        if (modal) {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => {
                     modal.style.display = 'none';
-                }
-            });
-        }
-    </script>
+                });
+            }
+
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.style.display = 'none';
+                    }
+                });
+            }
+    </script>  
 </body>
 </html>

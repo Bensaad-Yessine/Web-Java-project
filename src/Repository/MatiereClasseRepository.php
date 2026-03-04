@@ -147,13 +147,14 @@ class MatiereClasseRepository extends ServiceEntityRepository
     }
 
     /**
-     * Suggère des matières pour une classe en fonction de son niveau / filière
-     * (matières associées à d'autres classes du même niveau/filière mais pas encore à cette classe)
+     * Suggère des matières pour une classe en fonction de son niveau / filière / année universitaire
+     * (matières associées à d'autres classes du même niveau/filière/année mais pas encore à cette classe)
      */
     public function findSuggestionsForClasse(
         ?string $niveau,
         ?string $filiere,
-        array $excludeIds = []
+        array $excludeIds = [],
+        ?string $anneeUniversitaire = null
     ): array {
         $qb = $this->createQueryBuilder('m')
             ->innerJoin('m.classes', 'c');
@@ -166,6 +167,11 @@ class MatiereClasseRepository extends ServiceEntityRepository
         if ($filiere) {
             $qb->andWhere('c.filiere = :filiere')
                ->setParameter('filiere', $filiere);
+        }
+
+        if ($anneeUniversitaire) {
+            $qb->andWhere('c.anneeuniversitaire = :annee')
+               ->setParameter('annee', $anneeUniversitaire);
         }
 
         if (!empty($excludeIds)) {

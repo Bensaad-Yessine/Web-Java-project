@@ -32,6 +32,10 @@ class Notification
     #[Assert\Choice(choices: ["INFO", "WARNING", "RISK"], message: "Choose a valid type.")]
     private ?string $type = "INFO";
 
+
+    #[ORM\Column(type: "boolean")]
+    private bool $email = false;
+
     #[ORM\Column(type: "boolean")]
     private bool $isRead = false;
 
@@ -96,6 +100,17 @@ class Notification
             throw new \InvalidArgumentException("Invalid notification type.");
         }
         $this->type = $type;
+        return $this;
+    }
+
+    public function getEmail(): bool
+    {
+        return $this->email;
+    }
+
+    public function setEmail(bool $email): self
+    {
+        $this->email = $email;
         return $this;
     }
 
