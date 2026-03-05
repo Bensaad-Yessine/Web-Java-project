@@ -58,9 +58,66 @@ class ObjectifSante
     
     #[ORM\OneToMany(mappedBy: 'objectif', targetEntity: SuiviBienEtre::class, orphanRemoval: true, cascade: ['persist','remove'])]
     private Collection $suivis;
+    #[ORM\Column(length: 64, nullable: true)]
+private ?string $shareToken = null;
+
+#[ORM\Column(type: 'datetime_immutable', nullable: true)]
+private ?\DateTimeImmutable $shareExpiresAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'objectifSantes')]
     private ?User $user = null;
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+private ?\DateTimeImmutable $archivedAt = null;
+
+public function getArchivedAt(): ?\DateTimeImmutable
+{
+    return $this->archivedAt;
+}
+
+public function setArchivedAt(?\DateTimeImmutable $archivedAt): self
+{
+    $this->archivedAt = $archivedAt;
+    return $this;
+}
+
+public function isArchived(): bool
+{
+    return $this->archivedAt !== null;
+}
+#[ORM\Column(length: 255, nullable: true)]
+private ?string $archivePdfPath = null;
+
+public function getArchivePdfPath(): ?string
+{
+    return $this->archivePdfPath;
+}
+
+public function setArchivePdfPath(?string $archivePdfPath): self
+{
+    $this->archivePdfPath = $archivePdfPath;
+    return $this;
+}
+public function getShareToken(): ?string
+{
+    return $this->shareToken;
+}
+
+public function setShareToken(?string $shareToken): self
+{
+    $this->shareToken = $shareToken;
+    return $this;
+}
+
+public function getShareExpiresAt(): ?\DateTimeImmutable
+{
+    return $this->shareExpiresAt;
+}
+
+public function setShareExpiresAt(?\DateTimeImmutable $shareExpiresAt): self
+{
+    $this->shareExpiresAt = $shareExpiresAt;
+    return $this;
+}
 
     // ==================== CONSTRUCTOR ====================
 

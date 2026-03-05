@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESPRIT — Détails Objectif Santé</title>
+{% extends 'base.html.twig' %}
+
+{% block title %}ESPRIT — Détails Objectif Santé{% endblock %}
+    {% block stylesheets %}
+    {{ parent() }}
     <style>
         :root {
             --font-size: 16px;
@@ -914,9 +913,76 @@
         ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(180deg, var(--red-400), var(--orange-400));
         }
+        /* ===================== CHARTS LAYOUT ===================== */
+.charts-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.chart-item{
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(229,231,235,0.6);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.chart-item--full{
+  grid-column: 1 / -1;
+}
+
+.chart-head{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  margin-bottom: 12px;
+}
+
+.chart-title{
+  font-weight: 800;
+  color: var(--gray-900);
+  letter-spacing: -0.2px;
+}
+
+.chart-sub{
+  font-weight: 600;
+  color: var(--gray-500);
+  font-size: 13px;
+}
+
+/* La “boite” qui contrôle la taille du chart */
+.chart-box{
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid rgba(229,231,235,0.6);
+  padding: 10px;
+}
+
+/* tailles fixes (tu peux ajuster) */
+.chart-box--lg{ height: 260px; }  /* score */
+.chart-box--md{ height: 220px; }  /* indicators + mood */
+
+/* Très important: forcer le canvas à respecter la boite */
+.chart-box canvas{
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* responsive mobile */
+@media (max-width: 900px){
+  .charts-grid{ grid-template-columns: 1fr; }
+  .chart-item--full{ grid-column: auto; }
+  .chart-box--lg{ height: 240px; }
+  .chart-box--md{ height: 220px; }
+}
     </style>
-</head>
-<body>
+    {% endblock %}
+    
+{% block body %}
+
     <div class="app-shell">
         <!-- Sidebar with session info -->
         <aside class="sidebar">
@@ -1111,6 +1177,11 @@
                         </a>
                         
                         {{ include('front/objectif_sante/_delete_form.html.twig') }}
+                        {% if objectif_sante.archivedAt and objectif_sante.archivePdfPath %}
+        <a href="{{ objectif_sante.archivePdfPath }}" target="_blank" class="btn btn-green">
+            📄 Télécharger PDF
+        </a>
+    {% endif %}
                         
                         <a href="{{ path('front_objectif_sante_index') }}" class="btn btn-outline">
                             <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1121,6 +1192,55 @@
                     </div>
                 </div>
             </div>
+            {# ✅ ICI tu colles la carte IA Risque d’abandon #}
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">🤖 Risque d’abandon (IA)</h2>
+  </div>
+
+  <div class="card-content">
+    {% set rp = risk.riskPercent ?? 0 %}
+    {% set lvl = risk.riskLevel ?? 'LOW' %}
+    {% set title = risk.messageTitle ?? 'Risque IA' %}
+    {% set msg = risk.message ?? '' %}
+
+    {% set badgeClass =
+      lvl == 'HIGH' ? 'badge-danger' :
+      (lvl == 'MEDIUM' ? 'badge-warning' : 'badge-success')
+    %}
+
+    <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:14px;">
+      <span class="badge {{ badgeClass }}">{{ lvl }}</span>
+      <span class="badge badge-primary">{{ rp }}%</span>
+      <span class="badge badge-info">{{ title }}</span>
+    </div>
+
+    <div class="progress-container" style="margin: 0 0 12px 0;">
+      <div class="progress-label">
+        <span>Niveau de risque</span>
+        <span>{{ rp }}%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: {{ rp }}%;
+          background: {{ lvl == 'HIGH'
+            ? 'linear-gradient(90deg, var(--red-500), var(--red-600))'
+            : (lvl == 'MEDIUM'
+              ? 'linear-gradient(90deg, var(--orange-500), var(--orange-600))'
+              : 'linear-gradient(90deg, var(--green-500), var(--green-600))'
+            )
+          }};">
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:16px; border-radius: var(--radius-lg);
+      background: rgba(249,250,251,0.9);
+      border: 1px solid rgba(229,231,235,0.6);">
+      <div style="font-weight:800; color: var(--gray-900); margin-bottom:6px;">Conseil</div>
+      <div style="color: var(--gray-700); font-weight:600;">{{ msg }}</div>
+    </div>
+  </div>
+</div>
             {# ===================== Dashboard Analytics Card ===================== #}
 <div class="card" id="analyticsCard"
      data-url="{{ path('front_objectif_dashboard_analytics', { id: objectif_sante.id }) }}">
@@ -1203,6 +1323,52 @@
     </div>
   </div>
 </div>
+{# ===================== Charts Card (Dashboard Graphiques) ===================== #}
+<div class="card" id="chartsCard">
+  <div class="card-header">
+    <h2 class="card-title">📈 Dashboard Graphiques</h2>
+  </div>
+
+  <div class="card-content">
+
+    <div class="charts-grid">
+
+      {# 1) Score en FULL WIDTH #}
+      <div class="chart-item chart-item--full">
+        <div class="chart-head">
+          <div class="chart-title">Évolution du score</div>
+          <div class="chart-sub">Derniers suivis</div>
+        </div>
+        <div class="chart-box chart-box--lg">
+          {{ render_chart(scoreChart) }}
+        </div>
+      </div>
+
+      {# 2) Indicateurs (colonne gauche) #}
+      <div class="chart-item">
+        <div class="chart-head">
+          <div class="chart-title">Moyennes des indicateurs</div>
+          <div class="chart-sub">Sommeil / Énergie / Stress / Alimentation</div>
+        </div>
+        <div class="chart-box chart-box--md">
+          {{ render_chart(indicatorsChart) }}
+        </div>
+      </div>
+
+      {# 3) Humeur (colonne droite) #}
+      <div class="chart-item">
+        <div class="chart-head">
+          <div class="chart-title">Répartition de l’humeur</div>
+          <div class="chart-sub">Distribution</div>
+        </div>
+        <div class="chart-box chart-box--md">
+          {{ render_chart(moodChart) }}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
               {# ===================== Coaching Summary Card ===================== #}
 <div class="card" id="coachingCard"
      data-url="{{ path('front_objectif_coaching_summary', { id: objectif_sante.id }) }}">
@@ -1217,6 +1383,7 @@
     <div id="coachingError" style="display:none; padding:12px; border-radius:12px; background:#fee2e2; border:1px solid #fecaca; color:#991b1b; font-weight:700;">
   ✗ Impossible de charger le coaching.
 </div>
+
 
     <div id="coachingContent" style="display:none;">
       <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:16px;">
@@ -1316,6 +1483,10 @@
             </div>
         </main>
     </div>
+
+    {% endblock %}
+    {% block javascripts %}
+  {{ parent() }}
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -1629,6 +1800,8 @@ if (prog > 0) {
   }
 });
 </script>
+{% endblock %}
 
-</body>
-</html>
+
+
+

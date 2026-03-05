@@ -177,6 +177,17 @@ public function getHumeurDistribution(int $objectifId): array
         ->getQuery()
         ->getResult();
 }
+public function findScoresByObjectif(int $objectifId): array
+{
+    // Retourne tableau de scores triés par date ASC
+    return $this->createQueryBuilder('s')
+        ->select('s.score AS score')
+        ->where('s.objectif = :id')
+        ->setParameter('id', $objectifId)
+        ->orderBy('s.dateSaisie', 'ASC')
+        ->getQuery()
+        ->getArrayResult();
+}
 
 //    /**
 //     * @return SuiviBienEtre[] Returns an array of SuiviBienEtre objects

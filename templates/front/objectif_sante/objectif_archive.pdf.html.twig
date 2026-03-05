@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
+        h2 { margin-bottom: 10px; }
+        .row { margin: 6px 0; }
+        .label { font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ccc; padding: 6px; text-align: center; }
+        th { background: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+<h2>Rapport Objectif Archivé</h2>
+
+<div class="row"><span class="label">Titre:</span> {{ objectif.titre }}</div>
+<div class="row"><span class="label">Type:</span> {{ objectif.type }}</div>
+<div class="row"><span class="label">Date début:</span> {{ objectif.dateDebut|date('d/m/Y') }}</div>
+<div class="row"><span class="label">Date fin:</span> {{ objectif.dateFin|date('d/m/Y') }}</div>
+<div class="row"><span class="label">Score final:</span> {{ scorePercent }} %</div>
+<div class="row"><span class="label">Statut:</span> {{ objectif.statut }}</div>
+
+<h3>Suivis</h3>
+
+<table>
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Score</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in suivis %}
+            <tr>
+                <td>{{ s.dateSaisie|date('d/m/Y') }}</td>
+                <td>{{ s.score }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2">Aucun suivi</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>
