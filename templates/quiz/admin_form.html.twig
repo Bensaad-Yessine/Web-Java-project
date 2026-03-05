@@ -1,0 +1,60 @@
+{% extends 'classe/base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="mb-4">
+        <h1 class="h4 mb-1">{{ title }}</h1>
+        <p class="text-muted mb-0">Matière : {{ matiere.nom }}</p>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            {{ form_start(form) }}
+                <div class="mb-3">
+                    {{ form_label(form.question) }}
+                    {{ form_widget(form.question, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.question) }}
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.choiceA) }}
+                        {{ form_widget(form.choiceA, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.choiceA) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.choiceB) }}
+                        {{ form_widget(form.choiceB, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.choiceB) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.choiceC) }}
+                        {{ form_widget(form.choiceC, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.choiceC) }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form_label(form.choiceD) }}
+                        {{ form_widget(form.choiceD, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.choiceD) }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.correctChoice) }}
+                    {{ form_widget(form.correctChoice, {'attr': {'class': 'form-select'}}) }}
+                    {{ form_errors(form.correctChoice) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.explanation) }}
+                    {{ form_widget(form.explanation, {'attr': {'class': 'form-control', 'rows': 3}}) }}
+                    {{ form_errors(form.explanation) }}
+                </div>
+                <button class="btn btn-primary">Enregistrer</button>
+                <a href="{{ path('app_admin_quiz_matiere', {id: matiere.id}) }}" class="btn btn-secondary ms-2">Annuler</a>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

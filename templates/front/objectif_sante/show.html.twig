@@ -1,0 +1,1772 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ESPRIT — Détails Objectif Santé{% endblock %}
+    {% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --font-size: 16px;
+            --bg: #ffffff;
+            --fg: #111827;
+            
+            --red-50: #fef2f2;
+            --red-100: #fee2e2;
+            --red-200: #fecaca;
+            --red-300: #fca5a5;
+            --red-400: #f87171;
+            --red-500: #ef4444;
+            --red-600: #dc2626;
+            --red-700: #b91c1c;
+            --red-800: #991b1b;
+            --red-900: #7f1d1d;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --blue-50: #eff6ff;
+            --blue-100: #dbeafe;
+            --blue-200: #bfdbfe;
+            --blue-300: #93c5fd;
+            --blue-400: #60a5fa;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --blue-800: #1e40af;
+            --blue-900: #1e3a8a;
+            
+            --purple-50: #faf5ff;
+            --purple-100: #f3e8ff;
+            --purple-200: #e9d5ff;
+            --purple-300: #d8b4fe;
+            --purple-400: #c084fc;
+            --purple-500: #a855f7;
+            --purple-600: #9333ea;
+            --purple-700: #7e22ce;
+            --purple-800: #6b21a8;
+            --purple-900: #581c87;
+            
+            --green-50: #f0fdf4;
+            --green-100: #dcfce7;
+            --green-200: #bbf7d0;
+            --green-300: #86efac;
+            --green-400: #4ade80;
+            --green-500: #22c55e;
+            --green-600: #16a34a;
+            --green-700: #15803d;
+            --green-800: #166534;
+            --green-900: #14532d;
+            
+            --orange-50: #fff7ed;
+            --orange-100: #ffedd5;
+            --orange-200: #fed7aa;
+            --orange-300: #fdba74;
+            --orange-400: #fb923c;
+            --orange-500: #f97316;
+            --orange-600: #ea580c;
+            --orange-700: #c2410c;
+            --orange-800: #9a3412;
+            --orange-900: #7c2d12;
+            
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+            
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-2xl: 24px;
+            
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        html { 
+            font-size: var(--font-size); 
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, #ffffff 30%, var(--gray-50) 100%);
+            color: var(--fg);
+            min-height: 100vh;
+            line-height: 1.6;
+            font-feature-settings: 'ss01', 'ss02', 'cv01', 'cv02';
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Main Layout with Glassmorphism */
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+            background: linear-gradient(135deg, 
+                rgba(249, 250, 251, 0.95) 0%, 
+                rgba(255, 255, 255, 0.97) 50%, 
+                rgba(249, 250, 251, 0.95) 100%);
+            backdrop-filter: blur(20px);
+        }
+
+        /* Premium Sidebar with Glass Effect */
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(165deg, 
+                rgba(255, 255, 255, 0.92) 0%, 
+                rgba(249, 250, 251, 0.88) 100%);
+            border-right: 1px solid rgba(229, 231, 235, 0.6);
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        /* Premium Brand Section */
+        .brand {
+            margin-bottom: 36px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
+            position: relative;
+        }
+
+        .brand::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--red-500), var(--red-300));
+            border-radius: 2px;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--red-700) 100%);
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+            transition: all var(--transition);
+        }
+
+        .brand-icon:hover {
+            transform: rotate(-5deg) scale(1.05);
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.35);
+        }
+
+        .brand-title {
+            font-weight: 800;
+            font-size: 20px;
+            line-height: 1;
+            color: var(--gray-900);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-sub {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: 6px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        /* Premium User Session Card */
+        .user-session {
+            margin-top: 28px;
+            padding: 24px;
+            background: linear-gradient(145deg, 
+                rgba(255, 255, 255, 0.95) 0%, 
+                rgba(249, 250, 251, 0.9) 100%);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition);
+        }
+
+        .user-session::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .user-session:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(229, 231, 235, 0.8);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.2);
+            border: 3px solid white;
+            transition: all var(--transition);
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3);
+        }
+
+        .user-details h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            line-height: 1.4;
+        }
+
+        .user-details p {
+            margin: 6px 0 0;
+            font-size: 14px;
+            color: #4b5563;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .user-details p::before {
+            content: '📚';
+            font-size: 12px;
+        }
+
+        .session-info {
+            font-size: 13px;
+            color: #4b5563;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-weight: 500;
+        }
+
+        .session-info div {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            transition: all var(--transition-fast);
+        }
+
+        .session-info div:hover {
+            background: rgba(249, 250, 251, 0.5);
+            border-radius: var(--radius-sm);
+            padding: 6px 8px;
+        }
+
+        .session-info strong {
+            color: #1f2937;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Premium Navigation */
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 32px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            border-radius: var(--radius-lg);
+            color: #374151;
+            text-decoration: none;
+            transition: all var(--transition);
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            font-size: 15px;
+        }
+
+        .nav a:hover {
+            background: linear-gradient(90deg, 
+                rgba(254, 242, 242, 0.7) 0%, 
+                rgba(254, 242, 242, 0.4) 100%);
+            color: var(--red-600);
+            transform: translateX(8px);
+            box-shadow: var(--shadow-xs);
+        }
+
+        .nav a.active {
+            background: linear-gradient(90deg, 
+                rgba(254, 242, 242, 0.9) 0%, 
+                rgba(254, 242, 242, 0.6) 100%);
+            color: var(--red-600);
+            font-weight: 600;
+            border-left: 4px solid var(--red-500);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav a.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, var(--red-500), var(--orange-500));
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+
+        .nav a .icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            stroke-width: 2;
+            transition: all var(--transition);
+        }
+
+        .nav a:hover .icon {
+            transform: scale(1.1);
+        }
+
+        /* Premium Main Content */
+        .main {
+            flex: 1;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Premium Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--red-500), transparent);
+            border-radius: 2px;
+        }
+
+        .h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin: 0;
+            color: #111827;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .muted {
+            color: #6b7280;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .session-display {
+            text-align: right;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.9) 0%, 
+                rgba(249, 250, 251, 0.8) 100%);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(229, 231, 235, 0.6);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+        }
+
+        .session-display:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .session-display div:first-child {
+            font-size: 12px;
+            color: var(--gray-500);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .session-display div:last-child {
+            font-weight: 700;
+            font-size: 15px;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .session-display div:last-child::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--green-500);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Premium Card Design */
+        .card {
+            background: linear-gradient(145deg, 
+                rgba(255, 255, 255, 0.95) 0%, 
+                rgba(249, 250, 251, 0.9) 100%);
+            border: 1px solid rgba(229, 231, 235, 0.6);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 28px;
+            overflow: hidden;
+            transition: all var(--transition);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(229, 231, 235, 0.8);
+        }
+
+        .card-header {
+            padding: 28px 28px 0;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 6px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--red-500), var(--orange-500));
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .card-content {
+            padding: 28px;
+        }
+
+        /* Premium Buttons */
+        .btn {
+            appearance: none;
+            border: 2px solid transparent;
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: 16px 28px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all var(--transition);
+            font-size: 15px;
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+            text-decoration: none;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, var(--red-600) 0%, var(--orange-600) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #374151;
+            border-color: #d1d5db;
+            font-weight: 500;
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: #f3f4f6;
+            color: #111827;
+            border-color: #9ca3af;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, var(--green-500) 0%, var(--green-700) 100%);
+            box-shadow: 0 4px 16px rgba(22, 163, 74, 0.2);
+        }
+
+        .btn-green:hover {
+            background: linear-gradient(135deg, var(--green-600) 0%, var(--green-800) 100%);
+            box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3);
+        }
+
+        .btn-blue {
+            background: linear-gradient(135deg, var(--blue-500) 0%, var(--blue-700) 100%);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-blue:hover {
+            background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-800) 100%);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Badge Design */
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            box-shadow: var(--shadow-xs);
+            border: 1px solid transparent;
+        }
+
+        .badge-primary {
+            background: linear-gradient(135deg, var(--blue-100) 0%, var(--blue-50) 100%);
+            color: var(--blue-700);
+            border-color: var(--blue-200);
+        }
+
+        .badge-success {
+            background: linear-gradient(135deg, var(--green-100) 0%, var(--green-50) 100%);
+            color: var(--green-700);
+            border-color: var(--green-200);
+        }
+
+        .badge-warning {
+            background: linear-gradient(135deg, var(--orange-100) 0%, var(--orange-50) 100%);
+            color: var(--orange-700);
+            border-color: var(--orange-200);
+        }
+
+        .badge-danger {
+            background: linear-gradient(135deg, var(--red-100) 0%, var(--red-50) 100%);
+            color: var(--red-700);
+            border-color: var(--red-200);
+        }
+
+        .badge-info {
+            background: linear-gradient(135deg, var(--purple-100) 0%, var(--purple-50) 100%);
+            color: var(--purple-700);
+            border-color: var(--purple-200);
+        }
+
+        /* Detail Grid */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .detail-item {
+            background: linear-gradient(145deg, 
+                rgba(255, 255, 255, 0.9) 0%, 
+                rgba(249, 250, 251, 0.8) 100%);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid rgba(229, 231, 235, 0.4);
+            transition: all var(--transition);
+        }
+
+        .detail-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(229, 231, 235, 0.6);
+        }
+
+        .detail-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-label::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--red-400);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin: 0;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 32px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: var(--gray-200);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green-500), var(--green-600));
+            border-radius: 6px;
+            transition: width 1s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .breadcrumb a {
+            color: var(--blue-600);
+            text-decoration: none;
+            transition: all var(--transition);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--blue-700);
+            text-decoration: underline;
+        }
+
+        .breadcrumb .separator {
+            color: var(--gray-400);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .app-shell {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 24px;
+                border-right: none;
+                border-bottom: 1px solid rgba(229, 231, 235, 0.6);
+            }
+            
+            .main {
+                padding: 32px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            
+            .h1 {
+                font-size: 36px;
+            }
+            
+            .session-display {
+                width: 100%;
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main {
+                padding: 24px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main {
+                padding: 20px;
+            }
+            
+            .card-content {
+                padding: 20px;
+            }
+            
+            .detail-item {
+                padding: 20px;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(249, 250, 251, 0.8);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--red-300), var(--orange-300));
+            border-radius: 10px;
+            border: 2px solid rgba(249, 250, 251, 0.8);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--red-400), var(--orange-400));
+        }
+        /* ===================== CHARTS LAYOUT ===================== */
+.charts-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.chart-item{
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(229,231,235,0.6);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.chart-item--full{
+  grid-column: 1 / -1;
+}
+
+.chart-head{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  margin-bottom: 12px;
+}
+
+.chart-title{
+  font-weight: 800;
+  color: var(--gray-900);
+  letter-spacing: -0.2px;
+}
+
+.chart-sub{
+  font-weight: 600;
+  color: var(--gray-500);
+  font-size: 13px;
+}
+
+/* La “boite” qui contrôle la taille du chart */
+.chart-box{
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid rgba(229,231,235,0.6);
+  padding: 10px;
+}
+
+/* tailles fixes (tu peux ajuster) */
+.chart-box--lg{ height: 260px; }  /* score */
+.chart-box--md{ height: 220px; }  /* indicators + mood */
+
+/* Très important: forcer le canvas à respecter la boite */
+.chart-box canvas{
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* responsive mobile */
+@media (max-width: 900px){
+  .charts-grid{ grid-template-columns: 1fr; }
+  .chart-item--full{ grid-column: auto; }
+  .chart-box--lg{ height: 240px; }
+  .chart-box--md{ height: 220px; }
+}
+    </style>
+    {% endblock %}
+    
+{% block body %}
+
+    <div class="app-shell">
+        <!-- Sidebar with session info -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-row">
+                    <div class="brand-icon">ES</div>
+                    <div>
+                        <div class="brand-title">ESPRIT</div>
+                        <div class="brand-sub">Student Assistant</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User session information -->
+            <div class="user-session">
+                <div class="user-info">
+                    <div class="avatar">
+                        {{ app.user ? app.user.initials|default(app.user.nom|first ~ app.user.prenom|first) : 'JD' }}
+                    </div>
+                    <div class="user-details">
+                        <h3>{{ app.user ? app.user.nom ~ ' ' ~ app.user.prenom : 'John Doe' }}</h3>
+                        <p>{{ app.user ? app.user.classe.nom|default('4SE-G1') : '4SE-G1' }}</p>
+                    </div>
+                </div>
+                <div class="session-info">
+                    <div><strong>Email:</strong> {{ app.user ? app.user.email : 'student@esprit.tn' }}</div>
+                    <div><strong>Role:</strong> {{ app.user ? app.user.roles|first|replace({'ROLE_': ''})|capitalize : 'Student' }}</div>
+                    <div><strong>Member since:</strong> {{ app.user ? app.user.createdAt|date('M Y') : 'Jan 2024' }}</div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="nav">
+                <a href="{{ path('app_dashboard') }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="#">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                    My Tasks
+                </a>
+                <a href="{{ path('app_profile') }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Profile
+                </a>
+                <a href="{{ path('front_objectif_sante_index') }}" class="active">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v20"/><path d="M2 12h20"/>
+                    </svg>
+                    Objectifs Santé
+                </a>
+                <a href="#">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 a2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                    </svg>
+                    Settings
+                </a>
+                <a href="{{ path('app_logout') }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>
+                    </svg>
+                    Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main">
+            <header class="header">
+                <div>
+                    <h1 class="h1">Détails de l'Objectif</h1>
+                    <p class="muted">Visualisez et gérez votre objectif de santé</p>
+                </div>
+                <div class="session-display">
+                    <div>Session actuelle</div>
+                    <div>{{ app.user ? app.user.email : 'student@esprit.tn' }}</div>
+                </div>
+            </header>
+
+            <!-- Breadcrumb -->
+            <div class="breadcrumb">
+                <a href="{{ path('front_objectif_sante_index') }}">Mes Objectifs Santé</a>
+                <span class="separator">/</span>
+                <span>Détails</span>
+            </div>
+
+            <!-- Objectif Details Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">{{ objectif_sante.titre }}</h2>
+                </div>
+                <div class="card-content">
+                    <!-- Progress Bar -->
+                    <div class="progress-container">
+                        <div class="progress-label">
+                            <span>Score Moyen</span>
+                            <span>{{ objectif_sante.scoreMoyen }}/100</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ objectif_sante.scoreMoyen }}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Details Grid -->
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Type</div>
+                            <div class="detail-value">
+                                {% if objectif_sante.type == 'SOMMEIL' %}
+                                    <span class="badge badge-info">Sommeil</span>
+                                {% elseif objectif_sante.type == 'SPORT' %}
+                                    <span class="badge badge-success">Sport</span>
+                                {% elseif objectif_sante.type == 'ALIMENTATION' %}
+                                    <span class="badge badge-warning">Alimentation</span>
+                                {% else %}
+                                    <span class="badge badge-primary">{{ objectif_sante.type }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">Valeur Cible</div>
+                            <p class="detail-value">{{ objectif_sante.getValeurCibleAvecUnite() }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">Priorité</div>
+                            <div class="detail-value">
+                                {% if objectif_sante.priorite == 'HAUTE' %}
+                                    <span class="badge badge-danger">Haute</span>
+                                {% elseif objectif_sante.priorite == 'MOYENNE' %}
+                                    <span class="badge badge-warning">Moyenne</span>
+                                {% elseif objectif_sante.priorite == 'BASSE' %}
+                                    <span class="badge badge-success">Basse</span>
+                                {% else %}
+                                    <span class="badge badge-primary">{{ objectif_sante.priorite }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">Statut</div>
+                            <div class="detail-value">
+                                {% if objectif_sante.statut == 'EN_COURS' %}
+                                    <span class="badge badge-info">En cours</span>
+                                {% elseif objectif_sante.statut == 'ATTEINT' %}
+                                    <span class="badge badge-success">Atteint</span>
+                                {% elseif objectif_sante.statut == 'ABANDONNE' %}
+                                    <span class="badge badge-danger">Abandonné</span>
+                                {% else %}
+                                    <span class="badge badge-primary">{{ objectif_sante.statut }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">Date de Début</div>
+                            <p class="detail-value">{{ objectif_sante.dateDebut ? objectif_sante.dateDebut|date('d/m/Y') : 'Non définie' }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">Date de Fin</div>
+                            <p class="detail-value">{{ objectif_sante.dateFin ? objectif_sante.dateFin|date('d/m/Y') : 'Non définie' }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">Utilisateur</div>
+                            <p class="detail-value">{{ objectif_sante.user ? objectif_sante.user.email : 'Non assigné' }}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <div class="detail-label">ID</div>
+                            <p class="detail-value">#{{ objectif_sante.id }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <a href="{{ path('front_objectif_sante_edit', {'id': objectif_sante.id}) }}" class="btn btn-blue">
+                            <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                            Modifier
+                        </a>
+                        
+                        {{ include('front/objectif_sante/_delete_form.html.twig') }}
+                        {% if objectif_sante.archivedAt and objectif_sante.archivePdfPath %}
+        <a href="{{ objectif_sante.archivePdfPath }}" target="_blank" class="btn btn-green">
+            📄 Télécharger PDF
+        </a>
+    {% endif %}
+                        
+                        <a href="{{ path('front_objectif_sante_index') }}" class="btn btn-outline">
+                            <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 12H6M12 5l-7 7 7 7"/>
+                            </svg>
+                            Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {# ===================== Dashboard Analytics Card ===================== #}
+<div class="card" id="analyticsCard"
+     data-url="{{ path('front_objectif_dashboard_analytics', { id: objectif_sante.id }) }}">
+  <div class="card-header">
+    <h2 class="card-title">📊 Dashboard Analytics</h2>
+  </div>
+
+  <div class="card-content">
+    <div id="analyticsLoading" style="color: var(--gray-500); font-weight: 600;">
+      Chargement des statistiques...
+    </div>
+
+    <div id="analyticsError" style="display:none; padding:12px; border-radius:12px; background:#fee2e2; border:1px solid #fecaca; color:#991b1b; font-weight:700;">
+      ✗ Impossible de charger les statistiques.
+    </div>
+
+    <div id="analyticsContent" style="display:none;">
+      
+      {# TOP KPIs #}
+      <div class="detail-grid" style="margin-bottom: 18px;">
+        <div class="detail-item">
+          <div class="detail-label">Nombre de suivis</div>
+          <p class="detail-value" id="a_nbSuivis">-</p>
+        </div>
+
+        <div class="detail-item">
+          <div class="detail-label">Score moyen</div>
+          <p class="detail-value"><span id="a_avg">-</span>/100</p>
+        </div>
+
+        <div class="detail-item">
+          <div class="detail-label">Meilleur / Pire</div>
+          <p class="detail-value"><span id="a_best">-</span> / <span id="a_worst">-</span></p>
+        </div>
+
+        <div class="detail-item">
+          <div class="detail-label">Progression (First → Last)</div>
+          <p class="detail-value" id="a_progression">-</p>
+        </div>
+      </div>
+
+      {# Delta + Completion Rate #}
+      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:16px;">
+        <span class="badge badge-primary">Dernier: <span id="a_last">-</span></span>
+        <span class="badge badge-primary">Précédent: <span id="a_previous">-</span></span>
+        <span class="badge badge-primary">Δ: <span id="a_delta">-</span></span>
+        <span class="badge badge-info">Completion: <span id="a_completion">-</span>%</span>
+      </div>
+
+      {# Indicators Avg #}
+      <div style="margin-bottom:16px;">
+        <div style="font-weight:800; color: var(--gray-900); margin-bottom:10px;">Moyennes des indicateurs</div>
+
+        <div class="detail-grid">
+          <div class="detail-item">
+            <div class="detail-label">Sommeil</div>
+            <p class="detail-value"><span id="a_sleep">-</span>/10</p>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Énergie</div>
+            <p class="detail-value"><span id="a_energy">-</span>/10</p>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Stress</div>
+            <p class="detail-value"><span id="a_stress">-</span>/10</p>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Alimentation</div>
+            <p class="detail-value"><span id="a_food">-</span>/10</p>
+          </div>
+        </div>
+      </div>
+
+      {# Mood Distribution #}
+      <div>
+        <div style="font-weight:800; color: var(--gray-900); margin-bottom:10px;">Répartition de l’humeur</div>
+        <div id="a_humeurWrap" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{# ===================== Charts Card (Dashboard Graphiques) ===================== #}
+<div class="card" id="chartsCard">
+  <div class="card-header">
+    <h2 class="card-title">📈 Dashboard Graphiques</h2>
+  </div>
+
+  <div class="card-content">
+
+    {% if hasSuivis %}
+    <div class="charts-grid">
+
+      {# 1) Score en FULL WIDTH #}
+      <div class="chart-item chart-item--full">
+        <div class="chart-head">
+          <div class="chart-title">Évolution du score</div>
+          <div class="chart-sub">Derniers suivis</div>
+        </div>
+        <div class="chart-box chart-box--lg">
+          {{ render_chart(scoreChart) }}
+        </div>
+      </div>
+
+      {# 2) Indicateurs (colonne gauche) #}
+      <div class="chart-item">
+        <div class="chart-head">
+          <div class="chart-title">Moyennes des indicateurs</div>
+          <div class="chart-sub">Sommeil / Énergie / Stress / Alimentation</div>
+        </div>
+        <div class="chart-box chart-box--md">
+          {{ render_chart(indicatorsChart) }}
+        </div>
+      </div>
+
+      {# 3) Humeur (colonne droite) #}
+      {% if moodChart %}
+      <div class="chart-item">
+        <div class="chart-head">
+          <div class="chart-title">Répartition de l’humeur</div>
+          <div class="chart-sub">Distribution</div>
+        </div>
+        <div class="chart-box chart-box--md">
+          {{ render_chart(moodChart) }}
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px; color: var(--gray-500);">
+      <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
+      <div style="font-size: 18px; font-weight: 600; color: var(--gray-700); margin-bottom: 8px;">
+        Aucune donnée disponible
+      </div>
+      <div style="font-size: 14px;">
+        Les graphiques s'afficheront une fois que des suivis seront enregistrés.
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+              {# ===================== Coaching Summary Card ===================== #}
+<div class="card" id="coachingCard"
+     data-url="{{ path('front_objectif_coaching_summary', { id: objectif_sante.id }) }}">
+  <div class="card-header">
+    <h2 class="card-title">🧠 Coaching personnalisé</h2>
+  </div>
+  <div class="card-content">
+    <div id="coachingLoading" style="color: var(--gray-500); font-weight: 600;">
+      Chargement du coaching...
+    </div>
+
+    <div id="coachingError" style="display:none; padding:12px; border-radius:12px; background:#fee2e2; border:1px solid #fecaca; color:#991b1b; font-weight:700;">
+  ✗ Impossible de charger le coaching.
+</div>
+
+
+    <div id="coachingContent" style="display:none;">
+      <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:16px;">
+        <span id="trendBadge" class="badge badge-info">STABLE</span>
+        <span class="badge badge-primary">Score moyen: <span id="avgScore">-</span>/100</span>
+        <span class="badge badge-primary">Dernier: <span id="lastScore">-</span></span>
+        <span class="badge badge-primary">Précédent: <span id="prevScore">-</span></span>
+        <span class="badge badge-primary">Δ: <span id="deltaScore">-</span></span>
+      </div>
+
+      <div style="padding:18px; border-radius: var(--radius-lg);
+                  background: linear-gradient(135deg, rgba(239,68,68,0.08), rgba(249,250,251,0.9));
+                  border: 1px solid rgba(229,231,235,0.6);
+                  margin-bottom:16px;">
+        <div style="font-weight:800; color: var(--gray-900); margin-bottom:6px;">
+          Message
+        </div>
+        <div id="coachMessage" style="color: var(--gray-700); font-weight:600;"></div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <div style="font-weight:800; color: var(--gray-900); margin-bottom:8px;">Pourquoi ?</div>
+        <ul id="coachReasons" style="margin-left:18px; color: var(--gray-700);"></ul>
+      </div>
+
+      <div>
+        <div style="font-weight:800; color: var(--gray-900); margin-bottom:12px;">Recommandations</div>
+        <div id="coachRecs"
+             style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px;">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+            <!-- Tips Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">💡 Conseils pour cet objectif</h2>
+                </div>
+                <div class="card-content">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        {% if objectif_sante.type == 'SOMMEIL' %}
+                            <div style="padding: 20px; background: linear-gradient(135deg, var(--blue-50) 0%, var(--blue-100) 100%); border-radius: var(--radius);">
+                                <div style="font-size: 32px; margin-bottom: 12px;">😴</div>
+                                <h3 style="margin: 0 0 8px; font-size: 16px; color: var(--blue-800);">Routine du soir</h3>
+                                <p style="margin: 0; font-size: 14px; color: var(--blue-600);">
+                                    Couchez-vous à la même heure chaque soir et évitez les écrans 1h avant le coucher.
+                                </p>
+                            </div>
+                            
+                            <div style="padding: 20px; background: linear-gradient(135deg, var(--blue-50) 0%, var(--blue-100) 100%); border-radius: var(--radius);">
+                                <div style="font-size: 32px; margin-bottom: 12px;">🌙</div>
+                                <h3 style="margin: 0 0 8px; font-size: 16px; color: var(--blue-800);">Environnement</h3>
+                                <p style="margin: 0; font-size: 14px; color: var(--blue-600);">
+                                    Gardez votre chambre sombre, fraîche et silencieuse pour un sommeil optimal.
+                                </p>
+                            </div>
+                            
+                        {% elseif objectif_sante.type == 'SPORT' %}
+                            <div style="padding: 20px; background: linear-gradient(135deg, var(--green-50) 0%, var(--green-100) 100%); border-radius: var(--radius);">
+                                <div style="font-size: 32px; margin-bottom: 12px;">🏃‍♂️</div>
+                                <h3 style="margin: 0 0 8px; font-size: 16px; color: var(--green-800);">Progression graduelle</h3>
+                                <p style="margin: 0; font-size: 14px; color: var(--green-600);">
+                                    Augmentez progressivement l'intensité et la durée de vos séances.
+                                </p>
+                            </div>
+                            
+                            <div style="padding: 20px; background: linear-gradient(135deg, var(--green-50) 0%, var(--green-100) 100%); border-radius: var(--radius);">
+                                <div style="font-size: 32px; margin-bottom: 12px;">💧</div>
+                                <h3 style="margin: 0 0 8px; font-size: 16px; color: var(--green-800);">Hydratation</h3>
+                                <p style="margin: 0; font-size: 14px; color: var(--green-600);">
+                                    Buvez suffisamment d'eau avant, pendant et après l'exercice.
+                                </p>
+                            </div>
+                            
+                        {% elseif objectif_sante.type == 'ALIMENTATION' %}
+                            <div style="padding: 20px; background: linear-gradient(135deg, var(--orange-50) 0%, var(--orange-100) 100%); border-radius: var(--radius);">
+                                <div style="font-size: 32px; margin-bottom: 12px;">🥗</div>
+                                <h3 style="margin: 0 0 8px; font-size: 16px; color: var(--orange-800);">Repas équilibrés</h3>
+                                <p style="margin: 0; font-size: 14px; color: var(--orange-600);">
+                                    Incluez des protéines, légumes et céréales complètes à chaque repas.
+                                </p>
+                            </div>
+                            
+                            <div style="padding: 20px; background: linear-gradient(135deg, var(--orange-50) 0%, var(--orange-100) 100%); border-radius: var(--radius);">
+                                <div style="font-size: 32px; margin-bottom: 12px;">⏰</div>
+                                <h3 style="margin: 0 0 8px; font-size: 16px; color: var(--orange-800);">Régularité</h3>
+                                <p style="margin: 0; font-size: 14px; color: var(--orange-600);">
+                                    Mangez à heures régulières pour stabiliser votre métabolisme.
+                                </p>
+                            </div>
+                            
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    {% endblock %}
+    {% block javascripts %}
+  {{ parent() }}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Détails objectif page loaded');
+            
+            // Animation des cartes
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-8px)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Ripple effect pour les boutons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(255, 255, 255, 0.3);
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        width: ${size}px;
+                        height: ${size}px;
+                        top: ${y}px;
+                        left: ${x}px;
+                        pointer-events: none;
+                    `;
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+
+            // Confirmation pour la suppression
+            const deleteForm = document.querySelector('form[action*="delete"]');
+            if (deleteForm) {
+                deleteForm.addEventListener('submit', function(e) {
+                    if (!confirm('Êtes-vous sûr de vouloir supprimer cet objectif ? Cette action est irréversible.')) {
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            // Animate progress bar
+            const progressFill = document.querySelector('.progress-fill');
+            if (progressFill) {
+                // Reset width to 0 then animate to actual value
+                const finalWidth = progressFill.style.width;
+                progressFill.style.width = '0%';
+                
+                setTimeout(() => {
+                    progressFill.style.transition = 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                    progressFill.style.width = finalWidth;
+                }, 300);
+            }
+
+            // Add ripple animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+                
+                @keyframes shimmer {
+                    0% { left: -100%; }
+                    100% { left: 100%; }
+                }
+                
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.5; }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+    <script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const card = document.getElementById('coachingCard');
+  if (!card) return;
+
+  const url = card.dataset.url;
+
+  const loadingEl = document.getElementById('coachingLoading');
+  const errorEl = document.getElementById('coachingError');
+  const contentEl = document.getElementById('coachingContent');
+
+  const trendBadge = document.getElementById('trendBadge');
+  const avgScore = document.getElementById('avgScore');
+  const lastScore = document.getElementById('lastScore');
+  const prevScore = document.getElementById('prevScore');
+  const deltaScore = document.getElementById('deltaScore');
+
+  const coachMessage = document.getElementById('coachMessage');
+  const coachReasons = document.getElementById('coachReasons');
+  const coachRecs = document.getElementById('coachRecs');
+
+  function setTrendBadge(trend) {
+    trendBadge.textContent = trend;
+
+    // reset classes
+    trendBadge.className = 'badge';
+
+    if (trend === 'UP') {
+      trendBadge.classList.add('badge-success');
+      trendBadge.textContent = 'UP ↑';
+    } else if (trend === 'DOWN') {
+      trendBadge.classList.add('badge-danger');
+      trendBadge.textContent = 'DOWN ↓';
+    } else {
+      trendBadge.classList.add('badge-info');
+      trendBadge.textContent = 'STABLE →';
+    }
+  }
+
+  function esc(str) {
+    return String(str ?? '').replace(/[&<>"']/g, s => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[s]));
+  }
+
+  try {
+    const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const data = await res.json();
+
+    // scores
+    avgScore.textContent = data?.scores?.scoreMoyen ?? '-';
+    lastScore.textContent = data?.scores?.lastScore ?? '-';
+    prevScore.textContent = data?.scores?.previousScore ?? '-';
+    deltaScore.textContent = data?.scores?.delta ?? '-';
+
+    // trend + message
+    setTrendBadge(data?.trend || 'STABLE');
+    coachMessage.textContent = data?.message || '';
+
+    // reasons
+    coachReasons.innerHTML = '';
+    (data?.reasons || []).forEach(r => {
+      const li = document.createElement('li');
+      li.textContent = r;
+      coachReasons.appendChild(li);
+    });
+
+    // recommendations
+    coachRecs.innerHTML = '';
+    (data?.recommendations || []).forEach(rec => {
+      const priority = rec.priority || 'MOYENNE';
+
+      let badgeClass = 'badge-warning';
+      if (priority === 'HAUTE') badgeClass = 'badge-danger';
+      if (priority === 'BASSE') badgeClass = 'badge-success';
+
+      const actions = (rec.actions || []).map(a => `<li>${esc(a)}</li>`).join('');
+
+      const html = `
+        <div class="detail-item" style="padding:18px;">
+          <div style="display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:10px;">
+            <div style="font-weight:800; color: var(--gray-900);">${esc(rec.title)}</div>
+            <span class="badge ${badgeClass}">${esc(priority)}</span>
+          </div>
+          <div style="color: var(--gray-600); font-weight:600; margin-bottom:10px;">
+            ${esc(rec.why)}
+          </div>
+          <div style="color: var(--gray-700);">
+            <ul style="margin-left:18px; line-height:1.6;">
+              ${actions}
+            </ul>
+          </div>
+        </div>
+      `;
+
+      coachRecs.insertAdjacentHTML('beforeend', html);
+    });
+
+    // show
+    loadingEl.style.display = 'none';
+    errorEl.style.display = 'none';
+    contentEl.style.display = 'block';
+
+  } catch (e) {
+    console.error(e);
+    loadingEl.style.display = 'none';
+    errorEl.style.display = 'block';
+    contentEl.style.display = 'none';
+  }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  const card = document.getElementById('analyticsCard');
+  if (!card) return;
+
+  const url = card.dataset.url;
+
+  const loadingEl = document.getElementById('analyticsLoading');
+  const errorEl = document.getElementById('analyticsError');
+  const contentEl = document.getElementById('analyticsContent');
+
+  const el = (id) => document.getElementById(id);
+
+  function formatProg(v) {
+    if (v === null || v === undefined) return '-';
+    const n = Number(v);
+    if (Number.isNaN(n)) return v;
+    if (n > 0) return `+${n} ↑`;
+    if (n < 0) return `${n} ↓`;
+    return `0 →`;
+  }
+
+  function badgeForMood(h) {
+    const mood = (h || '').toLowerCase();
+    if (mood.includes('excellente') || mood.includes('bonne')) return 'badge-success';
+    if (mood.includes('neutre')) return 'badge-warning';
+    if (mood.includes('mauvaise')) return 'badge-danger';
+    return 'badge-primary';
+  }
+
+  try {
+    const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+
+    if (data?.message) {
+      // cas: aucun suivi
+      loadingEl.style.display = 'none';
+      errorEl.style.display = 'none';
+      contentEl.style.display = 'block';
+      contentEl.innerHTML = `<div style="padding:14px; border-radius:12px; background: var(--gray-50); border:1px solid var(--gray-200); font-weight:700; color: var(--gray-700);">
+        ${data.message}
+      </div>`;
+      return;
+    }
+
+    // KPIs
+    el('a_nbSuivis').textContent = data.nbSuivis ?? '-';
+    el('a_avg').textContent = data?.scores?.avg ?? '-';
+    el('a_best').textContent = data?.scores?.best ?? '-';
+    el('a_worst').textContent = data?.scores?.worst ?? '-';
+
+    el('a_last').textContent = data?.scores?.last ?? '-';
+    el('a_previous').textContent = data?.scores?.previous ?? '-';
+    el('a_delta').textContent = data?.scores?.delta ?? '-';
+
+    const progEl = el('a_progression');
+const prog = Number(data?.scores?.progression);
+
+progEl.textContent = formatProg(prog);
+
+if (prog > 0) {
+  progEl.style.color = '#16a34a'; // أخضر
+} else if (prog < 0) {
+  progEl.style.color = '#dc2626'; // أحمر
+} else {
+  progEl.style.color = '#374151';
+}
+    el('a_completion').textContent = data?.completionRate ?? '-';
+
+    // Indicators
+    el('a_sleep').textContent = data?.indicatorsAvg?.sommeil ?? '-';
+    el('a_energy').textContent = data?.indicatorsAvg?.energie ?? '-';
+    el('a_stress').textContent = data?.indicatorsAvg?.stress ?? '-';
+    el('a_food').textContent = data?.indicatorsAvg?.alimentation ?? '-';
+
+    // Mood distribution chips
+    const wrap = el('a_humeurWrap');
+    wrap.innerHTML = '';
+    (data?.humeurDistribution || []).forEach(item => {
+      const mood = item.humeur ?? '—';
+      const total = item.total ?? 0;
+      const span = document.createElement('span');
+      span.className = `badge ${badgeForMood(mood)}`;
+      span.textContent = `${mood}: ${total}`;
+      wrap.appendChild(span);
+    });
+
+    // show
+    loadingEl.style.display = 'none';
+    errorEl.style.display = 'none';
+    contentEl.style.display = 'block';
+
+  } catch (e) {
+    console.error(e);
+    loadingEl.style.display = 'none';
+    errorEl.style.display = 'block';
+    contentEl.style.display = 'none';
+  }
+});
+</script>
+{% endblock %}
+
+
+
+

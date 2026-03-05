@@ -1,0 +1,124 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Préférences{% endblock %}
+
+{% block body %}
+<div class="main-panel">
+  <div class="content-wrapper">
+
+    <h1>Mes Préférences</h1>
+
+    {# 🔎 Search + Sort Form #}
+    <form method="get" action="{{ path('preference_alerte_show') }}" class="row g-3 mb-3 align-items-end">
+
+        <div class="col-md-4">
+            <label class="form-label">Rechercher par nom</label>
+            <input type="text" 
+                   name="title" 
+                   value="{{ app.request.get('title') }}" 
+                   class="form-control"
+                   placeholder="Entrer un nom...">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Trier par</label>
+            <select name="sort" class="form-select">
+                <option value="">-- Choisir --</option>
+                <option value="dateCreation"
+                    {{ app.request.get('sort') == 'dateCreation' ? 'selected' : '' }}>
+                    Date de création
+                </option>
+                <option value="dateMiseAJour"
+                    {{ app.request.get('sort') == 'dateMiseAJour' ? 'selected' : '' }}>
+                    Date de mise à jour
+                </option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">🔍 Filtrer</button>
+            <a href="{{ path('preference_alerte_show') }}" class="btn btn-secondary">
+                Réinitialiser
+            </a>
+        </div>
+
+    </form>
+
+    {# ➕ Add Preference Button #}
+    <a href="{{ path('preference_alerte_add') }}" class="btn btn-success mb-3">
+        ➕ Ajouter une préférence
+    </a>
+
+    {# Preferences Table #}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Push</th>
+                    <th>Site</th>
+                    <th>Actif</th>
+                    <th>Créé le</th>
+                    <th>Dernière mise à jour</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pref in preferences %}
+                    <tr {% if pref.isActive %}class="table-success"{% endif %}>
+                        <td>{{ pref.nom }}</td>
+                        <td>{{ pref.emailActif ? '✅' : '❌' }}</td>
+                        <td>{{ pref.pushActif ? '✅' : '❌' }}</td>
+                        <td>{{ pref.siteNotifActive ? '✅' : '❌' }}</td>
+                        <td>{{ pref.isActive ? '✅' : '❌' }}</td>
+                        <td>{{ pref.dateCreation ? pref.dateCreation|date('d/m/Y H:i') : '-' }}</td>
+                        <td>{{ pref.dateMiseAJour ? pref.dateMiseAJour|date('d/m/Y H:i') : '-' }}</td>
+                        <td>
+                            <a href="{{ path('preference_alerte_edit', {'id': pref.id}) }}" 
+                               class="btn btn-sm btn-warning">✏️ Editer</a>
+
+                            <form method="post" 
+                                  action="{{ path('preference_alerte_delete', {'id': pref.id}) }}" 
+                                  style="display:inline;">
+                                <input type="hidden" 
+                                       name="_token" 
+                                       value="{{ csrf_token('delete' ~ pref.id) }}">
+                                <button type="submit" 
+                                        class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Voulez-vous vraiment supprimer cette préférence ?');">
+                                    🗑️ Supprimer
+                                </button>
+                            </form>
+
+                            {% if not pref.isActive %}
+                                <form method="post" 
+                                      action="{{ path('preference_alerte_activate', {'id': pref.id}) }}" 
+                                      style="display:inline;">
+                                    <input type="hidden" 
+                                           name="_token" 
+                                           value="{{ csrf_token('activate' ~ pref.id) }}">
+                                    <button type="submit" 
+                                            class="btn btn-sm btn-success">
+                                        ✅ Activer
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="badge bg-success">Active</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center">
+                            Aucune préférence trouvée
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

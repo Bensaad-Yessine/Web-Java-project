@@ -1,0 +1,199 @@
+{% extends 'user/FrontOffice.html.twig' %}
+
+{% block title %}Détails du groupe - {{ groupe_projet.nomProjet }}{% endblock %}
+
+{% block head_extra %}
+<style>
+    /* Define CSS variables with actual colors */
+    :root {
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --red-50: #fef2f2;
+        --red-100: #fee2e2;
+        --red-200: #fecaca;
+        --red-500: #ef4444;
+        --red-600: #dc2626;
+        --red-900: #7f1d1d;
+        --green-50: #f0fdf4;
+        --green-100: #dcfce7;
+        --green-200: #bbf7d0;
+        --green-500: #22c55e;
+        --green-600: #16a34a;
+        --green-900: #064e3b;
+        --blue-50: #eff6ff;
+        --blue-100: #dbeafe;
+        --blue-200: #bfdbfe;
+        --blue-900: #1e3a8a;
+        --orange-500: #f97316;
+        --radius: 8px;
+        --radius-lg: 12px;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+        --transition: 250ms;
+    }
+    h1, h2, h3, h4, h5, h6 { color: #111827 !important; }
+    .h1 { color: #111827 !important; }
+    .muted { color: #6b7280 !important; }
+    .main { color: #374151 !important; }
+    .main * { color: #374151 !important; }
+    .card { background: white !important; }
+</style>
+{% endblock %}
+
+{% block body %}
+<main class="main">
+<header class="header">
+    <div>
+        <h1 class="h1">{{ groupe_projet.nomProjet }}</h1>
+        <p class="muted">{{ groupe_projet.matiere }} · {{ groupe_projet.nbrMembre }} membre(s)</p>
+    </div>
+    <div class="session-display">
+        <a href="{{ path('front_groupe_projet_index') }}" style="color: inherit; text-decoration: none; font-weight: 600;">
+            ← Retour aux groupes
+        </a>
+    </div>
+</header>
+
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ label }}" style="margin-bottom: 20px; padding: 16px 20px; border-radius: 12px; background: {% if label == 'success' %}var(--green-50){% elseif label == 'error' %}var(--red-50){% else %}var(--blue-50){% endif %}; border: 1px solid {% if label == 'success' %}var(--green-200){% elseif label == 'error' %}var(--red-200){% else %}var(--blue-200){% endif %}; color: {% if label == 'success' %}var(--green-900){% elseif label == 'error' %}var(--red-900){% else %}var(--blue-900){% endif %};">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
+
+<div class="profile-container">
+    <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px;">
+        <a href="{{ path('front_groupe_projet_index') }}" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border: 1px solid #d1d5db; color: #374151 !important; text-decoration: none; border-radius: 12px; font-weight: 500;">
+            ← Liste des groupes
+        </a>
+        {% set isOwner = app.user and groupe_projet.createdBy and groupe_projet.createdBy.id == app.user.id %}
+        {% if isOwner or is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('front_groupe_projet_edit', {'id': groupe_projet.id}) }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, #ef4444, #f97316); color: white; text-decoration: none; border-radius: 12px; font-weight: 600;">
+                Modifier le groupe
+            </a>
+            <form method="post" action="{{ path('front_groupe_projet_delete', {'id': groupe_projet.id}) }}" onsubmit="return confirm('Supprimer ce groupe ?');" style="display:inline-flex;">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ groupe_projet.id) }}">
+                <button class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border: 1px solid #fecaca; color: #dc2626 !important; text-decoration: none; border-radius: 12px; font-weight: 600; background: white; cursor: pointer;">
+                    Supprimer
+                </button>
+            </form>
+        {% endif %}
+    </div>
+
+
+    <!-- Infos groupe -->
+    <div class="card" style="margin-bottom: 24px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+        <div style="padding: 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; position: relative; overflow: hidden; min-height: 180px; display: flex; align-items: center;">
+            {% if groupe_projet.logoImageName %}
+                <img src="{{ vich_uploader_asset(groupe_projet, 'logoImageFile') }}" 
+                     alt="Logo de {{ groupe_projet.nomProjet }}"
+                     style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); z-index: 1;"></div>
+            {% endif %}
+            <div style="display: flex; align-items: center; gap: 16px; position: relative; z-index: 2;">
+                {% if not groupe_projet.logoImageName %}
+                    <div style="width: 56px; height: 56px; border-radius: 12px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700;">
+                        GP{{ groupe_projet.id }}
+                    </div>
+                {% endif %}
+                <div>
+                    <h2 style="margin: 0 0 4px 0; font-size: 22px;">{{ groupe_projet.nomProjet }}</h2>
+                    <p style="margin: 0; opacity: 0.9; font-size: 14px;">{{ groupe_projet.matiere }}</p>
+                </div>
+                <div style="margin-left: auto;">
+                    {% if groupe_projet.statut == 'Actif' %}
+                        <span style="background: rgba(255,255,255,0.3); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600;">{{ groupe_projet.statut }}</span>
+                    {% elseif groupe_projet.statut == 'Terminé' %}
+                        <span style="background: rgba(255,255,255,0.3); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600;">{{ groupe_projet.statut }}</span>
+                    {% else %}
+                        <span style="background: rgba(255,255,255,0.3); padding: 6px 14px; border-radius: 20px; font-size: 13px;">{{ groupe_projet.statut }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div style="padding: 24px;">
+            <p style="color: #4b5563 !important; line-height: 1.6; margin: 0 0 20px 0;">
+                {{ groupe_projet.description|default('Aucune description.') }}
+            </p>
+            <div style="display: flex; gap: 24px; flex-wrap: wrap; font-size: 14px; color: #6b7280 !important;">
+                <span style="color: #6b7280 !important;">Créé le : {{ groupe_projet.CreatedAt ? groupe_projet.CreatedAt|date('d/m/Y') : 'N/A' }}</span>
+                <span style="color: #6b7280 !important;">{{ groupe_projet.nbrMembre }} membre(s)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Membres -->
+    {% if groupe_projet.idUser|length > 0 %}
+        <div class="card" style="margin-bottom: 24px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+            <div style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb; font-weight: 600; font-size: 16px; color: #111827 !important;">
+                Membres du groupe
+            </div>
+            <div style="padding: 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px;">
+                {% for user in groupe_projet.idUser %}
+                    <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: #f9fafb; border-radius: 8px;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px;">
+                            {{ user.prenom|first|upper }}{{ user.nom|first|upper }}
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: #1f2937 !important;">{{ user.prenom }} {{ user.nom }}</div>
+                            <div style="font-size: 13px; color: #6b7280 !important;">{{ user.email }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Propositions de réunion -->
+    <div class="card" style="margin-bottom: 24px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+        <div style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <span style="font-weight: 600; font-size: 16px; color: #111827 !important;">Propositions de réunion</span>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="{{ path('front_proposition_reunion_new', { id: groupe_projet.id }) }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600;">
+                    Créer une proposition
+                </a>
+                <a href="{{ path('front_proposition_reunion_index') }}" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: #f3f4f6; color: #374151 !important; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 600;">
+                    Voir toutes les propositions
+                </a>
+            </div>
+        </div>
+        <div style="padding: 24px;">
+            {% if propositions|length > 0 %}
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    {% for proposition in propositions|slice(0, 5) %}
+                        <li style="padding: 14px 0; border-bottom: 1px solid #f3f4f6; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                            <div>
+                                <span style="font-weight: 600; color: #1f2937 !important;">{{ proposition.titre|default('Sans titre') }}</span>
+                                <span style="font-size: 13px; color: #6b7280 !important; margin-left: 8px;">
+                                    {{ proposition.dateReunion ? proposition.dateReunion|date('d/m/Y') : '' }}
+                                    {% if proposition.status %}
+                                        · {{ proposition.status }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <a href="{{ path('front_proposition_reunion_show', {'id': proposition.id}) }}" style="font-size: 14px; color: #ef4444 !important; font-weight: 500; text-decoration: none;">Voir →</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% if propositions|length > 5 %}
+                    <p style="margin: 16px 0 0 0; font-size: 14px; color: #6b7280 !important;">
+                        <a href="{{ path('front_proposition_reunion_index') }}" style="color: #ef4444 !important; font-weight: 500;">Voir toutes les propositions ({{ propositions|length }})</a>
+                    </p>
+                {% endif %}
+            {% else %}
+                <p style="margin: 0; color: #6b7280 !important; font-size: 15px;">Aucune proposition de réunion pour ce groupe.</p>
+                <a href="{{ path('front_proposition_reunion_new', { id: groupe_projet.id }) }}" style="display: inline-block; margin-top: 12px; font-size: 14px; color: #ef4444 !important; font-weight: 600; text-decoration: none;">Créer une proposition →</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</main>
+{% endblock %}

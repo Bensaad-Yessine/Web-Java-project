@@ -1,0 +1,29 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+
+<div id="chatbot-widget" data-groupe-id="{{ groupe_projet is defined ? groupe_projet.id : '' }}" data-message-url="{{ path('api_chatbot_message') }}" data-confirm-url="{{ path('api_chatbot_confirm') }}" style="position: fixed; bottom: 24px; right: 24px; z-index: 9999; font-family: 'Inter', sans-serif;">
+    <button id="chatbot-toggle" type="button" style="width: 56px; height: 56px; border-radius: 50%; border: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 12px 24px rgba(102, 126, 234, 0.35); cursor: pointer; display: flex; align-items: center; justify-content: center;">
+        <i class="mdi mdi-robot" style="font-size: 24px;"></i>
+    </button>
+
+    <div id="chatbot-panel" style="position: absolute; bottom: 72px; right: 0; width: 340px; max-height: 520px; background: white; border-radius: 18px; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25); overflow: hidden; display: none; flex-direction: column;">
+        <div style="padding: 16px 18px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; display: flex; align-items: center; gap: 10px;">
+            <i class="mdi mdi-message-processing-outline" style="font-size: 20px;"></i>
+            <div>
+                <div style="font-weight: 700; font-size: 15px;">Assistant Réunion</div>
+                <div style="font-size: 12px; opacity: 0.85;">Gemini AI</div>
+            </div>
+        </div>
+
+        <div id="chatbot-messages" style="padding: 16px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; height: 320px; background: #f8fafc;"></div>
+
+        <div style="padding: 12px 16px; border-top: 1px solid #e2e8f0; display: flex; gap: 8px; align-items: center; background: white;">
+            <input id="chatbot-input" type="text" placeholder="Décrivez votre réunion..." style="flex: 1; padding: 10px 12px; border-radius: 10px; border: 1px solid #cbd5f5; font-size: 13px;">
+            <button id="chatbot-send" type="button" style="background: #667eea; color: white; border: none; border-radius: 10px; padding: 10px 12px; cursor: pointer;">
+                <i class="mdi mdi-send"></i>
+            </button>
+        </div>
+        <div style="padding: 12px 16px; border-top: 1px solid #e2e8f0; background: #f8fafc;">
+            <button id="chatbot-confirm" type="button" style="width: 100%; padding: 10px 14px; border: none; border-radius: 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 600; cursor: pointer; display: none;">Confirmer la création</button>
+        </div>
+    </div>
+</div>

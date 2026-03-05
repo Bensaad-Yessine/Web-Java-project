@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Présences – {{ seance.matiere ? seance.matiere.nom : 'Séance #'~seance.id }} – ESPRIT</title>
+
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+
+    <style>
+        body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        .dash-page { max-width: 960px; margin: 30px auto; padding: 0 16px 40px; }
+
+        /* ── Header ── */
+        .dash-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 18px;
+            padding: 28px 32px;
+            color: #fff;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        .dash-header h1 { font-size: 1.5rem; font-weight: 700; margin: 0 0 4px; }
+        .dash-header p  { margin: 0; opacity: .8; font-size: .92rem; }
+        .dash-actions a, .dash-actions button {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 9px 20px; border-radius: 10px;
+            font-size: .88rem; font-weight: 600; text-decoration: none;
+            margin-left: 8px; cursor: pointer; border: none;
+        }
+        .btn-qr   { background: rgba(255,255,255,.2); color: #fff; }
+        .btn-csv  { background: #fff; color: #667eea; }
+        .btn-back { background: rgba(255,255,255,.12); color: #fff; }
+
+        /* ── Indicateur live ── */
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,.15);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: .82rem;
+            color: #fff;
+            margin-top: 10px;
+        }
+        .live-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #69f0ae;
+            animation: livepulse 1.5s infinite;
+        }
+        @keyframes livepulse { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+        /* ── Stat cards ── */
+        .stat-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,.06);
+            transition: transform .2s;
+        }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-card .stat-num { font-size: 2rem; font-weight: 800; }
+        .stat-card .stat-lbl { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: #888; margin-top: 4px; }
+        .stat-card.present .stat-num { color: #2e7d32; }
+        .stat-card.late    .stat-num { color: #e65100; }
+        .stat-card.absent  .stat-num { color: #c62828; }
+        .stat-card.total   .stat-num { color: #1565c0; }
+
+        /* ── Progress bar ── */
+        .progress-section { background: #fff; border-radius: 14px; padding: 20px 24px; margin-bottom: 24px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+        .progress-section h3 { margin: 0 0 14px; font-size: 1rem; color: #444; }
+        .progress-bar-wrap { height: 22px; border-radius: 11px; background: #f0f0f0; overflow: hidden; display: flex; }
+        .pb-present { background: #43a047; transition: width .6s ease; }
+        .pb-late    { background: #ff9800; transition: width .6s ease; }
+        .pb-absent  { background: #ef5350; transition: width .6s ease; }
+        .progress-legend { display: flex; gap: 18px; margin-top: 10px; font-size: .82rem; }
+        .prog-leg-item { display: flex; align-items: center; gap: 6px; }
+        .leg-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        /* ── Table ── */
+        .table-section { background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,.06); overflow: hidden; margin-bottom: 24px; }
+        .table-section-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px 0; }
+        .table-section-header h3 { margin: 0; font-size: 1rem; color: #444; }
+        .table-tabs { display: flex; gap: 0; border-bottom: 1px solid #eee; padding: 0 24px; }
+        .ttab { padding: 12px 18px; font-size: .88rem; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; color: #888; }
+        .ttab.active { color: #667eea; border-bottom-color: #667eea; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8f9ff; padding: 12px 16px; text-align: left; font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; color: #888; border-bottom: 1px solid #eee; }
+        td { padding: 13px 16px; font-size: .9rem; border-bottom: 1px solid #f5f5f5; vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafbff; }
+
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 12px; border-radius: 50px; font-size: .78rem; font-weight: 700;
+        }
+        .sb-PRESENT  { background: #e8f5e9; color: #2e7d32; }
+        .sb-LATE     { background: #fff3e0; color: #e65100; }
+        .sb-ABSENT   { background: #ffebee; color: #c62828; }
+
+        .avatar-sm {
+            width: 32px; height: 32px; border-radius: 50%;
+            object-fit: cover; margin-right: 10px; vertical-align: middle;
+        }
+        .name-cell { display: flex; align-items: center; }
+
+        /* Nouvelle entrée highlight */
+        @keyframes newRow { from { background: #e8f5e9; } to { background: transparent; } }
+        tr.new-entry td { animation: newRow 2s ease; }
+
+        .empty-state { padding: 40px; text-align: center; color: #999; }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 10px; }
+
+        @media (max-width: 640px) {
+            .stat-row { grid-template-columns: repeat(2,1fr); }
+            .dash-header { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+<div class="dash-page">
+
+    <!-- Header -->
+    <div class="dash-header">
+        <div>
+            <h1>
+                <i class="mdi mdi-account-multiple-check"></i>
+                Présences – {{ seance.matiere ? seance.matiere.nom : 'Séance #'~seance.id }}
+            </h1>
+            <p>
+                {{ seance.classe ? seance.classe.nom : '–' }} &nbsp;|&nbsp;
+                Salle {{ seance.salle ? seance.salle.name : '–' }} &nbsp;|&nbsp;
+                {{ seance.heureDebut ? seance.heureDebut|date('d/m/Y H:i') : '–' }} →
+                {{ seance.heureFin ? seance.heureFin|date('H:i') : '–' }}
+            </p>
+            <div class="live-indicator">
+                <span class="live-dot"></span>
+                Mise à jour automatique toutes les 5 secondes
+            </div>
+        </div>
+        <div class="dash-actions">
+            <a href="{{ path('app_attendance_qr_display', {id: seance.id}) }}" class="btn-qr">
+                <i class="mdi mdi-qrcode"></i> QR Code
+            </a>
+            <a href="{{ path('app_attendance_export_csv', {id: seance.id}) }}" class="btn-csv">
+                <i class="mdi mdi-file-download"></i> Exporter CSV
+            </a>
+            <a href="{{ path('app_seance_show', {id: seance.id}) }}" class="btn-back">
+                <i class="mdi mdi-arrow-left"></i> Séance
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats (mises à jour dynamiquement) -->
+    <div class="stat-row">
+        <div class="stat-card total">
+            <div class="stat-num" id="stat-total">{{ totalStudents }}</div>
+            <div class="stat-lbl">Étudiants</div>
+        </div>
+        <div class="stat-card present">
+            <div class="stat-num" id="stat-present">{{ stats.PRESENT ?? 0 }}</div>
+            <div class="stat-lbl">Présents</div>
+        </div>
+        <div class="stat-card late">
+            <div class="stat-num" id="stat-late">{{ stats.LATE ?? 0 }}</div>
+            <div class="stat-lbl">En retard</div>
+        </div>
+        <div class="stat-card absent">
+            <div class="stat-num" id="stat-absent">{{ absentStudents|length }}</div>
+            <div class="stat-lbl">Absents</div>
+        </div>
+    </div>
+
+    <!-- Barre de progression -->
+    <div class="progress-section">
+        <h3>Taux de présence</h3>
+        <div class="progress-bar-wrap">
+            <div class="pb-present" id="pb-present" style="width:{{ totalStudents > 0 ? (((stats.PRESENT ?? 0) / totalStudents) * 100)|round : 0 }}%"></div>
+            <div class="pb-late"    id="pb-late"    style="width:{{ totalStudents > 0 ? (((stats.LATE ?? 0) / totalStudents) * 100)|round : 0 }}%"></div>
+            <div class="pb-absent"  id="pb-absent"  style="width:{{ totalStudents > 0 ? ((absentStudents|length / totalStudents) * 100)|round : 0 }}%"></div>
+        </div>
+        <div class="progress-legend">
+            <div class="prog-leg-item">
+                <div class="leg-dot" style="background:#43a047"></div>
+                <span id="leg-present">Présent ({{ totalStudents > 0 ? (((stats.PRESENT ?? 0) / totalStudents) * 100)|round : 0 }}%)</span>
+            </div>
+            <div class="prog-leg-item">
+                <div class="leg-dot" style="background:#ff9800"></div>
+                <span id="leg-late">Retard ({{ totalStudents > 0 ? (((stats.LATE ?? 0) / totalStudents) * 100)|round : 0 }}%)</span>
+            </div>
+            <div class="prog-leg-item">
+                <div class="leg-dot" style="background:#ef5350"></div>
+                <span id="leg-absent">Absent ({{ totalStudents > 0 ? ((absentStudents|length / totalStudents) * 100)|round : 0 }}%)</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table des présences -->
+    <div class="table-section">
+        <div class="table-section-header">
+            <h3><i class="mdi mdi-account-check" style="color:#667eea"></i> Liste des présences</h3>
+        </div>
+        <div class="table-tabs">
+            <div class="ttab active" id="tab-all-btn" onclick="showTab('all')">Tous <span id="tab-all-count">({{ attendances|length + absentStudents|length }})</span></div>
+            <div class="ttab" id="tab-present-btn" onclick="showTab('present')">Présents <span id="tab-present-count">({{ (stats.PRESENT ?? 0) + (stats.LATE ?? 0) }})</span></div>
+            <div class="ttab" id="tab-absent-btn" onclick="showTab('absent')">Absents <span id="tab-absent-count">({{ absentStudents|length }})</span></div>
+        </div>
+
+        <div id="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Étudiant</th>
+                        <th>Statut</th>
+                        <th>Scanné à</th>
+                        <th>Retard</th>
+                    </tr>
+                </thead>
+                <tbody id="attendance-tbody">
+                    {% for a in attendances %}
+                    <tr data-status="{{ a.status }}" data-id="{{ a.id }}">
+                        <td>
+                            <div class="name-cell">
+                                <img class="avatar-sm" src="{{ a.student ? a.student.profilePicUrl : '/assets/images/faces/face15.jpg' }}" alt="">
+                                <div>
+                                    <div style="font-weight:600;">{{ a.student ? a.student.fullName : 'N/A' }}</div>
+                                    <div style="font-size:.78rem;color:#888;">{{ a.student ? a.student.email : '' }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge sb-{{ a.status }}">{{ a.status }}</span></td>
+                        <td>{{ a.scannedAt ? a.scannedAt|date('H:i:s') : '–' }}</td>
+                        <td>{% if a.minutesLate %}{{ a.minutesLate }} min{% else %}–{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                    {% for student in absentStudents %}
+                    <tr data-status="ABSENT" data-student-id="{{ student.id }}">
+                        <td>
+                            <div class="name-cell">
+                                <img class="avatar-sm" src="{{ student.profilePicUrl }}" alt="">
+                                <div>
+                                    <div style="font-weight:600;">{{ student.fullName }}</div>
+                                    <div style="font-size:.78rem;color:#888;">{{ student.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge sb-ABSENT">ABSENT</span></td>
+                        <td>–</td>
+                        <td>–</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="empty-state" id="empty-state" style="display:none;">
+                <div class="icon">📋</div>
+                <p>En attente des premiers scans…</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+const LIVE_URL    = "{{ path('app_attendance_live', {id: seance.id}) }}";
+const TOTAL       = {{ totalStudents }};
+
+let currentTab    = 'all';
+let knownIds      = new Set([{% for a in attendances %}{{ a.id }},{% endfor %}]);
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function showTab(tab) {
+    currentTab = tab;
+    ['all','present','absent'].forEach(t => {
+        document.getElementById('tab-' + t + '-btn').classList.toggle('active', t === tab);
+    });
+    filterRows();
+}
+
+function filterRows() {
+    document.querySelectorAll('#attendance-tbody tr').forEach(row => {
+        const st = row.dataset.status;
+        if (currentTab === 'all')     row.style.display = '';
+        else if (currentTab === 'present') row.style.display = (st === 'PRESENT' || st === 'LATE') ? '' : 'none';
+        else if (currentTab === 'absent')  row.style.display = (st === 'ABSENT') ? '' : 'none';
+    });
+}
+
+// ── Build row HTML ─────────────────────────────────────────────────────────────
+function buildRow(a, isNew) {
+    const late = a.minutesLate ? `${a.minutesLate} min` : '–';
+    return `<tr data-status="${a.status}" data-id="${a.id}" class="${isNew ? 'new-entry' : ''}">
+        <td>
+            <div class="name-cell">
+                <img class="avatar-sm" src="${a.avatar}" alt="">
+                <div>
+                    <div style="font-weight:600;">${a.name}</div>
+                    <div style="font-size:.78rem;color:#888;">${a.email}</div>
+                </div>
+            </div>
+        </td>
+        <td><span class="status-badge sb-${a.status}">${a.status}</span></td>
+        <td>${a.scannedAt}</td>
+        <td>${late}</td>
+    </tr>`;
+}
+
+function buildAbsentRow(u) {
+    return `<tr data-status="ABSENT" data-student-id="${u.email}">
+        <td>
+            <div class="name-cell">
+                <img class="avatar-sm" src="${u.avatar}" alt="">
+                <div>
+                    <div style="font-weight:600;">${u.name}</div>
+                    <div style="font-size:.78rem;color:#888;">${u.email}</div>
+                </div>
+            </div>
+        </td>
+        <td><span class="status-badge sb-ABSENT">ABSENT</span></td>
+        <td>–</td>
+        <td>–</td>
+    </tr>`;
+}
+
+// ── Mise à jour des stats ─────────────────────────────────────────────────────
+function updateStats(data) {
+    document.getElementById('stat-total').textContent   = data.total;
+    document.getElementById('stat-present').textContent = data.present;
+    document.getElementById('stat-late').textContent    = data.late;
+    document.getElementById('stat-absent').textContent  = data.absent;
+
+    const total = data.total || 1;
+    const pP = Math.round(data.present / total * 100);
+    const pL = Math.round(data.late    / total * 100);
+    const pA = Math.round(data.absent  / total * 100);
+
+    document.getElementById('pb-present').style.width = pP + '%';
+    document.getElementById('pb-late').style.width    = pL + '%';
+    document.getElementById('pb-absent').style.width  = pA + '%';
+
+    document.getElementById('leg-present').textContent = `Présent (${pP}%)`;
+    document.getElementById('leg-late').textContent    = `Retard (${pL}%)`;
+    document.getElementById('leg-absent').textContent  = `Absent (${pA}%)`;
+
+    const total2 = data.attendances.length + data.absents.length;
+    const scanned = data.present + data.late;
+    document.getElementById('tab-all-count').textContent     = `(${total2})`;
+    document.getElementById('tab-present-count').textContent = `(${scanned})`;
+    document.getElementById('tab-absent-count').textContent  = `(${data.absent})`;
+}
+
+// ── Polling ───────────────────────────────────────────────────────────────────
+function fetchLive() {
+    fetch(LIVE_URL, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    .then(r => r.json())
+    .then(data => {
+        updateStats(data);
+
+        const tbody = document.getElementById('attendance-tbody');
+        tbody.innerHTML = '';
+
+        // Lignes présents/retard
+        data.attendances.forEach(a => {
+            const isNew = !knownIds.has(a.id);
+            if (isNew) knownIds.add(a.id);
+            tbody.insertAdjacentHTML('beforeend', buildRow(a, isNew));
+        });
+
+        // Lignes absents
+        data.absents.forEach(u => {
+            tbody.insertAdjacentHTML('beforeend', buildAbsentRow(u));
+        });
+
+        // État vide
+        const empty = document.getElementById('empty-state');
+        if (tbody.children.length === 0) {
+            empty.style.display = 'block';
+        } else {
+            empty.style.display = 'none';
+            filterRows();
+        }
+    })
+    .catch(e => console.warn('Live poll error:', e));
+}
+
+// Lancer le polling toutes les 5 secondes
+fetchLive();
+setInterval(fetchLive, 5000);
+</script>
+</body>
+</html>

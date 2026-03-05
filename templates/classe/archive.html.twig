@@ -1,0 +1,53 @@
+{% extends 'classe/base_classe.html.twig' %}
+
+{% block title %}Archiver - {{ classe.nom }}{% endblock %}
+
+{% block body %}
+<div class="container py-4" style="max-width: 600px;">
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white">
+            <h4 class="mb-0">📦 Archiver la Classe</h4>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">
+                Cette action va <strong>cloner</strong> la classe <strong>{{ classe.nom }}</strong> ({{ classe.anneeuniversitaire }})
+                vers une nouvelle année universitaire, en conservant toutes ses matières associées.
+            </p>
+            <div class="alert alert-info">
+                <strong>ℹ️ La classe originale ne sera pas modifiée.</strong><br>
+                Une nouvelle classe sera créée avec les mêmes matières.
+            </div>
+
+            <form method="POST" action="{{ path('app_classe_archive', {id: classe.id}) }}">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Nouvelle année universitaire</label>
+                    <input type="text"
+                           name="nouvelle_annee"
+                           class="form-control"
+                           value="{{ nextYear }}"
+                           placeholder="ex: 2025/2026"
+                           pattern="\\d{4}/\\d{4}"
+                           required>
+                    <div class="form-text">Format : AAAA/AAAA — Suggestion automatique: {{ nextYear }}</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted small">Classe originale</label>
+                    <div class="border rounded p-3 bg-light">
+                        <strong>{{ classe.nom }}</strong> — {{ classe.niveau }}
+                        {% if classe.filiere %}<span class="badge bg-secondary">{{ classe.filiere }}</span>{% endif %}
+                        <br><small class="text-muted">{{ classe.getMatiereClasses|length }} matière(s) — Année: {{ classe.anneeuniversitaire }}</small>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="{{ path('app_classe_show', {id: classe.id}) }}" class="btn btn-outline-secondary">Annuler</a>
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('Confirmer le clonage de la classe vers {{ nextYear }} ?')">
+                        📦 Cloner la classe
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

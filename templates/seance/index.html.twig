@@ -1,0 +1,1086 @@
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des Séances{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+    <style>
+      .stat-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      }
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: white;
+        margin: 0 auto;
+      }
+      .stat-count {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+      }
+      .stat-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .card-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+      .card-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+      .card-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+      .card-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+      .card-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+      
+      /* Profile styles */
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+      
+      .user-avatar-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      
+      .profile-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 20px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      
+      .profile-avatar-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #fff;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      }
+      
+      .badge-etudiant {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border: none;
+      }
+      
+      .badge-admin {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+      }
+      
+      .user-role-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 10px;
+        margin-top: 5px;
+        display: inline-block;
+      }
+      
+      .profile-pic {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+      }
+      
+      .count-indicator {
+        position: relative;
+        margin-right: 15px;
+      }
+      
+      .profile-name {
+        flex-grow: 1;
+      }
+      
+      .navbar-profile {
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+      }
+      
+      .avatar-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      
+      .alert {
+        border-radius: 10px;
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+      }
+      
+      /* Seance specific styles */
+      .seance-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 16px;
+      }
+      
+      .seance-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: white;
+      }
+      
+      .badge-cours {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      }
+      
+      .badge-td {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+      }
+      
+      .badge-tp {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+      }
+      
+      .badge-presentiel {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      
+      .badge-distanciel {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      }
+      
+      .badge-hybride {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      }
+      
+      .jour-badge {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+      
+      .action-buttons {
+        display: flex;
+        gap: 5px;
+      }
+      
+      .action-buttons .btn {
+        padding: 5px 10px;
+        margin: 0 2px;
+      }
+      
+      .search-box {
+        max-width: 300px;
+      }
+      
+      .table-hover tbody tr:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+      }
+      
+      .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+      }
+      
+      .empty-state i {
+        font-size: 60px;
+        color: #dee2e6;
+        margin-bottom: 20px;
+      }
+      
+      .day-filter {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      
+      .day-filter .btn {
+        border-radius: 20px;
+        padding: 6px 15px;
+        font-size: 0.9rem;
+      }
+      
+      .type-filter {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+      
+      .type-filter .btn {
+        border-radius: 20px;
+        padding: 6px 15px;
+        font-size: 0.9rem;
+      }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container-scroller">
+    <!-- Sidebar -->
+    <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+            <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
+                <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+            </a>
+            <a class="sidebar-brand brand-logo-mini" href="{{ path('app_user_index') }}">
+                <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+            </a>
+        </div>
+        <ul class="nav">
+            <li class="nav-item profile">
+                <div class="profile-desc">
+                    <div class="profile-pic">
+                        <div class="count-indicator">
+                            {% if app.user %}
+                                {% if app.user.profilePic %}
+                                    <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                                         alt="{{ app.user.prenom }}" 
+                                         class="profile-avatar-img">
+                                {% else %}
+                                    <div class="profile-avatar">
+                                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                            {% endif %}
+                            <span class="count bg-success"></span>
+                        </div>
+                        <div class="profile-name">
+                            {% if app.user %}
+                                <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                                <span class="text-muted">{{ app.user.email }}</span>
+                                <div class="mt-1">
+                                    {% if 'ROLE_ADMIN' in app.user.roles %}
+                                        <span class="user-role-badge badge-admin">Administrateur</span>
+                                    {% else %}
+                                        <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                                <span>Veuillez vous connecter</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item nav-category">
+                <span class="nav-link">Navigation</span>
+            </li>
+            
+            <!-- Dashboard -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="#">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-speedometer"></i>
+                    </span>
+                    <span class="menu-title">Dashboard</span>
+                </a>
+            </li>
+            
+            <!-- Utilisateurs -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_user_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-account-group"></i>
+                    </span>
+                    <span class="menu-title">Utilisateurs</span>
+                </a>
+            </li>
+            
+            <!-- Matières -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_matiere_classe_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-book-open-page-variant"></i>
+                    </span>
+                    <span class="menu-title">Matières</span>
+                </a>
+            </li>
+            
+            <!-- Classes -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_classe_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-school"></i>
+                    </span>
+                    <span class="menu-title">Classes</span>
+                </a>
+            </li>
+            
+            <!-- Salles -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_salle_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-office-building"></i>
+                    </span>
+                    <span class="menu-title">Salles</span>
+                </a>
+            </li>
+            
+            <!-- Séances -->
+            <li class="nav-item menu-items active">
+                <a class="nav-link" href="{{ path('app_seance_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-calendar-clock"></i>
+                    </span>
+                    <span class="menu-title">Séances</span>
+                </a>
+            </li>
+            
+            <!-- Groupes -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{path('app_groupe_projet_index')}}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-account-multiple"></i>
+                    </span>
+                    <span class="menu-title">Groupes</span>
+                </a>
+            </li>
+            
+            <!-- Tâches -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_tache_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+                    </span>
+                    <span class="menu-title">Tâches</span>
+                </a>
+            </li>
+            
+            <!-- Alertes -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{path('app_preference_alerte_index')}}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-alert-circle-outline"></i>
+                    </span>
+                    <span class="menu-title">Alertes</span>
+                </a>
+            </li>
+            
+            <!-- Exercices de santé -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_objectif_sante_index') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-heart-pulse"></i>
+                    </span>
+                    <span class="menu-title">Exercices de santé</span>
+                </a>
+            </li>
+            
+            <!-- Logout -->
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_logout') }}">
+                    <span class="menu-icon">
+                        <i class="mdi mdi-logout text-danger"></i>
+                    </span>
+                    <span class="menu-title text-danger">Déconnexion</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid page-body-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+            <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+                <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+            </div>
+            <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+                <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                    <span class="mdi mdi-menu"></span>
+                </button>
+                <ul class="navbar-nav w-100">
+                    <li class="nav-item w-100">
+                        <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                            <input type="text" class="form-control" placeholder="Rechercher une séance..." id="searchInput">
+                        </form>
+                    </li>
+                </ul>
+                <ul class="navbar-nav navbar-nav-right">
+                    <li class="nav-item dropdown border-left">
+                        <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                            <i class="mdi mdi-bell"></i>
+                            <span class="count bg-danger">2</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                            <h6 class="p-3 mb-0">Notifications</h6>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item preview-item">
+                                <div class="preview-thumbnail">
+                                    <div class="preview-icon bg-success rounded-circle">
+                                        <i class="mdi mdi-calendar-clock"></i>
+                                    </div>
+                                </div>
+                                <div class="preview-item-content">
+                                    <p class="preview-subject mb-1">Nouvelle séance</p>
+                                    <p class="text-muted ellipsis mb-0">Séance Mathématiques programmée</p>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" id="profileDropdown" href="#" data-bs-toggle="dropdown">
+                            <div class="navbar-profile">
+                                {% if app.user %}
+                                    <div class="avatar-container">
+                                        {% if app.user.profilePic %}
+                                            <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                                                 alt="{{ app.user.prenom }}" 
+                                                 class="user-avatar-img">
+                                        {% else %}
+                                            <div class="user-avatar">
+                                                {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                                            </div>
+                                        {% endif %}
+                                        <div class="text-start ms-2">
+                                            <p class="mb-0 d-none d-sm-block navbar-profile-name">
+                                                {{ app.user.prenom }} {{ app.user.nom }}
+                                            </p>
+                                            <small class="text-muted d-none d-sm-block">
+                                                {% if 'ROLE_ADMIN' in app.user.roles %}
+                                                    <span class="badge badge-admin">Admin</span>
+                                                {% else %}
+                                                    <span class="badge badge-etudiant">Utilisateur</span>
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Non connecté</p>
+                                {% endif %}
+                                <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                            </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                            <div class="dropdown-header p-3">
+                                {% if app.user %}
+                                    <h6 class="mb-0">{{ app.user.prenom }} {{ app.user.nom }}</h6>
+                                    <p class="text-muted mb-0">{{ app.user.email }}</p>
+                                    <small class="text-muted">
+                                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                                            <span class="badge badge-admin">Administrateur</span>
+                                        {% else %}
+                                            <span class="badge badge-etudiant">Utilisateur</span>
+                                        {% endif %}
+                                    </small>
+                                {% else %}
+                                    <h6 class="mb-0">Non connecté</h6>
+                                    <p class="text-muted mb-0">Veuillez vous connecter</p>
+                                {% endif %}
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            {% if app.user %}
+                                <a class="dropdown-item preview-item" href="{{ path('app_user_show', {id: app.user.id}) }}">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-primary rounded-circle">
+                                            <i class="mdi mdi-account"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Mon profil</p>
+                                    </div>
+                                </a>
+                                <a class="dropdown-item preview-item" href="{{ path('app_user_edit', {id: app.user.id}) }}">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-warning rounded-circle">
+                                            <i class="mdi mdi-account-edit"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Modifier mon profil</p>
+                                    </div>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                            {% endif %}
+                            <a class="dropdown-item preview-item" href="{{ path('app_logout') }}">
+                                <div class="preview-thumbnail">
+                                    <div class="preview-icon bg-dark rounded-circle">
+                                        <i class="mdi mdi-logout text-danger"></i>
+                                    </div>
+                                </div>
+                                <div class="preview-item-content">
+                                    <p class="preview-subject mb-1">Déconnexion</p>
+                                </div>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="main-panel">
+            <div class="content-wrapper">
+                {# Flash Messages #}
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                            <i class="mdi mdi-{{ label == 'success' ? 'check-circle' : 'alert-circle' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <!-- Header -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-header">
+                            <h3 class="page-title">
+                                <span class="page-title-icon bg-gradient-primary text-white me-2">
+                                    <i class="mdi mdi-calendar-clock"></i>
+                                </span> 
+                                Gestion des Séances
+                            </h3>
+                            <nav aria-label="breadcrumb">
+                                <ul class="breadcrumb">
+                                    <li class="breadcrumb-item active" aria-current="page">
+                                        <span></span>Liste des séances ESPRIT
+                                    </li>
+                                </ul>
+                            </nav>
+                            {% if app.user %}
+                                <div class="mt-2">
+                                    <small class="text-muted">
+                                        <i class="mdi mdi-account me-1"></i>
+                                        Connecté en tant que: <strong>{{ app.user.prenom }} {{ app.user.nom }}</strong>
+                                        ({{ app.user.email }})
+                                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                                            <span class="badge badge-admin ms-2">Administrateur</span>
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Statistics -->
+                <div class="row">
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            <h3 class="mb-0 stat-count">{{ seances|length }}</h3>
+                                            <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(2, 8) }}%</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="stat-icon card-1">
+                                            <i class="mdi mdi-calendar-clock"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="stat-label">Total Séances</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            {% set coursCount = seances|filter(s => s.typeSeance == 'Cours')|length %}
+                                            <h3 class="mb-0 stat-count">{{ coursCount }}</h3>
+                                            <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(5, 15) }}%</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="stat-icon card-2">
+                                            <i class="mdi mdi-book-open-page-variant"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="stat-label">Séances Cours</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            {% set presentielCount = seances|filter(s => s.mode == 'Présentiel')|length %}
+                                            <h3 class="mb-0 stat-count">{{ presentielCount }}</h3>
+                                            <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(1, 5) }}%</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="stat-icon card-3">
+                                            <i class="mdi mdi-account-group"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="stat-label">Présentiel</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-sm-6 grid-margin stretch-card">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-9">
+                                        <div class="d-flex align-items-center align-self-start">
+                                            {% set thisWeekCount = seances|filter(s => s.jour in ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'])|length %}
+                                            <h3 class="mb-0 stat-count">{{ thisWeekCount }}</h3>
+                                            <p class="text-success ms-2 mb-0 font-weight-medium">+{{ random(3, 10) }}%</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="stat-icon card-4">
+                                            <i class="mdi mdi-calendar-week"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h6 class="stat-label">Cette semaine</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            <!-- Filters Panel -->
+            <div class="row">
+              <div class="col-12 grid-margin stretch-card">
+                <div class="card" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border: none; border-radius: 12px;">
+                  <div class="card-body">
+                    <h4 class="card-title mb-4 text-primary"><i class="mdi mdi-filter-variant me-2"></i>Filtrer et Rechercher</h4>
+                    <div class="row g-3">
+                      <!-- Search -->
+                      <div class="col-md-3">
+                        <label class="fw-bold mb-1">Recherche</label>
+                        <div class="search-box">
+                          <i class="mdi mdi-magnify search-icon"></i>
+                          <input type="text" id="filterSearchInput" class="form-control form-control-lg border-primary" 
+                                 placeholder="Matière, Salle..." value="{{ search }}">
+                        </div>
+                      </div>
+                      
+                      <!-- Filters -->
+                      <div class="col-md-2">
+                        <label class="fw-bold mb-1">Jour</label>
+                        <select id="jourFilter" class="form-select form-select-lg border-primary">
+                          <option value="">Tous les jours</option>
+                          <option value="Lundi" {% if jour == 'Lundi' %}selected{% endif %}>Lundi</option>
+                          <option value="Mardi" {% if jour == 'Mardi' %}selected{% endif %}>Mardi</option>
+                          <option value="Mercredi" {% if jour == 'Mercredi' %}selected{% endif %}>Mercredi</option>
+                          <option value="Jeudi" {% if jour == 'Jeudi' %}selected{% endif %}>Jeudi</option>
+                          <option value="Vendredi" {% if jour == 'Vendredi' %}selected{% endif %}>Vendredi</option>
+                          <option value="Samedi" {% if jour == 'Samedi' %}selected{% endif %}>Samedi</option>
+                        </select>
+                      </div>
+
+                      <div class="col-md-2">
+                         <label class="fw-bold mb-1">Type</label>
+                          <select id="typeFilter" class="form-select form-select-lg border-primary">
+                             <option value="">Tous les types</option>
+                             <option value="Cours" {% if type == 'Cours' %}selected{% endif %}>Cours</option>
+                             <option value="TD" {% if type == 'TD' %}selected{% endif %}>TD</option>
+                             <option value="TP" {% if type == 'TP' %}selected{% endif %}>TP</option>
+                          </select>
+                      </div>
+
+                      <div class="col-md-2">
+                         <label class="fw-bold mb-1">Mode</label>
+                          <select id="modeFilter" class="form-select form-select-lg border-primary">
+                             <option value="">Tous les modes</option>
+                             <option value="Présentiel" {% if mode == 'Présentiel' %}selected{% endif %}>Présentiel</option>
+                             <option value="Distanciel" {% if mode == 'Distanciel' %}selected{% endif %}>Distanciel</option>
+                             <option value="Hybride" {% if mode == 'Hybride' %}selected{% endif %}>Hybride</option>
+                          </select>
+                      </div>
+
+                      <!-- Sort -->
+                      <div class="col-md-3">
+                        <label class="fw-bold mb-1">Trier par</label>
+                        <select id="sortSelect" class="form-select form-select-lg border-primary">
+                          <option value="id-asc" {% if sort == 'id' and direction == 'asc' %}selected{% endif %}>ID (Croissant)</option>
+                          <option value="id-desc" {% if sort == 'id' and direction == 'desc' %}selected{% endif %}>ID (Décroissant)</option>
+                          <option value="jour-asc" {% if sort == 'jour' and direction == 'asc' %}selected{% endif %}>Jour (Lun-Sam)</option>
+                          <option value="heureDebut-asc" {% if sort == 'heureDebut' and direction == 'asc' %}selected{% endif %}>Heure Début (Tôt-Tard)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="mt-4 d-flex justify-content-end">
+                      <button id="resetFilters" class="btn btn-inverse-dark btn-icon-text me-2">
+                        <i class="mdi mdi-refresh btn-icon-prepend"></i> Réinitialiser
+                      </button>
+                      <button id="applyFilters" class="btn btn-gradient-primary btn-icon-text">
+                        <i class="mdi mdi-filter btn-icon-prepend"></i> FILTRER
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Seances Table -->
+            <div class="row">
+                <div class="col-12 grid-margin">
+                    <div class="card table-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="card-title mb-0">📅 Liste des Séances</h4>
+                                <span id="resultCount" class="badge badge-outline-primary badge-pill">
+                                    <i class="mdi mdi-format-list-bulleted me-1"></i>Résultats: {{ seances|length }}
+                                </span>
+                                <a href="{{ path('app_seance_new') }}" class="btn btn-gradient-primary btn-icon-text">
+                                    <i class="mdi mdi-plus-circle btn-icon-prepend"></i>
+                                    Nouvelle Séance
+                                </a>
+                            </div>
+
+                            <div class="table-responsive" id="seancesTableContainer">
+                                <table class="table table-hover" id="seancesTable">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Matière</th>
+                                            <th>Classe</th>
+                                            <th>Salle</th>
+                                            <th>Jour</th>
+                                            <th>Horaires</th>
+                                            <th>Mode</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for seance in seances %}
+                                            <tr>
+                                                <td><span class="text-muted">#{{ seance.id }}</span></td>
+                                                <td><span class="fw-bold">{{ seance.matiere ? seance.matiere.nom : 'N/A' }}</span></td>
+                                                <td><label class="badge badge-info">{{ seance.classe ? seance.classe.nom : 'N/A' }}</label></td>
+                                                <td>{{ seance.salle ? seance.salle.name : 'N/A' }}</td>
+                                                <td><span class="jour-badge">{{ seance.jour }}</span></td>
+                                                <td>
+                                                    {{ seance.heureDebut ? seance.heureDebut|date('H:i') : '' }} - 
+                                                    {{ seance.heureFin ? seance.heureFin|date('H:i') : '' }}
+                                                </td>
+                                                <td>
+                                                    {% if seance.mode|lower in ['présentiel', 'presentiel'] %}
+                                                        <label class="badge badge-presentiel">PRESENTIEL</label>
+                                                    {% elseif seance.mode|lower in ['distanciel', 'en_ligne'] %}
+                                                        <label class="badge badge-distanciel">EN_LIGNE</label>
+                                                    {% elseif seance.mode|lower == 'hybride' %}
+                                                        <label class="badge badge-info">HYBRIDE</label>
+                                                    {% else %}
+                                                        <label class="badge badge-secondary">{{ seance.mode }}</label>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <div class="action-buttons">
+                                                        <a href="{{ path('app_seance_show', {'id': seance.id}) }}" class="btn btn-sm btn-info" title="Voir"><i class="mdi mdi-eye"></i></a>
+                                                        <a href="{{ path('app_attendance_qr_display', {'id': seance.id}) }}" class="btn btn-sm btn-primary" title="QR Présence"><i class="mdi mdi-qrcode"></i></a>
+                                                        <a href="{{ path('app_seance_edit', {'id': seance.id}) }}" class="btn btn-sm btn-warning" title="Modifier"><i class="mdi mdi-pencil"></i></a>
+                                                        <button type="button" class="btn btn-sm btn-danger delete-btn" 
+                                                                data-id="{{ seance.id }}" 
+                                                                data-title="Seance #{{ seance.id }}"
+                                                                data-token="{{ csrf_token('delete' ~ seance.id) }}"
+                                                                title="Supprimer">
+                                                            <i class="mdi mdi-delete"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="8" class="text-center py-5">
+                                                    <div class="empty-state">
+                                                        <i class="mdi mdi-calendar-blank-outline empty-state-icon"></i>
+                                                        <h4>Aucune séance trouvée</h4>
+                                                        <p class="text-muted">Commencez par créer une nouvelle séance</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="footer">
+              <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                  © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
+                </span>
+                <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                  Gestion des Séances
+                </span>
+              </div>
+            </footer>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteModalLabel">
+          <i class="mdi mdi-alert-circle me-2"></i>Confirmer la suppression
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <div class="mb-3">
+          <i class="mdi mdi-trash-can-outline" style="font-size: 60px; color: #dc3545;"></i>
+        </div>
+        <h5 class="mb-3">Êtes-vous sûr de vouloir supprimer <span id="itemTitle" class="fw-bold"></span> ?</h5>
+        <p class="text-muted">Cette action est irréversible.</p>
+        <form id="deleteForm" method="post" action="">
+            <input type="hidden" name="_token" id="deleteToken">
+        </form>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-danger px-4" onclick="document.getElementById('deleteForm').submit();">Supprimer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+<script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+<script src="{{ asset('assets/js/misc.js') }}"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      // Delete Modal Handling
+      const deleteModalEl = document.getElementById('deleteModal');
+      let deleteModal = null;
+      if (deleteModalEl) {
+         deleteModal = new bootstrap.Modal(deleteModalEl);
+      }
+      const itemTitleSpan = document.getElementById('itemTitle');
+      const deleteForm = document.getElementById('deleteForm');
+      const deleteTokenInput = document.getElementById('deleteToken');
+
+      function attachDeleteHandlers() {
+          document.querySelectorAll('.delete-btn').forEach(button => {
+              button.addEventListener('click', function() {
+                  const id = this.getAttribute('data-id');
+                  const title = this.getAttribute('data-title');
+                  const token = this.getAttribute('data-token');
+
+                  if(itemTitleSpan) itemTitleSpan.textContent = title;
+                  if(deleteForm) deleteForm.action = '/seance/' + id; // Standard delete route
+                  if(deleteTokenInput) deleteTokenInput.value = token;
+                  
+                  if(deleteModal) deleteModal.show();
+              });
+          });
+      }
+      
+      attachDeleteHandlers();
+
+      // AJAX Filtering
+      const searchInput = document.getElementById('filterSearchInput');
+      const jourFilter = document.getElementById('jourFilter');
+      const typeFilter = document.getElementById('typeFilter');
+      const modeFilter = document.getElementById('modeFilter');
+      const sortSelect = document.getElementById('sortSelect');
+      const applyFiltersBtn = document.getElementById('applyFilters');
+      const resetFiltersBtn = document.getElementById('resetFilters');
+      const resultCountSpan = document.getElementById('resultCount');
+      const tableBody = document.querySelector('#seancesTable tbody');
+      const tableContainer = document.getElementById('seancesTableContainer');
+
+      function fetchResults() {
+          const params = new URLSearchParams();
+          if (searchInput && searchInput.value) params.append('search', searchInput.value);
+          if (jourFilter && jourFilter.value) params.append('jour', jourFilter.value);
+          if (typeFilter && typeFilter.value) params.append('type', typeFilter.value);
+          if (modeFilter && modeFilter.value) params.append('mode', modeFilter.value);
+          
+          if (sortSelect && sortSelect.value) {
+              const [sort, direction] = sortSelect.value.split('-');
+              params.append('sort', sort);
+              params.append('direction', direction);
+          }
+
+          // UI Loading State
+          if (applyFiltersBtn) {
+              applyFiltersBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin me-2"></i>Chargement...';
+              applyFiltersBtn.disabled = true;
+          }
+          if (tableContainer) tableContainer.style.opacity = '0.5';
+
+          fetch('{{ path("app_seance_ajax_filter") }}?' + params.toString())
+              .then(response => response.json())
+              .then(data => {
+                  updateTable(data.data);
+                  if (resultCountSpan) resultCountSpan.innerHTML = '<i class="mdi mdi-format-list-bulleted me-1"></i>Résultats: ' + data.count;
+              })
+              .catch(err => console.error('Error fetching data:', err))
+              .finally(() => {
+                  if (applyFiltersBtn) {
+                      applyFiltersBtn.innerHTML = '<i class="mdi mdi-filter btn-icon-prepend"></i> FILTRER';
+                      applyFiltersBtn.disabled = false;
+                  }
+                  if (tableContainer) tableContainer.style.opacity = '1';
+              });
+      }
+
+      function updateTable(seances) {
+          if (!tableBody) return;
+
+          if (seances.length === 0) {
+              tableBody.innerHTML = `
+                  <tr>
+                    <td colspan="8" class="text-center py-5">
+                      <div class="empty-state">
+                        <i class="mdi mdi-calendar-blank-outline empty-state-icon"></i>
+                        <h4>Aucune séance trouvée</h4>
+                        <p class="text-muted">Essayez de modifier vos filtres.</p>
+                      </div>
+                    </td>
+                  </tr>
+              `;
+              return;
+          }
+
+          tableBody.innerHTML = seances.map(seance => {
+              let modeBadge = '';
+              const mode = seance.mode ? seance.mode.toLowerCase() : '';
+              
+              if (mode === 'présentiel' || mode === 'presentiel') {
+                  modeBadge = '<label class="badge badge-presentiel">PRESENTIEL</label>';
+              } else if (mode === 'distanciel' || mode === 'en_ligne') {
+                  modeBadge = '<label class="badge badge-distanciel">EN_LIGNE</label>';
+              } else if (mode === 'hybride') {
+                  modeBadge = '<label class="badge badge-info">HYBRIDE</label>';
+              } else {
+                  modeBadge = `<label class="badge badge-secondary">${seance.mode || 'N/A'}</label>`;
+              }
+
+              return `
+                  <tr>
+                      <td><span class="text-muted">#${seance.id}</span></td>
+                      <td><span class="fw-bold">${seance.matiere}</span></td>
+                      <td><label class="badge badge-info">${seance.classe}</label></td>
+                      <td>${seance.salle}</td>
+                      <td><span class="jour-badge">${seance.jour}</span></td>
+                      <td>
+                          ${seance.heureDebut} - ${seance.heureFin}
+                      </td>
+                      <td>${modeBadge}</td>
+                      <td>
+                          <div class="action-buttons">
+                              <a href="${seance.url}" class="btn btn-sm btn-info" title="Voir"><i class="mdi mdi-eye"></i></a>
+                              <a href="${seance.editUrl}" class="btn btn-sm btn-warning" title="Modifier"><i class="mdi mdi-pencil"></i></a>
+                              <button type="button" class="btn btn-sm btn-danger delete-btn" 
+                                      data-id="${seance.id}" 
+                                      data-title="Seance #${seance.id}"
+                                      data-token="${seance.csrfToken}"
+                                      title="Supprimer">
+                                  <i class="mdi mdi-delete"></i>
+                              </button>
+                          </div>
+                      </td>
+                  </tr>
+              `;
+          }).join('');
+          
+          attachDeleteHandlers();
+      }
+
+      // Event Listeners
+      if (applyFiltersBtn) applyFiltersBtn.addEventListener('click', fetchResults);
+      
+      if (searchInput) {
+          searchInput.addEventListener('input', function() {
+               clearTimeout(this.searchTimeout);
+               this.searchTimeout = setTimeout(fetchResults, 400);
+          });
+      }
+
+      const navSearchInput = document.getElementById('searchInput'); // Navbar search
+      if (navSearchInput) {
+          navSearchInput.addEventListener('input', function() {
+               if (searchInput) {
+                   searchInput.value = this.value; // Sync the filter box
+                   clearTimeout(searchInput.searchTimeout);
+                   searchInput.searchTimeout = setTimeout(fetchResults, 400);
+               }
+          });
+      }
+      
+      [jourFilter, typeFilter, modeFilter, sortSelect].forEach(el => {
+          if (el) el.addEventListener('change', fetchResults);
+      });
+
+      if (resetFiltersBtn) {
+          resetFiltersBtn.addEventListener('click', () => {
+              window.location.href = "{{ path('app_seance_index') }}";
+          });
+      }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,92 @@
+<table class="table table-hover" id="classesTable">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>
+        <a href="{{ path('app_classe_index', {sort: sort == 'nom_asc' ? 'nom_desc' : 'nom_asc'}) }}" class="text-decoration-none sort-link" data-sort="{{ sort == 'nom_asc' ? 'nom_desc' : 'nom_asc' }}">
+          Classe
+          {% if sort == 'nom_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'nom_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
+        </a>
+      </th>
+      <th>Nom Complet</th>
+      <th>
+        <a href="{{ path('app_classe_index', {sort: sort == 'niveau_asc' ? 'niveau_desc' : 'niveau_asc'}) }}" class="text-decoration-none sort-link" data-sort="{{ sort == 'niveau_asc' ? 'niveau_desc' : 'niveau_asc' }}">
+          Niveau
+          {% if sort == 'niveau_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'niveau_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
+        </a>
+      </th>
+      <th>
+        <a href="{{ path('app_classe_index', {sort: sort == 'anneeuniversitaire_asc' ? 'anneeuniversitaire_desc' : 'anneeuniversitaire_asc'}) }}" class="text-decoration-none sort-link" data-sort="{{ sort == 'anneeuniversitaire_asc' ? 'anneeuniversitaire_desc' : 'anneeuniversitaire_asc' }}">
+          Année Universitaire
+          {% if sort == 'anneeuniversitaire_asc' %}<i class="mdi mdi-arrow-up"></i>{% elseif sort == 'anneeuniversitaire_desc' %}<i class="mdi mdi-arrow-down"></i>{% endif %}
+        </a>
+      </th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for classe in classes %}
+      <tr>
+        <td>
+          <span class="text-muted">#{{ classe.id }}</span>
+        </td>
+        <td>
+          <div class="d-flex align-items-center">
+            <div class="class-avatar me-3">
+              {{ classe.nom|slice(0, 2)|upper }}
+            </div>
+            <div>
+              <h6 class="mb-0 font-weight-bold">{{ classe.nom }}</h6>
+              <small class="text-muted">Classe ID: {{ classe.id }}</small>
+            </div>
+          </div>
+        </td>
+        <td>
+          <strong>{{ classe.nom }}</strong>
+        </td>
+        <td>
+          {% if classe.niveau %}
+            <span class="class-badge badge-niveau">
+              <i class="mdi mdi-account-group me-1"></i>
+              {{ classe.niveau }}
+            </span>
+          {% else %}
+            <span class="text-muted">—</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if classe.anneeuniversitaire %}
+            <span class="class-badge badge-annee">
+              <i class="mdi mdi-calendar me-1"></i>
+              {{ classe.anneeuniversitaire }}
+            </span>
+          {% else %}
+            <span class="text-muted">—</span>
+          {% endif %}
+        </td>
+        <td>
+          <div class="action-buttons">
+            <a href="{{ path('app_classe_show', {'id': classe.id}) }}" 
+               class="btn btn-info btn-sm btn-icon"
+               title="Voir détails">
+              <i class="mdi mdi-eye"></i>
+            </a>
+            <a href="{{ path('app_classe_edit', {'id': classe.id}) }}" 
+               class="btn btn-warning btn-sm btn-icon"
+               title="Modifier">
+              <i class="mdi mdi-pencil"></i>
+            </a>
+            <button type="button" 
+                    class="btn btn-danger btn-sm btn-icon delete-btn"
+                    data-classe-id="{{ classe.id }}"
+                    data-classe-name="{{ classe.nom }}"
+                    data-csrf-token="{{ csrf_token('delete' ~ classe.id) }}"
+                    title="Supprimer">
+              <i class="mdi mdi-delete"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>

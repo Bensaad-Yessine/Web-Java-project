@@ -1,0 +1,1266 @@
+{# templates/user/profile.html.twig #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESPRIT — User Profile</title>
+    <style>
+        :root {
+            --font-size: 16px;
+            --bg: #ffffff;
+            --fg: #111827;
+            
+            --red-50: #fef2f2;
+            --red-100: #fee2e2;
+            --red-200: #fecaca;
+            --red-300: #fca5a5;
+            --red-400: #f87171;
+            --red-500: #ef4444;
+            --red-600: #dc2626;
+            --red-700: #b91c1c;
+            --red-800: #991b1b;
+            --red-900: #7f1d1d;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --blue-50: #eff6ff;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            
+            --green-50: #f0fdf4;
+            --green-500: #22c55e;
+            --green-600: #16a34a;
+            
+            --orange-500: #f97316;
+            
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+            
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        html { 
+            font-size: var(--font-size); 
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, #ffffff 30%, var(--gray-50) 100%);
+            color: var(--fg);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(165deg, rgba(255, 255, 255, 0.92) 0%, rgba(249, 250, 251, 0.88) 100%);
+            border-right: 1px solid rgba(229, 231, 235, 0.6);
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(209, 213, 219, 0.5);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(209, 213, 219, 0.8);
+        }
+
+        .brand {
+            margin-bottom: 36px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
+            position: relative;
+        }
+
+        .brand::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--red-500), var(--red-300));
+            border-radius: 2px;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--red-700) 100%);
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+            transition: all var(--transition);
+        }
+
+        .brand-icon:hover {
+            transform: rotate(-5deg) scale(1.05);
+        }
+
+        .brand-title {
+            font-weight: 800;
+            font-size: 20px;
+            line-height: 1;
+            color: var(--gray-900);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-sub {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        .user-session {
+            margin-top: 28px;
+            padding: 24px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.9) 100%);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition);
+        }
+
+        .user-session::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 20px;
+            border: 3px solid white;
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.2);
+        }
+
+        .user-details h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .user-details p {
+            margin: 6px 0 0;
+            font-size: 14px;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .session-info {
+            font-size: 13px;
+            color: #4b5563;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-weight: 500;
+        }
+
+        .session-info div {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .session-info strong {
+            color: #1f2937;
+            font-weight: 600;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 32px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            border-radius: var(--radius-lg);
+            color: #374151;
+            text-decoration: none;
+            transition: all var(--transition);
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .nav a:hover {
+            background: linear-gradient(90deg, rgba(254, 242, 242, 0.7) 0%, rgba(254, 242, 242, 0.4) 100%);
+            color: var(--red-600);
+            transform: translateX(8px);
+        }
+
+        .nav a.active {
+            background: linear-gradient(90deg, rgba(254, 242, 242, 0.9) 0%, rgba(254, 242, 242, 0.6) 100%);
+            color: var(--red-600);
+            font-weight: 600;
+            border-left: 4px solid var(--red-500);
+        }
+
+        .nav a .icon {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+        }
+
+        .main {
+            flex: 1;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        .main::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .main::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .main::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        .main::-webkit-scrollbar-thumb:hover {
+            background: #9ca3af;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+            padding-bottom: 28px;
+            border-bottom: 2px solid rgba(229, 231, 235, 0.4);
+        }
+
+        .h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin: 0;
+            color: #111827;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--red-600) 0%, var(--orange-600) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .muted {
+            color: #6b7280;
+            margin-top: 12px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 36px;
+        }
+
+        .card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.9) 100%);
+            border: 1px solid rgba(229, 231, 235, 0.6);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 28px;
+            overflow: hidden;
+            transition: all var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
+            border-color: rgba(220, 38, 38, 0.2);
+        }
+
+        .card-header {
+            padding: 28px 28px 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, rgba(249, 250, 251, 0.3) 100%);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid rgba(220, 38, 38, 0.15);
+            letter-spacing: -0.3px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(180deg, var(--red-500), var(--orange-500));
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
+        }
+
+        .card-content {
+            padding: 32px;
+        }
+
+        .card-content > form > button {
+            margin-top: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        .form-group:last-of-type {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #1f2937;
+            letter-spacing: -0.3px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 18px;
+            border: 2px solid #e5e7eb;
+            border-radius: var(--radius-lg);
+            background: #fafbfc;
+            color: #111827;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+        }
+
+        .form-control:hover {
+            border-color: #d1d5db;
+            background: #ffffff;
+        }
+
+        .form-control:focus {
+            border-color: var(--red-500);
+            background: #ffffff;
+            box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.08), inset 0 1px 2px rgba(0, 0, 0, 0.02);
+            outline: none;
+        }
+        
+        .form-control:disabled,
+        .form-control[readonly] {
+            background: #f3f4f6;
+            border-color: #e5e7eb;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .form-text {
+            display: block;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .btn {
+            appearance: none;
+            border: 2px solid transparent;
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: 14px 28px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all var(--transition-fast);
+            font-size: 15px;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+            letter-spacing: -0.3px;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, var(--red-600) 0%, var(--orange-600) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #374151;
+            border: 2px solid #d1d5db;
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: #f9fafb;
+            border-color: var(--red-500);
+            color: var(--red-600);
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quick-actions .btn-outline {
+            width: 100%;
+            justify-content: flex-start;
+            padding: 16px 20px;
+            border-radius: var(--radius-lg);
+            font-weight: 600;
+            transition: all var(--transition-fast);
+        }
+
+        .password-field {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-field input {
+            flex: 1;
+            padding-right: 45px;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6b7280;
+            font-size: 18px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-fast);
+            z-index: 10;
+            opacity: 0.6;
+        }
+
+        .password-toggle:hover {
+            color: var(--red-500);
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        .password-toggle:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 1024px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main {
+                height: auto;
+                padding: 32px;
+            }
+
+            .h1 {
+                font-size: 32px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main {
+                padding: 20px;
+                height: auto;
+            }
+
+            .card-content {
+                padding: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .h1 {
+                font-size: 28px;
+            }
+
+            .quick-actions .btn-outline {
+                padding: 14px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-row">
+                    <div class="brand-icon">ES</div>
+                    <div>
+                        <div class="brand-title">ESPRIT</div>
+                        <div class="brand-sub">Student Assistant</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-session">
+                <div class="user-info">
+                    <div class="avatar" {% if app.user.profilePic %}style="background: no-repeat center/cover url({{ app.user.getProfilePicUrl() }});"{% endif %}>
+                        {% if not app.user.profilePic %}{{ app.user.nom|first }}{{ app.user.prenom|first }}{% endif %}
+                    </div>
+                    <div class="user-details">
+                        <h3>{{ app.user.nom }} {{ app.user.prenom }}</h3>
+                        <p>📚 {{ app.user.classe is not null ? app.user.classe.nom : 'No Class' }}</p>
+                    </div>
+                </div>
+                <div class="session-info">
+                    <div><strong>Email:</strong> {{ app.user.email }}</div>
+                    <div><strong>Role:</strong> {{ app.user.roles[0]|replace({'ROLE_': ''})|capitalize }}</div>
+                </div>
+            </div>
+
+            <nav class="nav">
+                <a href="{{ path('app_dashboard') }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="{{ path('app_dashboard') }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                    My Tasks
+                </a>
+                <a href="{{ path('app_profile') }}" class="active">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Profile
+                </a>
+                <a href="{{ path('app_logout') }}">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>
+                    </svg>
+                    Logout
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="header">
+                <div>
+                    <h1 class="h1">My Profile</h1>
+                    <p class="muted">Manage your personal information and account settings</p>
+                </div>
+            </header>
+
+            <div class="profile-container">
+                <div class="profile-grid">
+                    <!-- Left column: Profile info -->
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Personal Information</h2>
+                            </div>
+                            <div class="card-content">
+                                <form id="profileForm">
+                                    <div class="form-group">
+                                        <label style="margin-bottom: 16px;">📷 Profile Picture</label>
+                                        <div style="display: flex; gap: 24px; align-items: flex-start; background: linear-gradient(135deg, rgba(254, 242, 242, 0.4) 0%, rgba(254, 242, 242, 0.2) 100%); padding: 24px; border-radius: var(--radius-lg); border: 2px dashed rgba(220, 38, 38, 0.2);">
+                                            <div style="flex-shrink: 0;">
+                                                <div id="profilePreview" style="width: 110px; height: 110px; border-radius: 50%; {% if app.user.profilePic %}background: no-repeat center/cover url({{ app.user.getProfilePicUrl() }}){% else %}background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%){% endif %}; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 36px; border: 4px solid white; box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);">
+                                                    {% if not app.user.profilePic %}{{ app.user.nom|first }}{{ app.user.prenom|first }}{% endif %}
+                                                </div>
+                                            </div>
+                                            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                                                <input type="file" id="profilePic" class="form-control" accept="image/*" style="padding: 12px; margin-bottom: 12px; display: none;">
+                                                <button type="button" id="uploadPicBtn" class="btn" style="background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-500) 100%); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); width: 100%; justify-content: center;">
+                                                    📤 Choose Photo
+                                                </button>
+                                                <small class="form-text" style="margin-top: 12px;">JPG, PNG, GIF, WebP • Max 5MB</small>
+                                                <small class="form-text" style="margin-top: 8px; color: #4b5563;">Shown throughout the application</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr style="margin: 28px 0; border: none; border-top: 2px dashed rgba(220, 38, 38, 0.15); opacity: 0.5;">
+
+                                    <div class="form-group">
+                                        <label for="nom">Last Name *</label>
+                                        <input type="text" id="nom" class="form-control" 
+                                               value="{{ app.user.nom }}"
+                                               placeholder="Doe"
+                                               required
+                                               minlength="2">
+                                        <small class="form-text">Your last name</small>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="prenom">First Name *</label>
+                                        <input type="text" id="prenom" class="form-control" 
+                                               value="{{ app.user.prenom }}"
+                                               placeholder="John"
+                                               required
+                                               minlength="2">
+                                        <small class="form-text">Your first name</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="email">Email Address *</label>
+                                        <input type="email" id="email" class="form-control" 
+                                               value="{{ app.user.email }}"
+                                               placeholder="your.email@esprit.tn"
+                                               required>
+                                        <small class="form-text">Your ESPRIT email address</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="class">Class / Group</label>
+                                        <input type="text" id="class" class="form-control" 
+                                               value="{{ app.user.classe is not null ? app.user.classe.nom : 'Not assigned' }}"
+                                               readonly
+                                               disabled>
+                                        <small class="form-text">Contact administration to change</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="phone">Phone Number</label>
+                                        <input type="tel" id="phone" class="form-control" 
+                                               value="{{ app.user.numTel ?? '' }}"
+                                               placeholder="+216 12 345 678"
+                                               pattern="[+]?[0-9\s]{8,20}">
+                                        <small class="form-text">Optional: Include country code</small>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn" style="width: 100%; justify-content: center; padding: 16px 32px; font-size: 16px;">✏️ Update Profile</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right column: Quick Actions -->
+                    <div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">Quick Actions</h2>
+                            </div>
+                            <div class="card-content">
+                                <div class="quick-actions">
+                                    <button type="button" onclick="openPasswordModal()" class="btn btn-outline">
+                                        🔒 Change Password
+                                    </button>
+                                    <a href="{{path('front_preference_alerte_show',{'id': app.user.id})}}" class="btn btn-outline">
+                                        🔔 Notification Settings
+                                    </a>
+                                    <a href="#" class="btn btn-outline">
+                                        🔐 Privacy Settings
+                                    </a>
+                                    <button onclick="exportData()" class="btn btn-outline">
+                                        📥 Export My Data
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Password Change Modal -->
+    <div id="passwordModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 10000; align-items: center; justify-content: center; animation: fadeIn 0.2s ease-out;">
+        <div style="background: white; border-radius: var(--radius-xl); padding: 40px; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2); animation: slideUp 0.3s ease-out;">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 28px;">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%); display: flex; align-items: center; justify-content: center; font-size: 20px;">🔐</div>
+                <h2 style="font-size: 26px; font-weight: 800; margin: 0; color: #111827; letter-spacing: -0.5px;">Change Password</h2>
+            </div>
+            
+            <form id="passwordForm" style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="currentPassword">Current Password *</label>
+                    <div class="password-field">
+                        <input type="password" id="currentPassword" class="form-control" placeholder="••••••••" required>
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('currentPassword', event)">
+                            👁️
+                        </button>
+                    </div>
+                    <small class="form-text">Enter your current password for security</small>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="newPassword">New Password *</label>
+                    <div class="password-field">
+                        <input type="password" id="newPassword" class="form-control" placeholder="••••••••" required minlength="8">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('newPassword', event)">
+                            👁️
+                        </button>
+                    </div>
+                    <small class="form-text">At least 8 characters with uppercase, numbers & symbols</small>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="confirmPassword">Confirm Password *</label>
+                    <div class="password-field">
+                        <input type="password" id="confirmPassword" class="form-control" placeholder="••••••••" required minlength="8">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility('confirmPassword', event)">
+                            👁️
+                        </button>
+                    </div>
+                    <small class="form-text">Must match your new password</small>
+                </div>
+
+                <div id="passwordStrength" style="padding: 14px 16px; border-radius: var(--radius); background: linear-gradient(135deg, rgba(254, 242, 242, 0.4) 0%, rgba(254, 242, 242, 0.2) 100%); border: 1px solid rgba(220, 38, 38, 0.1); display: none;">
+                    <small style="color: #111827; font-weight: 600;">📊 Strength: <span id="strengthText" style="color: #ef4444;">Weak</span></small>
+                    <div style="height: 6px; background: #e5e7eb; border-radius: 3px; margin-top: 10px; overflow: hidden;">
+                        <div id="strengthBar" style="height: 100%; background: #ef4444; border-radius: 3px; width: 30%; transition: all 0.3s ease-out;"></div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 12px; margin-top: 28px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+                    <button type="submit" class="btn" style="flex: 1; justify-content: center;">🔐 Update Password</button>
+                    <button type="button" onclick="closePasswordModal()" class="btn btn-outline" style="flex: 1; justify-content: center; background: white;">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <style>
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translateY(20px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        </style>
+    </div>
+
+    <script>
+        // Toggle Password Visibility
+        function togglePasswordVisibility(fieldId, event) {
+            event.preventDefault();
+            const field = document.getElementById(fieldId);
+            const button = event.target.closest('.password-toggle');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                button.textContent = '👁️‍🗨️';
+                button.style.opacity = '1';
+            } else {
+                field.type = 'password';
+                button.textContent = '👁️';
+                button.style.opacity = '0.6';
+            }
+        }
+
+        // Password Modal Functions
+        function openPasswordModal() {
+            document.getElementById('passwordModal').style.display = 'flex';
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').style.display = 'none';
+            document.getElementById('passwordForm').reset();
+            
+            // Reset password field types to password
+            document.getElementById('currentPassword').type = 'password';
+            document.getElementById('newPassword').type = 'password';
+            document.getElementById('confirmPassword').type = 'password';
+            
+            // Reset eye icons
+            document.querySelectorAll('.password-toggle').forEach(btn => {
+                btn.textContent = '👁️';
+                btn.style.opacity = '0.6';
+            });
+        }
+
+        // Password Strength Indicator
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            
+            if (!password) {
+                document.getElementById('passwordStrength').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('passwordStrength').style.display = 'block';
+
+            if (password.length >= 8) strength++;
+            if (password.length >= 12) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+
+            const strengthLevels = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+            const strengthPercentages = [30, 50, 70, 85, 100];
+            const strengthColors = ['#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e'];
+
+            strengthText.textContent = strengthLevels[Math.min(strength - 1, 4)] || 'Weak';
+            strengthBar.style.width = strengthPercentages[Math.min(strength - 1, 4)] + '%';
+            strengthBar.style.background = strengthColors[Math.min(strength - 1, 4)];
+        }
+
+        // Monitor new password field for strength
+        document.getElementById('newPassword').addEventListener('input', function() {
+            checkPasswordStrength(this.value);
+        });
+
+        // Profile Picture Upload
+        document.getElementById('uploadPicBtn').addEventListener('click', function() {
+            document.getElementById('profilePic').click();
+        });
+
+        document.getElementById('profilePic').addEventListener('change', function(e) {
+            const file = this.files[0];
+            
+            if (!file) return;
+
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showErrorMsg('File size must not exceed 5MB');
+                this.value = '';
+                return;
+            }
+
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                showErrorMsg('Only JPG, PNG, GIF, and WebP formats are allowed');
+                this.value = '';
+                return;
+            }
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profilePreview').style.background = 'no-repeat center/cover url(' + e.target.result + ')';
+                document.getElementById('profilePreview').style.color = 'transparent';
+            };
+            reader.readAsDataURL(file);
+
+            // Upload file
+            uploadProfilePicture(file);
+        });
+
+        function uploadProfilePicture(file) {
+            const formData = new FormData();
+            formData.append('profilePic', file);
+
+            const uploadBtn = document.getElementById('uploadPicBtn');
+            const originalHTML = uploadBtn.innerHTML;
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '⏳ Uploading...';
+
+            fetch('{{ path('app_profile_picture_upload') }}', {
+                method: 'POST',
+                body: formData,
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || `Upload failed with status ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = originalHTML;
+                
+                if (data.success) {
+                    showSuccessMsg('Profile picture updated successfully!');
+                    
+                    // Update the sidebar avatar
+                    const avatar = document.querySelector('.avatar');
+                    if (avatar) {
+                        avatar.style.background = 'no-repeat center/cover url(' + data.url + ')';
+                        avatar.style.color = 'transparent';
+                        avatar.innerHTML = '';
+                    }
+                    
+                    // Reset file input
+                    document.getElementById('profilePic').value = '';
+                } else {
+                    showErrorMsg(data.message || 'Failed to upload profile picture');
+                    // Reset preview
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = originalHTML;
+                showErrorMsg('Upload error: ' + error.message);
+                // Reset preview
+                document.getElementById('profilePic').value = '';
+                location.reload();
+            });
+        }
+
+        // Password Change Form
+        document.getElementById('passwordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validation
+            if (!currentPassword) {
+                showErrorMsg('Current password is required');
+                return;
+            }
+
+            if (!newPassword || newPassword.length < 8) {
+                showErrorMsg('New password must be at least 8 characters');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showErrorMsg('Passwords do not match');
+                return;
+            }
+
+            if (currentPassword === newPassword) {
+                showErrorMsg('New password must be different from current password');
+                return;
+            }
+
+            // Check password strength (at least 3 criteria should be met)
+            const strength = calculatePasswordStrength(newPassword);
+            if (strength < 3) {
+                showErrorMsg('Password is too weak. Use uppercase, numbers, and special characters');
+                return;
+            }
+
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalHTML = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '⏳ Updating...';
+
+            const formData = {
+                currentPassword: currentPassword,
+                newPassword: newPassword
+            };
+
+            fetch('{{ path('app_change_password') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(formData),
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+
+                if (data.success) {
+                    showSuccessMsg(data.message || 'Password updated successfully!');
+                    closePasswordModal();
+                } else {
+                    showErrorMsg(data.message || 'Failed to update password');
+                }
+            })
+            .catch(error => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+                showErrorMsg('Error: ' + error.message);
+            });
+        });
+
+        function calculatePasswordStrength(password) {
+            let strength = 0;
+            if (password.length >= 8) strength++;
+            if (/[A-Z]/.test(password)) strength++;
+            if (/[a-z]/.test(password)) strength++;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) strength++;
+            return strength;
+        }
+
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalHTML = submitBtn.innerHTML;
+            
+            const nom = document.getElementById('nom').value.trim();
+            const prenom = document.getElementById('prenom').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            
+            if (!nom || nom.length < 2) {
+                showErrorMsg('Please enter your last name (at least 2 characters)');
+                return;
+            }
+            
+            if (!prenom || prenom.length < 2) {
+                showErrorMsg('Please enter your first name (at least 2 characters)');
+                return;
+            }
+            
+            if (!email) {
+                showErrorMsg('Please enter an email address');
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showErrorMsg('Please enter a valid email address');
+                return;
+            }
+            
+            if (phone) {
+                const phoneClean = phone.replace(/\s/g, '');
+                const phoneRegex = /^[+]?[0-9]{8,20}$/;
+                if (!phoneRegex.test(phoneClean)) {
+                    showErrorMsg('Please enter a valid phone number');
+                    return;
+                }
+            }
+            
+            const formData = {
+                nom: nom,
+                prenom: prenom,
+                email: email,
+                phone: phone
+            };
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '⏳ Updating...';
+            
+            fetch('{{ path('app_profile_update') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(formData),
+                credentials: 'same-origin'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.message || `HTTP error! status: ${response.status}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+                
+                if (data.success) {
+                    showSuccessMsg(data.message || 'Profile updated successfully!');
+                    
+                    if (data.user) {
+                        document.getElementById('nom').value = data.user.nom || '';
+                        document.getElementById('prenom').value = data.user.prenom || '';
+                        document.getElementById('email').value = data.user.email || '';
+                        document.getElementById('phone').value = data.user.phone || '';
+                        
+                        // Update sidebar
+                        const sidebarName = document.querySelector('.user-details h3');
+                        if (sidebarName) {
+                            sidebarName.textContent = data.user.nom + ' ' + data.user.prenom;
+                        }
+                        
+                        const avatar = document.querySelector('.avatar');
+                        if (avatar) {
+                            avatar.textContent = data.user.nom.charAt(0) + data.user.prenom.charAt(0);
+                        }
+                    }
+                } else {
+                    showErrorMsg(data.message || 'Failed to update profile');
+                }
+            })
+            .catch(error => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalHTML;
+                showErrorMsg('Error: ' + error.message);
+            });
+        });
+
+        function showSuccessMsg(message) {
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 16px 24px; border-radius: 10px; box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3); z-index: 9999; font-weight: 600;';
+            msg.innerHTML = '✓ ' + message;
+            document.body.appendChild(msg);
+            setTimeout(() => {
+                msg.style.opacity = '0';
+                msg.style.transition = 'opacity 0.3s';
+                setTimeout(() => msg.remove(), 300);
+            }, 4000);
+        }
+
+        function showErrorMsg(message) {
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 16px 24px; border-radius: 10px; box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3); z-index: 9999; font-weight: 600;';
+            msg.innerHTML = '✗ ' + message;
+            document.body.appendChild(msg);
+            setTimeout(() => {
+                msg.style.opacity = '0';
+                msg.style.transition = 'opacity 0.3s';
+                setTimeout(() => msg.remove(), 300);
+            }, 4000);
+        }
+
+        function exportData() {
+            if (confirm('This will export all your data as a JSON file. Continue?')) {
+                alert('Export feature coming soon!');
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('passwordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePasswordModal();
+            }
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePasswordModal();
+            }
+        });
+    </script>
+</body>
+</html>

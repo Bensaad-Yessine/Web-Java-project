@@ -1,0 +1,606 @@
+{% extends 'user/FrontOffice.html.twig' %}
+
+{% block title %}🤖 SmartGroup Matcher — ESPRIT{% endblock %}
+
+{% block body %}
+<style>
+    /* ── Design tokens ─────────────────────────────── */
+    :root {
+        --sg-primary:    #ef4444;
+        --sg-primary2:   #f97316;
+        --sg-gradient:   linear-gradient(135deg, #ef4444, #f97316);
+        --sg-ai-bg:      radial-gradient(circle at 10% 10%, #1d4ed8 0%, #0f172a 45%, #7c2d12 100%);
+        --sg-card-bg:    #ffffff;
+        --sg-border:     #e5e7eb;
+        --sg-text:       #111827;
+        --sg-muted:      #6b7280;
+        --sg-radius:     14px;
+        --sg-shadow:     0 4px 24px rgba(0,0,0,0.08);
+        --sg-gold:       #f59e0b;
+        --sg-silver:     #94a3b8;
+        --sg-bronze:     #d97706;
+        --sg-green:      #10b981;
+        --sg-blue:       #3b82f6;
+        --sg-orange:     #f97316;
+        --sg-red:        #ef4444;
+    }
+
+    /* ── Layout ────────────────────────────────────── */
+    .main {
+        background:
+            radial-gradient(circle at 12% 0%, rgba(251, 191, 36, 0.22), transparent 30%),
+            radial-gradient(circle at 95% 15%, rgba(59, 130, 246, 0.15), transparent 28%),
+            linear-gradient(180deg, #fff7ed 0%, #f8fafc 38%, #ffffff 100%);
+    }
+    .sg-page {
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        position: relative;
+    }
+
+    /* ── AI Hero banner ────────────────────────────── */
+    .sg-hero {
+        background: var(--sg-ai-bg);
+        border-radius: 20px;
+        padding: 36px 40px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.28);
+        border: 1px solid rgba(255,255,255,0.18);
+    }
+    .sg-hero::before {
+        content: '';
+        position: absolute; inset: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .sg-hero::after {
+        content: '';
+        position: absolute;
+        width: 280px;
+        height: 280px;
+        right: -120px;
+        bottom: -120px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(251,191,36,0.28), rgba(251,191,36,0.02));
+    }
+    .sg-hero-inner { position: relative; z-index: 1; }
+    .sg-hero-badge {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: rgba(255,255,255,0.15); backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 100px; padding: 6px 16px;
+        font-size: 13px; font-weight: 600; color: #c7d2fe;
+        margin-bottom: 16px;
+    }
+    .sg-hero h1 {
+        font-size: 32px; font-weight: 800; color: white !important;
+        margin: 0 0 8px; line-height: 1.2;
+    }
+    .sg-hero p { color: #c7d2fe !important; font-size: 15px; margin: 0; max-width: 580px; }
+    .sg-formula {
+        margin-top: 24px;
+        display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+    }
+    .sg-formula-pill {
+        background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 8px; padding: 8px 14px;
+        font-size: 13px; font-weight: 600; color: white;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .sg-formula-pill .pct { color: #a5b4fc; font-size: 11px; }
+    .sg-formula-sep { color: rgba(255,255,255,0.4); font-size: 18px; font-weight: 300; }
+
+    /* ── Form card ─────────────────────────────────── */
+    .sg-form-card {
+        background: rgba(255,255,255,0.92);
+        border: 1px solid #fde7d1;
+        border-radius: 18px;
+        box-shadow: 0 14px 36px rgba(148, 163, 184, 0.20);
+        backdrop-filter: blur(8px);
+        overflow: hidden;
+    }
+    .sg-form-header {
+        background: var(--sg-gradient); padding: 20px 28px;
+        display: flex; align-items: center; gap: 12px;
+    }
+    .sg-form-header h2 { color: white !important; font-size: 18px; font-weight: 700; margin: 0; }
+    .sg-form-body { padding: 28px; background: linear-gradient(180deg, #fff 0%, #fffbf8 100%); }
+
+    .sg-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+
+    .sg-field {
+        padding: 14px;
+        border: 1px solid #f3e8dd;
+        border-radius: 12px;
+        background: #fff;
+    }
+    .sg-field label {
+        display: block; font-weight: 700; font-size: 14px;
+        color: var(--sg-text); margin-bottom: 10px;
+    }
+    .sg-select {
+        width: 100%; padding: 12px 16px;
+        border: 1.5px solid var(--sg-border); border-radius: 10px;
+        font-size: 15px; color: var(--sg-text); background: white;
+        transition: border-color 0.2s, box-shadow 0.2s; cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 12px center;
+        padding-right: 40px;
+    }
+    .sg-select:focus { outline: none; border-color: #ef4444; box-shadow: 0 0 0 4px rgba(249,115,22,0.14); }
+
+    .sg-radios, .sg-checks {
+        display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .sg-radio-label, .sg-check-label {
+        display: flex; align-items: center; gap: 7px;
+        padding: 9px 14px; border: 1.5px solid var(--sg-border);
+        border-radius: 8px; font-size: 14px; font-weight: 500;
+        color: var(--sg-text); cursor: pointer;
+        transition: all 0.15s ease; user-select: none;
+        background: #fffaf5;
+    }
+    .sg-radio-label:hover, .sg-check-label:hover { border-color: #ef4444; background: #fff5f5; }
+    .sg-radio-label input, .sg-check-label input { display: none; }
+    .sg-radio-label.selected, .sg-check-label.selected {
+        border-color: #ea580c; background: linear-gradient(135deg, #fff1e7, #ffe4cf); color: #c2410c; font-weight: 700;
+        box-shadow: 0 6px 14px rgba(251,146,60,0.16);
+    }
+
+    .sg-submit-row { padding: 0 28px 28px; display: flex; gap: 12px; align-items: center; }
+    .sg-btn-analyze {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 14px 32px; background: var(--sg-gradient);
+        color: white; border: none; border-radius: 12px;
+        font-size: 15px; font-weight: 700; cursor: pointer;
+        box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+        transition: all 0.2s; text-decoration: none;
+    }
+    .sg-btn-analyze:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(239,68,68,0.4); }
+    .sg-btn-back {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 14px 24px; background: white; color: var(--sg-muted);
+        border: 1.5px solid var(--sg-border); border-radius: 12px;
+        font-size: 14px; font-weight: 600; text-decoration: none;
+        transition: all 0.2s;
+    }
+    .sg-btn-back:hover { background: #f9fafb; border-color: #9ca3af; color: var(--sg-text); }
+
+    /* ── Results section ───────────────────────────── */
+    .sg-results-header {
+        display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+    }
+    .sg-results-header h2 { font-size: 22px; font-weight: 800; color: var(--sg-text) !important; margin: 0; }
+    .sg-results-count {
+        background: var(--sg-gradient); color: white;
+        border-radius: 100px; padding: 4px 12px;
+        font-size: 13px; font-weight: 700;
+    }
+
+    .sg-results-grid { display: flex; flex-direction: column; gap: 16px; }
+
+    .sg-result-card {
+        background: linear-gradient(180deg, #ffffff 0%, #fffcfa 100%);
+        border: 1px solid #f4e6d9;
+        border-radius: 16px;
+        box-shadow: 0 10px 26px rgba(148,163,184,0.18);
+        overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;
+        display: grid; grid-template-columns: auto 1fr auto;
+        align-items: stretch;
+    }
+    .sg-result-card:hover { transform: translateY(-3px); box-shadow: 0 16px 30px rgba(71,85,105,0.24); }
+    .sg-result-card.rank-1 { border-color: #f59e0b; box-shadow: 0 4px 20px rgba(245,158,11,0.2); }
+    .sg-result-card.rank-2 { border-color: #94a3b8; }
+    .sg-result-card.rank-3 { border-color: #d97706; }
+
+    .sg-rank-col {
+        width: 72px; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; padding: 20px 0;
+        background: linear-gradient(180deg, #fff7ed, #ffffff);
+        border-right: 1px solid #f4e6d9;
+    }
+    .sg-medal { font-size: 36px; line-height: 1; }
+    .sg-rank-num { font-size: 12px; font-weight: 600; color: var(--sg-muted); margin-top: 4px; }
+
+    .sg-card-body { padding: 20px 24px; }
+    .sg-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .sg-group-name { font-size: 18px; font-weight: 800; color: var(--sg-text); margin: 0 0 4px; }
+    .sg-group-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sg-pill {
+        display: inline-flex; align-items: center; gap: 5px;
+        padding: 4px 10px; border-radius: 6px;
+        font-size: 12px; font-weight: 600;
+    }
+    .sg-pill-matiere { background: #eff6ff; color: #1d4ed8; }
+    .sg-pill-membres { background: #f0fdf4; color: #15803d; }
+    .sg-pill-niveau  { background: #faf5ff; color: #7e22ce; }
+    .sg-pill-objectif{ background: #fff7ed; color: #c2410c; }
+    .sg-pill-style   { background: #f0f9ff; color: #0369a1; }
+
+    /* Score circle */
+    .sg-score-col {
+        width: 120px; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; padding: 20px 12px;
+        border-left: 1px solid #f4e6d9;
+        background: linear-gradient(180deg, #fff7ed, #ffffff);
+    }
+    .sg-score-circle {
+        width: 72px; height: 72px; border-radius: 50%;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        font-weight: 800; border: 4px solid currentColor;
+        margin-bottom: 8px;
+    }
+    .sg-score-circle.high   { color: #10b981; background: #ecfdf5; }
+    .sg-score-circle.medium { color: #3b82f6; background: #eff6ff; }
+    .sg-score-circle.low    { color: #f97316; background: #fff7ed; }
+    .sg-score-circle.poor   { color: #6b7280; background: #f9fafb; }
+    .sg-score-val { font-size: 22px; line-height: 1; }
+    .sg-score-pct { font-size: 11px; line-height: 1; }
+    .sg-score-label { font-size: 11px; font-weight: 600; color: var(--sg-muted); text-align: center; }
+
+    /* Breakdown bars */
+    .sg-breakdown { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .sg-bar-item label { font-size: 11px; font-weight: 600; color: var(--sg-muted); display: flex; justify-content: space-between; margin-bottom: 3px; }
+    .sg-bar-track { height: 6px; background: #f3f4f6; border-radius: 100px; overflow: hidden; }
+    .sg-bar-fill { height: 100%; border-radius: 100px; transition: width 0.8s ease; }
+
+    /* Justification */
+    .sg-justif {
+        margin-top: 12px; padding: 10px 14px;
+        background: #f8fafc; border-radius: 8px; border-left: 3px solid #e5e7eb;
+        font-size: 13px; color: var(--sg-muted); font-style: italic;
+    }
+
+    /* Join button area */
+    .sg-card-actions { padding: 16px 24px 20px; display: flex; gap: 10px; border-top: 1px solid #f3f4f6; }
+    .sg-btn-join {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 10px 22px; background: var(--sg-gradient);
+        color: white; border: none; border-radius: 10px;
+        font-size: 14px; font-weight: 700; cursor: pointer;
+        box-shadow: 0 2px 8px rgba(239,68,68,0.25); transition: all 0.2s; text-decoration: none;
+    }
+    .sg-btn-join:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(239,68,68,0.35); }
+    .sg-btn-view {
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 10px 18px; background: white;
+        color: var(--sg-text); border: 1.5px solid var(--sg-border);
+        border-radius: 10px; font-size: 14px; font-weight: 600;
+        text-decoration: none; transition: all 0.2s;
+    }
+    .sg-btn-view:hover { background: #f9fafb; border-color: #9ca3af; }
+
+    /* Empty state */
+    .sg-empty {
+        text-align: center; padding: 60px 20px;
+        background: linear-gradient(180deg, #fff, #fffbf8);
+        border: 2px dashed #fdba74;
+        border-radius: var(--sg-radius);
+    }
+    .sg-empty-icon { font-size: 64px; margin-bottom: 16px; }
+    .sg-empty h3 { font-size: 20px; font-weight: 700; color: var(--sg-text) !important; margin-bottom: 8px; }
+    .sg-empty p { color: var(--sg-muted) !important; }
+
+    /* Steps */
+    .sg-steps { display: flex; gap: 0; margin-top: 16px; flex-wrap: wrap; }
+    .sg-step {
+        flex: 1; min-width: 160px; display: flex; flex-direction: column;
+        align-items: center; text-align: center; padding: 0 16px;
+        position: relative;
+    }
+    .sg-step:not(:last-child)::after {
+        content: ''; position: absolute; right: 0; top: 20px;
+        width: 1px; height: 40px; background: rgba(255,255,255,0.2);
+    }
+    .sg-step-num {
+        width: 40px; height: 40px; border-radius: 50%;
+        background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3);
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 800; font-size: 16px; color: white; margin-bottom: 8px;
+    }
+    .sg-step-text { font-size: 13px; color: #c7d2fe; font-weight: 500; }
+
+    @media (max-width: 768px) {
+        .sg-result-card { grid-template-columns: 1fr; }
+        .sg-rank-col { flex-direction: row; width: 100%; border-right: none; border-bottom: 1px solid var(--sg-border); padding: 12px 20px; }
+        .sg-score-col { width: 100%; border-left: none; border-top: 1px solid var(--sg-border); flex-direction: row; gap: 16px; justify-content: flex-start; padding-left: 20px; }
+        .sg-hero { padding: 24px 20px; }
+        .sg-hero h1 { font-size: 24px; }
+        .sg-breakdown { grid-template-columns: 1fr; }
+    }
+</style>
+<main class="main">
+
+<!-- Page Header -->
+<header class="header" style="margin-bottom: 28px;">
+    <div>
+        <h1 style="font-size: 28px; font-weight: 800; color: #111827; margin: 0 0 4px;">SmartGroup Matcher</h1>
+        <p style="color: #6b7280; margin: 0;">L'IA qui trouve ton groupe idéal</p>
+    </div>
+    <a href="{{ path('front_groupe_projet_index') }}" class="sg-btn-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+        Mes groupes
+    </a>
+</header>
+
+<div class="sg-page">
+
+    {# ── AI Hero ──────────────────────────────────────── #}
+    <div class="sg-hero">
+        <div class="sg-hero-inner">
+            <div class="sg-hero-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                Intelligence Artificielle · Scoring pondéré
+            </div>
+            <h1>🤖 Trouve ton groupe idéal</h1>
+            <p>Décris ton profil et l'IA analyse chaque groupe disponible pour calculer un score de compatibilité personnalisé.</p>
+
+            <div class="sg-formula">
+                <div class="sg-formula-pill">🧠 Niveau <span class="pct">×30%</span></div>
+                <span class="sg-formula-sep">+</span>
+                <div class="sg-formula-pill">📅 Disponibilités <span class="pct">×30%</span></div>
+                <span class="sg-formula-sep">+</span>
+                <div class="sg-formula-pill">🎯 Objectif <span class="pct">×25%</span></div>
+                <span class="sg-formula-sep">+</span>
+                <div class="sg-formula-pill">👥 Taille <span class="pct">×15%</span></div>
+            </div>
+
+            <div class="sg-steps" style="margin-top: 28px;">
+                <div class="sg-step"><div class="sg-step-num">1</div><div class="sg-step-text">Remplis ton profil</div></div>
+                <div class="sg-step"><div class="sg-step-num">2</div><div class="sg-step-text">L'IA analyse les groupes</div></div>
+                <div class="sg-step"><div class="sg-step-num">3</div><div class="sg-step-text">Vois les scores</div></div>
+                <div class="sg-step"><div class="sg-step-num">4</div><div class="sg-step-text">Rejoins le meilleur</div></div>
+            </div>
+        </div>
+    </div>
+
+    {# ── Search Form ───────────────────────────────────── #}
+    <div class="sg-form-card">
+        <div class="sg-form-header">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <h2>Ton profil de recherche</h2>
+        </div>
+
+        <form method="POST" action="{{ path('front_groupe_projet_find') }}">
+            <div class="sg-form-body">
+                <div class="sg-fields">
+
+                    {# Matière #}
+                    <div class="sg-field">
+                        <label for="matiere">📚 Matière recherchée <span style="color:#ef4444">*</span></label>
+                        <select name="matiere" id="matiere" class="sg-select" required>
+                            <option value="">— Choisir une matière —</option>
+                            {% for mat in matieres %}
+                                <option value="{{ mat }}" {{ criteria.matiere == mat ? 'selected' : '' }}>{{ mat }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    {# Niveau #}
+                    <div class="sg-field">
+                        <label>🧠 Ton niveau</label>
+                        <div class="sg-radios" id="niveau-radios">
+                            {% for val, lbl in {'débutant': '🌱 Débutant', 'intermédiaire': '📈 Intermédiaire', 'avancé': '🚀 Avancé'} %}
+                                <label class="sg-radio-label {{ criteria.niveau == val ? 'selected' : '' }}">
+                                    <input type="radio" name="niveau" value="{{ val }}" {{ criteria.niveau == val ? 'checked' : '' }}>
+                                    {{ lbl }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {# Objectif #}
+                    <div class="sg-field">
+                        <label>🎯 Ton objectif principal</label>
+                        <div class="sg-radios" id="objectif-radios">
+                            {% for val, lbl in {'bonnes_notes': '🏆 Bonnes notes', 'apprendre': '📖 Apprendre', 'finir_vite': '⚡ Finir vite'} %}
+                                <label class="sg-radio-label {{ criteria.objectif == val ? 'selected' : '' }}">
+                                    <input type="radio" name="objectif" value="{{ val }}" {{ criteria.objectif == val ? 'checked' : '' }}>
+                                    {{ lbl }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {# Style #}
+                    <div class="sg-field">
+                        <label>💪 Style de travail</label>
+                        <div class="sg-radios" id="style-radios">
+                            {% for val, lbl in {'intense': '🔥 Intense', 'détendu': '😌 Détendu', 'équilibré': '⚖️ Équilibré'} %}
+                                <label class="sg-radio-label {{ criteria.style == val ? 'selected' : '' }}">
+                                    <input type="radio" name="style" value="{{ val }}" {{ criteria.style == val ? 'checked' : '' }}>
+                                    {{ lbl }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {# Disponibilités #}
+                    <div class="sg-field" style="grid-column: 1 / -1;">
+                        <label>📅 Tes disponibilités <span style="color:#6b7280; font-weight:400">(sélectionne plusieurs jours)</span></label>
+                        <div class="sg-checks" id="dispo-checks">
+                            {% for val, lbl in {'lundi': 'Lun', 'mardi': 'Mar', 'mercredi': 'Mer', 'jeudi': 'Jeu', 'vendredi': 'Ven', 'samedi': 'Sam'} %}
+                                <label class="sg-check-label {{ val in criteria.disponibilites ? 'selected' : '' }}">
+                                    <input type="checkbox" name="disponibilites[]" value="{{ val }}" {{ val in criteria.disponibilites ? 'checked' : '' }}>
+                                    {{ lbl }}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="sg-submit-row">
+                <button type="submit" class="sg-btn-analyze">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    Analyser les groupes
+                </button>
+                {% if submitted %}
+                    <span style="font-size:13px; color:#6b7280;">
+                        {{ results|length }} groupe(s) analysé(s)
+                    </span>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    {# ── Results ───────────────────────────────────────── #}
+    {% if submitted %}
+        <div>
+            <div class="sg-results-header">
+                <h2>Résultats de l'analyse</h2>
+                {% if results|length > 0 %}
+                    <span class="sg-results-count">{{ results|length }} groupe(s)</span>
+                {% endif %}
+            </div>
+
+            {% if results|length == 0 %}
+                <div class="sg-empty">
+                    <div class="sg-empty-icon">🔍</div>
+                    <h3>Aucun groupe trouvé</h3>
+                    <p>
+                        {% if criteria.matiere %}
+                            Aucun groupe actif pour <strong>{{ criteria.matiere }}</strong> n'est disponible,
+                            ou vous faites déjà partie de tous les groupes de cette matière.
+                        {% else %}
+                            Sélectionne une matière pour lancer l'analyse.
+                        {% endif %}
+                    </p>
+                </div>
+            {% else %}
+                <div class="sg-results-grid">
+                    {% for item in results %}
+                        {% set rank = loop.index %}
+                        {% set scoreClass = item.score >= 80 ? 'high' : (item.score >= 60 ? 'medium' : (item.score >= 40 ? 'low' : 'poor')) %}
+                        {% set medal = rank == 1 ? '🥇' : (rank == 2 ? '🥈' : (rank == 3 ? '🥉' : '')) %}
+
+                        <div class="sg-result-card {{ rank <= 3 ? 'rank-' ~ rank : '' }}">
+
+                            {# Rank col #}
+                            <div class="sg-rank-col">
+                                {% if medal %}
+                                    <div class="sg-medal">{{ medal }}</div>
+                                {% else %}
+                                    <div class="sg-medal" style="font-size:22px; color:#9ca3af;">#{{ rank }}</div>
+                                {% endif %}
+                                <div class="sg-rank-num">{{ rank <= 3 ? 'TOP ' ~ rank : 'N°' ~ rank }}</div>
+                            </div>
+
+                            {# Main body #}
+                            <div style="display: flex; flex-direction: column; min-width: 0;">
+                                <div class="sg-card-body">
+                                    <div class="sg-card-top">
+                                        <div style="min-width:0;">
+                                            <h3 class="sg-group-name">{{ item.groupe.nomProjet }}</h3>
+                                            <div class="sg-group-meta">
+                                                <span class="sg-pill sg-pill-matiere">📚 {{ item.groupe.matiere }}</span>
+                                                <span class="sg-pill sg-pill-membres">👥 {{ item.groupe.idUser|length }} membre(s)</span>
+                                                {% if item.groupe.niveauGroupe %}
+                                                    <span class="sg-pill sg-pill-niveau">🧠 {{ item.groupe.niveauGroupe|capitalize }}</span>
+                                                {% endif %}
+                                                {% if item.groupe.objectifGroupe %}
+                                                    <span class="sg-pill sg-pill-objectif">🎯 {{ item.groupe.objectifGroupe|replace({'_': ' '})|capitalize }}</span>
+                                                {% endif %}
+                                                {% if item.groupe.styleGroupe %}
+                                                    <span class="sg-pill sg-pill-style">💪 {{ item.groupe.styleGroupe|capitalize }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {# Score breakdown bars #}
+                                    <div class="sg-breakdown">
+                                        {% for bar in [
+                                            ['🧠 Niveau ×30%',         'niveau',        item.niveauScore],
+                                            ['📅 Dispo ×30%',          'disponibilite', item.disponibiliteScore],
+                                            ['🎯 Objectif ×25%',       'objectif',      item.objectifScore],
+                                            ['👥 Taille ×15%',         'taille',        item.tailleScore]
+                                        ] %}
+                                            <div class="sg-bar-item">
+                                                <label>
+                                                    <span>{{ bar[0] }}</span>
+                                                    <span style="color: {{ bar[2] >= 70 ? '#10b981' : (bar[2] >= 40 ? '#f97316' : '#ef4444') }}; font-weight:700;">{{ bar[2] }}%</span>
+                                                </label>
+                                                <div class="sg-bar-track">
+                                                    <div class="sg-bar-fill" style="width: {{ bar[2] }}%; background: {{ bar[2] >= 70 ? '#10b981' : (bar[2] >= 40 ? '#f97316' : '#ef4444') }};"></div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+
+                                    {# Justification #}
+                                    <div class="sg-justif">
+                                        💬 {{ item.justification }}
+                                    </div>
+                                </div>
+
+                                {# Actions #}
+                                <div class="sg-card-actions">
+                                    <form method="POST" action="{{ path('front_groupe_projet_join', {'id': item.groupe.id}) }}" style="margin:0;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('join' ~ item.groupe.id) }}">
+                                        <button type="submit" class="sg-btn-join"
+                                            onclick="return confirm('Rejoindre le groupe &quot;{{ item.groupe.nomProjet|e('js') }}&quot; ?')">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                                            Rejoindre
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            {# Score circle #}
+                            <div class="sg-score-col">
+                                <div class="sg-score-circle {{ scoreClass }}">
+                                    <span class="sg-score-val">{{ item.score }}</span>
+                                    <span class="sg-score-pct">%</span>
+                                </div>
+                                <div class="sg-score-label">
+                                    {{ item.score >= 80 ? '🔥 Excellent' : (item.score >= 60 ? '👍 Bon match' : (item.score >= 40 ? '🤔 Passable' : '❌ Faible')) }}
+                                </div>
+                            </div>
+
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+
+</div><!-- .sg-page -->
+</main>
+
+<script>
+// Toggle selected class on radio/checkbox labels
+document.querySelectorAll('.sg-radio-label input[type="radio"]').forEach(function(input) {
+    input.addEventListener('change', function() {
+        const group = this.closest('.sg-radios');
+        group.querySelectorAll('.sg-radio-label').forEach(function(l) { l.classList.remove('selected'); });
+        this.closest('.sg-radio-label').classList.add('selected');
+    });
+});
+
+document.querySelectorAll('.sg-check-label input[type="checkbox"]').forEach(function(input) {
+    input.addEventListener('change', function() {
+        this.closest('.sg-check-label').classList.toggle('selected', this.checked);
+    });
+});
+
+// Animate bars on load
+document.addEventListener('DOMContentLoaded', function() {
+    const fills = document.querySelectorAll('.sg-bar-fill');
+    fills.forEach(function(fill) {
+        const w = fill.style.width;
+        fill.style.width = '0';
+        setTimeout(function() { fill.style.width = w; }, 100);
+    });
+});
+</script>
+
+{% include 'chatbot/_widget.html.twig' %}
+<script src="{{ asset('js/chatbot.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,561 @@
+{% extends 'classe/base.html.twig' %}
+
+{% block title %}Stats Quiz — {{ matiere.nom }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <style>
+      body {
+        background: radial-gradient(circle at top left, #0f172a 0, #020617 45%, #020617 100%);
+        color: #e5e7eb;
+      }
+      .quiz-page {
+        padding: 2.5rem 0;
+      }
+      .quiz-header {
+        display:flex;
+        justify-content:space-between;
+        align-items:flex-start;
+        margin-bottom:1.5rem;
+        gap:1.5rem;
+      }
+      .quiz-title {
+        font-size:1.35rem;
+        font-weight:600;
+        display:flex;
+        align-items:center;
+        gap:.75rem;
+        color:#f9fafb;
+      }
+      .quiz-title-icon {
+        width:40px;
+        height:40px;
+        border-radius:999px;
+        background:linear-gradient(135deg,#6366f1,#ec4899);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:#fff;
+        box-shadow:0 12px 30px rgba(79,70,229,.6);
+      }
+      .quiz-subtitle {
+        margin-top:.25rem;
+        color:#9ca3af;
+        font-size:.9rem;
+      }
+      .pill {
+        display:inline-flex;
+        align-items:center;
+        gap:.4rem;
+        padding:.35rem .75rem;
+        border-radius:999px;
+        font-size:.75rem;
+        text-transform:uppercase;
+        letter-spacing:.08em;
+        border:1px solid rgba(148,163,184,.6);
+        color:#9ca3af;
+      }
+      .pill--success {
+        border-color:rgba(34,197,94,.7);
+        color:#bbf7d0;
+        background:rgba(22,163,74,.08);
+      }
+      .pill-dot {
+        width:6px;
+        height:6px;
+        border-radius:999px;
+        background:#22c55e;
+      }
+      .pill--attempts {
+        border-color:rgba(59,130,246,.7);
+        background:rgba(37,99,235,.09);
+        color:#bfdbfe;
+      }
+      .pill--passrate {
+        border-color:rgba(245,158,11,.7);
+        background:rgba(217,119,6,.1);
+        color:#fed7aa;
+      }
+      .quiz-actions .btn-glass {
+        border-radius:999px;
+        padding:.35rem .9rem;
+        border:1px solid rgba(148,163,184,.5);
+        background:rgba(15,23,42,.8);
+        color:#e5e7eb;
+        font-size:.8rem;
+        display:inline-flex;
+        align-items:center;
+        gap:.35rem;
+        transition:all .16s ease-out;
+      }
+      .quiz-actions .btn-glass:hover {
+        transform:translateY(-1px);
+        box-shadow:0 12px 30px rgba(15,23,42,.9);
+        text-decoration:none;
+        background:rgba(15,23,42,.95);
+      }
+      .btn-pill-primary {
+        border-radius:999px;
+        padding:.45rem .95rem;
+        font-size:.82rem;
+        border:none;
+        background:linear-gradient(135deg,#6366f1,#ec4899);
+        color:#f9fafb;
+        display:inline-flex;
+        align-items:center;
+        gap:.4rem;
+        box-shadow:0 14px 35px rgba(79,70,229,.8);
+      }
+      .btn-pill-primary:hover {
+        filter:brightness(1.05);
+        transform:translateY(-1px);
+        text-decoration:none;
+      }
+      .stats-layout {
+        display:grid;
+        grid-template-columns:minmax(0,3fr) minmax(0,1.6fr);
+        gap:1.75rem;
+      }
+      @media (max-width: 991.98px) {
+        .quiz-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .stats-layout {
+          grid-template-columns:minmax(0,1fr);
+        }
+      }
+      .stats-grid {
+        display:grid;
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:1.25rem;
+        margin-bottom:1.75rem;
+      }
+      @media (max-width: 767.98px) {
+        .stats-grid {
+          grid-template-columns:minmax(0,1fr);
+        }
+      }
+      .stat-card {
+        background: radial-gradient(circle at top left, rgba(15,23,42,.98), rgba(15,23,42,.94));
+        border-radius:16px;
+        border:1px solid rgba(148,163,184,.4);
+        padding:1rem 1.1rem .9rem;
+        box-shadow:0 20px 55px rgba(15,23,42,1);
+      }
+      .stat-card-label {
+        font-size:.72rem;
+        text-transform:uppercase;
+        letter-spacing:.12em;
+        color:#9ca3af;
+        margin-bottom:.25rem;
+      }
+      .stat-card-value {
+        font-size:1.7rem;
+        font-weight:700;
+        color:#f9fafb;
+      }
+      .stat-card-sub {
+        font-size:.78rem;
+        color:#9ca3af;
+      }
+      .stat-card-icon {
+        width:36px;
+        height:36px;
+        border-radius:999px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-size:1.1rem;
+      }
+      .stat-card-icon--attempts { background:linear-gradient(135deg,#22c55e,#16a34a); color:#ecfdf5; }
+      .stat-card-icon--average { background:linear-gradient(135deg,#3b82f6,#1d4ed8); color:#eff6ff; }
+      .stat-card-icon--pass { background:linear-gradient(135deg,#f97316,#ea580c); color:#fff7ed; }
+      .stat-progress {
+        margin-top:.5rem;
+        height:6px;
+        border-radius:999px;
+        background:rgba(31,41,55,.9);
+        overflow:hidden;
+      }
+      .stat-progress-fill {
+        height:100%;
+        border-radius:999px;
+        background:linear-gradient(90deg,#22c55e,#4ade80,#bbf7d0);
+      }
+      .stat-progress-fill--warn {
+        background:linear-gradient(90deg,#f97316,#fb923c,#fed7aa);
+      }
+      .stat-progress-fill--danger {
+        background:linear-gradient(90deg,#ef4444,#f97373,#fecaca);
+      }
+      .panel-card {
+        background:radial-gradient(circle at top,rgba(15,23,42,1),rgba(15,23,42,.95));
+        border-radius:18px;
+        border:1px solid rgba(148,163,184,.4);
+        overflow:hidden;
+        box-shadow:0 24px 70px rgba(15,23,42,1);
+      }
+      .panel-header {
+        padding:.85rem 1.35rem;
+        border-bottom:1px solid rgba(55,65,81,.9);
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:.75rem;
+      }
+      .panel-title {
+        font-size:.9rem;
+        font-weight:600;
+        display:flex;
+        align-items:center;
+        gap:.45rem;
+        color:#e5e7eb;
+      }
+      .panel-title i { color:#6366f1; }
+      .panel-badge {
+        font-size:.7rem;
+        text-transform:uppercase;
+        letter-spacing:.1em;
+        padding:.1rem .5rem;
+        border-radius:999px;
+        border:1px solid rgba(148,163,184,.6);
+        color:#9ca3af;
+      }
+      .quiz-table {
+        margin-bottom:0;
+        border-collapse:separate;
+        border-spacing:0;
+      }
+      .quiz-table thead {
+        background:linear-gradient(to right,rgba(15,23,42,.9),rgba(17,24,39,.9));
+      }
+      .quiz-table th {
+        font-size:.75rem;
+        font-weight:600;
+        text-transform:uppercase;
+        letter-spacing:.08em;
+        color:#9ca3af;
+        border-bottom-color:rgba(55,65,81,.9);
+        padding:.7rem 1.25rem;
+        background:transparent;
+      }
+      .quiz-table tbody tr {
+        background:rgba(15,23,42,.96);
+      }
+      .quiz-table tbody tr:nth-child(even) {
+        background:rgba(15,23,42,.98);
+      }
+      .quiz-table td {
+        border-top-color:rgba(31,41,55,.9);
+        padding:.7rem 1.25rem;
+        font-size:.86rem;
+        color:#e5e7eb;
+      }
+      .quiz-table tbody tr:hover {
+        background:rgba(30,64,175,.7);
+      }
+      .badge-result-success {
+        display:inline-flex;
+        align-items:center;
+        gap:.25rem;
+        padding:.15rem .55rem;
+        border-radius:999px;
+        font-size:.75rem;
+        background:rgba(22,163,74,.15);
+        color:#bbf7d0;
+        border:1px solid rgba(34,197,94,.7);
+      }
+      .badge-result-fail {
+        display:inline-flex;
+        align-items:center;
+        gap:.25rem;
+        padding:.15rem .55rem;
+        border-radius:999px;
+        font-size:.75rem;
+        background:rgba(239,68,68,.15);
+        color:#fecaca;
+        border:1px solid rgba(248,113,113,.7);
+      }
+      .empty-state {
+        padding:2rem 1.5rem;
+        text-align:center;
+      }
+      .empty-state-icon {
+        width:46px;
+        height:46px;
+        border-radius:999px;
+        margin:0 auto .8rem;
+        background:rgba(30,64,175,.7);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        color:#bfdbfe;
+        box-shadow:0 15px 40px rgba(30,64,175,.8);
+      }
+      .empty-state-title {
+        font-size:.98rem;
+        font-weight:500;
+        color:#e5e7eb;
+        margin-bottom:.2rem;
+      }
+      .empty-state-text {
+        font-size:.84rem;
+        color:#9ca3af;
+      }
+      .hard-questions-list {
+        list-style:none;
+        margin:0;
+        padding:1rem 1.25rem 1.1rem;
+      }
+      .hard-questions-list li + li {
+        border-top:1px dashed rgba(55,65,81,.9);
+        margin-top:.6rem;
+        padding-top:.6rem;
+      }
+      .hard-question-title {
+        font-size:.88rem;
+        font-weight:600;
+        color:#f9fafb;
+      }
+      .hard-question-meta {
+        font-size:.78rem;
+        color:#9ca3af;
+        margin-top:.15rem;
+      }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="quiz-page container">
+    <div class="quiz-header">
+        <div>
+            <div class="quiz-title">
+                <div class="quiz-title-icon">
+                    <i class="mdi mdi-chart-box"></i>
+                </div>
+                <div>
+                    <div>Analytics du quiz — {{ matiere.nom }}</div>
+                    <div class="quiz-subtitle">
+                        Suivez les performances des étudiants et identifiez les points de blocage sur cette matière.
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3 d-flex flex-wrap gap-2">
+                <span class="pill pill--attempts">
+                    <i class="mdi mdi-account-check"></i>
+                    {{ overview.attempts }} tentative{{ overview.attempts > 1 ? 's' : '' }}
+                </span>
+                <span class="pill pill--success">
+                    <span class="pill-dot"></span>
+                    Score moyen {{ overview.averagePercent }}%
+                </span>
+                <span class="pill pill--passrate">
+                    <i class="mdi mdi-target"></i>
+                    Taux de réussite {{ overview.passRate }}%
+                </span>
+            </div>
+        </div>
+        <div class="quiz-actions d-flex flex-column align-items-end gap-2">
+            <div class="d-flex gap-2">
+                <a href="{{ path('app_matiere_classe_index') }}" class="btn-glass">
+                    <i class="mdi mdi-arrow-left"></i>
+                    Matières
+                </a>
+                <a href="{{ path('app_admin_quiz_matiere', {id: matiere.id}) }}" class="btn-glass">
+                    <i class="mdi mdi-help-circle-outline"></i>
+                    Gérer les questions
+                </a>
+            </div>
+            <a href="{{ path('app_admin_quiz_matiere', {id: matiere.id}) }}" class="btn-pill-primary">
+                <i class="mdi mdi-pencil-outline"></i>
+                Modifier les questions
+            </a>
+        </div>
+    </div>
+
+    {% if overview.attempts == 0 %}
+        <div class="panel-card mb-4">
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="mdi mdi-chart-timeline-variant"></i>
+                </div>
+                <div class="empty-state-title">Aucune donnée disponible pour l'instant</div>
+                <div class="empty-state-text">
+                    Aucun quiz n'a encore été soumis pour cette matière. Revenez après quelques tentatives pour voir les statistiques détaillées.
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                    <div>
+                        <div class="stat-card-label">Tentatives</div>
+                        <div class="stat-card-value">{{ overview.attempts }}</div>
+                    </div>
+                    <div class="stat-card-icon stat-card-icon--attempts">
+                        <i class="mdi mdi-account-multiple"></i>
+                    </div>
+                </div>
+                <div class="stat-card-sub">
+                    {% if overview.attempts == 1 %}
+                        1 tentative enregistrée
+                    {% else %}
+                        {{ overview.attempts }} tentatives enregistrées
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                    <div class="flex-grow-1 me-2">
+                        <div class="stat-card-label">Score moyen</div>
+                        <div class="stat-card-value">{{ overview.averagePercent }}%</div>
+                        <div class="stat-progress mt-2">
+                            {% set avg = overview.averagePercent|default(0) %}
+                            {% set avg = avg > 100 ? 100 : (avg < 0 ? 0 : avg) %}
+                            <div class="stat-progress-fill
+                                {% if avg < 50 %} stat-progress-fill--danger
+                                {% elseif avg < 70 %} stat-progress-fill--warn
+                                {% endif %}"
+                                 style="width: {{ avg }}%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card-icon stat-card-icon--average">
+                        <i class="mdi mdi-poll"></i>
+                    </div>
+                </div>
+                <div class="stat-card-sub">Moyenne sur l'ensemble des tentatives.</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                    <div class="flex-grow-1 me-2">
+                        <div class="stat-card-label">Taux de réussite</div>
+                        <div class="stat-card-value">{{ overview.passRate }}%</div>
+                        <div class="stat-progress mt-2">
+                            {% set pr = overview.passRate|default(0) %}
+                            {% set pr = pr > 100 ? 100 : (pr < 0 ? 0 : pr) %}
+                            <div class="stat-progress-fill
+                                {% if pr < 50 %} stat-progress-fill--danger
+                                {% elseif pr < 70 %} stat-progress-fill--warn
+                                {% endif %}"
+                                 style="width: {{ pr }}%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-card-icon stat-card-icon--pass">
+                        <i class="mdi mdi-target"></i>
+                    </div>
+                </div>
+                <div class="stat-card-sub">Part des tentatives avec un score ≥ 50%.</div>
+            </div>
+        </div>
+
+        <div class="stats-layout">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="mdi mdi-history"></i>
+                        Dernières tentatives
+                    </div>
+                    <span class="panel-badge">{{ attempts|length }} affichée{{ attempts|length > 1 ? 's' : '' }}</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0 quiz-table">
+                        <thead>
+                            <tr>
+                                <th>Étudiant</th>
+                                <th class="text-center">Score</th>
+                                <th class="text-center">Résultat</th>
+                                <th class="text-end">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for attempt in attempts %}
+                                <tr>
+                                    <td>
+                                        {% if attempt.user %}
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div style="width:28px;height:28px;border-radius:999px;background:rgba(55,65,81,.9);display:flex;align-items:center;justify-content:center;font-size:.78rem;color:#e5e7eb;">
+                                                    {{ attempt.user.prenom|first|upper }}{{ attempt.user.nom|first|upper }}
+                                                </div>
+                                                <div>
+                                                    <div style="font-size:.88rem;font-weight:500;">{{ attempt.user.prenom }} {{ attempt.user.nom }}</div>
+                                                    <div style="font-size:.76rem;color:#9ca3af;">{{ attempt.user.email }}</div>
+                                                </div>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted">Utilisateur supprimé</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">{{ attempt.percent }}%</td>
+                                    <td class="text-center">
+                                        {% if attempt.percent >= 50 %}
+                                            <span class="badge-result-success">
+                                                <i class="mdi mdi-check"></i>
+                                                Réussi
+                                            </span>
+                                        {% else %}
+                                            <span class="badge-result-fail">
+                                                <i class="mdi mdi-close"></i>
+                                                Échoué
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end text-muted" style="font-size:.8rem;">{{ attempt.createdAt|date('d/m/Y H:i') }}</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="p-0">
+                                        <div class="empty-state">
+                                            <div class="empty-state-icon">
+                                                <i class="mdi mdi-information-outline"></i>
+                                            </div>
+                                            <div class="empty-state-title">Aucune tentative pour le moment</div>
+                                            <div class="empty-state-text">Les résultats s'afficheront ici dès que les étudiants auront passé le quiz.</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <i class="mdi mdi-alert-decagram-outline"></i>
+                        Questions les plus difficiles
+                    </div>
+                    <span class="panel-badge">Top {{ hardestQuestions|length }}</span>
+                </div>
+                {% if hardestQuestions is empty %}
+                    <div class="empty-state">
+                        <div class="empty-state-icon" style="background:rgba(202,138,4,.2);color:#facc15;">
+                            <i class="mdi mdi-lightbulb-on-outline"></i>
+                        </div>
+                        <div class="empty-state-title">Pas encore de questions critiques</div>
+                        <div class="empty-state-text">Les données sont insuffisantes pour détecter des questions particulièrement difficiles.</div>
+                    </div>
+                {% else %}
+                    <ul class="hard-questions-list">
+                        {% for q in hardestQuestions %}
+                            <li>
+                                <div class="hard-question-title">{{ q.question }}</div>
+                                <div class="hard-question-meta">
+                                    Taux de réussite : <strong>{{ q.successRate }}%</strong>
+                                    &nbsp;·&nbsp; Tentatives : <strong>{{ q.attempts }}</strong>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

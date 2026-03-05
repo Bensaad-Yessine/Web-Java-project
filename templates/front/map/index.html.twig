@@ -1,0 +1,861 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Plan du campus{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+/* ── Page wrapper ── */
+.map-page { padding: 32px 40px; max-width: 1400px; margin: 0 auto; }
+
+/* ── Page header ── */
+.map-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+.map-page-header-left h1 {
+    font-size: 36px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 6px;
+    letter-spacing: -0.5px;
+    position: relative;
+    display: inline-block;
+}
+.map-page-header-left h1::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 0;
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, #e74c3c, #f39c12);
+    border-radius: 2px;
+}
+.map-page-header-left p {
+    color: #6b7280;
+    font-size: 15px;
+    margin: 10px 0 0;
+}
+.map-header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #e74c3c, #e67e22);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 4px 16px rgba(231,76,60,.25);
+    text-decoration: none;
+    transition: transform .2s, box-shadow .2s;
+}
+.map-header-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(231,76,60,.35);
+    color: #fff;
+}
+
+/* ── Stats row ── */
+.map-stats-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+.map-stat {
+    flex: 1 1 180px;
+    background: #fff;
+    border: 1px solid rgba(229,231,235,.7);
+    border-radius: 14px;
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    transition: transform .2s, box-shadow .2s;
+}
+.map-stat:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,.09); }
+.map-stat-icon {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    color: #fff;
+}
+.map-stat-icon.red    { background: linear-gradient(135deg,#e74c3c,#e67e22); }
+.map-stat-icon.green  { background: linear-gradient(135deg,#27ae60,#2ecc71); }
+.map-stat-icon.blue   { background: linear-gradient(135deg,#3498db,#1abc9c); }
+.map-stat-icon.purple { background: linear-gradient(135deg,#9b59b6,#8e44ad); }
+.map-stat-value { font-size: 26px; font-weight: 800; color: #111827; line-height: 1; }
+.map-stat-label { font-size: 13px; color: #6b7280; margin-top: 3px; font-weight: 500; }
+
+/* ── How-to banner ── */
+.map-howto {
+    background: linear-gradient(135deg, rgba(231,76,60,.07) 0%, rgba(230,126,34,.07) 100%);
+    border: 1px solid rgba(231,76,60,.2);
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 13px;
+    color: #374151;
+}
+.map-howto-step {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 500;
+}
+.map-howto-step .step-num {
+    width: 24px; height: 24px;
+    background: linear-gradient(135deg,#e74c3c,#e67e22);
+    color: #fff; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+}
+.map-howto-sep { color: #d1d5db; font-size: 18px; }
+
+/* ── Layout ── */
+#campus-wrapper {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+#map-container {
+    flex: 1 1 600px;
+    height: 600px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,.15);
+    border: 1px solid rgba(229,231,235,.5);
+}
+
+/* ── Side panel ── */
+#side-panel {
+    flex: 0 0 370px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 600px;
+    border: 1px solid rgba(229,231,235,.5);
+}
+#side-panel-header {
+    background: linear-gradient(135deg, #c0392b, #e74c3c);
+    color: #fff;
+    padding: 16px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: .2px;
+}
+#side-panel-header .back-btn {
+    cursor: pointer;
+    opacity: .85;
+    transition: opacity .2s;
+    margin-right: 4px;
+    font-size: 18px;
+}
+#side-panel-header .back-btn:hover { opacity: 1; }
+#side-panel-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: 16px;
+}
+
+/* ── States ── */
+#state-idle { text-align: center; color: #9ca3af; padding: 40px 20px; }
+#state-idle .icon { font-size: 52px; margin-bottom: 12px; }
+#state-idle p { font-size: 14px; line-height: 1.6; }
+
+/* ── Étage accordion ── */
+.etage-block {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+.etage-header {
+    background: #f9fafb;
+    padding: 11px 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 14px;
+    user-select: none;
+    transition: background .15s;
+}
+.etage-header:hover { background: #f3f4f6; }
+.etage-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    color: #fff;
+}
+.badge-libre  { background: #16a34a; }
+.badge-occupe { background: #dc2626; }
+.etage-body   { padding: 10px; display: none; }
+.etage-body.open { display: block; }
+
+/* ── Salle cards grid ── */
+.salles-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+.salle-card {
+    border-radius: 10px;
+    padding: 10px 6px;
+    text-align: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform .15s, box-shadow .15s;
+    font-size: 13px;
+    font-weight: 600;
+}
+.salle-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+.salle-libre   { background: #f0fdf4; border-color: #16a34a; color: #15803d; }
+.salle-occupee { background: #fef2f2; border-color: #dc2626; color: #b91c1c; }
+.salle-card .salle-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin: 0 auto 4px;
+}
+.salle-libre  .salle-dot { background: #16a34a; }
+.salle-occupee .salle-dot { background: #dc2626; }
+.salle-card .cap { font-size: 10px; font-weight: 400; color: #9ca3af; margin-top: 2px; }
+
+/* ── Slots panel ── */
+.slot-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 14px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    border: 1px solid #e5e7eb;
+}
+.slot-libre  { background: #f0fdf4; border-color: #86efac; }
+.slot-occupee{ background: #fef2f2; border-color: #fca5a5; }
+.slot-time   { font-weight: 700; font-size: 13px; color: #111827; }
+.slot-status { font-size: 12px; font-weight: 500; margin-top: 2px; }
+.slot-libre  .slot-status { color: #16a34a; }
+.slot-occupee .slot-status { color: #dc2626; }
+.btn-reserver {
+    background: linear-gradient(135deg,#e74c3c,#e67e22);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(231,76,60,.25);
+}
+.btn-reserver:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(231,76,60,.4); }
+.btn-reserver:disabled { background: #d1d5db; cursor: default; box-shadow: none; transform: none; }
+
+/* ── Date picker ── */
+.date-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    background: #f9fafb;
+    border-radius: 10px;
+    padding: 10px 14px;
+    border: 1px solid #e5e7eb;
+}
+.date-row label { font-size: 12px; font-weight: 700; color: #374151; white-space: nowrap; }
+.date-row input[type=date] {
+    flex: 1;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    background: #fff;
+}
+.date-row input[type=date]:focus { outline: none; border-color: #e74c3c; box-shadow: 0 0 0 3px rgba(231,76,60,.1); }
+
+/* ── Toast ── */
+#toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    padding: 14px 22px;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 9999;
+    display: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,.2);
+    max-width: 340px;
+    line-height: 1.5;
+}
+#toast.success { background: linear-gradient(135deg,#16a34a,#22c55e); }
+#toast.error   { background: linear-gradient(135deg,#dc2626,#ef4444); }
+
+/* ── Legend ── */
+.legend {
+    background: rgba(255,255,255,.96);
+    padding: 12px 16px;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.15);
+    font-size: 12px;
+    line-height: 2;
+    backdrop-filter: blur(4px);
+}
+.legend b { font-size: 13px; }
+.legend-dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+
+/* ── Loader ── */
+.loader { text-align: center; padding: 30px; color: #9ca3af; font-size: 13px; }
+.loader::after {
+    content: '';
+    display: block;
+    margin: 12px auto 0;
+    width: 28px; height: 28px;
+    border: 3px solid #e5e7eb;
+    border-top-color: #e74c3c;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes ping {
+    0%,100% { box-shadow: 0 0 0 0 rgba(231,76,60,.4); }
+    50%      { box-shadow: 0 0 0 10px rgba(231,76,60,0); }
+}
+
+@media (max-width: 900px) {
+    .map-page { padding: 20px; }
+    #campus-wrapper { flex-direction: column; }
+    #side-panel { flex: 1 1 auto; max-height: 500px; }
+    .map-stats-row { gap: 10px; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="map-page">
+
+    <!-- Header -->
+    <div class="map-page-header">
+        <div class="map-page-header-left">
+            <h1>🗺️ Plan du campus</h1>
+            <p>Cliquez sur un bloc pour explorer ses salles et réserver un créneau de révision</p>
+        </div>
+        <a href="{{ path('front_salles') }}" class="map-header-badge">
+            🏢 Voir toutes les salles
+        </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="map-stats-row">
+        <div class="map-stat">
+            <div class="map-stat-icon red">🏫</div>
+            <div>
+                <div class="map-stat-value">6</div>
+                <div class="map-stat-label">Blocs ESPRIT</div>
+            </div>
+        </div>
+        <div class="map-stat">
+            <div class="map-stat-icon green">✅</div>
+            <div>
+                <div class="map-stat-value">4</div>
+                <div class="map-stat-label">Créneaux / jour</div>
+            </div>
+        </div>
+        <div class="map-stat">
+            <div class="map-stat-icon blue">📋</div>
+            <div>
+                <div class="map-stat-value">6</div>
+                <div class="map-stat-label">Jours / semaine</div>
+            </div>
+        </div>
+        <div class="map-stat">
+            <div class="map-stat-icon purple">📖</div>
+            <div>
+                <div class="map-stat-value">Révision</div>
+                <div class="map-stat-label">Type de séance</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How-to -->
+    <div class="map-howto">
+        <div class="map-howto-step"><span class="step-num">1</span> Cliquez sur un marqueur de bloc</div>
+        <span class="map-howto-sep">›</span>
+        <div class="map-howto-step"><span class="step-num">2</span> Choisissez une salle libre</div>
+        <span class="map-howto-sep">›</span>
+        <div class="map-howto-step"><span class="step-num">3</span> Sélectionnez un créneau disponible</div>
+        <span class="map-howto-sep">›</span>
+        <div class="map-howto-step"><span class="step-num">4</span> Cliquez sur <b>Réserver</b> ✅</div>
+    </div>
+
+    <div id="campus-wrapper">
+        <!-- MAP -->
+        <div id="map-container"></div>
+
+        <!-- SIDE PANEL -->
+        <div id="side-panel">
+            <div id="side-panel-header">
+                <span id="panel-back" class="back-btn" style="display:none" onclick="goBack()">&#8592;</span>
+                <span id="panel-title">🏫 Campus ESPRIT</span>
+            </div>
+            <div id="side-panel-body">
+                <div id="state-idle">
+                    <div class="icon">📍</div>
+                    <p>Cliquez sur un marqueur de bloc sur la carte pour explorer ses salles et réserver une séance de révision.</p>
+                </div>
+                <div id="state-etages" style="display:none"></div>
+                <div id="state-salle"  style="display:none"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function () {
+    /* ─── DATA ─── */
+    const BLOCS = [
+        { label: 'A / B / C', blocs:['A','B','C'], lat: 36.84797, lng: 10.14578, color: '#e74c3c' },
+        { label: 'D',         blocs:['D'],          lat: 36.84672, lng: 10.14578, color: '#e67e22' },
+        { label: 'E',         blocs:['E'],          lat: 36.84750, lng: 10.14641, color: '#f39c12' },
+        { label: 'G',         blocs:['G'],          lat: 36.83266, lng: 10.19516, color: '#2ecc71' },
+        { label: 'H',         blocs:['H'],          lat: 36.84219, lng: 10.14453, color: '#1abc9c' },
+        { label: 'I / J / K', blocs:['I','J','K'], lat: 36.84969, lng: 10.17578, color: '#9b59b6' },
+    ];
+
+    const SLOTS_LABELS = {
+        '09:00-10:30': '09h00 – 10h30',
+        '10:45-12:15': '10h45 – 12h15',
+        '13:30-15:00': '13h30 – 15h00',
+        '15:15-16:45': '15h15 – 16h45',
+    };
+    const ALL_SLOTS = [
+        ['09:00','10:30'],
+        ['10:45','12:15'],
+        ['13:30','15:00'],
+        ['15:15','16:45'],
+    ];
+
+    /* ─── STATE ─── */
+    let currentBloc  = null;   // { label, blocs[] }
+    let currentSalle = null;   // { id, nom, ... }
+    let navStack     = [];     // ['idle','etages','salle']
+
+    /* ─── MAP ─── */
+    const map = L.map('map-container').setView([36.8460, 10.1500], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19,
+    }).addTo(map);
+
+    function makeIcon(color, pulse) {
+        return L.divIcon({
+            className: '',
+            html: `<div style="background:${color};width:32px;height:32px;border-radius:50% 50% 50% 0;
+                   transform:rotate(-45deg);border:3px solid white;
+                   box-shadow:0 2px 8px rgba(0,0,0,.4);
+                   ${pulse?'animation:ping 1.2s ease-in-out infinite':''}"></div>`,
+            iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -34],
+        });
+    }
+
+    BLOCS.forEach(entry => {
+        const marker = L.marker([entry.lat, entry.lng], { icon: makeIcon(entry.color, false) })
+            .addTo(map)
+            .bindTooltip(`<b>Bloc ${entry.label}</b>`, { permanent: false, direction: 'top' });
+
+        marker.on('click', () => {
+            currentBloc = entry;
+            navStack = ['idle'];
+            loadEtages(entry);
+        });
+    });
+
+    /* Legend */
+    const legend = L.control({ position: 'bottomright' });
+    legend.onAdd = function () {
+        const div = L.DomUtil.create('div', 'legend');
+        div.innerHTML = '<b>Blocs ESPRIT</b><br>';
+        BLOCS.forEach(b => {
+            div.innerHTML += `<span class="legend-dot" style="background:${b.color}"></span>Bloc ${b.label}<br>`;
+        });
+        div.innerHTML += `<span class="legend-dot" style="background:#3498db"></span>Votre position`;
+        return div;
+    };
+    legend.addTo(map);
+
+    /* Geolocation */
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            const { latitude: lat, longitude: lng } = pos.coords;
+            L.marker([lat, lng], {
+                icon: L.divIcon({
+                    className: '',
+                    html: `<div style="background:#3498db;width:18px;height:18px;border-radius:50%;
+                           border:3px solid white;box-shadow:0 0 0 4px rgba(52,152,219,.3)"></div>`,
+                    iconSize: [18,18], iconAnchor: [9,9], popupAnchor:[0,-12],
+                })
+            }).addTo(map).bindPopup('<b>📍 Vous êtes ici</b>').openPopup();
+
+            L.circle([lat, lng], {
+                radius: pos.coords.accuracy,
+                color: '#3498db', fillColor: '#3498db', fillOpacity: .08, weight: 1,
+            }).addTo(map);
+        }, () => {});
+    }
+
+    /* ─── PANEL helpers ─── */
+    function showState(name) {
+        ['idle','etages','salle'].forEach(s => {
+            document.getElementById('state-'+s).style.display = s === name ? 'block' : 'none';
+        });
+    }
+    function setTitle(html, showBack) {
+        document.getElementById('panel-title').innerHTML = html;
+        document.getElementById('panel-back').style.display = showBack ? 'inline' : 'none';
+    }
+    function showLoader(containerId) {
+        document.getElementById(containerId).innerHTML = '<div class="loader">Chargement…</div>';
+    }
+    function showToast(msg, type) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = type;
+        t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 3800);
+    }
+
+    window.goBack = function() {
+        const prev = navStack.pop();
+        if (prev === 'idle') {
+            setTitle('🏫 Campus ESPRIT', false);
+            showState('idle');
+        } else if (prev === 'etages') {
+            loadEtages(currentBloc);
+        }
+    };
+
+    /* ─── LOAD ÉTAGES + SALLES ─── */
+    function loadEtages(blocEntry) {
+        setTitle(`🏢 Bloc <b>${blocEntry.label}</b>`, true);
+        showState('etages');
+        showLoader('state-etages');
+
+        // Use the first bloc letter for the API call
+        const blocLetter = blocEntry.blocs[0];
+        fetch(`/api/blocs/${blocLetter}/salles`)
+            .then(r => r.json())
+            .then(data => renderEtages(data, blocEntry))
+            .catch(() => {
+                document.getElementById('state-etages').innerHTML =
+                    '<p class="text-danger text-center mt-3">Erreur de chargement.</p>';
+            });
+    }
+
+    function renderEtages(data, blocEntry) {
+        const container = document.getElementById('state-etages');
+        if (!data.etages || data.etages.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center mt-3">Aucune salle enregistrée.</p>';
+            return;
+        }
+
+        // date picker
+        const today = new Date().toISOString().split('T')[0];
+        let html = `<div class="date-row">
+            <label>📅 Date :</label>
+            <input type="date" id="sel-date" value="${today}" min="${today}">
+        </div>`;
+
+        data.etages.forEach(etage => {
+            const libres  = etage.stats.libres;
+            const total   = etage.stats.total;
+            const label   = etage.etage === 0 ? 'Rez-de-chaussée' : `Étage ${etage.etage}`;
+            const badgeCls = libres > 0 ? 'badge-libre' : 'badge-occupe';
+            const badgeTxt = libres > 0 ? `${libres}/${total} libres` : 'Complet';
+
+            html += `<div class="etage-block">
+                <div class="etage-header" onclick="toggleEtage(this)">
+                    <span>🏬 ${label}</span>
+                    <span class="etage-badge ${badgeCls}">${badgeTxt}</span>
+                </div>
+                <div class="etage-body">
+                    <div class="salles-grid">`;
+
+            etage.salles.forEach(salle => {
+                const cls = salle.statut === 'libre' ? 'salle-libre' : 'salle-occupee';
+                html += `<div class="salle-card ${cls}" onclick="openSalle(${salle.id}, '${salle.nom}')">
+                    <div class="salle-dot"></div>
+                    <div>${salle.nom}</div>
+                    <div class="cap">Cap. ${salle.capacite}</div>
+                </div>`;
+            });
+
+            html += `</div></div></div>`;
+        });
+
+        container.innerHTML = html;
+
+        // Re-fetch on date change
+        document.getElementById('sel-date').addEventListener('change', () => {
+            refreshEtagesWithDate(blocEntry, document.getElementById('sel-date').value);
+        });
+    }
+
+    function refreshEtagesWithDate(blocEntry, dateStr) {
+        showLoader('state-etages');
+        const blocLetter = blocEntry.blocs[0];
+        // We re-fetch availability per salle using the date
+        // Since the API uses "today" internally, we rebuild the grid client-side
+        // by querying each salle's disponibilite endpoint
+        fetch(`/api/blocs/${blocLetter}/salles`)
+            .then(r => r.json())
+            .then(data => {
+                // override with date-specific availability
+                const promises = data.etages.flatMap(e =>
+                    e.salles.map(s =>
+                        fetch(`/api/salle/${s.id}/disponibilite?date=${dateStr}`)
+                            .then(r => r.json())
+                            .then(av => {
+                                s.statut     = av.isAvailable ? 'libre' : 'occupee';
+                                s.freeSlots  = av.freeSlots;
+                                s.occupiedSlots = av.occupiedSlots;
+                            })
+                            .catch(() => {})
+                    )
+                );
+                Promise.all(promises).then(() => {
+                    // recompute stats
+                    data.etages.forEach(e => {
+                        e.stats.libres = e.salles.filter(s => s.statut === 'libre').length;
+                    });
+                    renderEtages(data, blocEntry);
+                    // restore date
+                    document.getElementById('sel-date').value = dateStr;
+                    document.getElementById('sel-date').addEventListener('change', () => {
+                        refreshEtagesWithDate(blocEntry, document.getElementById('sel-date').value);
+                    });
+                });
+            });
+    }
+
+    window.toggleEtage = function(header) {
+        const body = header.nextElementSibling;
+        body.classList.toggle('open');
+    };
+
+    /* ─── OPEN SALLE DETAIL ─── */
+    window.openSalle = function(salleId, salleNom) {
+        navStack.push('etages');
+        currentSalle = { id: salleId, nom: salleNom };
+
+        setTitle(`🚪 Salle <b>${salleNom}</b>`, true);
+        showState('salle');
+        showLoader('state-salle');
+
+        // Charger les 6 prochains jours (Lundi→Samedi de la semaine courante)
+        loadSalleWeek(salleId, salleNom);
+    };
+
+    function getWeekDates() {
+        // Retourne un tableau [{jourFr, date:'YYYY-MM-DD'}] pour Lun→Sam de la semaine courante
+        const jours = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+        const today = new Date();
+        const dow = today.getDay(); // 0=dim, 1=lun...
+        const diffToMonday = (dow === 0) ? -6 : 1 - dow;
+        const monday = new Date(today);
+        monday.setDate(today.getDate() + diffToMonday);
+
+        return jours.map((j, i) => {
+            const d = new Date(monday);
+            d.setDate(monday.getDate() + i);
+            const iso = d.toISOString().split('T')[0];
+            const label = d.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit' });
+            return { jourFr: j, date: iso, label };
+        });
+    }
+
+    function loadSalleWeek(salleId, salleNom) {
+        const weekDates = getWeekDates();
+        const container = document.getElementById('state-salle');
+
+        // Fetch dispo salle ET créneaux étudiant en parallèle pour chaque jour
+        Promise.all(
+            weekDates.map(({ date }) =>
+                Promise.all([
+                    fetch(`/api/salle/${salleId}/disponibilite?date=${date}`).then(r => r.json()),
+                    fetch(`/api/etudiant/creneaux?date=${date}`).then(r => r.json()),
+                ])
+            )
+        ).then(results => {
+            // results[i] = [salleAvail, etudiantAvail]
+            renderSalleWeek(salleId, salleNom, weekDates, results);
+        }).catch(() => {
+            container.innerHTML = '<p class="text-danger text-center mt-3">Erreur de chargement.</p>';
+        });
+    }
+
+    function renderSalleWeek(salleId, salleNom, weekDates, results) {
+        const container = document.getElementById('state-salle');
+
+        // Compter jours avec au moins 1 créneau réservable (salle libre ET étudiant libre)
+        let joursReservables = 0;
+        results.forEach(([salleAvail, etudAvail]) => {
+            const salleKeys  = (salleAvail.freeSlots || []).map(s => s[0]+'-'+s[1]);
+            const etudKeys   = (etudAvail.freeSlots  || []).map(s => s[0]+'-'+s[1]);
+            const communs    = salleKeys.filter(k => etudKeys.includes(k));
+            if (communs.length > 0) joursReservables++;
+        });
+
+        let html = `<div style="margin-bottom:14px;padding:10px 14px;border-radius:8px;
+            background:${joursReservables > 0 ? '#eafaf1' : '#fdf0f0'};
+            border:1px solid ${joursReservables > 0 ? '#27ae60' : '#e74c3c'};
+            font-size:12px;color:${joursReservables > 0 ? '#1e8449' : '#c0392b'};">
+            ${joursReservables > 0
+                ? `✅ <b>${joursReservables} jour${joursReservables>1?'s':''}</b> avec créneaux disponibles pour vous cette semaine`
+                : '🔴 <b>Aucun créneau compatible</b> — vous avez cours ou la salle est occupée toute la semaine'}
+        </div>`;
+
+        weekDates.forEach(({ jourFr, date, label }, idx) => {
+            const [salleAvail, etudAvail] = results[idx];
+
+            const salleKeys = (salleAvail.freeSlots || []).map(s => s[0]+'-'+s[1]);
+            const etudKeys  = (etudAvail.freeSlots  || []).map(s => s[0]+'-'+s[1]);
+            const reservableKeys = salleKeys.filter(k => etudKeys.includes(k));
+            const hasReservable  = reservableKeys.length > 0;
+
+            const headerColor = hasReservable ? '#27ae60' : '#e74c3c';
+            const headerBg    = hasReservable ? '#eafaf1'  : '#fdf0f0';
+
+            html += `<div class="etage-block" style="margin-bottom:8px;">
+                <div class="etage-header" style="background:${headerBg};color:${headerColor};"
+                     onclick="toggleEtage(this)">
+                    <span><b>${jourFr}</b> <span style="font-weight:400;font-size:11px;color:#777;">${label}</span></span>
+                    <span class="etage-badge" style="background:${headerColor};">
+                        ${hasReservable ? reservableKeys.length + ' libre' + (reservableKeys.length>1?'s':'') : 'Indisponible'}
+                    </span>
+                </div>
+                <div class="etage-body open">`;
+
+            ALL_SLOTS.forEach(([hd, hf]) => {
+                const key           = hd + '-' + hf;
+                const salleLibre    = salleKeys.includes(key);
+                const etudLibre     = etudKeys.includes(key);
+                const reservable    = salleLibre && etudLibre;
+
+                let slotCls, statusTxt, statusIcon;
+                if (reservable) {
+                    slotCls    = 'slot-libre';
+                    statusIcon = '✅';
+                    statusTxt  = 'Disponible — vous pouvez réserver';
+                } else if (!etudLibre && salleLibre) {
+                    slotCls    = 'slot-occupee';
+                    statusIcon = '📚';
+                    statusTxt  = 'Vous avez cours à cet horaire';
+                } else if (!salleLibre && etudLibre) {
+                    slotCls    = 'slot-occupee';
+                    statusIcon = '🔴';
+                    statusTxt  = 'Salle occupée';
+                } else {
+                    slotCls    = 'slot-occupee';
+                    statusIcon = '🔴';
+                    statusTxt  = 'Cours + salle occupée';
+                }
+
+                html += `<div class="slot-item ${slotCls}">
+                    <div>
+                        <div class="slot-time">${hd} – ${hf}</div>
+                        <div class="slot-status">${statusIcon} ${statusTxt}</div>
+                    </div>`;
+                if (reservable) {
+                    html += `<button class="btn-reserver"
+                        onclick="reserver(${salleId},'${date}','${hd}','${hf}',this)">
+                        Réserver
+                    </button>`;
+                }
+                html += `</div>`;
+            });
+
+            html += `</div></div>`;
+        });
+
+        // Lien emploi du temps
+        html += `<div style="margin-top:14px;padding-top:12px;border-top:1px solid #eee;text-align:center;">
+            <a href="/seance/by-classe/{{ app.user is defined and app.user and app.user.classe is defined ? app.user.classe.id : '' }}"
+               target="_blank"
+               style="font-size:12px;color:#e74c3c;text-decoration:none;font-weight:600;">
+               📋 Voir mon emploi du temps →
+            </a>
+        </div>`;
+
+        container.innerHTML = html;
+    }
+
+    /* ─── RESERVATION ─── */
+    window.reserver = function(salleId, dateStr, heureDebut, heureFin, btn) {
+        btn.disabled = true;
+        btn.textContent = '…';
+
+        fetch(`/api/salle/${salleId}/reserver`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date: dateStr, heureDebut, heureFin }),
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                // Toast avec lien vers l'emploi du temps
+                showToastWithLink(
+                    `✅ Séance de révision ajoutée — ${data.seance.salle}, ${data.seance.jour} ${heureDebut}–${heureFin}`,
+                    'Voir mon emploi du temps →',
+                    '/seance/by-classe/{{ app.user is defined and app.user and app.user.classe is defined ? app.user.classe.id : "" }}'
+                );
+                // Recharge la vue semaine complète pour mettre à jour tous les créneaux
+                loadSalleWeek(salleId, currentSalle ? currentSalle.nom : '');
+            } else {
+                showToast('❌ ' + (data.error || 'Erreur inconnue'), 'error');
+                btn.disabled = false;
+                btn.textContent = 'Réserver';
+            }
+        })
+        .catch(() => {
+            showToast('❌ Erreur réseau', 'error');
+            btn.disabled = false;
+            btn.textContent = 'Réserver';
+        });
+    };
+
+    function showToastWithLink(msg, linkText, linkUrl) {
+        const t = document.getElementById('toast');
+        t.innerHTML = `${msg}<br><a href="${linkUrl}" target="_blank"
+            style="color:#fff;font-weight:700;text-decoration:underline;font-size:12px;">${linkText}</a>`;
+        t.className = 'success';
+        t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 6000);
+    }
+
+})();
+</script>
+{% endblock %}

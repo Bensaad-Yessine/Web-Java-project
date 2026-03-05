@@ -1,0 +1,2790 @@
+{% set stats = stats ?? {
+    tasks: { total: 0, completed: 0, pending: 0, overdue: 0, highPriority: 0 },
+    objectifs_sante: { total: 0, active: 0, completed: 0 },
+    suivi_bien_etre: { total: 0, this_month: 0 },
+    groupes_projets: { total: 0, active: 0 },
+    preferences_alertes: { total: 0, active: 0 }
+} %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESPRIT — Mes Tâches</title>
+    <style>
+        :root {
+            --font-size: 16px;
+            --primary-red: #DC2626;
+            --primary-red-dark: #B91C1C;
+            --primary-red-light: #FEE2E2;
+            --primary-gradient: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+            --secondary: #10B981;
+            --secondary-dark: #059669;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        html { 
+            font-size: var(--font-size); 
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+            color: var(--gray-900);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 20px rgba(220, 38, 38, 0.05);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        .brand {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--gray-200);
+            flex-shrink: 0;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            background: var(--primary-gradient);
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+        }
+
+        .brand-title {
+            font-weight: 800;
+            font-size: 20px;
+            color: var(--primary-red);
+        }
+
+        .brand-sub {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .user-session {
+            margin-top: 24px;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .user-session::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .user-details h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 2px;
+        }
+
+        .user-details p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .session-info {
+            font-size: 12px;
+            color: var(--gray-600);
+            padding-top: 16px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .session-info div {
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .session-info strong {
+            color: var(--gray-800);
+            font-weight: 600;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 24px;
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .nav::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: var(--radius-lg);
+            color: var(--gray-700);
+            text-decoration: none;
+            transition: all var(--transition);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .nav a:hover {
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            transform: translateX(4px);
+        }
+
+        .nav a.active {
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            font-weight: 600;
+            border-left: 3px solid var(--primary-red);
+        }
+
+        .nav a .icon {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2;
+            flex-shrink: 0;
+        }
+
+        .nav-section {
+            margin-top: 24px;
+            margin-bottom: 8px;
+            padding-left: 16px;
+        }
+
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .main {
+            flex: 1;
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .header-content h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin: 0;
+            color: var(--gray-900);
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-content p {
+            color: var(--gray-500);
+            margin-top: 8px;
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-lg);
+            border: none;
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+        }
+
+        .task-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-red-light);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .tasks-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .tasks-header {
+            padding: 24px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .tasks-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 24px;
+        }
+
+        .task-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-red-light);
+        }
+
+        .task-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--gray-300);
+        }
+
+        .task-card.high-priority::before {
+            background: var(--primary-red);
+        }
+
+        .task-card.medium-priority::before {
+            background: var(--warning);
+        }
+
+        .task-card.low-priority::before {
+            background: var(--secondary);
+        }
+
+        .task-card.completed::before {
+            background: var(--secondary);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .task-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .task-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-in-progress {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .status-completed {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .task-description {
+            color: var(--gray-600);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .task-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--gray-700);
+        }
+
+        .detail-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--gray-500);
+        }
+
+        .task-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .task-tag {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .tag-type-cours {
+            background: rgba(59, 130, 246, 0.1);
+            color: #2563EB;
+        }
+
+        .tag-type-examen {
+            background: rgba(239, 68, 68, 0.1);
+            color: #DC2626;
+        }
+
+        .tag-type-reunion {
+            background: rgba(245, 158, 11, 0.1);
+            color: #D97706;
+        }
+
+        .tag-type-personnel {
+            background: rgba(156, 163, 175, 0.1);
+            color: #4B5563;
+        }
+
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--gray-100);
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--gray-300);
+            background: white;
+            color: var(--gray-700);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .action-btn.primary {
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            border-color: var(--primary-red);
+        }
+
+        .action-btn.primary:hover {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        .task-date {
+            font-size: 12px;
+            color: var(--gray-500);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-500);
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray-500);
+            font-size: 12px;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 1200px) {
+            .app-shell {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 16px;
+                max-height: 80vh;
+            }
+            
+            .main {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .header-content h1 {
+                font-size: 28px;
+            }
+            
+            .task-grid {
+                grid-template-columns: 1fr;
+                padding: 16px;
+            }
+            
+            .task-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Notification Dropdown */
+        .dropdown {
+            position: fixed;
+            width: 500px;
+            max-width: 95vw;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.2), 0 10px 15px -6px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200);
+            z-index: 9999;
+            overflow: hidden;
+            animation: dropdown-slide 0.2s ease-out;
+        }
+
+        @keyframes dropdown-slide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dropdown.hidden {
+            display: none;
+        }
+
+        .dropdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .dropdown-header h3 {
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+        }
+
+        .mark-all-read {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 20px;
+            transition: all var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .mark-all-read:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        #notif-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        #notif-list li {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--gray-100);
+            transition: all var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        #notif-list li:hover {
+            background: var(--gray-50);
+        }
+
+        #notif-list li.unread {
+            background: #f7f0ff;
+            border-left: 4px solid #8b5cf6;
+        }
+
+        #notif-list li .message {
+            font-size: 14px;
+            color: var(--gray-800);
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        #notif-list li.unread .message {
+            font-weight: 600;
+            color: #6b21a8;
+        }
+
+        #notif-list li .meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        #notif-list li .time {
+            color: var(--gray-500);
+            font-size: 11px;
+        }
+
+        .notif-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .notif-action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--gray-300);
+            background: white;
+            color: var(--gray-700);
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .notif-action-btn:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-400);
+        }
+
+        .notif-action-btn.primary {
+            background: #8b5cf6;
+            color: white;
+            border-color: #8b5cf6;
+        }
+
+        .notif-action-btn.primary:hover {
+            background: #7c3aed;
+        }
+
+        #notif-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #notif-list::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        #notif-list::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+
+        #notif-list::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        /* Messaging Widget Styles */
+        #messaging-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all var(--transition);
+            z-index: 999;
+        }
+
+        #messaging-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+        }
+
+        #messaging-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        #messaging-widget {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 400px;
+            max-width: 90vw;
+            max-height: 550px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.3);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 998;
+            animation: widget-slide-up 0.3s ease-out;
+        }
+
+        #messaging-widget.active {
+            display: flex;
+        }
+
+        #messaging-view {
+            display: flex;
+            flex-direction: column;
+            height: 550px;
+            width: 100%;
+        }
+
+        #chat-view {
+            flex-direction: column;
+            height: 550px;
+            width: 100%;
+        }
+
+        #chat-view.active {
+            display: flex;
+        }
+
+        .messaging-header {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .messaging-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .messaging-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            font-size: 16px;
+            padding: 0;
+        }
+
+        .messaging-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .messaging-search {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-200);
+            position: relative;
+        }
+
+        .messaging-search input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: 20px;
+            font-size: 14px;
+            outline: none;
+            transition: all var(--transition);
+        }
+
+        .messaging-search input:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 16px;
+            right: 16px;
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            max-height: 250px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            margin-top: -10px;
+            padding-top: 8px;
+        }
+
+        .search-result-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background var(--transition);
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .search-result-item:hover {
+            background: var(--gray-50);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-result-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .search-result-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .search-result-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .search-result-email {
+            font-size: 12px;
+            color: var(--gray-500);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .conversations-container {
+            flex: 1;
+            overflow-y: auto;
+            background: var(--gray-50);
+        }
+
+        .conversations-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .conversation-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-200);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all var(--transition);
+            background: white;
+        }
+
+        .conversation-item:hover {
+            background: var(--gray-50);
+        }
+
+        .conversation-item.unread {
+            background: rgba(139, 92, 246, 0.05);
+            border-left: 3px solid #8b5cf6;
+            padding-left: 13px;
+        }
+
+        .conversation-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .conversation-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .conversation-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 4px;
+        }
+
+        .conversation-message {
+            font-size: 13px;
+            color: var(--gray-600);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .conversation-badge {
+            background: #8b5cf6;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .empty-conversations {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--gray-500);
+            font-size: 14px;
+        }
+
+        .chat-header-messaging {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .back-to-convs {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            font-size: 16px;
+            padding: 0;
+        }
+
+        .back-to-convs:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        #chat-title {
+            flex: 1;
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: var(--gray-50);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            animation: message-fade 0.3s ease-out;
+        }
+
+        .message.own {
+            align-items: flex-end;
+        }
+
+        .message.other {
+            align-items: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 70%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .message.own .message-bubble {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border-radius: 12px 12px 4px 12px;
+        }
+
+        .message.other .message-bubble {
+            background: white;
+            color: var(--gray-800);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px 12px 12px 4px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--gray-500);
+            margin-top: 2px;
+            padding: 0 4px;
+        }
+
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: var(--gray-500);
+        }
+
+        .message-status {
+            font-weight: 600;
+            color: var(--gray-600);
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 6px;
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .message.own:hover .message-actions {
+            opacity: 1;
+        }
+
+        .message-action-btn {
+            border: none;
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border-radius: 6px;
+            padding: 3px 6px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+
+        .message-action-btn:hover {
+            background: var(--gray-200);
+        }
+
+        .message-input-area {
+            padding: 12px 16px;
+            background: white;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            gap: 8px;
+        }
+
+        #message-input {
+            flex: 1;
+            border: 1px solid var(--gray-300);
+            border-radius: 20px;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: all var(--transition);
+        }
+
+        #message-input:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            font-weight: 600;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .conversations-container::-webkit-scrollbar,
+        .messages-area::-webkit-scrollbar,
+        .search-results::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .conversations-container::-webkit-scrollbar-track,
+        .messages-area::-webkit-scrollbar-track,
+        .search-results::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        .conversations-container::-webkit-scrollbar-thumb,
+        .messages-area::-webkit-scrollbar-thumb,
+        .search-results::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+
+        .conversations-container::-webkit-scrollbar-thumb:hover,
+        .messages-area::-webkit-scrollbar-thumb:hover,
+        .search-results::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        /* AI Chatbot Widget Styles */
+        #ai-chat-button {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: all var(--transition);
+            z-index: 999;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        #ai-chat-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.6);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .ai-chat-widget {
+            position: fixed;
+            bottom: 160px;
+            right: 20px;
+            width: 400px;
+            max-width: 90vw;
+            max-height: 550px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.3), 0 0 30px rgba(79, 70, 229, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 998;
+            animation: ai-widget-slide-up 0.3s ease-out;
+            border: 1px solid rgba(79, 70, 229, 0.2);
+        }
+
+        .ai-chat-widget.active {
+            display: flex;
+        }
+
+        @keyframes ai-widget-slide-up {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            position: relative;
+        }
+
+        .ai-chat-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .ai-chat-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            font-size: 16px;
+            padding: 0;
+        }
+
+        .ai-chat-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .ai-messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            background: linear-gradient(to bottom, rgba(79, 70, 229, 0.02), rgba(124, 58, 237, 0.02));
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ai-message {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            animation: message-fade 0.3s ease-out;
+        }
+
+        .ai-message.user {
+            align-items: flex-end;
+        }
+
+        .ai-message.ai {
+            align-items: flex-start;
+        }
+
+        .ai-message-bubble {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .ai-message.user .ai-message-bubble {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border-radius: 12px 12px 4px 12px;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
+        }
+
+        .ai-message.ai .ai-message-bubble {
+            background: white;
+            color: var(--gray-800);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px 12px 12px 4px;
+        }
+
+        .ai-messages-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .ai-messages-area::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        .ai-messages-area::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+
+        .ai-messages-area::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        .ai-message-input-area {
+            padding: 12px 16px;
+            background: white;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            gap: 8px;
+        }
+
+        #ai-message-input {
+            flex: 1;
+            border: 1px solid var(--gray-300);
+            border-radius: 20px;
+            padding: 10px 14px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: all var(--transition);
+        }
+
+        #ai-message-input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .ai-send-btn {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition);
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .ai-send-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+        }
+
+        .ai-send-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .ai-typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            align-items: center;
+        }
+
+        .ai-typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4f46e5;
+            animation: typing-bounce 1.4s infinite;
+        }
+
+        .ai-typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .ai-typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing-bounce {
+            0%, 60%, 100% {
+                opacity: 0.3;
+                transform: translateY(0);
+            }
+            30% {
+                opacity: 1;
+                transform: translateY(-8px);
+            }
+        }
+
+        @keyframes message-fade {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-row">
+                    <div class="brand-icon">ES</div>
+                    <div>
+                        <div class="brand-title">ESPRIT</div>
+                        <div class="brand-sub">Assistant Étudiant</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-session">
+                <div class="user-info">
+                    <div class="avatar">
+                        {{ app.user.nom|first }}{{ app.user.prenom|first }}
+                    </div>
+                    <div class="user-details">
+                        <h3>{{ app.user.nom }} {{ app.user.prenom }}</h3>
+                        <p>📚 {{ app.user.classe is not null ? app.user.classe.nom : 'Aucune classe' }}</p>
+                    </div>
+                </div>
+                <div class="session-info">
+                    <div><strong>Email :</strong> {{ app.user.email }}</div>
+                    <div><strong>Rôle :</strong> {{ app.user.roles[0]|replace({'ROLE_': ''})|capitalize }}</div>
+                </div>
+            </div>
+
+            <!-- Updated Navigation Bar -->
+            <nav class="nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Général</div>
+                    <a href="{{ path('app_dashboard') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/>
+                        </svg>
+                        Tableau de bord
+                    </a>
+                    <a href="{{ path('app_my_tasks') }}" >
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                        </svg>
+                        Mes Tâches
+                    </a>
+                    <a href="{{path('front_calendrier')}}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            <circle cx="12" cy="12" r="10"/>
+                        </svg>
+                        Calendrier 
+                    </a>
+                    <a href="{{ path('app_attendance_scan_page') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="4" width="6" height="6"/>
+                            <rect x="14" y="4" width="6" height="6"/>
+                            <rect x="4" y="14" width="6" height="6"/>
+                            <path d="M14 14h6v6h-6z"/>
+                        </svg>
+                        QR Scan
+                    </a>
+                    <a href="{{path('front_objectif_sante_index')}}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            <path d="M8 12h8"/>
+                            <path d="M12 8v8"/>
+                        </svg>
+                        Santé
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Académique</div>
+                    <a href="{% if app.user.classe %}{{ path('app_classe_front_show',{'id': app.user.classe.id}) }}{% else %}#{% endif %}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        </svg>
+                        Classes
+                    </a>
+                    <a href="{{ path('app_matiere_classe_front_index') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        Matières
+                    </a>
+                    <a href="{{ path('front_salles') }}" {% if current_page|default('') == 'salles' %}class="active"{% endif %}>
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="7" width="18" height="13" rx="2" ry="2"/>
+                            <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            <line x1="12" y1="12" x2="12" y2="12"/>
+                            <line x1="8" y1="17" x2="16" y2="17"/>
+                        </svg>
+                        Salles
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Cours & Groupes</div>
+                    <a href="{% if app.user.classe %}{{path('app_seance_by_classe',{'id': app.user.classe.id})}}{% else %}#{% endif %}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                            <line x1="12" y1="12" x2="12" y2="12"/>
+                        </svg>
+                        Séances
+                    </a>
+                    <a href="{{path('front_groupe_projet_index')}}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        Groupes
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Compte</div>
+                    <a href="{{ path('app_profile') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        Profil
+                    </a>
+                    <a href="{{ path('app_logout') }}">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>
+                        </svg>
+                        Déconnexion
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Rest of the content remains the same -->
+        {% block body %}
+        <main class="main">
+            <header class="header">
+                <div class="header-content">
+                    <h1>Mes Tâches</h1>
+                    <p>Gérez et suivez toutes vos tâches académiques</p>
+                </div>
+                <div class="header-actions">
+                    <a href="{{ path('app_payment_packs') }}" class="btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="5" width="20" height="14" rx="2"/>
+                            <line x1="2" y1="10" x2="22" y2="10"/>
+                        </svg>
+                        Packs & Paiement
+                    </a>
+                    <a href="{{ path('app_tache_new') }}" class="btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 5v14M5 12h14"/>
+                        </svg>
+                        Nouvelle Tâche
+                    </a>
+                    <button id="notif-btn" class="btn" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25); position: relative;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        Notifications
+                        <span id="notif-badge" style="position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; display: none;">0</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Statistics Dashboard for All User Entities -->
+            <div class="task-stats">
+                <!-- Tasks Statistics -->
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.tasks.total|default(0) }}</div>
+                    <div class="stat-label">📋 Tâches totales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.tasks.completed|default(0) }}</div>
+                    <div class="stat-label">✅ Complétées</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.tasks.pending|default(0) }}</div>
+                    <div class="stat-label">⏳ En attente</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.tasks.highPriority|default(0) }}</div>
+                    <div class="stat-label">🚨 Haute priorité</div>
+                </div>
+
+                <!-- Health Objectives Statistics -->
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.objectifs_sante.total|default(0) }}</div>
+                    <div class="stat-label">🏥 Objectifs Santé</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.objectifs_sante.active|default(0) }}</div>
+                    <div class="stat-label">🌟 Actifs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.objectifs_sante.completed|default(0) }}</div>
+                    <div class="stat-label">🎯 Complétés</div>
+                </div>
+
+                <!-- Wellbeing Tracking Statistics -->
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.suivi_bien_etre.total|default(0) }}</div>
+                    <div class="stat-label">😊 Suivi Bien-être</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.suivi_bien_etre.this_month|default(0) }}</div>
+                    <div class="stat-label">📆 Ce mois-ci</div>
+                </div>
+
+                <!-- Project Groups Statistics -->
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.groupes_projets.total|default(0) }}</div>
+                    <div class="stat-label">👥 Groupes Projets</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.groupes_projets.active|default(0) }}</div>
+                    <div class="stat-label">💼 Actifs</div>
+                </div>
+
+                <!-- Alert Preferences Statistics -->
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.preferences_alertes.total|default(0) }}</div>
+                    <div class="stat-label">🔔 Préférences Alertes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">{{ stats.preferences_alertes.active|default(0) }}</div>
+                    <div class="stat-label">✔️ Activées</div>
+                </div>
+            </div>
+
+            <div class="tasks-container">
+                <div class="tasks-header">
+                    <h2 class="tasks-title">Toutes les tâches ({{ stats.tasks.total|default(0) }})</h2>
+                </div>
+
+                <div class="task-grid" id="taskList">
+                    {% if tasks is defined and tasks is not empty %}
+                        {% for task in tasks %}
+                            {% set taskType = task.type|default('personnel') %}
+                            {% set taskPriority = task.priorite|default('MOYEN') %}
+                            {% set rawStatus = task.statut|default('A_FAIRE') %}
+                            {% set isCompleted = rawStatus == 'TERMINE' %}
+                            {% set statusLabels = {'A_FAIRE': 'En attente', 'EN_COURS': 'En cours', 'TERMINE': 'Terminée', 'EN_RETARD': 'En retard', 'PAUSED': 'En pause'} %}
+                            {% set statusSlugMap = {'A_FAIRE':'pending', 'EN_COURS':'in_progress', 'TERMINE':'completed', 'EN_RETARD':'overdue', 'PAUSED':'paused'} %}
+                            {% set statusSlug = statusSlugMap[rawStatus]|default('pending') %}
+                            {% set priorityMap = {'ELEVEE': 'high', 'MOYEN': 'medium', 'FAIBLE': 'low'} %}
+                            {% set priorityClassMap = {'ELEVEE': 'high', 'MOYEN': 'medium', 'FAIBLE': 'low'} %}
+                            {% set priorityLabelMap = {'ELEVEE': 'Haute', 'MOYEN': 'Moyenne', 'FAIBLE': 'Basse'} %}
+                            {% set priorityClass = priorityClassMap[taskPriority]|default('medium') %}
+                            
+                            <div class="task-card {{ isCompleted ? 'completed' : '' }} {{ priorityClass }}-priority">
+                                <div class="task-header">
+                                    <h3 class="task-title">{{ task.titre|default('Tâche sans titre') }}</h3>
+                                    <span class="task-status status-{{ statusSlug }}">
+                                        {{ statusLabels[rawStatus]|default('En attente') }}
+                                    </span>
+                                </div>
+                                
+                                {% if task.description %}
+                                <div class="task-description">
+                                    {{ task.description }}
+                                </div>
+                                {% endif %}
+                                
+                                <div class="task-details">
+                                    <div class="detail-item">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 8v4l3 3"/>
+                                            <circle cx="12" cy="12" r="10"/>
+                                        </svg>
+                                        <span>Priorité : 
+                                            <strong style="color: 
+                                                {% if priorityClass == 'high' %}var(--primary-red)
+                                                {% elseif priorityClass == 'medium' %}var(--warning)
+                                                {% else %}var(--secondary){% endif %}">
+                                                {{ priorityLabelMap[taskPriority] }}
+                                            </strong>
+                                        </span>
+                                    </div>
+                                    
+                                    {% if task.dateEcheance %}
+                                    <div class="detail-item">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                            <line x1="16" y1="2" x2="16" y2="6"/>
+                                            <line x1="8" y1="2" x2="8" y2="6"/>
+                                            <line x1="3" y1="10" x2="21" y2="10"/>
+                                        </svg>
+                                        <span>Échéance : <strong>{{ task.dateEcheance|date('d/m/Y') }}</strong></span>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if task.createdAt %}
+                                    <div class="detail-item">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                            <circle cx="12" cy="7" r="4"/>
+                                        </svg>
+                                        <span>Créée le : {{ task.createdAt|date('d/m/Y') }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="task-tags">
+                                    <span class="task-tag tag-type-{{ taskType }}">
+                                        {{ taskType|capitalize }}
+                                    </span>
+                                </div>
+                                
+                                <div class="task-footer">
+                                    <div class="task-actions">
+                                        <a class="action-btn primary" href="{{ path('app_task_show', {'id': task.id}) }}">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10"/>
+                                                <path d="M12 16v-4"/>
+                                                <circle cx="12" cy="8" r="0.5" fill="currentColor" stroke="none"/>
+                                            </svg>
+                                            Voir détails
+                                        </a>
+                                        <a class="action-btn" href="{{ path('app_tache_edit', {'id': task.id}) }}">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                            </svg>
+                                            Modifier
+                                        </a>
+                                    </div>
+                                    <div class="task-date">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <polyline points="12 6 12 12 16 14"/>
+                                        </svg>
+                                        {{ task.updatedAt ? 'Modifiée' : 'Créée' }} le {{ (task.updatedAt ?? task.createdAt ?? "now")|date('d/m/Y') }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11l3 3 8-8"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                            </svg>
+                            <h3>Aucune tâche pour le moment</h3>
+                            <p>Créez votre première tâche pour commencer à organiser votre travail</p>
+                            <a href="{{ path('app_tache_new') }}" class="btn" style="margin-top: 20px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 5v14M5 12h14"/>
+                                </svg>
+                                Créer une tâche
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>ESPRIT Assistant Étudiant • © {{ "now"|date("Y") }} • Tous droits réservés</p>
+            </div>
+        </main>
+        {% endblock %}
+    </div>
+
+    <!-- Floating notification dropdown -->
+    <div id="notif-dropdown" class="dropdown hidden">
+        <div class="dropdown-header">
+            <h3>🔔 Notifications</h3>
+            <button class="mark-all-read" id="mark-all-read">Marquer comme lues</button>
+        </div>
+        <ul id="notif-list"></ul>
+    </div>
+
+    <!-- Toast message -->
+    <div id="toast-message" style="position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 12px 20px; border-radius: 8px; opacity: 0; transition: opacity 0.3s; z-index: 10000; font-size: 14px;"></div>
+
+    <!-- Messaging Widget (Messenger-like) -->
+    <button id="messaging-button" title="Messages">
+        💬
+        <span id="messaging-badge" style="display: none;">0</span>
+    </button>
+    <div id="messaging-widget">
+        <div id="messaging-view">
+            <!-- Search Section -->
+            <div class="messaging-header">
+                <h3>Messages</h3>
+                <button class="messaging-close" onclick="toggleMessaging()">✕</button>
+            </div>
+            <div class="messaging-search">
+                <input 
+                    id="student-search" 
+                    type="text" 
+                    placeholder="Rechercher un étudiant..."
+                    autocomplete="off"
+                />
+                <div id="search-results" class="search-results" style="display: none;"></div>
+            </div>
+            
+            <!-- Conversations List -->
+            <div class="conversations-container">
+                <ul id="conversations-list" class="conversations-list"></ul>
+                <div id="no-conversations" class="empty-conversations" style="display: none;">
+                    <p>Aucune conversation pour le moment</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chat View -->
+        <div id="chat-view" style="display: none;">
+            <div class="chat-header-messaging">
+                <button class="back-to-convs" onclick="backToConversations()" title="Retour">← </button>
+                <h3 id="chat-title">Conversation</h3>
+                <button class="messaging-close" onclick="toggleMessaging()">✕</button>
+            </div>
+            <div id="messages-area" class="messages-area"></div>
+            <div class="message-input-area">
+                <input 
+                    id="message-input" 
+                    type="text" 
+                    placeholder="Écrivez un message..."
+                    autocomplete="off"
+                />
+                <button id="send-message-btn" class="send-btn" onclick="sendMessage()">↑</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Education Chatbot Widget (Llama 3.1 via Ollama) -->
+    <button id="ai-chat-button" title="Assistance IA (Éducation)">
+        🤖
+    </button>
+    <div id="ai-chat-widget" class="ai-chat-widget">
+        <div class="ai-chat-header">
+            <h3>Assistant IA 🤖</h3>
+            <p style="font-size: 11px; color: rgba(255,255,255,0.8); margin: 4px 0 0 0;">Questions sur l'éducation & sujets</p>
+            <button class="ai-chat-close" onclick="toggleAIChat()">✕</button>
+        </div>
+        <div id="ai-messages-area" class="ai-messages-area"></div>
+        <div class="ai-message-input-area">
+            <input 
+                id="ai-message-input" 
+                type="text" 
+                placeholder="Posez une question..."
+                autocomplete="off"
+            />
+            <button id="ai-send-btn" class="ai-send-btn" onclick="sendAIMessage()">↑</button>
+        </div>
+    </div>
+
+    <script>
+        // Toast helper
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast-message');
+            toast.textContent = message;
+            toast.style.background = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#333';
+            toast.style.opacity = '1';
+            setTimeout(() => toast.style.opacity = '0', 3000);
+        }
+
+        // Notification system
+        const notifBtn = document.getElementById('notif-btn');
+        const notifDropdown = document.getElementById('notif-dropdown');
+        const notifList = document.getElementById('notif-list');
+        const notifBadge = document.getElementById('notif-badge');
+
+        if (notifBtn && notifDropdown) {
+            notifBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                notifDropdown.classList.toggle('hidden');
+                if (!notifDropdown.classList.contains('hidden')) {
+                    positionDropdown(notifDropdown, notifBtn);
+                    fetchNotifications();
+                }
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!notifDropdown.contains(e.target) && e.target !== notifBtn) {
+                    notifDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        function positionDropdown(dropdown, button) {
+            const rect = button.getBoundingClientRect();
+            dropdown.style.top = (rect.bottom + 10) + 'px';
+            dropdown.style.right = (window.innerWidth - rect.right) + 'px';
+        }
+
+        function fetchNotifications() {
+            fetch('{{ path('notifications_fetch') }}')
+                .then(response => response.json())
+                .then(data => {
+                    notifList.innerHTML = '';
+                    if (data && data.length > 0) {
+                        notifBadge.textContent = data.length;
+                        notifBadge.style.display = 'flex';
+                        data.forEach(notif => {
+                            const li = document.createElement('li');
+                            if (!notif.isRead) li.classList.add('unread');
+                            li.innerHTML = `
+                                <div class="message">${notif.message}</div>
+                                <div class="meta">
+                                    <span class="time">${notif.createdAt}</span>
+                                </div>
+                                <div class="notif-actions">
+                                    <button class="notif-action-btn primary" onclick="markAsRead(${notif.id})">Marquer comme lue</button>
+                                </div>
+                            `;
+                            notifList.appendChild(li);
+                        });
+                    } else {
+                        notifBadge.style.display = 'none';
+                        notifList.innerHTML = '<li style="text-align: center; padding: 30px 20px; color: var(--gray-500);">Aucune notification</li>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    notifList.innerHTML = '<li style="text-align: center; padding: 30px 20px; color: var(--gray-500);">Erreur lors du chargement</li>';
+                });
+        }
+
+        function markAsRead(id) {
+            fetch('{{ path('notifications_mark_read', {'id': '__ID__'}) }}'.replace('__ID__', id), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                showToast('Notification marquée comme lue', 'success');
+                fetchNotifications();
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showToast('Erreur lors de la mise à jour', 'error');
+            });
+        }
+
+        // Poll notifications every 30 seconds
+        setInterval(() => {
+            if (!notifDropdown.classList.contains('hidden')) {
+                fetchNotifications();
+            }
+        }, 30000);
+
+        // ========== MESSAGING WIDGET ==========
+        const messagingWidget = document.getElementById('messaging-widget');
+        const messagingButton = document.getElementById('messaging-button');
+        const messagingBadge = document.getElementById('messaging-badge');
+        const messagingView = document.getElementById('messaging-view');
+        const chatView = document.getElementById('chat-view');
+        const studentSearch = document.getElementById('student-search');
+        const searchResults = document.getElementById('search-results');
+        const conversationsList = document.getElementById('conversations-list');
+        const messagesArea = document.getElementById('messages-area');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-message-btn');
+
+        // State management
+        const state = {
+            currentConversationId: null,
+            currentChatName: null,
+            lastMessageId: 0,
+            previousUnreadCount: 0,
+            isLoading: false,
+            isSending: false,
+            messagePollingInterval: null,
+            unreadPollingInterval: null
+        };
+
+        // Debounce helper
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        if (messagingButton && studentSearch && messageInput && sendBtn && searchResults) {
+            messagingButton.addEventListener('click', toggleMessaging);
+            studentSearch.addEventListener('input', debounce(searchStudents, 300));
+            studentSearch.addEventListener('focus', () => {
+                if (studentSearch.value.trim()) searchResults.style.display = 'block';
+            });
+            
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            sendBtn.addEventListener('click', sendMessage);
+            
+            document.addEventListener('click', function(e) {
+                if (!searchResults.contains(e.target) && e.target !== studentSearch) {
+                    searchResults.style.display = 'none';
+                }
+            });
+        }
+
+        function toggleMessaging() {
+            messagingWidget.classList.toggle('active');
+            messagingButton.classList.toggle('active');
+            if (messagingWidget.classList.contains('active')) {
+                loadConversations();
+                studentSearch.focus();
+                stopUnreadPolling();
+            } else {
+                stopAllPolling();
+                startUnreadPolling();
+            }
+        }
+
+        function startUnreadPolling() {
+            if (state.unreadPollingInterval) return;
+            updateUnreadCount(false);
+            state.unreadPollingInterval = setInterval(() => updateUnreadCount(true), 10000);
+        }
+
+        function stopUnreadPolling() {
+            if (state.unreadPollingInterval) {
+                clearInterval(state.unreadPollingInterval);
+                state.unreadPollingInterval = null;
+            }
+        }
+
+        function stopAllPolling() {
+            if (state.messagePollingInterval) {
+                clearInterval(state.messagePollingInterval);
+                state.messagePollingInterval = null;
+            }
+            stopUnreadPolling();
+        }
+
+        function updateUnreadCount(showToastOnIncrease = false) {
+            fetch('{{ path('messaging_unread_count') }}')
+            .then(r => r.json())
+            .then(data => {
+                const count = data.unreadCount || 0;
+                if (count > 0) {
+                    messagingBadge.textContent = count;
+                    messagingBadge.style.display = 'flex';
+                } else {
+                    messagingBadge.style.display = 'none';
+                }
+                
+                if (showToastOnIncrease && count > state.previousUnreadCount && state.previousUnreadCount > 0) {
+                    showToast(`${count - state.previousUnreadCount} nouveau(x) message(s)`, 'info');
+                }
+                state.previousUnreadCount = count;
+            })
+            .catch(e => console.error('Unread count error:', e));
+        }
+
+        function searchStudents() {
+            const query = studentSearch.value.trim();
+            if (query.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            
+            fetch('{{ path('messaging_search') }}', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'query=' + encodeURIComponent(query)
+            })
+            .then(r => r.json())
+            .then(data => {
+                searchResults.innerHTML = '';
+                if (data.results.length > 0) {
+                    data.results.forEach(user => {
+                        const item = document.createElement('div');
+                        item.className = 'search-result-item';
+                        const initials = (user.prenom[0] + user.nom[0]).toUpperCase();
+                        item.innerHTML = `
+                            <div class="search-result-avatar">${initials}</div>
+                            <div class="search-result-info">
+                                <div class="search-result-name">${user.fullName}</div>
+                                <div class="search-result-email">${user.email}</div>
+                            </div>
+                        `;
+                        item.onclick = () => startConversation(user.id, user.fullName);
+                        searchResults.appendChild(item);
+                    });
+                    searchResults.style.display = 'block';
+                } else {
+                    searchResults.innerHTML = '<div style="padding: 16px; text-align: center; color: var(--gray-500); font-size: 14px;">Aucun étudiant trouvé</div>';
+                    searchResults.style.display = 'block';
+                }
+            })
+            .catch(e => console.error('Search error:', e));
+        }
+
+        function startConversation(userId, userName) {
+            fetch('{{ path('messaging_start', {'userId': '__ID__'}) }}'.replace('__ID__', userId), {
+                method: 'POST'
+            })
+            .then(r => r.json())
+            .then(data => {
+                studentSearch.value = '';
+                searchResults.style.display = 'none';
+                openConversation(data.conversationId, userName);
+            })
+            .catch(e => {
+                console.error('Start conversation error:', e);
+                showToast('Erreur lors du démarrage de la conversation', 'error');
+            });
+        }
+
+        function loadConversations() {
+            fetch('{{ path('messaging_conversations') }}')
+            .then(r => r.json())
+            .then(data => {
+                conversationsList.innerHTML = '';
+                if (data.conversations.length > 0) {
+                    document.getElementById('no-conversations').style.display = 'none';
+                    data.conversations.forEach(conv => {
+                        const li = document.createElement('li');
+                        li.className = `conversation-item ${conv.unreadCount > 0 ? 'unread' : ''}`;
+                        const nameParts = conv.otherUser.name.split(' ');
+                        const initials = (nameParts[0]?.[0] || '') + (nameParts[1]?.[0] || '');
+                        let lastMsgPreview = conv.lastMessage ? conv.lastMessage.content.substring(0, 40) : 'Aucun message';
+                        li.innerHTML = `
+                            <div class="conversation-avatar">${initials}</div>
+                            <div class="conversation-info">
+                                <div class="conversation-name">${conv.otherUser.name}</div>
+                                <div class="conversation-message">${lastMsgPreview}</div>
+                            </div>
+                            ${conv.unreadCount > 0 ? `<div class="conversation-badge">${conv.unreadCount}</div>` : ''}
+                        `;
+                        li.onclick = () => openConversation(conv.id, conv.otherUser.name);
+                        conversationsList.appendChild(li);
+                    });
+                } else {
+                    document.getElementById('no-conversations').style.display = 'block';
+                }
+            })
+            .catch(e => console.error('Load conversations error:', e));
+        }
+
+        function openConversation(convId, otherUserName = null) {
+            state.currentConversationId = convId;
+            state.lastMessageId = 0;
+            state.isLoading = false;
+            messagesArea.innerHTML = '';
+            
+            messagingView.style.display = 'none';
+            chatView.style.display = 'flex';
+            state.currentChatName = otherUserName;
+            
+            if (state.currentChatName) {
+                const titleEl = document.getElementById('chat-title');
+                if (titleEl) titleEl.textContent = state.currentChatName;
+            }
+            
+            // Load initial messages
+            loadInitialMessages();
+            
+            // Start polling for new messages (every 5 seconds)
+            if (state.messagePollingInterval) clearInterval(state.messagePollingInterval);
+            state.messagePollingInterval = setInterval(pollNewMessages, 5000);
+        }
+
+        function backToConversations() {
+            state.currentConversationId = null;
+            state.lastMessageId = 0;
+            state.isLoading = false;
+            messagingView.style.display = 'block';
+            chatView.style.display = 'none';
+            state.currentChatName = null;
+            
+            if (state.messagePollingInterval) {
+                clearInterval(state.messagePollingInterval);
+                state.messagePollingInterval = null;
+            }
+            
+            loadConversations();
+        }
+
+        function loadInitialMessages() {
+            if (!state.currentConversationId || state.isLoading) return;
+            
+            state.isLoading = true;
+            messagesArea.innerHTML = '<div style="text-align:center;padding:20px;color:#6B7280;">Chargement...</div>';
+            
+            fetch('{{ path('messaging_get_messages', {'id': '__ID__'}) }}'.replace('__ID__', state.currentConversationId))
+            .then(r => r.json())
+            .then(data => {
+                messagesArea.innerHTML = '';
+                data.messages.forEach(msg => {
+                    renderMessage(msg);
+                    if (msg.id > state.lastMessageId) {
+                        state.lastMessageId = msg.id;
+                    }
+                });
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+                state.isLoading = false;
+            })
+            .catch(e => {
+                console.error('Load messages error:', e);
+                messagesArea.innerHTML = '<div style="text-align:center;padding:20px;color:#EF4444;">Erreur de chargement</div>';
+                state.isLoading = false;
+            });
+        }
+
+        function pollNewMessages() {
+            if (!state.currentConversationId || state.isLoading) return;
+            
+            fetch(`{{ path('messaging_check_new', {'id': '__ID__'}) }}`.replace('__ID__', state.currentConversationId) + 
+                  `?lastMessageId=${state.lastMessageId}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.hasNew && data.messages.length > 0) {
+                    const wasAtBottom = messagesArea.scrollHeight - messagesArea.scrollTop <= messagesArea.clientHeight + 100;
+                    
+                    data.messages.forEach(msg => {
+                        renderMessage(msg);
+                        if (msg.id > state.lastMessageId) {
+                            state.lastMessageId = msg.id;
+                        }
+                    });
+                    
+                    if (wasAtBottom) {
+                        messagesArea.scrollTop = messagesArea.scrollHeight;
+                    }
+                    
+                    updateUnreadCount(false);
+                    loadConversations();
+                }
+            })
+            .catch(e => console.error('Poll new messages error:', e));
+        }
+
+        function renderMessage(msg) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${msg.sender.id === {{ app.user.id }} ? 'own' : 'other'}`;
+            msgDiv.dataset.messageId = msg.id;
+            
+            const timeStr = new Date(msg.createdAt).toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
+            const statusParts = [];
+            if (msg.isEdited) statusParts.push('Modifie');
+            if (msg.sender.id === {{ app.user.id }}) {
+                statusParts.push(msg.isRead ? 'Vu' : 'Envoye');
+            }
+            const statusText = statusParts.join(' • ');
+            
+            msgDiv.innerHTML = `
+                <div class="message-bubble">${escapeHtml(msg.content)}</div>
+                <div class="message-meta">
+                    <span class="message-time">${timeStr}</span>
+                    ${statusText ? `<span class=\"message-status\">${statusText}</span>` : ''}
+                    ${msg.sender.id === {{ app.user.id }} ? `
+                        <div class=\"message-actions\">
+                            <button class=\"message-action-btn\" data-action=\"edit\" data-id=\"${msg.id}\">Modifier</button>
+                            <button class=\"message-action-btn\" data-action=\"delete\" data-id=\"${msg.id}\">Supprimer</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            messagesArea.appendChild(msgDiv);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        messagesArea.addEventListener('click', function(e) {
+            const target = e.target;
+            if (!target || !target.dataset) return;
+
+            const action = target.dataset.action;
+            const messageId = target.dataset.id;
+            if (!action || !messageId) return;
+
+           if (action === 'edit') {
+                const messageDiv = target.closest('.message');
+                const currentContent = messageDiv.querySelector('.message-bubble').textContent;
+                const newContent = prompt('Modifier le message:', currentContent);
+                
+                if (!newContent || !newContent.trim() || newContent.trim() === currentContent) return;
+                
+                // Optimistic update
+                const bubble = messageDiv.querySelector('.message-bubble');
+                const oldContent = bubble.textContent;
+                bubble.textContent = newContent.trim();
+                target.disabled = true;
+                
+                fetch('{{ path('messaging_edit_message', {'id': '__ID__'}) }}'.replace('__ID__', messageId), {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: 'content=' + encodeURIComponent(newContent.trim())
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update status to show "Modifie"
+                        const statusEl = messageDiv.querySelector('.message-status');
+                        if (statusEl && !statusEl.textContent.includes('Modifie')) {
+                            statusEl.textContent = 'Modifie • ' + statusEl.textContent;
+                        }
+                        showToast('Message modifie', 'success');
+                    } else {
+                        bubble.textContent = oldContent;
+                        showToast('Erreur lors de la modification', 'error');
+                    }
+                    target.disabled = false;
+                })
+                .catch(e => {
+                    console.error('Edit message error:', e);
+                    bubble.textContent = oldContent;
+                    showToast('Erreur de connexion', 'error');
+                    target.disabled = false;
+                });
+            }
+
+            if (action === 'delete') {
+                if (!confirm('Supprimer ce message ?')) return;
+                
+                const messageDiv = target.closest('.message');
+                messageDiv.style.opacity = '0.5';
+                target.disabled = true;
+                
+                fetch('{{ path('messaging_delete_message', {'id': '__ID__'}) }}'.replace('__ID__', messageId), {
+                    method: 'POST'
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        messageDiv.remove();
+                        showToast('Message supprime', 'success');
+                        loadConversations();
+                    } else {
+                        messageDiv.style.opacity = '1';
+                        target.disabled = false;
+                        showToast('Erreur lors de la suppression', 'error');
+                    }
+                })
+                .catch(e => {
+                    console.error('Delete message error:', e);
+                    messageDiv.style.opacity = '1';
+                    target.disabled = false;
+                    showToast('Erreur de connexion', 'error');
+                });
+            }
+        });
+
+        function sendMessage() {
+            const content = messageInput.value.trim();
+            if (!content || !state.currentConversationId || state.isSending) return;
+            
+            state.isSending = true;
+            sendBtn.disabled = true;
+            messageInput.value = '';
+            
+            // Optimistic UI - show message immediately
+            const tempMsg = {
+                id: 'temp-' + Date.now(),
+                content: content,
+                sender: { id: {{ app.user.id }}, name: 'Vous' },
+                createdAt: new Date().toISOString(),
+                isRead: false,
+                isEdited: false
+            };
+            renderMessage(tempMsg);
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+            
+            fetch('{{ path('messaging_send', {'id': '__ID__'}) }}'.replace('__ID__', state.currentConversationId), {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'content=' + encodeURIComponent(content)
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove temp message and replace with real one
+                    const tempMsgDiv = messagesArea.querySelector(`[data-message-id="${tempMsg.id}"]`);
+                    if (tempMsgDiv) tempMsgDiv.remove();
+                    
+                    // Update last message ID
+                    if (data.message.id > state.lastMessageId) {
+                        state.lastMessageId = data.message.id;
+                    }
+                    
+                    renderMessage(data.message);
+                    messagesArea.scrollTop = messagesArea.scrollHeight;
+                    loadConversations();
+                } else {
+                    // Remove temp message on error
+                    const tempMsgDiv = messagesArea.querySelector(`[data-message-id="${tempMsg.id}"]`);
+                    if (tempMsgDiv) tempMsgDiv.remove();
+                    messageInput.value = content;
+                    showToast('Erreur lors de l\'envoi du message', 'error');
+                }
+                state.isSending = false;
+                sendBtn.disabled = false;
+            })
+            .catch(e => {
+                console.error('Send message error:', e);
+                // Remove temp message on error
+                const tempMsgDiv = messagesArea.querySelector(`[data-message-id="${tempMsg.id}"]`);
+                if (tempMsgDiv) tempMsgDiv.remove();
+                messageInput.value = content;
+                showToast('Erreur de connexion', 'error');
+                state.isSending = false;
+                sendBtn.disabled = false;
+            });
+        }
+
+        // Start unread count polling when page loads
+        startUnreadPolling();
+
+        function toggleTask(taskId) {
+            fetch(`/tasks/${taskId}/toggle`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Tâche mise à jour:', data);
+                location.reload();
+            })
+            .catch(error => console.error('Erreur:', error));
+        }
+
+        // Highlight active section based on current page
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav a');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // ========== AI EDUCATION CHATBOT ==========
+        const aiChatButton = document.getElementById('ai-chat-button');
+        const aiChatWidget = document.getElementById('ai-chat-widget');
+        const aiMessagesArea = document.getElementById('ai-messages-area');
+        const aiMessageInput = document.getElementById('ai-message-input');
+        const aiSendBtn = document.getElementById('ai-send-btn');
+
+        const aiState = {
+            isSending: false,
+            conversationHistory: []
+        };
+
+        if (aiChatButton && aiMessageInput && aiSendBtn) {
+            aiChatButton.addEventListener('click', toggleAIChat);
+            aiMessageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendAIMessage();
+                }
+            });
+            aiSendBtn.addEventListener('click', sendAIMessage);
+        }
+
+        function toggleAIChat() {
+            aiChatWidget.classList.toggle('active');
+            aiChatButton.classList.toggle('active');
+            if (aiChatWidget.classList.contains('active')) {
+                aiMessageInput.focus();
+                if (aiMessagesArea.children.length === 0) {
+                    addAIMessage('Bonjour! 👋 Je suis votre assistant IA éducatif. Je peux répondre à vos questions sur les différents sujets académiques. N\'hésitez pas à me poser vos questions!', 'ai');
+                }
+            }
+        }
+
+        function addAIMessage(content, sender = 'ai') {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `ai-message ${sender}`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = 'ai-message-bubble';
+            bubble.textContent = content;
+            msgDiv.appendChild(bubble);
+            
+            aiMessagesArea.appendChild(msgDiv);
+            aiMessagesArea.scrollTop = aiMessagesArea.scrollHeight;
+            
+            aiState.conversationHistory.push({
+                sender: sender,
+                content: content,
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        function addAITypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'ai-typing-indicator';
+            typingDiv.id = 'ai-typing-indicator';
+            
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'ai-typing-dot';
+                typingDiv.appendChild(dot);
+            }
+            
+            aiMessagesArea.appendChild(typingDiv);
+            aiMessagesArea.scrollTop = aiMessagesArea.scrollHeight;
+        }
+
+        function removeAITypingIndicator() {
+            const indicator = document.getElementById('ai-typing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        function sendAIMessage() {
+            const content = aiMessageInput.value.trim();
+            if (!content || aiState.isSending) return;
+            
+            aiState.isSending = true;
+            aiSendBtn.disabled = true;
+            aiMessageInput.value = '';
+            
+            // Show user message
+            addAIMessage(content, 'user');
+            
+            // Show typing indicator
+            addAITypingIndicator();
+            
+            // Send to server
+            fetch('{{ path('chatbot_send') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    message: content
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                removeAITypingIndicator();
+                
+                if (data.success) {
+                    const aiResponse = data.response || data.message;
+                    addAIMessage(aiResponse, 'ai');
+                    showToast('✅ Réponse reçue', 'success');
+                } else {
+                    const errorMsg = data.message || 'Impossible de recevoir une réponse';
+                    addAIMessage('⚠️ ' + errorMsg, 'ai');
+                    showToast('❌ Erreur: ' + errorMsg, 'error');
+                }
+                
+                aiState.isSending = false;
+                aiSendBtn.disabled = false;
+                aiMessageInput.focus();
+            })
+            .catch(error => {
+                console.error('AI Chat error:', error);
+                removeAITypingIndicator();
+                addAIMessage('⚠️ Erreur de connexion. Assurez-vous que l\'API Ollama est en cours d\'exécution.', 'ai');
+                showToast('❌ Erreur de connexion', 'error');
+                aiState.isSending = false;
+                aiSendBtn.disabled = false;
+                aiMessageInput.focus();
+            });
+        }
+    </script>
+</body>
+</html>

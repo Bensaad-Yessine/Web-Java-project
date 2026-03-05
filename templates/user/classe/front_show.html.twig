@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESPRIT — {{ classe.nom }}</title>
+    <style>
+        :root {
+            --font-size: 16px;
+            --primary-red: #DC2626;
+            --primary-red-dark: #B91C1C;
+            --primary-red-light: #FEE2E2;
+            --primary-gradient: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+            --secondary: #10B981;
+            --secondary-dark: #059669;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 2px 8px rgba(220, 38, 38, 0.06);
+            --shadow-md: 0 4px 20px rgba(220, 38, 38, 0.08);
+            --shadow-lg: 0 10px 40px rgba(220, 38, 38, 0.12);
+            --shadow-xl: 0 20px 50px rgba(220, 38, 38, 0.15);
+            --radius-lg: 14px;
+            --radius-xl: 18px;
+            --transition: 280ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: var(--font-size); scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fef2f2 0%, #f8fafc 100%);
+            color: var(--gray-900);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-shell { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 290px;
+            background: linear-gradient(to bottom, #ffffff 0%, #fefefe 100%);
+            border-right: 1px solid var(--gray-200);
+            padding: 28px 20px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 4px 0 24px rgba(220, 38, 38, 0.04);
+        }
+
+        .brand {
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--gray-100);
+        }
+
+        .brand-row { display: flex; align-items: center; gap: 14px; }
+        .brand-icon {
+            background: var(--primary-gradient);
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 800; font-size: 20px;
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+            transition: all var(--transition);
+        }
+
+        .brand-icon:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 28px rgba(220, 38, 38, 0.4);
+        }
+
+        .brand-title { 
+            font-weight: 800; 
+            font-size: 22px; 
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-sub {
+            font-size: 12px;
+            color: var(--gray-500);
+            font-weight: 500;
+            margin-top: 2px;
+        }
+
+        .user-session {
+            padding: 22px;
+            background: linear-gradient(135deg, rgba(254, 226, 226, 0.3) 0%, rgba(254, 242, 242, 0.4) 100%);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(220, 38, 38, 0.1);
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .user-session::before {
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            height: 4px;
+            background: var(--primary-gradient); 
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .avatar {
+            width: 54px; 
+            height: 54px; 
+            border-radius: 50%;
+            background: var(--primary-gradient); 
+            color: white;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-weight: 700; font-size: 20px; border: 3px solid white;
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.25);
+        }
+
+        .user-details h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 2px;
+        }
+
+        .user-details p {
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .session-info {
+            padding-top: 12px;
+            border-top: 1px solid rgba(220, 38, 38, 0.1);
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .session-info div {
+            margin-top: 6px;
+        }
+
+        .nav { display: flex; flex-direction: column; gap: 4px; margin-top: 28px; }
+        .nav a {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            border-radius: var(--radius-lg); color: var(--gray-700);
+            text-decoration: none; transition: all var(--transition);
+            font-weight: 500; font-size: 14px;
+            position: relative;
+        }
+        .nav a:hover {
+            background: linear-gradient(135deg, rgba(254, 226, 226, 0.5) 0%, rgba(254, 242, 242, 0.6) 100%);
+            color: var(--primary-red);
+            padding-left: 20px;
+        }
+        .nav a.active { 
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            font-weight: 600; 
+            border-left: 4px solid var(--primary-red);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-section-title {
+            font-size: 11px; font-weight: 700; color: var(--gray-500);
+            text-transform: uppercase; letter-spacing: 0.8px; margin: 28px 0 10px 16px;
+        }
+
+        .main { flex: 1; padding: 36px 40px; max-width: 1400px; margin: 0 auto; width: 100%; }
+
+        .header { margin-bottom: 44px; }
+        .header-content {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        .header-content h1 {
+            font-size: 40px; font-weight: 800;
+            background: var(--primary-gradient); 
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 12px 0 8px;
+            letter-spacing: -0.5px;
+        }
+        .header-content p {
+            font-size: 15px;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 44px;
+        }
+
+        .feature-card {
+            background: white; border-radius: var(--radius-xl);
+            padding: 28px; border: 2px solid var(--gray-100);
+            transition: all var(--transition); text-decoration: none; color: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px); 
+            box-shadow: 0 12px 48px rgba(220, 38, 38, 0.15);
+            border-color: var(--primary-red-light);
+        }
+
+        .feature-icon {
+            width: 56px; height: 56px; border-radius: 14px;
+            background: linear-gradient(135deg, rgba(254, 226, 226, 0.5) 0%, rgba(254, 242, 242, 0.7) 100%); 
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; margin-bottom: 18px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .feature-card h3 { font-size: 18px; margin-bottom: 10px; color: var(--gray-900); font-weight: 700; }
+        .feature-card p { font-size: 14px; color: var(--gray-600); line-height: 1.6; }
+
+        /* Tables and Lists */
+        .section-container {
+            background: white; border-radius: var(--radius-xl);
+            border: 2px solid var(--gray-100); box-shadow: 0 4px 24px rgba(220, 38, 38, 0.06);
+            margin-bottom: 36px; overflow: hidden;
+        }
+
+        .section-header {
+            padding: 28px 32px; 
+            background: linear-gradient(135deg, rgba(249, 250, 251, 1) 0%, rgba(255, 255, 255, 1) 100%);
+            border-bottom: 2px solid var(--gray-100);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .section-title { font-size: 22px; font-weight: 800; color: var(--gray-900); letter-spacing: -0.3px; }
+
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th {
+            text-align: left; padding: 18px 32px; color: var(--gray-600);
+            font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+            background: var(--gray-50);
+            border-bottom: 2px solid var(--gray-100);
+        }
+        .data-table td { padding: 20px 32px; border-bottom: 1px solid var(--gray-100); font-size: 14px; color: var(--gray-800); }
+        .data-table tbody tr {
+            transition: all var(--transition);
+        }
+        .data-table tbody tr:hover {
+            background: linear-gradient(135deg, rgba(254, 242, 242, 0.3) 0%, rgba(255, 255, 255, 0.5) 100%);
+        }
+
+        .badge {
+            padding: 6px 14px; border-radius: 24px; font-size: 12px; font-weight: 700;
+            display: inline-block;
+        }
+        .badge-red { background: var(--primary-red-light); color: var(--primary-red); border: 1px solid rgba(220, 38, 38, 0.2); }
+        .badge-blue { background: #DBEAFE; color: #1E40AF; border: 1px solid rgba(30, 64, 175, 0.2); }
+        .badge-green { background: #D1FAE5; color: #065F46; border: 1px solid rgba(6, 95, 70, 0.2); }
+
+        .avatar-sm {
+            width: 38px; height: 38px; border-radius: 50%;
+            background: var(--primary-red-light); color: var(--primary-red);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 13px;
+            border: 2px solid white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: 10px;
+            background: var(--primary-gradient);
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all var(--transition);
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.15);
+        }
+
+        .btn-sm:hover {
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Flash Messages */
+        .flash-message {
+            padding: 18px 22px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 24px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: var(--shadow-sm);
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .flash-success {
+            background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+            color: #166534;
+            border: 2px solid #BBF7D0;
+        }
+
+        .flash-warning {
+            background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+            color: #92400E;
+            border: 2px solid #FDE68A;
+        }
+
+        .flash-error {
+            background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
+            color: #991B1B;
+            border: 2px solid #FECACA;
+        }
+
+        .flash-info {
+            background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+            color: #1E40AF;
+            border: 2px solid #BFDBFE;
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            flex: 1;
+            height: 8px;
+            background: var(--gray-100);
+            border-radius: 4px;
+            max-width: 100px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: 4px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 8px rgba(220, 38, 38, 0.4);
+        }
+
+        /* Links */
+        a:not(.feature-card):not(.btn):not(.nav a) {
+            color: var(--primary-red);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all var(--transition);
+            position: relative;
+        }
+
+        a:not(.feature-card):not(.btn):not(.nav a):hover {
+            color: var(--primary-red-dark);
+        }
+
+        a:not(.feature-card):not(.btn):not(.nav a):hover::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-gradient);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 260px;
+            }
+            .main {
+                padding: 28px 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .app-shell {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            .header-content h1 {
+                font-size: 32px;
+            }
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-row">
+                    <div class="brand-icon">ES</div>
+                    <div>
+                        <div class="brand-title">ESPRIT</div>
+                        <div class="brand-sub">Assistant Étudiant</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="user-session">
+                <div class="user-info">
+                    {% if app.user %}
+                        <div class="avatar">{{ app.user.nom|first }}{{ app.user.prenom|first }}</div>
+                        <div class="user-details">
+                            <h3>{{ app.user.nom }} {{ app.user.prenom }}</h3>
+                            <p>🏫 {{ classe.nom }}</p>
+                        </div>
+                    {% else %}
+                        <div class="avatar">?</div>
+                        <div class="user-details">
+                            <h3>Invité</h3>
+                            <p>🏫 {{ classe.nom }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="session-info">
+                    {% if app.user %}
+                        <div><strong>Email:</strong> {{ app.user.email }}</div>
+                    {% else %}
+                        <div><strong>Email:</strong> —</div>
+                    {% endif %}
+                    <div><strong>Niveau:</strong> {{ classe.niveau }}</div>
+                </div>
+            </div>
+
+            <nav class="nav">
+                <div class="nav-section-title">Général</div>
+                <a href="{{ path('app_dashboard') }}">
+                    <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/>
+                    </svg>
+                    Tableau de bord
+                </a>
+
+                <div class="nav-section-title">Académique</div>
+                <a href="{{ path('app_classe_front_show', {'id': classe.id}) }}" class="active">
+                    <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                    Ma Classe
+                </a>
+                <a href="{{ path('app_matiere_classe_front_index') }}">
+                    <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                    Mes Matières
+                </a>
+
+                <div class="nav-section-title">Compte</div>
+                <a href="{{ path('app_profile') }}">
+                    <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    Profil
+                </a>
+                <a href="{{ path('app_logout') }}">
+                    <svg style="width:18px;height:18px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/>
+                    </svg>
+                    Déconnexion
+                </a>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="header">
+                {# Flash Messages #}
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="flash-message flash-{{ label == 'error' ? 'error' : (label == 'warning' ? 'warning' : (label == 'info' ? 'info' : 'success')) }}">
+                            <svg style="width:22px;height:22px; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                {% if label == 'warning' or label == 'error' %}
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                                    <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                                {% else %}
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                {% endif %}
+                            </svg>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <div class="header-content">
+                    <span class="badge badge-red">{{ classe.filiere }} — {{ classe.niveau }}</span>
+                    <h1>{{ classe.nom }}</h1>
+                    <p>Espace académique de votre promotion — Année {{ classe.anneeuniversitaire }}</p>
+                </div>
+            </header>
+
+            <div class="nav-section-title" style="margin-left:0; margin-bottom:16px;">🎓 Outils Académiques</div>
+            <div class="feature-grid">
+                <a href="{{ path('app_classe_audit', {id: classe.id}) }}" class="feature-card">
+                    <div class="feature-icon">⚖️</div>
+                    <h3>Audit de Charge</h3>
+                    <p>Analysez votre volume horaire et prévenez le surmenage.</p>
+                </a>
+                <a href="{{ path('app_classe_stats', {id: classe.id}) }}" class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Statistiques détaillées</h3>
+                    <p>Analyse avancée de la complexité des matières.</p>
+                </a>
+                <a href="{{ path('app_classe_export_pdf', {id: classe.id}) }}" class="feature-card">
+                    <div class="feature-icon">🖨️</div>
+                    <h3>Fiche PDF</h3>
+                    <p>Téléchargez votre programme officiel complet.</p>
+                </a>
+                <a href="{{ path('app_classe_export_csv', {id: classe.id}) }}" class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Données CSV</h3>
+                    <p>Exportez vos matières vers Excel ou Sheets.</p>
+                </a>
+            </div>
+
+
+            {# Assistant de révision AI #}
+            <div id="ai-study-coach" class="section-container" style="margin-top: 24px; overflow: hidden; position: relative;">
+                <div style="position:absolute; inset:0; background:radial-gradient(circle at top left, rgba(252,165,165,0.35), transparent 55%), radial-gradient(circle at bottom right, rgba(248,113,113,0.25), transparent 55%); opacity:0.8; pointer-events:none;"></div>
+
+                <div class="section-header" style="background: linear-gradient(135deg, rgba(220,38,38,0.98), rgba(185,28,28,0.98)); color:white; border-bottom:none; position:relative; z-index:1;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="width:36px; height:36px; border-radius:12px; background:rgba(255,255,255,0.14); display:flex; align-items:center; justify-content:center; font-size:18px;">🤖</div>
+                        <div>
+                            <h2 class="section-title" style="color:white; margin:0;">Assistant de révision intelligent</h2>
+                            <p style="margin:2px 0 0; font-size:13px; opacity:0.9;">Plan de travail optimisé sur vos matières, leur complexité et vos quiz</p>
+                        </div>
+                    </div>
+                    <span style="font-size:12px; padding:4px 10px; border-radius:999px; background:rgba(255,255,255,0.12); border:1px solid rgba(248,250,252,0.35);">Basé sur les données de {{ classe.nom }}</span>
+                </div>
+
+                <div style="position:relative; z-index:1; padding:24px; background:linear-gradient(to bottom right, rgba(255,255,255,0.96), rgba(254,242,242,0.96));">
+                    {% if studyPlan is not defined %}
+                        <p style="font-size:14px; color:var(--gray-600);">L'assistant de révision n'est pas encore disponible.</p>
+                    {% elseif studyPlan.status == 'not_configured' %}
+                        <p style="font-size:14px; color:var(--gray-600);">{{ studyPlan.message }}</p>
+                    {% elseif studyPlan.status == 'error' %}
+                        <div style="padding:12px 14px; border-radius:10px; background:rgba(254,242,242,1); border:1px solid rgba(248,113,113,0.6); font-size:13px; color:var(--danger); display:flex; gap:8px; align-items:flex-start;">
+                            <span>⚠️</span>
+                            <span>Une erreur est survenue lors de la génération du plan : {{ studyPlan.message }}</span>
+                        </div>
+                    {% else %}
+                        {% set plan = studyPlan.plan ?? {} %}
+
+                        <div style="display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start;">
+                            <div style="flex:1.6 1 260px; min-width:0;">
+                                {% if plan.summary is defined %}
+                                    <div style="padding:14px 16px; border-radius:12px; background:rgba(239,246,255,0.85); border:1px solid rgba(191,219,254,0.9); font-size:13px; color:var(--gray-800); margin-bottom:16px; display:flex; gap:10px;">
+                                        <span style="font-size:18px;">📌</span>
+                                        <span>{{ plan.summary }}</span>
+                                    </div>
+                                {% endif %}
+
+                                {% set focus = plan.week_focus ?? [] %}
+                                {% if focus is not empty %}
+                                    <h3 style="font-size:14px; font-weight:700; margin-bottom:8px; color:var(--gray-800); text-transform:uppercase; letter-spacing:0.04em;">Priorités de la semaine</h3>
+                                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap:14px;">
+                                        {% for item in focus %}
+                                            <div style="border-radius:14px; padding:14px; background:white; box-shadow:0 6px 16px rgba(15,23,42,0.06); border:1px solid rgba(248,250,252,1);">
+                                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                                    <div style="display:flex; flex-direction:column;">
+                                                        <span style="font-size:13px; font-weight:600; color:var(--gray-900);">{{ item.matiere ?? 'Matière' }}</span>
+                                                        {% if item.recommended_hours is defined %}
+                                                            <span style="font-size:12px; color:var(--gray-500);">⏱ {{ item.recommended_hours }} h cette semaine</span>
+                                                        {% endif %}
+                                                    </div>
+                                                    {% if item.priority is defined %}
+                                                        <span class="badge badge-red" style="font-size:11px; text-transform:uppercase;">Priorité {{ item.priority }}</span>
+                                                    {% endif %}
+                                                </div>
+                                                {% set topics = item.topics ?? [] %}
+                                                {% if topics is not empty %}
+                                                    <ul style="padding-left:18px; font-size:12px; color:var(--gray-700); margin:4px 0 0; list-style:disc;">
+                                                        {% for t in topics %}
+                                                            <li>{{ t }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div style="flex:1 1 220px; min-width:0; padding:14px 16px; border-radius:14px; background:white; box-shadow:0 8px 22px rgba(15,23,42,0.08); border:1px solid rgba(248,250,252,1);">
+                                <h3 style="font-size:13px; font-weight:700; margin-bottom:10px; color:var(--gray-800); text-transform:uppercase; letter-spacing:0.08em;">Ordre conseillé</h3>
+                                {% if plan.ordering is defined and plan.ordering is not empty %}
+                                    <ol style="padding-left:18px; font-size:12px; color:var(--gray-700); margin:0 0 10px;">
+                                        {% for name in plan.ordering %}
+                                            <li style="margin-bottom:4px;">{{ name }}</li>
+                                        {% endfor %}
+                                    </ol>
+                                {% else %}
+                                    <p style="font-size:12px; color:var(--gray-500);">L'ordre conseillé sera affiché dès que suffisamment de données seront disponibles.</p>
+                                {% endif %}
+
+                                {% if plan.notes is defined and plan.notes %}
+                                    <div style="margin-top:10px; padding:10px 12px; border-radius:10px; background:rgba(254,249,195,0.7); border:1px solid rgba(250,204,21,0.8); font-size:12px; color:var(--gray-800); display:flex; gap:8px;">
+                                        <span>💡</span>
+                                        <span>{{ plan.notes }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="section-container">
+
+                <div class="section-header">
+                    <h2 class="section-title">📚 Programme Académique</h2>
+                    <span class="badge badge-blue">{{ classe.matiereClasses|length }} Matières</span>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Matière</th>
+                            <th>Coefficient</th>
+                            <th>Charge Horaire</th>
+                            <th>Complexité</th>
+                            <th>Pré-requis</th>
+                            <th>Quiz</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mc in classe.matiereClasses %}
+                        <tr>
+                            <td><strong>{{ mc.nom }}</strong></td>
+                            <td><span class="badge badge-blue">{{ mc.coefficient }}</span></td>
+                            <td>{{ mc.chargehoraire }}h</td>
+                            <td>
+                                <div style="display:flex; align-items:center; gap:10px;">
+                                    <div class="progress-bar-container">
+                                        <div class="progress-bar-fill" style="width:{{ mc.scorecomplexite * 10 }}%;"></div>
+                                    </div>
+                                    <span style="font-size:13px; font-weight:700; color:var(--gray-700);">{{ mc.scorecomplexite }}/10</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% for pre in mc.prerequis %}
+                                    <span class="badge badge-green" style="margin-right:4px;">{{ pre.nom }}</span>
+                                {% else %}
+                                    <span style="color:var(--gray-400);">Aucun</span>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('app_admin_quiz_matiere', {id: mc.id}) }}" style="font-size:12px; color:var(--primary-red); text-decoration:underline;">Lancer le quiz</a>
+                                {% else %}
+                                    <span style="font-size:12px; color:var(--gray-400);">Quiz indisponible</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">👥 Membres de la Classe</h2>
+                    <span class="badge badge-green">{{ users|length }} Étudiants</span>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Étudiant</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td style="display:flex; align-items:center; gap:12px;">
+                                <div class="avatar-sm">{{ u.nom|first }}{{ u.prenom|first }}</div>
+                                <strong>{{ u.nom }} {{ u.prenom }}</strong>
+                            </td>
+                            <td>{{ u.email }}</td>
+                            <td>
+                                <a href="#" class="btn btn-sm">Message</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

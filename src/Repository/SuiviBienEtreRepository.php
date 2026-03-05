@@ -1,0 +1,217 @@
+<?php
+
+namespace App\Repository;
+
+use App\Entity\SuiviBienEtre;
+use App\Entity\User;
+use App\Entity\ObjectifSante;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<SuiviBienEtre>
+ */
+class SuiviBienEtreRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, SuiviBienEtre::class);
+    }
+// src/Repository/SuiviBienEtreRepository.php
+
+public function findByUserAndObjectif(int $userId, int $objectifId): array
+{
+    return $this->createQueryBuilder('s')
+        ->join('s.objectif', 'o')
+        ->andWhere('IDENTITY(o.user) = :userId')
+        ->andWhere('o.id = :objectifId')
+        ->setParameter('userId', $userId)
+        ->setParameter('objectifId', $objectifId)
+        ->orderBy('s.dateSaisie', 'DESC')
+        ->getQuery()
+        ->getResult();
+}
+public function filterByObjectifUser(
+    User $user,
+    ObjectifSante $objectif,
+    ?string $q,
+    ?string $humeur,
+    string $sortBy = 'dateSaisie',
+    string $sortDir = 'DESC'
+): array {
+    $qb = $this->createQueryBuilder('s')
+        ->join('s.objectif', 'o')
+        ->andWhere('o.id = :oid')
+        ->andWhere('o.user = :user')
+        ->setParameter('oid', $objectif->getId())
+        ->setParameter('user', $user);
+
+    if ($humeur) {
+        $qb->andWhere('s.humeur = :h')->setParameter('h', $humeur);
+    }
+
+    if ($q) {
+        $qb->andWhere('LOWER(s.notesLibres) LIKE LOWER(:q)')
+           ->setParameter('q', '%' . mb_strtolower(trim($q)) . '%');
+    }
+
+    // ✅ sécuriser sortDir
+    $sortDir = strtoupper($sortDir) === 'ASC' ? 'ASC' : 'DESC';
+
+    // ✅ sécuriser sortBy
+    $allowedSortBy = ['dateSaisie', 'score'];
+    if (!in_array($sortBy, $allowedSortBy, true)) {
+        $sortBy = 'dateSaisie';
+    }
+
+    $qb->orderBy('s.' . $sortBy, $sortDir);
+
+    // ✅ tie-breaker باش يكون الترتيب ثابت
+    if ($sortBy !== 'dateSaisie') {
+        $qb->addOrderBy('s.dateSaisie', 'DESC');
+    } else {
+        $qb->addOrderBy('s.id', 'DESC');
+    }
+
+    return $qb->getQuery()->getResult();
+}
+public function filterByObjectif(
+    ObjectifSante $objectif,
+    ?string $q,
+    ?string $humeur,
+    string $sortBy = 'dateSaisie',
+    string $sortDir = 'DESC'
+): array
+{
+    $qb = $this->createQueryBuilder('s')
+        ->andWhere('s.objectif = :obj')
+        ->setParameter('obj', $objectif);
+
+    if ($humeur) {
+        $qb->andWhere('s.humeur = :h')->setParameter('h', $humeur);
+    }
+
+    if ($q) {
+        $qb->andWhere('LOWER(s.notesLibres) LIKE LOWER(:q)')
+           ->setParameter('q', '%'.$q.'%');
+    }
+
+    // sécurité sort
+    $allowedSortBy = ['dateSaisie', 'score'];
+    if (!in_array($sortBy, $allowedSortBy, true)) $sortBy = 'dateSaisie';
+    $sortDir = strtoupper($sortDir) === 'ASC' ? 'ASC' : 'DESC';
+
+    $qb->orderBy('s.' . $sortBy, $sortDir);
+
+    return $qb->getQuery()->getResult();
+}
+
+public function searchFrontSuivis(int $objectifId, ?string $q, ?string $humeur, string $sortDir = 'DESC'): array
+{
+    $qb = $this->createQueryBuilder('s')
+        ->join('s.objectif', 'o')
+        ->andWhere('o.id = :oid')
+        ->setParameter('oid', $objectifId);
+
+    if ($humeur) {
+        $qb->andWhere('s.humeur = :h')->setParameter('h', $humeur);
+    }
+
+    if ($q) {
+        $qb->andWhere('LOWER(s.notesLibres) LIKE LOWER(:q)')
+           ->setParameter('q', '%'.$q.'%');
+    }
+
+    $sortDir = strtoupper($sortDir) === 'ASC' ? 'ASC' : 'DESC';
+    $qb->orderBy('s.dateSaisie', $sortDir);
+
+    return $qb->getQuery()->getResult();
+}
+    public function findLastTwoByObjectif(int $objectifId): array
+{
+    return $this->createQueryBuilder('s')
+        ->andWhere('s.objectif = :oid')
+        ->setParameter('oid', $objectifId)
+        ->orderBy('s.dateSaisie', 'DESC')
+        ->addOrderBy('s.id', 'DESC')
+        ->setMaxResults(2)
+        ->getQuery()
+        ->getResult();
+}
+public function findByObjectifOrdered(int $objectifId): array
+{
+    return $this->createQueryBuilder('s')
+        ->andWhere('s.objectif = :oid')
+        ->setParameter('oid', $objectifId)
+        ->orderBy('s.dateSaisie', 'ASC')
+        ->getQuery()
+        ->getResult();
+}
+
+public function getAggregatedStats(int $objectifId): array
+{
+    $result = $this->createQueryBuilder('s')
+        ->select(
+            'COUNT(s.id) as nbSuivis',
+            'AVG(s.score) as avgScore',
+            'MIN(s.score) as minScore',
+            'MAX(s.score) as maxScore',
+            'AVG(s.qualiteSommeil) as avgSleep',
+            'AVG(s.niveauEnergie) as avgEnergy',
+            'AVG(s.niveauStress) as avgStress',
+            'AVG(s.qualiteAlimentation) as avgFood'
+        )
+        ->andWhere('s.objectif = :oid')
+        ->setParameter('oid', $objectifId)
+        ->getQuery()
+        ->getSingleResult();
+    
+    // Ensure all values are numeric and handle null
+    return [
+        'nbSuivis' => (int) ($result['nbSuivis'] ?? 0),
+        'avgScore' => (float) ($result['avgScore'] ?? 0),
+        'minScore' => (float) ($result['minScore'] ?? 0),
+        'maxScore' => (float) ($result['maxScore'] ?? 0),
+        'avgSleep' => (float) ($result['avgSleep'] ?? 0),
+        'avgEnergy' => (float) ($result['avgEnergy'] ?? 0),
+        'avgStress' => (float) ($result['avgStress'] ?? 0),
+        'avgFood' => (float) ($result['avgFood'] ?? 0),
+    ];
+}
+
+public function getHumeurDistribution(int $objectifId): array
+{
+    return $this->createQueryBuilder('s')
+        ->select('s.humeur, COUNT(s.id) as total')
+        ->andWhere('s.objectif = :oid')
+        ->setParameter('oid', $objectifId)
+        ->groupBy('s.humeur')
+        ->getQuery()
+        ->getResult();
+}
+
+//    /**
+//     * @return SuiviBienEtre[] Returns an array of SuiviBienEtre objects
+//     */
+//    public function findByExampleField($value): array
+//    {
+//        return $this->createQueryBuilder('s')
+//            ->andWhere('s.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->orderBy('s.id', 'ASC')
+//            ->setMaxResults(10)
+//            ->getQuery()
+//            ->getResult()
+//        ;
+//    }
+
+//    public function findOneBySomeField($value): ?SuiviBienEtre
+//    {
+//        return $this->createQueryBuilder('s')
+//            ->andWhere('s.exampleField = :val')
+//            ->setParameter('val', $value)
+//            ->getQuery()
+//            ->getOneOrNullResult()
+//        ;
+//    }
+}

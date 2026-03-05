@@ -1,0 +1,511 @@
+{% extends 'user/FrontOffice.html.twig' %}
+
+{% block title %}{{ proposition_reunion.titre }} - ESPRIT{% endblock %}
+
+{% block head_extra %}
+<style>
+    /* Define CSS variables with actual colors to fix visibility */
+    :root {
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --red-50: #fef2f2;
+        --red-100: #fee2e2;
+        --red-200: #fecaca;
+        --red-500: #ef4444;
+        --red-900: #7f1d1d;
+        --green-50: #f0fdf4;
+        --green-100: #dcfce7;
+        --green-200: #bbf7d0;
+        --green-500: #22c55e;
+        --green-600: #059669;
+        --green-900: #064e3b;
+        --blue-50: #eff6ff;
+        --blue-100: #dbeafe;
+        --blue-200: #bfdbfe;
+        --blue-900: #1e3a8a;
+        --orange-50: #fff7ed;
+        --orange-100: #ffedd5;
+        --orange-200: #fed7aa;
+        --orange-500: #f97316;
+        --orange-600: #ea580c;
+        --orange-700: #c2410c;
+        --orange-900: #7c2d12;
+        --purple-100: #f3e8ff;
+        --purple-600: #9333ea;
+        --radius: 8px;
+        --radius-lg: 12px;
+        --transition: 250ms;
+    }
+    #show-map { background: #f3f4f6; }
+    h1, h2, h3, h4, h5, h6 { color: #111827 !important; }
+    .muted { color: #6b7280 !important; }
+    .main { color: #111827 !important; }
+    .card { background: white !important; }
+    .main * { color: #374151 !important; }
+    .main div { color: #374151 !important; }
+    .main span { color: #374151 !important; }
+    .main p { color: #374151 !important; }
+    .main a { color: #374151 !important; }
+    .main label { color: #374151 !important; }
+</style>
+{% endblock %}
+
+{% block body %}
+<main class="main">
+<header class="header">
+    <div>
+        <h1 class="h1" style="color: #111827 !important;">{{ proposition_reunion.titre|default('Proposition de réunion') }}</h1>
+        <p class="muted" style="color: #6b7280 !important;">{{ groupe_projet.nomProjet }} · {{ groupe_projet.matiere }}</p>
+    </div>
+    <span style="padding: 8px 18px; border-radius: var(--radius-lg); font-size: 14px; font-weight: 600; background: {% if proposition_reunion.status == 'Confirmée' %}var(--green-100){% elseif proposition_reunion.status == 'Annulée' %}var(--red-100){% elseif proposition_reunion.status == 'Reportée' %}var(--orange-100){% else %}var(--blue-100){% endif %}; color: {% if proposition_reunion.status == 'Confirmée' %}var(--green-900){% elseif proposition_reunion.status == 'Annulée' %}var(--red-900){% elseif proposition_reunion.status == 'Reportée' %}var(--orange-900){% else %}var(--blue-900){% endif %};">
+        {{ proposition_reunion.status|default('En attente') }}
+    </span>
+</header>
+
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="alert alert-{{ label }}" style="margin-bottom: 20px; padding: 16px 20px; border-radius: 12px; background: {% if label == 'success' %}var(--green-50){% elseif label == 'error' %}var(--red-50){% else %}var(--blue-50){% endif %}; border: 1px solid {% if label == 'success' %}var(--green-200){% elseif label == 'error' %}var(--red-200){% else %}var(--blue-200){% endif %}; color: {% if label == 'success' %}var(--green-900){% elseif label == 'error' %}var(--red-900){% else %}var(--blue-900){% endif %};">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endfor %}
+
+<div class="profile-container">
+    <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+        <a href="{{ path('front_proposition_reunion_index') }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: white; color: var(--gray-700); text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; border: 1px solid var(--gray-300); transition: all var(--transition);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+            </svg>
+            Toutes les propositions
+        </a>
+        <a href="{{ path('front_groupe_projet_show', {'id': groupe_projet.id}) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: white; color: var(--gray-700); text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; border: 1px solid var(--gray-300); transition: all var(--transition);">
+            Voir le groupe
+        </a>
+        <a href="{{ path('front_proposition_reunion_edit', {'id': proposition_reunion.id}) }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, var(--orange-500), var(--red-500)); color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; transition: all var(--transition);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+            Modifier
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+        <!-- Left Column - Details -->
+        <div>
+            <!-- Date and Time Card -->
+            <div class="card" style="margin-bottom: 24px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+                <div style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h2 style="margin: 0; font-size: 18px; font-weight: 700; color: white !important;">Informations de la réunion</h2>
+                </div>
+                <div style="padding: 24px;">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: start; gap: 12px;">
+                            <div style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: var(--blue-100); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--blue-600)" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 13px; color: #6b7280 !important; margin-bottom: 4px; font-weight: 500;">Date de réunion</div>
+                                <div style="font-size: 16px; font-weight: 700; color: #111827 !important;">
+                                    {{ proposition_reunion.dateReunion ? proposition_reunion.dateReunion|date('d/m/Y') : 'Non définie' }}
+                                </div>
+                                <div style="font-size: 13px; color: #4b5563 !important; margin-top: 2px;">
+                                    {{ proposition_reunion.dateReunion ? proposition_reunion.dateReunion|date('l', 'Europe/Paris')|trans : 'Non définie' }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; align-items: start; gap: 12px;">
+                            <div style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: var(--purple-100); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple-600)" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div style="font-size: 13px; color: #6b7280 !important; margin-bottom: 4px; font-weight: 500;">Horaire</div>
+                                <div style="font-size: 16px; font-weight: 700; color: #111827 !important;">
+                                    {{ proposition_reunion.heureDebut ? proposition_reunion.heureDebut|date('H:i') : '-' }} - {{ proposition_reunion.heureFin ? proposition_reunion.heureFin|date('H:i') : '-' }}
+                                </div>
+                                {% if proposition_reunion.heureDebut and proposition_reunion.heureFin %}
+                                    {% set duration = (proposition_reunion.heureFin.timestamp - proposition_reunion.heureDebut.timestamp) / 60 %}
+                                    <div style="font-size: 13px; color: #4b5563 !important; margin-top: 2px;">
+                                        Durée: {{ duration|round }} minutes
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: start; gap: 12px; padding: 16px; background: #fff7ed; border-radius: 12px; border: 1px solid #fed7aa;">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: #ffedd5; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                            </svg>
+                        </div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 13px; color: #c2410c !important; margin-bottom: 4px; font-weight: 600;">Lieu de réunion</div>
+                            {% set lieu_raw = proposition_reunion.lieu|default('') %}
+                            {% if '||' in lieu_raw %}
+                                {% set lieu_parts = lieu_raw|split('||') %}
+                                {% set lieu_adresse = lieu_parts[0] %}
+                                {% set lieu_coords = lieu_parts[1] %}
+                                <div style="font-size: 16px; font-weight: 700; color: var(--orange-900); margin-bottom: 10px;">
+                                    {{ lieu_adresse }}
+                                </div>
+                                <div id="show-map" style="width: 100%; height: 220px; border-radius: 10px; border: 2px solid var(--orange-300); overflow: hidden;"></div>
+                                <a href="https://www.google.com/maps?q={{ lieu_coords }}" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; color: var(--orange-700); text-decoration: none; font-weight: 600;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                    Voir sur Google Maps
+                                </a>
+                                <script>
+                                    window._showMapCoords = '{{ lieu_coords }}';
+                                    window._showMapAddress = '{{ lieu_adresse|e('js') }}';
+                                </script>
+                            {% elseif lieu_raw matches '/^-?\\d+\\.\\d+\\s*,\\s*-?\\d+\\.\\d+$/' %}
+                                {# Format lat,lng sans adresse — afficher directement la carte #}
+                                <div style="font-size: 16px; font-weight: 700; color: var(--orange-900); margin-bottom: 10px;">
+                                    {{ lieu_raw }}
+                                </div>
+                                <div id="show-map" style="width: 100%; height: 220px; border-radius: 10px; border: 2px solid var(--orange-300); overflow: hidden;"></div>
+                                <a href="https://www.google.com/maps?q={{ lieu_raw|url_encode }}" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; color: var(--orange-700); text-decoration: none; font-weight: 600;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                    Voir sur Google Maps
+                                </a>
+                                <script>
+                                    window._showMapCoords = '{{ lieu_raw|e('js') }}';
+                                    window._showMapAddress = '';
+                                </script>
+                            {% elseif lieu_raw %}
+                                <div style="font-size: 16px; font-weight: 700; color: var(--orange-900); margin-bottom: 10px;">
+                                    {{ lieu_raw }}
+                                </div>
+                                <div id="show-map" style="width: 100%; height: 220px; border-radius: 10px; border: 2px solid var(--orange-300); overflow: hidden;"></div>
+                                <a href="https://www.google.com/maps?q={{ lieu_raw|url_encode }}" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 13px; color: var(--orange-700); text-decoration: none; font-weight: 600;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                                    Voir sur Google Maps
+                                </a>
+                                <script>
+                                    window._showMapAddress = '{{ lieu_raw|e('js') }}';
+                                </script>
+                            {% else %}
+                                <div style="font-size: 15px; color: var(--gray-500); font-style: italic;">Non défini</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description Card -->
+            {% if proposition_reunion.description %}
+                <div class="card" style="margin-bottom: 24px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+                    <div style="padding: 20px 24px; border-bottom: 1px solid var(--gray-200);">
+                        <h2 style="margin: 0; font-size: 18px; font-weight: 700; color: var(--gray-900);">Description</h2>
+                    </div>
+                    <div style="padding: 24px;">
+                        <p style="margin: 0; color: var(--gray-700); line-height: 1.7; font-size: 15px; white-space: pre-wrap;">{{ proposition_reunion.description }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column - Sidebar -->
+        <div>
+            <!-- Vote Card -->
+            <div class="card" style="margin-bottom: 24px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+                <div style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h2 style="margin: 0; font-size: 16px; font-weight: 700; color: white !important;">Vote pour cette réunion</h2>
+                </div>
+                <div class="vote-card" data-proposition-id="{{ proposition_reunion.id }}" style="padding: 24px;">
+                    <div style="margin-bottom: 16px; font-size: 13px; color: #4b5563 !important;">
+                        Fin du vote: {{ proposition_reunion.dateFinVote ? proposition_reunion.dateFinVote|date('d/m/Y H:i') : 'Non définie' }}
+                    </div>
+
+                    <div id="vote-message" style="margin-bottom: 12px;"></div>
+
+                    <div class="vote-buttons" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px;">
+                        <button type="button" class="btn-vote" data-vote="pour" style="flex: 1; min-width: 110px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--green-300); background: var(--green-50); color: var(--green-800); font-weight: 600; cursor: pointer;">Pour</button>
+                        <button type="button" class="btn-vote" data-vote="contre" style="flex: 1; min-width: 110px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--red-300); background: var(--red-50); color: var(--red-800); font-weight: 600; cursor: pointer;">Contre</button>
+                        <button type="button" class="btn-vote" data-vote="abstention" style="flex: 1; min-width: 110px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--gray-300); background: var(--gray-50); color: var(--gray-800); font-weight: 600; cursor: pointer;">Abstention</button>
+                    </div>
+
+                    <div class="progress-bar-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                        <div style="background: var(--green-100); border-radius: 8px; overflow: hidden;">
+                            <div class="progress-bar-pour" style="width: 0%; background: var(--green-500); color: white; padding: 6px 8px; font-size: 12px; font-weight: 600;">0 Pour</div>
+                        </div>
+                        <div style="background: var(--red-100); border-radius: 8px; overflow: hidden;">
+                            <div class="progress-bar-contre" style="width: 0%; background: var(--red-500); color: white; padding: 6px 8px; font-size: 12px; font-weight: 600;">0 Contre</div>
+                        </div>
+                    </div>
+
+                    <div class="vote-stats" style="display: flex; gap: 10px; flex-wrap: wrap; font-size: 13px; color: #374151 !important;">
+                        <span class="stat-pour" style="color: #374151 !important;">0 Pour</span>
+                        <span class="stat-contre" style="color: #374151 !important;">0 Contre</span>
+                        <span class="stat-abstention" style="color: #374151 !important;">0 Abstention</span>
+                        <span class="stat-total" style="color: #374151 !important;">0 votants</span>
+                    </div>
+
+                    <div class="user-vote" data-user-vote="" style="margin-top: 10px; font-size: 13px; color: #4b5563 !important;"></div>
+                </div>
+            </div>
+
+            <!-- Group Info Card -->
+            <div class="card" style="margin-bottom: 24px; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+                <div style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb; background: linear-gradient(135deg, #ef4444, #f97316); color: white;">
+                    <h2 style="margin: 0; font-size: 16px; font-weight: 700; color: white !important;">Groupe</h2>
+                </div>
+                <div style="padding: 24px;">
+                    <div style="margin-bottom: 16px;">
+                        <div style="font-size: 13px; color: #6b7280 !important; margin-bottom: 6px; font-weight: 500;">Nom du groupe</div>
+                        <div style="font-size: 16px; font-weight: 700; color: #111827 !important;">
+                            {{ groupe_projet.nomProjet }}
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <div style="font-size: 13px; color: #6b7280 !important; margin-bottom: 6px; font-weight: 500;">Matière</div>
+                        <div style="font-size: 15px; font-weight: 600; color: #1f2937 !important;">
+                            {{ groupe_projet.matiere }}
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <div style="font-size: 13px; color: #6b7280 !important; margin-bottom: 6px; font-weight: 500;">Membres</div>
+                        <div style="font-size: 15px; font-weight: 600; color: #1f2937 !important;">
+                            {{ groupe_projet.idUser|length }} membre(s)
+                        </div>
+                    </div>
+
+                    <a href="{{ path('front_groupe_projet_show', {'id': groupe_projet.id}) }}" style="display: block; width: 100%; padding: 12px; background: linear-gradient(135deg, var(--red-500), var(--orange-500)); color: white; text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; font-size: 14px; text-align: center; transition: all var(--transition);">
+                        Voir le groupe
+                    </a>
+                </div>
+            </div>
+
+            <!-- Status Info Card -->
+            <div class="card" style="border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+                <div style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb;">
+                    <h2 style="margin: 0; font-size: 16px; font-weight: 700; color: #111827 !important;">Informations</h2>
+                </div>
+                <div style="padding: 24px;">
+                    <div style="margin-bottom: 16px;">
+                        <div style="font-size: 13px; color: #6b7280 !important; margin-bottom: 6px; font-weight: 500;">Statut</div>
+                        <span style="display: inline-block; padding: 6px 14px; border-radius: var(--radius); font-size: 13px; font-weight: 600; background: {% if proposition_reunion.status == 'Confirmée' %}var(--green-100){% elseif proposition_reunion.status == 'Annulée' %}var(--red-100){% elseif proposition_reunion.status == 'Reportée' %}var(--orange-100){% else %}var(--blue-100){% endif %}; color: {% if proposition_reunion.status == 'Confirmée' %}var(--green-900){% elseif proposition_reunion.status == 'Annulée' %}var(--red-900){% elseif proposition_reunion.status == 'Reportée' %}var(--orange-900){% else %}var(--blue-900){% endif %};">
+                            {{ proposition_reunion.status|default('En attente') }}
+                        </span>
+                    </div>
+
+                    {% if proposition_reunion.dateCreation %}
+                        <div style="margin-bottom: 16px;">
+                            <div style="font-size: 13px; color: #6b7280 !important; margin-bottom: 6px; font-weight: 500;">Créée le</div>
+                            <div style="font-size: 14px; color: #374151 !important;">
+                                {{ proposition_reunion.dateCreation|date('d/m/Y à H:i') }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {% if proposition_reunion.nbrVoteAccept is not null %}
+                        <div>
+                            <div style="font-size: 13px; color: #6b7280 !important; margin-bottom: 6px; font-weight: 500;">Votes d'acceptation</div>
+                            <div style="font-size: 20px; font-weight: 700; color: #059669 !important;">
+                                {{ proposition_reunion.nbrVoteAccept }}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.initShowMap = function () {
+        const coords = window._showMapCoords;
+        const address = window._showMapAddress;
+        const mapDiv = document.getElementById('show-map');
+        if ((!coords && !address) || !mapDiv) return;
+
+        const initMapWithLatLng = (lat, lng) => {
+            const map = new google.maps.Map(mapDiv, {
+                center: { lat: lat, lng: lng },
+                zoom: 15,
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: false,
+                zoomControl: true,
+                clickableIcons: false,
+                gestureHandling: 'cooperative'
+            });
+            new google.maps.Marker({
+                position: { lat: lat, lng: lng },
+                map: map,
+                animation: google.maps.Animation.DROP
+            });
+        };
+
+        if (coords) {
+            const parts = coords.split(',');
+            if (parts.length < 2) return;
+            const lat = parseFloat(parts[0]);
+            const lng = parseFloat(parts[1]);
+            if (isNaN(lat) || isNaN(lng)) return;
+            initMapWithLatLng(lat, lng);
+            return;
+        }
+
+        if (address) {
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address: address }, function (results, status) {
+                if (status === 'OK' && results[0]) {
+                    const location = results[0].geometry.location;
+                    initMapWithLatLng(location.lat(), location.lng());
+                }
+            });
+        }
+    };
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initShowMap" async defer></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const card = document.querySelector('.vote-card');
+    if (!card) return;
+
+    const propositionId = card.dataset.propositionId;
+    const buttons = Array.from(card.querySelectorAll('.btn-vote'));
+    const messageEl = document.getElementById('vote-message');
+    const userVoteEl = card.querySelector('.user-vote');
+    const barPour = card.querySelector('.progress-bar-pour');
+    const barContre = card.querySelector('.progress-bar-contre');
+    const statPour = card.querySelector('.stat-pour');
+    const statContre = card.querySelector('.stat-contre');
+    const statAbstention = card.querySelector('.stat-abstention');
+    const statTotal = card.querySelector('.stat-total');
+
+    const disableButtons = (disabled) => {
+        buttons.forEach(btn => {
+            btn.disabled = disabled;
+            btn.style.opacity = disabled ? '0.6' : '1';
+            btn.style.cursor = disabled ? 'not-allowed' : 'pointer';
+        });
+    };
+
+    const highlightVote = (voteValue) => {
+        buttons.forEach(btn => {
+            const isActive = btn.dataset.vote === voteValue;
+            btn.style.boxShadow = isActive ? '0 0 0 2px rgba(99,102,241,0.25)' : 'none';
+        });
+    };
+
+    const setMessage = (text, type = 'info') => {
+        if (!messageEl) return;
+        if (!text) {
+            messageEl.innerHTML = '';
+            return;
+        }
+        const color = type === 'error' ? 'var(--red-700)' : type === 'success' ? 'var(--green-700)' : 'var(--gray-700)';
+        const bg = type === 'error' ? 'var(--red-50)' : type === 'success' ? 'var(--green-50)' : 'var(--gray-50)';
+        const border = type === 'error' ? 'var(--red-200)' : type === 'success' ? 'var(--green-200)' : 'var(--gray-200)';
+        messageEl.innerHTML = `<div style="padding: 10px 12px; border-radius: 10px; background: ${bg}; border: 1px solid ${border}; color: ${color}; font-size: 13px;">${text}</div>`;
+    };
+
+    const updateUI = (results) => {
+        const pour = results.pour ?? 0;
+        const contre = results.contre ?? 0;
+        const abstention = results.abstention ?? 0;
+        const total = results.total ?? 0;
+        const pctPour = results.pourcentagePour ?? 0;
+        const pctContre = results.pourcentageContre ?? 0;
+
+        if (barPour) {
+            barPour.style.width = `${pctPour}%`;
+            barPour.textContent = `${pour} Pour`;
+        }
+        if (barContre) {
+            barContre.style.width = `${pctContre}%`;
+            barContre.textContent = `${contre} Contre`;
+        }
+        if (statPour) statPour.textContent = `${pour} Pour`;
+        if (statContre) statContre.textContent = `${contre} Contre`;
+        if (statAbstention) statAbstention.textContent = `${abstention} Abstention`;
+        if (statTotal) statTotal.textContent = `${total} votants`;
+
+        if (results.monVote) {
+            userVoteEl.textContent = `Votre vote: ${results.monVote}`;
+            highlightVote(results.monVote);
+        } else {
+            userVoteEl.textContent = '';
+            highlightVote(null);
+        }
+
+        const status = (results.statut || '').toLowerCase();
+        const dateFin = results.dateFin ? new Date(results.dateFin) : null;
+        const isOpen = (!dateFin || new Date() <= dateFin) && (status === 'proposé'.toLowerCase() || status === 'en attente'.toLowerCase());
+
+        if (!isOpen) {
+            disableButtons(true);
+            setMessage('Vote terminé.', 'info');
+        } else {
+            disableButtons(false);
+            if (results.aVote) {
+                setMessage('Vote enregistré. Vous pouvez changer votre vote.', 'success');
+            } else {
+                setMessage('Vote ouvert. Choisissez une option.', 'info');
+            }
+        }
+    };
+
+    const fetchResults = async () => {
+        try {
+            const res = await fetch(`/api/proposition/${propositionId}/results`, {
+                headers: { 'Accept': 'application/json' },
+            });
+            const data = await res.json();
+            if (data && data.results) updateUI(data.results);
+        } catch (e) {
+            setMessage('Impossible de charger les résultats.', 'error');
+        }
+    };
+
+    buttons.forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const voteValue = btn.dataset.vote;
+            disableButtons(true);
+            try {
+                const res = await fetch(`/api/proposition/${propositionId}/vote`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({ vote: voteValue }),
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    setMessage(data.message || 'Erreur lors du vote.', 'error');
+                    await fetchResults();
+                    return;
+                }
+                if (data.results) updateUI(data.results);
+            } catch (e) {
+                setMessage('Erreur réseau lors du vote.', 'error');
+            } finally {
+                disableButtons(false);
+            }
+        });
+    });
+
+    fetchResults();
+    setInterval(fetchResults, 10000);
+});
+</script>
+</main>
+{% endblock %}

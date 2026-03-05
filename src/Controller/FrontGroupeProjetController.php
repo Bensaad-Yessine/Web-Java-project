@@ -1,0 +1,441 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\GroupeProjet;
+use App\Entity\PropositionReunion;
+use App\Form\GroupeProjetType;
+use App\Form\PropositionReunionType;
+use App\Repository\GroupeProjetRepository;
+use App\Service\SmartGroupMatcherService;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+#[Route('/front')]
+final class FrontGroupeProjetController extends AbstractController
+{
+    #[Route('', name: 'front_groupe_projet_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, GroupeProjetRepository $groupeProjetRepository): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Un membre ne voit que les groupes dont il fait partie
+        $groupesProjets = $groupeProjetRepository->findByMember($user);
+
+        $search = $request->get('search', '');
+        $sortBy = $request->get('sortBy', 'createdAt');
+        $sortOrder = $request->get('sortOrder', 'DESC');
+
+        if ($search) {
+            $groupesProjets = array_filter($groupesProjets, function ($groupe) use ($search) {
+                return stripos($groupe->getNomProjet(), $search) !== false;
+            });
+        }
+
+        usort($groupesProjets, function ($a, $b) use ($sortBy, $sortOrder) {
+            $aValue = match ($sortBy) {
+                'id' => $a->getId(),
+                'members' => $a->getNbrMembre() ?? 0,
+                'createdAt' => $a->getCreatedAt() ? $a->getCreatedAt()->getTimestamp() : 0,
+                default => $a->getCreatedAt() ? $a->getCreatedAt()->getTimestamp() : 0,
+            };
+            $bValue = match ($sortBy) {
+                'id' => $b->getId(),
+                'members' => $b->getNbrMembre() ?? 0,
+                'createdAt' => $b->getCreatedAt() ? $b->getCreatedAt()->getTimestamp() : 0,
+                default => $b->getCreatedAt() ? $b->getCreatedAt()->getTimestamp() : 0,
+            };
+            $result = $aValue <=> $bValue;
+            return $sortOrder === 'ASC' ? $result : -$result;
+        });
+
+        // Pagination
+        $limit = 3;
+        $totalGroupes = count($groupesProjets);
+        $totalPages = (int) ceil($totalGroupes / $limit);
+        $page = max(1, min((int) $request->get('page', 1), $totalPages ?: 1));
+        $offset = ($page - 1) * $limit;
+        $groupesProjetsPage = array_slice(array_values($groupesProjets), $offset, $limit);
+
+        if ($request->isXmlHttpRequest()) {
+            $html = '';
+            foreach ($groupesProjetsPage as $groupe) {
+                $html .= $this->renderView('front/groupe/_group_card.html.twig', ['groupe' => $groupe]);
+            }
+            return $this->json([
+                'success' => true,
+                'html' => $html,
+                'count' => $totalGroupes,
+            ]);
+        }
+
+        return $this->render('front/groupe/index.html.twig', [
+            'groupe_projets' => $groupesProjetsPage,
+            'total_groupes' => $totalGroupes,
+            'current_page' => $page,
+            'total_pages' => $totalPages,
+            'limit' => $limit,
+        
+        ]);
+    }
+
+    #[Route('/new', name: 'front_groupe_projet_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $groupeProjet = new GroupeProjet();
+        $groupeProjet->setCreatedAt(new \DateTimeImmutable());
+        $groupeProjet->setCreatedBy($user);
+        $groupeProjet->addIdUser($user); // Le créateur est toujours membre
+
+        $form = $this->createForm(GroupeProjetType::class, $groupeProjet);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // S'assurer que le créateur reste membre
+            if (!$groupeProjet->getIdUser()->contains($user)) {
+                $groupeProjet->addIdUser($user);
+            }
+            $groupeProjet->setNbrMembre($groupeProjet->getIdUser()->count());
+            $entityManager->persist($groupeProjet);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Groupe créé avec succès!');
+            return $this->redirectToRoute('front_groupe_projet_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('front/groupe/new.html.twig', [
+            'groupe_projet' => $groupeProjet,
+            'form' => $form,
+            'tasks' => [],
+        ]);
+    }
+
+    #[Route('/find', name: 'front_groupe_projet_find', methods: ['GET', 'POST'])]
+    public function find(
+        Request $request,
+        GroupeProjetRepository $groupeProjetRepository,
+        SmartGroupMatcherService $matcher,
+        \App\Repository\MatiereClasseRepository $matiereRepo
+    ): Response {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $results   = [];
+        $submitted = false;
+        $criteria  = [
+            'matiere'        => '',
+            'niveau'         => '',
+            'disponibilites' => [],
+            'objectif'       => '',
+            'style'          => '',
+        ];
+
+        // Build full matières list from MatiereClasse
+        $matieres = [];
+        foreach ($matiereRepo->findAll() as $m) {
+            if ($m->getNom()) {
+                $matieres[] = $m->getNom();
+            }
+        }
+        // Fallback: also include matieres used in existing groups
+        foreach ($groupeProjetRepository->findDistinctMatieres() as $mat) {
+            if (!in_array($mat, $matieres, true)) {
+                $matieres[] = $mat;
+            }
+        }
+        sort($matieres);
+
+        if ($request->isMethod('POST')) {
+            $allPost = $request->request->all();
+            $criteria = [
+                'matiere'        => $request->request->get('matiere', ''),
+                'niveau'         => $request->request->get('niveau', ''),
+                'disponibilites' => isset($allPost['disponibilites']) ? (array) $allPost['disponibilites'] : [],
+                'objectif'       => $request->request->get('objectif', ''),
+                'style'          => $request->request->get('style', ''),
+            ];
+
+            if ($criteria['matiere']) {
+                $groups  = $groupeProjetRepository->findByMatiereForMatching($criteria['matiere'], $user);
+                $results = $matcher->rankGroups($groups, $criteria);
+            }
+            $submitted = true;
+        }
+
+        return $this->render('front/groupe/find.html.twig', [
+            'results'   => $results,
+            'submitted' => $submitted,
+            'criteria'  => $criteria,
+            'matieres'  => $matieres,
+        ]);
+    }
+
+    #[Route('/{id}/join', name: 'front_groupe_projet_join', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function join(Request $request, GroupeProjet $groupeProjet, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        if (!$this->isCsrfTokenValid('join'.$groupeProjet->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'RequÃªte invalide.');
+            return $this->redirectToRoute('front_groupe_projet_find');
+        }
+
+        if ($groupeProjet->getIdUser()->contains($user)) {
+            $this->addFlash('info', 'Vous êtes déjà membre de ce groupe.');
+            return $this->redirectToRoute('front_groupe_projet_show', ['id' => $groupeProjet->getId()]);
+        }
+
+        if ($groupeProjet->getIdUser()->count() >= 10) {
+            $this->addFlash('error', 'Ce groupe est complet (maximum 10 membres).');
+            return $this->redirectToRoute('front_groupe_projet_find');
+        }
+
+        $groupeProjet->addIdUser($user);
+        $groupeProjet->setNbrMembre($groupeProjet->getIdUser()->count());
+        $entityManager->flush();
+
+        $this->addFlash('success', '🎉 Vous avez rejoint le groupe "' . $groupeProjet->getNomProjet() . '" !');
+        return $this->redirectToRoute('front_groupe_projet_show', ['id' => $groupeProjet->getId()]);
+    }
+
+    #[Route('/{id}/proposition/new', name: 'front_proposition_reunion_new', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function newProposition(Request $request, GroupeProjet $groupeProjet, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        $isMember = $user && $groupeProjet->getIdUser()->contains($user);
+        if (!$isMember && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous ne faites pas partie de ce groupe.');
+        }
+
+        $propositionReunion = new PropositionReunion();
+        $propositionReunion->setIdGroupe($groupeProjet);
+        if (method_exists($propositionReunion, 'setDateCreation')) {
+            $propositionReunion->setDateCreation(new \DateTime());
+        }
+        if (method_exists($propositionReunion, 'setPropositionId')) {
+            $propositionReunion->setPropositionId(0);
+        }
+
+        $form = $this->createForm(PropositionReunionType::class, $propositionReunion, [
+            'status_choices' => [
+                'En attente' => 'En attente',
+                'Proposé' => 'Proposé',
+            ],
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // PHP Assertions for business logic validation
+            try {
+                $titre = $propositionReunion->getTitre();
+                $description = $propositionReunion->getDescription();
+                
+                // Business logic assertions - min lengths
+                assert(strlen(trim($titre ?? '')) >= 3, "Le titre doit contenir au moins 3 caractères");
+                assert(strlen(trim($description ?? '')) >= 10, "La description doit contenir au moins 10 caractères");
+                
+                // All assertions passed, save the entity
+                $entityManager->persist($propositionReunion);
+                $entityManager->flush();
+                $this->addFlash('success', 'Proposition de réunion créée avec succès!');
+                return $this->redirectToRoute('front_proposition_reunion_show', ['id' => $propositionReunion->getId()], Response::HTTP_SEE_OTHER);
+            } catch (\AssertionError $e) {
+                $this->addFlash('error', $e->getMessage());
+            }
+        } elseif ($form->isSubmitted() && !$form->isValid()) {
+            // Form validation failed - collect errors
+            foreach ($form->getErrors(true) as $error) {
+                $this->addFlash('error', $error->getMessage());
+            }
+        }
+
+        return $this->render('front/proposition/new.html.twig', [
+            'groupe_projet' => $groupeProjet,
+            'proposition_reunion' => $propositionReunion,
+            'form' => $form,
+            'tasks' => [],
+            'google_maps_api_key' => $_ENV['GOOGLE_MAPS_API_KEY'] ?? '',
+        ]);
+    }
+
+    #[Route('/{id}', name: 'front_groupe_projet_show', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function show(GroupeProjet $groupeProjet, \App\Repository\PropositionReunionRepository $propositionRepo): Response
+    {
+        $user = $this->getUser();
+        $isMember = $user && $groupeProjet->getIdUser()->contains($user);
+        if (!$isMember && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous ne faites pas partie de ce groupe.');
+        }
+
+        $propositions = $propositionRepo->findBy(['idGroupe' => $groupeProjet->getId()], ['dateCreation' => 'DESC']);
+
+        return $this->render('front/groupe/show.html.twig', [
+            'groupe_projet' => $groupeProjet,
+            'propositions' => $propositions,
+            'tasks' => [],
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'front_groupe_projet_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function edit(Request $request, GroupeProjet $groupeProjet, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        $owner = $groupeProjet->getCreatedBy();
+        $isOwner = $user && $owner && $owner->getId() === $user->getId();
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+        if (!$isOwner && !$isAdmin) {
+            throw $this->createAccessDeniedException('Seul le créateur du groupe (ou un admin) peut modifier ce groupe.');
+        }
+
+        $form = $this->createForm(GroupeProjetType::class, $groupeProjet);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $groupeProjet->setNbrMembre($groupeProjet->getIdUser()->count());
+            $groupeProjet->setUpdatedAt(new \DateTime());
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Groupe modifié avec succès!');
+            return $this->redirectToRoute('front_groupe_projet_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('front/groupe/edit.html.twig', [
+            'groupe_projet' => $groupeProjet,
+            'form' => $form,
+            'tasks' => [],
+        ]);
+    }
+
+    #[Route('/{id}/delete', name: 'front_groupe_projet_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function delete(Request $request, GroupeProjet $groupeProjet, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        $owner = $groupeProjet->getCreatedBy();
+        $isOwner = $user && $owner && $owner->getId() === $user->getId();
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+        if (!$isOwner && !$isAdmin) {
+            throw $this->createAccessDeniedException('Seul le créateur du groupe (ou un admin) peut supprimer ce groupe.');
+        }
+
+        if ($this->isCsrfTokenValid('delete'.$groupeProjet->getId(), $request->request->get('_token'))) {
+            foreach ($groupeProjet->getIdUser()->toArray() as $u) {
+                $groupeProjet->removeIdUser($u);
+            }
+            $entityManager->flush();
+            $entityManager->remove($groupeProjet);
+            $entityManager->flush();
+            $this->addFlash('success', 'Groupe supprimé avec succès!');
+        }
+
+        return $this->redirectToRoute('front_groupe_projet_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/propositions', name: 'front_proposition_reunion_index', methods: ['GET'])]
+    public function indexPropositions(\App\Repository\PropositionReunionRepository $propositionRepo): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $propositionsActives  = $propositionRepo->findActiveByUser($user);
+        $propositionsArchives = $propositionRepo->findArchivedByUser($user);
+
+        return $this->render('front/proposition/index.html.twig', [
+            'propositions'          => $propositionsActives,
+            'propositions_archives' => $propositionsArchives,
+            'tasks' => [],
+        ]);
+    }
+
+    #[Route('/proposition/{id}', name: 'front_proposition_reunion_show', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function showProposition(PropositionReunion $proposition): Response
+    {
+        $user = $this->getUser();
+        $groupeProjet = $proposition->getIdGroupe();
+        $isMember = $user && $groupeProjet->getIdUser()->contains($user);
+        
+        if (!$isMember && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous ne faites pas partie de ce groupe.');
+        }
+
+        return $this->render('front/proposition/show.html.twig', [
+            'proposition_reunion' => $proposition,
+            'groupe_projet' => $groupeProjet,
+            'tasks' => [],
+            'google_maps_api_key' => $_ENV['GOOGLE_MAPS_API_KEY'] ?? '',
+        ]);
+    }
+
+    #[Route('/proposition/{id}/edit', name: 'front_proposition_reunion_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function editProposition(Request $request, PropositionReunion $proposition, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        $groupeProjet = $proposition->getIdGroupe();
+        $isMember = $user && $groupeProjet->getIdUser()->contains($user);
+        
+        if (!$isMember && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous ne faites pas partie de ce groupe.');
+        }
+
+        $form = $this->createForm(PropositionReunionType::class, $proposition, [
+            'status_choices' => [
+                'En attente' => 'En attente',
+                'Proposé' => 'Proposé',
+            ],
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+            $this->addFlash('success', 'Proposition de réunion modifiée avec succès!');
+            return $this->redirectToRoute('front_proposition_reunion_show', ['id' => $proposition->getId()], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('front/proposition/edit.html.twig', [
+            'proposition_reunion' => $proposition,
+            'groupe_projet' => $groupeProjet,
+            'form' => $form,
+            'tasks' => [],
+            'google_maps_api_key' => $_ENV['GOOGLE_MAPS_API_KEY'] ?? '',
+        ]);
+    }
+
+    #[Route('/proposition/{id}/delete', name: 'front_proposition_reunion_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function deleteProposition(Request $request, PropositionReunion $proposition, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        $groupeProjet = $proposition->getIdGroupe();
+        $isMember = $user && $groupeProjet->getIdUser()->contains($user);
+        
+        if (!$isMember && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException('Vous ne faites pas partie de ce groupe.');
+        }
+
+        if ($this->isCsrfTokenValid('delete'.$proposition->getId(), $request->request->get('_token'))) {
+            $groupeId = $groupeProjet->getId();
+            $entityManager->remove($proposition);
+            $entityManager->flush();
+            $this->addFlash('success', 'Proposition de réunion supprimée avec succès!');
+            return $this->redirectToRoute('front_groupe_projet_show', ['id' => $groupeId], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->redirectToRoute('front_proposition_reunion_show', ['id' => $proposition->getId()], Response::HTTP_SEE_OTHER);
+    }
+}

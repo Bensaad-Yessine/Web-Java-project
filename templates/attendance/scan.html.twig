@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Scanner QR – ESPRIT Présence</title>
+
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+
+    <!-- jsQR : décodage QR via canvas (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            background: linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .scan-page { max-width: 430px; margin: 0 auto; padding: 24px 16px 40px; }
+
+        /* ── Header ── */
+        .scan-header { text-align: center; margin-bottom: 28px; }
+        .scan-header h1 { font-size: 1.5rem; font-weight: 700; margin: 0 0 6px; }
+        .scan-header p  { opacity: .7; margin: 0; font-size: .9rem; }
+        .avatar-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 14px;
+            font-size: 2rem;
+        }
+
+        /* ── Carte ── */
+        .card {
+            background: rgba(255,255,255,.08);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(255,255,255,.12);
+        }
+        .card-title {
+            font-size: .8rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            opacity: .6;
+            margin-bottom: 14px;
+        }
+
+        /* ── Caméra ── */
+        #video-container {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #000;
+            aspect-ratio: 1;
+        }
+        #video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .scan-overlay {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .scan-frame {
+            width: 60%; aspect-ratio: 1;
+            border: 3px solid #667eea;
+            border-radius: 12px;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,.45);
+        }
+        .scan-line {
+            position: absolute;
+            left: 20%; right: 20%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #667eea, transparent);
+            animation: scanline 2s linear infinite;
+        }
+        @keyframes scanline {
+            0%   { top: 20%; }
+            100% { top: 80%; }
+        }
+        #scan-status {
+            position: absolute; bottom: 10px; left: 0; right: 0;
+            text-align: center; font-size: .78rem; opacity: .8;
+        }
+        .scan-hint { text-align: center; font-size: .82rem; opacity: .65; margin-top: 10px; }
+
+        /* ── Saisie manuelle ── */
+        .tab-btns {
+            display: flex; gap: 8px; margin-bottom: 14px;
+        }
+        .tab-btn {
+            flex: 1; padding: 9px; border-radius: 10px; border: none;
+            background: rgba(255,255,255,.1); color: #fff; font-size: .85rem;
+            cursor: pointer; transition: background .2s;
+        }
+        .tab-btn.active { background: linear-gradient(135deg,#667eea,#764ba2); }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        .form-field { margin-bottom: 14px; }
+        .form-field label { font-size: .8rem; opacity: .7; display: block; margin-bottom: 6px; }
+        .form-field input, .form-field textarea {
+            width: 100%; background: rgba(255,255,255,.1);
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 10px; color: #fff;
+            padding: 11px 14px; font-size: .9rem;
+            outline: none;
+        }
+        .form-field input::placeholder { opacity: .4; }
+        .form-field input:focus { border-color: #667eea; }
+
+        /* ── Bouton soumettre ── */
+        .btn-submit {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none; border-radius: 12px; color: #fff;
+            font-size: 1rem; font-weight: 700; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: opacity .2s, transform .15s;
+        }
+        .btn-submit:active { transform: scale(.97); }
+        .btn-submit:disabled { opacity: .5; cursor: not-allowed; }
+
+        /* ── Résultat ── */
+        .result-card {
+            display: none;
+            text-align: center;
+            padding: 28px 22px;
+        }
+        .result-icon { font-size: 3.5rem; margin-bottom: 12px; }
+        .result-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
+        .result-msg   { opacity: .8; font-size: .9rem; }
+        .result-badge {
+            display: inline-block;
+            margin-top: 12px; padding: 6px 20px;
+            border-radius: 50px; font-weight: 700; font-size: .9rem;
+        }
+        .badge-present  { background: #1b5e20; color: #a5d6a7; }
+        .badge-late     { background: #e65100; color: #ffccbc; }
+        .badge-rejected { background: #b71c1c; color: #ef9a9a; }
+
+        .btn-retry {
+            margin-top: 18px; padding: 10px 28px;
+            background: rgba(255,255,255,.15); border: none;
+            border-radius: 10px; color: #fff; font-size: .9rem; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="scan-page">
+
+    <div class="scan-header">
+        <div class="avatar-icon">📸</div>
+        <h1>Marquer ma présence</h1>
+        <p>Connecté : {{ app.user ? app.user.fullName : 'Inconnu' }}</p>
+    </div>
+
+    <!-- ── Résultat ─────────────────────────────────────────────── -->
+    <div class="card result-card" id="result-card">
+        <div class="result-icon" id="res-icon">✅</div>
+        <div class="result-title" id="res-title">Présence enregistrée</div>
+        <div class="result-msg"   id="res-msg"></div>
+        <div class="result-badge" id="res-badge"></div>
+        <div id="res-seance-info" style="margin-top:14px; font-size:.85rem; opacity:.7;"></div>
+        <button class="btn-retry" onclick="resetScan()">Scanner à nouveau</button>
+    </div>
+
+    <!-- ── Scanner / formulaire ─────────────────────────────────── -->
+    <div id="main-form">
+
+        <!-- Tabs -->
+        <div class="tab-btns">
+            <button class="tab-btn active" onclick="switchTab('camera')">
+                <i class="mdi mdi-camera"></i> Caméra
+            </button>
+            <button class="tab-btn" onclick="switchTab('manual')">
+                <i class="mdi mdi-keyboard"></i> Saisie manuelle
+            </button>
+        </div>
+
+        <!-- Tab Caméra -->
+        <div class="tab-panel active card" id="tab-camera">
+            <div class="card-title">Scanner le QR Code</div>
+            <div id="video-container">
+                <video id="video" playsinline muted></video>
+                <div class="scan-overlay">
+                    <div class="scan-frame"></div>
+                    <div class="scan-line"></div>
+                    <div id="scan-status">Initialisation caméra…</div>
+                </div>
+            </div>
+            <p class="scan-hint">Centrez le QR code dans le cadre</p>
+        </div>
+
+        <!-- Tab Manuelle -->
+        <div class="tab-panel card" id="tab-manual">
+            <div class="card-title">Saisie du token QR</div>
+            <div class="form-field">
+                <label>Token QR</label>
+                <input type="text" id="manual-token" placeholder="Collez le token ici…"
+                       value="{{ prefillToken }}">
+            </div>
+        </div>
+
+        <!-- GPS (commun) -->
+        <div class="card" id="gps-card">
+            <div class="card-title">Géolocalisation (optionnel)</div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <input type="checkbox" id="use-gps" style="width:18px;height:18px;accent-color:#667eea;">
+                <label for="use-gps" style="font-size:.9rem; opacity:.85; cursor:pointer;">
+                    Activer la localisation GPS
+                </label>
+            </div>
+            <div id="gps-coords" style="font-size:.78rem;opacity:.6;margin-top:8px;display:none;"></div>
+        </div>
+
+        <!-- Submit -->
+        <button class="btn-submit" id="btn-submit" onclick="submitScan()">
+            <i class="mdi mdi-check-circle"></i>
+            <span>Confirmer ma présence</span>
+        </button>
+    </div>
+
+</div>
+
+<script>
+const SUBMIT_URL = "{{ path('app_attendance_scan_submit') }}";
+const CSRF_HEADER = "{{ csrf_token('scan_submit') }}";
+
+let scannedToken = "{{ prefillToken|e('js') }}" || null;
+let gpsLat = null, gpsLng = null;
+let activeTab = 'camera';
+
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+    activeTab = tab;
+    document.querySelectorAll('.tab-btn').forEach((b,i)=>{
+        b.classList.toggle('active', (i===0 && tab==='camera') || (i===1 && tab==='manual'));
+    });
+    document.getElementById('tab-camera').classList.toggle('active', tab === 'camera');
+    document.getElementById('tab-manual').classList.toggle('active', tab === 'manual');
+
+    if (tab === 'camera') startCamera();
+    else stopCamera();
+}
+
+// ── Caméra / jsQR ────────────────────────────────────────────────────────────
+let scanLoop = null;
+
+async function startCamera() {
+    const statusEl = document.getElementById('scan-status');
+    const videoEl  = document.getElementById('video');
+    statusEl.textContent = 'Demande d\'accès à la caméra…';
+
+    let stream = null;
+
+    // 1. Obtenir le stream caméra
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    } catch (e) {
+        console.error('[Camera getUserMedia]', e.name, e.message);
+        if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
+            statusEl.innerHTML = '🚫 Permission refusée – cliquez sur 📷 dans la barre d\'adresse → Autoriser la caméra.';
+        } else if (e.name === 'NotFoundError' || e.name === 'DevicesNotFoundError') {
+            statusEl.innerHTML = '📷 Aucune caméra trouvée – vérifiez qu\'elle est bien connectée et activée dans Windows.';
+        } else if (e.name === 'NotReadableError') {
+            statusEl.innerHTML = '⚠️ Caméra déjà utilisée – fermez toute autre application y accédant.';
+        } else {
+            statusEl.textContent = 'Erreur caméra : [' + e.name + '] ' + e.message;
+        }
+        return;
+    }
+
+    // 2. Attacher le stream à la balise vidéo
+    try {
+        videoEl.srcObject = stream;
+        videoEl.playsInline = true;
+        videoEl.muted = true;
+        await videoEl.play();
+        statusEl.textContent = 'Caméra prête – Centrez le QR code';
+    } catch (e) {
+        console.error('[Camera play]', e.name, e.message);
+        statusEl.textContent = 'Impossible d\'afficher la vidéo : ' + e.message;
+        stream.getTracks().forEach(t => t.stop());
+        return;
+    }
+
+    // 3. Démarrer la boucle de scan
+    startScanLoop();
+}
+
+function startScanLoop() {
+    const videoEl  = document.getElementById('video');
+    const statusEl = document.getElementById('scan-status');
+    const canvas   = document.createElement('canvas');
+    const ctx      = canvas.getContext('2d');
+
+    function tick() {
+        if (!videoEl.srcObject) return; // caméra arrêtée
+        if (videoEl.readyState >= videoEl.HAVE_ENOUGH_DATA && videoEl.videoWidth > 0) {
+            canvas.width  = videoEl.videoWidth;
+            canvas.height = videoEl.videoHeight;
+            ctx.drawImage(videoEl, 0, 0);
+            try {
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: 'dontInvert'
+                });
+                if (code && code.data) {
+                    // Extraire le token si le QR encode une URL (/attendance/scan?token=...)
+                    let raw = code.data;
+                    try {
+                        const u = new URL(raw);
+                        const t = u.searchParams.get('token');
+                        if (t) raw = t;
+                    } catch(ignored) {}
+                    scannedToken = raw;
+                    statusEl.textContent = '✅ QR détecté !';
+                    stopCamera();
+                    submitScan();
+                    return;
+                }
+            } catch(e) { /* ignorer erreurs canvas */ }
+        }
+        scanLoop = requestAnimationFrame(tick);
+    }
+    scanLoop = requestAnimationFrame(tick);
+}
+
+function stopCamera() {
+    if (scanLoop) { cancelAnimationFrame(scanLoop); scanLoop = null; }
+    const videoEl = document.getElementById('video');
+    if (videoEl.srcObject) {
+        videoEl.srcObject.getTracks().forEach(t => t.stop());
+        videoEl.srcObject = null;
+    }
+}
+
+// ── GPS ──────────────────────────────────────────────────────────────────────
+document.getElementById('use-gps').addEventListener('change', function() {
+    if (!this.checked) { gpsLat = null; gpsLng = null; document.getElementById('gps-coords').style.display='none'; return; }
+    navigator.geolocation.getCurrentPosition(
+        pos => {
+            gpsLat = pos.coords.latitude;
+            gpsLng = pos.coords.longitude;
+            const el = document.getElementById('gps-coords');
+            el.textContent = `📍 ${gpsLat.toFixed(5)}, ${gpsLng.toFixed(5)}`;
+            el.style.display = 'block';
+        },
+        err => {
+            document.getElementById('gps-coords').textContent = 'GPS non disponible';
+            document.getElementById('gps-coords').style.display = 'block';
+        }
+    );
+});
+
+// ── Soumettre ────────────────────────────────────────────────────────────────
+function submitScan() {
+    const token = activeTab === 'camera'
+        ? (scannedToken || '')
+        : document.getElementById('manual-token').value.trim();
+
+    if (!token) { alert('Token QR manquant.'); return; }
+
+    console.log('[Scan] Token envoyé :', token);
+
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.querySelector('span').textContent = 'Envoi en cours…';
+
+    const body = { qrToken: token };
+    if (gpsLat !== null) body.gps = { lat: gpsLat, lng: gpsLng };
+
+    const deviceId = (navigator.userAgent || '').substring(0, 50);
+    if (deviceId) body.deviceId = deviceId;
+
+    fetch(SUBMIT_URL, {
+        method:  'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify(body),
+    })
+    .then(r => r.json())
+    .then(data => showResult(data))
+    .catch(e  => showResult({ success: false, status: 'REJECTED', message: 'Erreur réseau : ' + e.message }))
+    .finally(() => {
+        btn.disabled = false;
+        btn.querySelector('span').textContent = 'Confirmer ma présence';
+    });
+}
+
+// ── Afficher résultat ─────────────────────────────────────────────────────────
+function showResult(data) {
+    document.getElementById('main-form').style.display = 'none';
+    const card = document.getElementById('result-card');
+    card.style.display = 'block';
+
+    const status = data.status || (data.success ? 'PRESENT' : 'REJECTED');
+
+    const icons   = { PRESENT: '✅', LATE: '⏰', REJECTED: '❌' };
+    const titles  = { PRESENT: 'Présence enregistrée !', LATE: 'Enregistré en retard', REJECTED: 'Présence refusée' };
+    const badges  = { PRESENT: 'badge-present', LATE: 'badge-late', REJECTED: 'badge-rejected' };
+
+    document.getElementById('res-icon').textContent  = icons[status]  || '❓';
+    document.getElementById('res-title').textContent = titles[status] || status;
+    document.getElementById('res-msg').textContent   = data.message || '';
+
+    const badge = document.getElementById('res-badge');
+    badge.textContent  = status;
+    badge.className    = 'result-badge ' + (badges[status] || '');
+
+    if (status === 'LATE' && data.minutesLate) {
+        document.getElementById('res-msg').textContent += ` (${data.minutesLate} min de retard)`;
+    }
+
+    if (status === 'REJECTED' && data.reason) {
+        const reasons = {
+            TOKEN_FALSIFIED:  'QR code non valide (token falsifié).',
+            TOKEN_INVALID:    'QR code invalide.',
+            ALREADY_SCANNED:  'Présence déjà enregistrée pour cette séance.',
+            SEANCE_NOT_FOUND: 'Séance introuvable.',
+            SERVER_ERROR:     'Erreur serveur, réessayez.',
+        };
+        document.getElementById('res-msg').textContent = reasons[data.reason] || data.message || data.reason;
+    }
+
+    if (data.seance) {
+        document.getElementById('res-seance-info').innerHTML =
+            `📚 ${data.seance.matiere || ''} &nbsp;|&nbsp; 🏫 Salle ${data.seance.salle || ''} &nbsp;|&nbsp; ⏰ ${data.seance.debut || ''}`;
+    }
+}
+
+// ── Reset ────────────────────────────────────────────────────────────────────
+function resetScan() {
+    scannedToken = null;
+    document.getElementById('result-card').style.display = 'none';
+    document.getElementById('main-form').style.display   = 'block';
+    document.getElementById('manual-token').value = '';
+    if (activeTab === 'camera') startCamera();
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+    // Forcer localhost au lieu de 127.0.0.1 pour autoriser getUserMedia
+    if (location.hostname === '127.0.0.1') {
+        location.href = location.href.replace('127.0.0.1', 'localhost');
+        return;
+    }
+
+    {% if prefillToken %}
+        // Token en URL → soumettre directement
+        scannedToken = "{{ prefillToken|e('js') }}";
+        switchTab('manual');
+        document.getElementById('manual-token').value = scannedToken;
+        // Laisser l'utilisateur confirmer manuellement
+    {% else %}
+        startCamera();
+    {% endif %}
+});
+</script>
+</body>
+</html>
