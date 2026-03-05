@@ -204,27 +204,18 @@
             font-style: italic;
         }
 
-        /* Style Symfony default error lists */
-        .form-group ul {
-            list-style: none;
-            padding: 0;
-            margin: 5px 0 0 0;
+        /* Error Messages */
+        .error-message {
             color: #dc3545;
             font-size: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .form-group ul li {
+            margin-top: 5px;
             display: flex;
             align-items: center;
             gap: 5px;
         }
 
-        .form-group ul li::before {
+        .error-message::before {
             content: "⚠";
-            font-weight: bold;
         }
 
         .form-control.is-invalid, .form-select.is-invalid, input[type="datetime-local"].is-invalid {
@@ -1079,8 +1070,7 @@
                                         <div class="form-group">
                                             {{ form_label(form.typeSeance, null, {'label_attr': {'class': 'required'}}) }}
                                             {{ form_widget(form.typeSeance, {'attr': {
-                                                'class': 'form-control' ~ (form.typeSeance.vars.errors|length > 0 ? ' is-invalid' : ''),
-                                                'placeholder': 'Ex: Cours, TD, TP'
+                                                'class': 'form-select'
                                             }}) }}
                                             {{ form_errors(form.typeSeance) }}
                                             <span class="help-text">Type d'enseignement (Cours, TD, TP)</span>
@@ -1089,8 +1079,7 @@
                                         <div class="form-group">
                                             {{ form_label(form.mode, null, {'label_attr': {'class': 'required'}}) }}
                                             {{ form_widget(form.mode, {'attr': {
-                                                'class': 'form-control' ~ (form.mode.vars.errors|length > 0 ? ' is-invalid' : ''),
-                                                'placeholder': 'Ex: Présentiel, Distanciel, Hybride'
+                                                'class': 'form-select'
                                             }}) }}
                                             {{ form_errors(form.mode) }}
                                             <span class="help-text">Mode d'enseignement (Présentiel, Distanciel, Hybride)</span>

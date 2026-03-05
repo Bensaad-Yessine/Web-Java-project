@@ -42,6 +42,25 @@ class SeanceRepository extends ServiceEntityRepository
     //    }
     
     /**
+     * Find seances for a class within a given week (by heureDebut date range).
+     * @return Seance[]
+     */
+    public function findByClasseAndWeek(\App\Entity\Classe $classe, \DateTimeInterface $start, \DateTimeInterface $end): array
+    {
+        return $this->createQueryBuilder('s')
+            ->leftJoin('s.matiere', 'm')->addSelect('m')
+            ->leftJoin('s.salle', 'sa')->addSelect('sa')
+            ->andWhere('s.classe = :classe')
+            ->andWhere('s.heureDebut BETWEEN :start AND :end')
+            ->setParameter('classe', $classe)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->orderBy('s.heureDebut', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * @return Seance[] Returns an array of Seance objects matching filters
      */
     public function findWithFilters(

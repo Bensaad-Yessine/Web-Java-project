@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Optimisation IA - ESPRIT</title>
+    
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/ti-icons/css/themify-icons.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/css/vendor.bundle.base.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css') }}">
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" />
+    
+    <style>
+        /* Smart Room AI Specific Styles */
+        .ai-optimization-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .ai-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .ai-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            color: white;
+            font-size: 28px;
+        }
+
+        .prediction-box {
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+            border: 2px solid #e3e8ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .prediction-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: #667eea;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .confidence-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .confidence-high {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .confidence-medium {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: white;
+        }
+
+        .confidence-low {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+        }
+
+        .explanation-list {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+
+        .explanation-list li {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            border-radius: 6px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recommendation-box {
+            background: linear-gradient(135deg, #e8f5e8 0%, #fff 100%);
+            border: 2px solid #d4edda;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .room-card {
+            background: white;
+            border: 2px solid #eaeaea;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .room-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .room-card.recommended {
+            border-color: #28a745;
+            background: linear-gradient(135deg, #f0fff4 0%, #fff 100%);
+        }
+
+        .room-card.recommended::before {
+            content: '🎯 RECOMMANDÉE';
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .room-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .room-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .room-capacity {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+
+        .room-location {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .utilization-bar {
+            height: 8px;
+            background: #eaeaea;
+            border-radius: 4px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .utilization-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745 0%, #20c997 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 10px 0;
+        }
+
+        .status-online {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .status-offline {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+
+        .btn-ai {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary-ai {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary-ai:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary-ai {
+            background: transparent;
+            color: #666;
+            border: 2px solid #ddd;
+        }
+
+        .btn-secondary-ai:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading .loading-spinner {
+            display: inline-block;
+        }
+
+        .loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .alert-ai {
+            border-radius: 10px;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .alert-success-ai {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .alert-warning-ai {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: white;
+        }
+
+        .alert-danger-ai {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .ai-card {
+                padding: 20px;
+                margin-top: 15px;
+            }
+            
+            .ai-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .ai-icon {
+                margin-right: 0;
+                margin-bottom: 15px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn-ai {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container-scroller">
+    <!-- Sidebar -->
+    <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+            <a class="sidebar-brand brand-logo" href="{{ path('app_seance_index') }}">
+                <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+            </a>
+            <a class="sidebar-brand brand-logo-mini" href="{{ path('app_seance_index') }}">
+                <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+            </a>
+        </div>
+        
+        <!-- Menu items (same as other pages) -->
+        <ul class="nav">
+            <li class="nav-item profile">
+                <div class="profile-desc">
+                    <div class="profile-pic">
+                        <div class="count-indicator">
+                            {% if app.user %}
+                                {% if app.user.profilePic %}
+                                    <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                                         alt="{{ app.user.prenom }}" 
+                                         class="profile-avatar-img">
+                                {% else %}
+                                    <div class="profile-avatar">
+                                        {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                            {% endif %}
+                            <span class="count bg-success"></span>
+                        </div>
+                        <div class="profile-name">
+                            {% if app.user %}
+                                <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                                <span class="text-muted">{{ app.user.email }}</span>
+                                <div class="mt-1">
+                                    {% if 'ROLE_ADMIN' in app.user.roles %}
+                                        <span class="user-role-badge badge-admin">Administrateur</span>
+                                    {% else %}
+                                        <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                                <span>Veuillez vous connecter</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="nav-item nav-category">
+                <span class="nav-link">Navigation</span>
+            </li>
+            
+            <li class="nav-item menu-items">
+                <a class="nav-link" href="{{ path('app_seance_index') }}">
+                    <span class="menu-icon"><i class="mdi mdi-calendar-clock"></i></span>
+                    <span class="menu-title">Séances</span>
+                </a>
+            </li>
+            
+            <!-- Other menu items... -->
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid page-body-wrapper">
+        <!-- Navbar -->
+        <nav class="navbar p-0 fixed-top d-flex flex-row">
+            <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+                <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+            </div>
+            <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+                <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                    <span class="mdi mdi-menu"></span>
+                </button>
+                <ul class="navbar-nav w-100">
+                    <li class="nav-item w-100">
+                        <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                            <input type="text" class="form-control" placeholder="Rechercher..." id="searchInput">
+                        </form>
+                    </li>
+                </ul>
+                <!-- Profile dropdown (same as other pages) -->
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <div class="main-panel">
+            <div class="content-wrapper">
+                <!-- Header -->
+                <div class="page-header">
+                    <h3 class="page-title">
+                        <span class="page-title-icon bg-gradient-primary text-white me-2">
+                            <i class="mdi mdi-brain"></i>
+                        </span> 
+                        Optimisation IA de Séance
+                    </h3>
+                    <nav aria-label="breadcrumb">
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{{ path('app_seance_index') }}" class="text-primary">
+                                    <i class="mdi mdi-calendar-clock me-1"></i>Séances
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ path('app_seance_show', {id: seance.id}) }}" class="text-primary">
+                                    {{ seance.matiere.nom ?? 'Séance' }}
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">
+                                <i class="mdi mdi-brain me-1"></i>Optimisation IA
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <!-- Flash Messages -->
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show alert-ai" role="alert">
+                            <i class="mdi mdi-{{ label == 'success' ? 'check-circle' : 'alert-circle' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                <!-- AI Optimization Container -->
+                <div class="ai-optimization-container">
+                    <div class="row">
+                        <div class="col-12">
+                            <!-- Séance Info Card -->
+                            <div class="ai-card">
+                                <div class="ai-header">
+                                    <div class="ai-icon">
+                                        <i class="mdi mdi-calendar-clock"></i>
+                                    </div>
+                                    <div>
+                                        <h2 class="mb-1">{{ seance.matiere.nom ?? 'Séance' }}</h2>
+                                        <p class="text-muted mb-0">
+                                            {{ seance.classe.nom ?? 'Classe' }} | 
+                                            {{ seance.jour }} {{ seance.heureDebut ? seance.heureDebut|date('H:i') : '' }}-{{ seance.heureFin ? seance.heureFin|date('H:i') : '' }} |
+                                            {{ seance.typeSeance }} ({{ seance.mode }})
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- AI Service Status -->
+                                <div class="mb-3">
+                                    <div class="status-indicator {{ smart_room_healthy ? 'status-online' : 'status-offline' }}">
+                                        <i class="mdi mdi-{{ smart_room_healthy ? 'check-circle' : 'alert-circle' }}"></i>
+                                        Service Smart Room AI: {{ smart_room_healthy ? 'En ligne' : 'Hors ligne' }}
+                                    </div>
+                                </div>
+
+                                {% if smart_room_healthy %}
+                                    <!-- Prediction Section -->
+                                    <div class="prediction-box">
+                                        <h4><i class="mdi mdi-brain me-2"></i>Prédiction d'assiduité</h4>
+                                        
+                                        {% if prediction %}
+                                            <div class="text-center">
+                                                <div class="prediction-number">
+                                                    {{ prediction.predicted_attendance }} étudiants
+                                                </div>
+                                                
+                                                <div class="confidence-badge confidence-{{ prediction.confidence >= 0.7 ? 'high' : (prediction.confidence >= 0.4 ? 'medium' : 'low') }}">
+                                                    <i class="mdi mdi-{{ prediction.confidence >= 0.7 ? 'check-circle' : (prediction.confidence >= 0.4 ? 'alert' : 'alert-circle') }}"></i>
+                                                    {{ prediction.confidence >= 0.7 ? 'Très fiable' : (prediction.confidence >= 0.4 ? 'Fiable' : 'Faible') }}
+                                                    ({{ (prediction.confidence * 100)|round }}%)
+                                                </div>
+                                            </div>
+                                            
+                                            {% if prediction.explanations %}
+                                                <h6 class="mt-4 mb-3">Facteurs influents :</h6>
+                                                <ul class="explanation-list">
+                                                    {% for explanation in prediction.explanations %}
+                                                        <li>
+                                                            <i class="mdi mdi-information-outline text-primary"></i>
+                                                            {{ explanation }}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        {% else %}
+                                            <div class="alert alert-warning-ai">
+                                                <i class="mdi mdi-alert me-2"></i>
+                                                Impossible d'obtenir une prédiction pour le moment.
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Recommendation Section -->
+                                    {% if recommendation %}
+                                        <div class="recommendation-box">
+                                            <h4><i class="mdi mdi-lightbulb-on me-2"></i>Recommandation de salle</h4>
+                                            
+                                            {% if recommendation.recommended_room %}
+                                                <div class="alert alert-success-ai">
+                                                    <i class="mdi mdi-check-circle me-2"></i>
+                                                    {{ recommendation.message|raw }}
+                                                </div>
+                                                
+                                                <div class="room-card recommended" style="position: relative;">
+                                                    <div class="room-info">
+                                                        <div>
+                                                            <div class="room-name">{{ recommendation.recommended_room.id }}</div>
+                                                            <div class="room-location">
+                                                                Bloc {{ recommendation.recommended_room.bloc }}, Étage {{ recommendation.recommended_room.etage }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="room-capacity">
+                                                            {{ recommendation.recommended_room.capacite }} places
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    {% set utilization = (recommendation.predicted_attendance / recommendation.recommended_room.capacite) * 100 %}
+                                                    <div class="utilization-bar">
+                                                        <div class="utilization-fill" style="width: {{ utilization }}%"></div>
+                                                    </div>
+                                                    <small class="text-muted">Taux d'occupation estimé : {{ utilization|round }}%</small>
+                                                </div>
+                                                
+                                                {% if recommendation.alternatives|length > 0 %}
+                                                    <h6 class="mt-4 mb-3">Alternatives disponibles :</h6>
+                                                    {% for room in recommendation.alternatives %}
+                                                        {% set alt_utilization = (recommendation.predicted_attendance / room.capacite) * 100 %}
+                                                        <div class="room-card">
+                                                            <div class="room-info">
+                                                                <div>
+                                                                    <div class="room-name">{{ room.id }}</div>
+                                                                    <div class="room-location">
+                                                                        Bloc {{ room.bloc }}, Étage {{ room.etage }}
+                                                                    </div>
+                                                                </div>
+                                                                <div class="room-capacity">
+                                                                    {{ room.capacite }} places
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="utilization-bar">
+                                                                <div class="utilization-fill" style="width: {{ alt_utilization }}%"></div>
+                                                            </div>
+                                                            <small class="text-muted">Taux d'occupation : {{ alt_utilization|round }}%</small>
+                                                        </div>
+                                                    {% endfor %}
+                                                {% endif %}
+                                            {% else %}
+                                                <div class="alert alert-warning-ai">
+                                                    <i class="mdi mdi-alert me-2"></i>
+                                                    {{ recommendation.message }}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Change Room Form -->
+                                        <form method="post" action="{{ path('app_seance_optimize', {id: seance.id}) }}" class="mt-4">
+                                            <div class="form-group">
+                                                <label class="form-label">Changer de salle :</label>
+                                                <select name="salle_id" class="form-select">
+                                                    <option value="">Sélectionner une salle...</option>
+                                                    {% for room in available_rooms %}
+                                                        <option value="{{ room.id }}" 
+                                                                {% if recommendation.recommended_room and room.name == recommendation.recommended_room.id %}selected{% endif %}>
+                                                            {{ room.name }} (Bloc {{ room.bloc }}, Étage {{ room.etage }}, {{ room.capacite }} places)
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="action-buttons">
+                                                <button type="submit" class="btn-ai btn-primary-ai">
+                                                    <i class="mdi mdi-check-circle"></i>
+                                                    <span class="btn-text">Appliquer le changement</span>
+                                                    <div class="loading-spinner"></div>
+                                                </button>
+                                                
+                                                <a href="{{ path('app_seance_show', {id: seance.id}) }}" class="btn-ai btn-secondary-ai">
+                                                    <i class="mdi mdi-arrow-left"></i>Retour à la séance
+                                                </a>
+                                            </div>
+                                        </form>
+                                    {% endif %}
+                                {% else %}
+                                    <!-- AI Service Offline -->
+                                    <div class="alert alert-danger-ai">
+                                        <i class="mdi mdi-alert-circle me-2"></i>
+                                        <strong>Service IA indisponible</strong><br>
+                                        Le service Smart Room AI n'est pas accessible. Veuillez démarrer l'API pour utiliser les fonctionnalités d'optimisation.<br>
+                                        <small>
+                                            Commande : <code>cd smart_room_ai && uvicorn app.main:app --reload</code>
+                                        </small>
+                                    </div>
+                                    
+                                    <!-- Manual Room Selection -->
+                                    <form method="post" action="{{ path('app_seance_optimize', {id: seance.id}) }}" class="mt-4">
+                                        <div class="form-group">
+                                            <label class="form-label">Sélectionner une salle manuellement :</label>
+                                            <select name="salle_id" class="form-select">
+                                                <option value="">Sélectionner une salle...</option>
+                                                {% for room in available_rooms %}
+                                                    <option value="{{ room.id }}" 
+                                                            {% if seance.salle and room.id == seance.salle.id %}selected{% endif %}>
+                                                        {{ room.name }} (Bloc {{ room.bloc }}, Étage {{ room.etage }}, {{ room.capacite }} places)
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="action-buttons">
+                                            <button type="submit" class="btn-ai btn-primary-ai">
+                                                <i class="mdi mdi-check-circle"></i>
+                                                <span class="btn-text">Appliquer le changement</span>
+                                                <div class="loading-spinner"></div>
+                                            </button>
+                                            
+                                            <a href="{{ path('app_seance_show', {id: seance.id}) }}" class="btn-ai btn-secondary-ai">
+                                                <i class="mdi mdi-arrow-left"></i>Retour à la séance
+                                            </a>
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <footer class="footer">
+                <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                    <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">
+                        © {{ 'now'|date('Y') }} ESPRIT École d'Ingénieurs. Tous droits réservés.
+                    </span>
+                    <span class="text-muted float-none float-sm-end d-block mt-1 mt-sm-0 text-center">
+                        Optimisation IA | {{ "now"|date("d/m/Y H:i") }}
+                    </span>
+                </div>
+            </footer>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+<script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+<script src="{{ asset('assets/js/misc.js') }}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form submission loading state
+        const form = document.querySelector('form[method="post"]');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.classList.add('loading');
+                submitBtn.disabled = true;
+            });
+        }
+        
+        // Room card selection
+        const roomCards = document.querySelectorAll('.room-card');
+        const selectElement = document.querySelector('select[name="salle_id"]');
+        
+        roomCards.forEach(card => {
+            card.addEventListener('click', function() {
+                const roomName = this.querySelector('.room-name').textContent;
+                
+                // Find and select the corresponding option
+                Array.from(selectElement.options).forEach(option => {
+                    if (option.textContent.includes(roomName)) {
+                        selectElement.value = option.value;
+                        selectElement.dispatchEvent(new Event('change'));
+                    }
+                });
+                
+                // Visual feedback
+                roomCards.forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                this.style.borderColor = '#667eea';
+                this.style.boxShadow = '0 5px 15px rgba(102, 126, 234, 0.2)';
+            });
+        });
+        
+        // Auto-refresh AI status every 30 seconds
+        setInterval(function() {
+            fetch('{{ path("app_seance_smartroom_health") }}')
+                .then(response => response.json())
+                .then(data => {
+                    const statusDiv = document.querySelector('.status-indicator');
+                    if (statusDiv) {
+                        if (data.healthy) {
+                            statusDiv.className = 'status-indicator status-online';
+                            statusDiv.innerHTML = '<i class="mdi mdi-check-circle"></i>Service Smart Room AI: En ligne';
+                        } else {
+                            statusDiv.className = 'status-indicator status-offline';
+                            statusDiv.innerHTML = '<i class="mdi mdi-alert-circle"></i>Service Smart Room AI: Hors ligne';
+                        }
+                    }
+                })
+                .catch(error => console.log('Health check failed:', error));
+        }, 30000);
+        
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    });
+</script>
+</body>
+</html>

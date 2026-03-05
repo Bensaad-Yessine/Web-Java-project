@@ -67,6 +67,20 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getResult();
     }
 
+    /**
+     * Return students of a classe excluding admins.
+     *
+     * WARNING: roles stored as JSON array; Doctrine cannot easily query inside,
+     * so we filter in PHP for now.
+     */
+    public function findStudentsByClasseWithoutAdmin(Classe $classe): array
+    {
+        $users = $this->findUsersByClasse($classe);
+        return array_values(array_filter($users, function(User $u) {
+            return !in_array('ROLE_ADMIN', $u->getRoles(), true);
+        }));
+    }
+
     public function findWithFilters(
         ?string $search = null,
         ?string $role = null,

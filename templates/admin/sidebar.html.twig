@@ -1,0 +1,143 @@
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+        <a class="sidebar-brand brand-logo" href="{{ path('app_user_index') }}">
+            <img src="{{ asset('assets/images/logo.svg') }}" alt="logo" />
+        </a>
+        <a class="sidebar-brand brand-logo-mini" href="{{ path('app_user_index') }}">
+            <img src="{{ asset('assets/images/logo-mini.svg') }}" alt="logo" />
+        </a>
+    </div>
+    <ul class="nav">
+        <li class="nav-item profile">
+            <div class="profile-desc">
+                <div class="profile-pic">
+                    <div class="count-indicator">
+                        {% if app.user %}
+                            {% if app.user.profilePic %}
+                                <img src="{{ asset('uploads/profile_pics/' ~ app.user.profilePic) }}" 
+                                     alt="{{ app.user.prenom }}" 
+                                     class="profile-avatar-img">
+                            {% else %}
+                                <div class="profile-avatar">
+                                    {{ app.user.prenom|first|upper }}{{ app.user.nom|first|upper }}
+                                </div>
+                            {% endif %}
+                        {% else %}
+                            <img class="img-xs rounded-circle" src="{{ asset('assets/images/faces/face15.jpg') }}" alt="">
+                        {% endif %}
+                        <span class="count bg-success"></span>
+                    </div>
+                    <div class="profile-name">
+                        {% if app.user %}
+                            <h5 class="mb-0 font-weight-normal">{{ app.user.prenom }} {{ app.user.nom }}</h5>
+                            <span class="text-muted">{{ app.user.email }}</span>
+                            <div class="mt-1">
+                                {% if 'ROLE_ADMIN' in app.user.roles %}
+                                    <span class="user-role-badge badge-admin">Administrateur</span>
+                                {% else %}
+                                    <span class="user-role-badge badge-etudiant">Utilisateur</span>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <h5 class="mb-0 font-weight-normal">Non connecté</h5>
+                            <span>Veuillez vous connecter</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </li>
+        <li class="nav-item nav-category">
+            <span class="nav-link">Navigation</span>
+        </li>
+        <!-- Dashboard -->
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+                <span class="menu-icon">
+                    <i class="mdi mdi-speedometer"></i>
+                </span>
+                <span class="menu-title">Dashboard</span>
+            </a>
+        </li>
+        <!-- Utilisateurs -->
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_user_index') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-account-group"></i>
+                </span>
+                <span class="menu-title">Utilisateurs</span>
+            </a>
+        </li>
+        <!-- Matières -->
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_matiere_classe_index') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-book-open-page-variant"></i>
+                </span>
+                <span class="menu-title">Matières</span>
+            </a>
+        </li>
+        <!-- Classes -->
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_classe_index') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-school"></i>
+                </span>
+                <span class="menu-title">Classes</span>
+            </a>
+        </li>
+        <!-- Salles -->
+        <li class="nav-item menu-items {% if app.request.attributes.get('_route') starts with 'app_salle' %}active{% endif %}">
+            <a class="nav-link" href="{{ path('app_salle_index') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-office-building"></i>
+                </span>
+                <span class="menu-title">Salles</span>
+            </a>
+        </li>
+        <!-- Séances -->
+        <li class="nav-item menu-items {% if app.request.attributes.get('_route') starts with 'app_seance' %}active{% endif %}">
+            <a class="nav-link" href="{{ path('app_seance_index') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-calendar-clock"></i>
+                </span>
+                <span class="menu-title">Séances</span>
+            </a>
+        </li>
+        <!-- Groupes -->
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{{path('app_groupe_projet_index')}}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-account-multiple"></i>
+                </span>
+                <span class="menu-title">Groupes</span>
+            </a>
+        </li>
+        <!-- Tâches -->
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_tache_index') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-checkbox-marked-circle-outline"></i>
+                </span>
+                <span class="menu-title">Tâches</span>
+            </a>
+        </li>
+        <!-- Alertes -->
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{{path('app_preference_alerte_index')}}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-alert-circle-outline"></i>
+                </span>
+                <span class="menu-title">Alertes</span>
+            </a>
+        </li>
+        <!-- Exercices de santé -->
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{{ path('app_objectif_sante_index') }}">
+                <span class="menu-icon">
+                    <i class="mdi mdi-heart-pulse"></i>
+                </span>
+                <span class="menu-title">Exercices de santé</span>
+            </a>
+        </li>
+    </ul>
+</nav>

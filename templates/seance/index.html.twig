@@ -1,3 +1,4 @@
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Gestion des Séances{% endblock %}
@@ -748,16 +749,6 @@
                           </select>
                       </div>
 
-                      <div class="col-md-2">
-                        <label class="fw-bold mb-1">Salle</label>
-                        <select id="salleFilter" class="form-select form-select-lg border-primary">
-                          <option value="">Toutes les salles</option>
-                          {% for s in salles %}
-                            <option value="{{ s.id }}" {% if salleFilter == s.id %}selected{% endif %}>{{ s.name }}</option>
-                          {% endfor %}
-                        </select>
-                      </div>
-
                       <!-- Sort -->
                       <div class="col-md-3">
                         <label class="fw-bold mb-1">Trier par</label>
@@ -839,6 +830,7 @@
                                                 <td>
                                                     <div class="action-buttons">
                                                         <a href="{{ path('app_seance_show', {'id': seance.id}) }}" class="btn btn-sm btn-info" title="Voir"><i class="mdi mdi-eye"></i></a>
+                                                        <a href="{{ path('app_attendance_qr_display', {'id': seance.id}) }}" class="btn btn-sm btn-primary" title="QR Présence"><i class="mdi mdi-qrcode"></i></a>
                                                         <a href="{{ path('app_seance_edit', {'id': seance.id}) }}" class="btn btn-sm btn-warning" title="Modifier"><i class="mdi mdi-pencil"></i></a>
                                                         <button type="button" class="btn btn-sm btn-danger delete-btn" 
                                                                 data-id="{{ seance.id }}" 
@@ -953,7 +945,6 @@
       const jourFilter = document.getElementById('jourFilter');
       const typeFilter = document.getElementById('typeFilter');
       const modeFilter = document.getElementById('modeFilter');
-      const salleFilter = document.getElementById('salleFilter');
       const sortSelect = document.getElementById('sortSelect');
       const applyFiltersBtn = document.getElementById('applyFilters');
       const resetFiltersBtn = document.getElementById('resetFilters');
@@ -967,7 +958,6 @@
           if (jourFilter && jourFilter.value) params.append('jour', jourFilter.value);
           if (typeFilter && typeFilter.value) params.append('type', typeFilter.value);
           if (modeFilter && modeFilter.value) params.append('mode', modeFilter.value);
-          if (salleFilter && salleFilter.value) params.append('salle', salleFilter.value);
           
           if (sortSelect && sortSelect.value) {
               const [sort, direction] = sortSelect.value.split('-');
@@ -1082,7 +1072,7 @@
           });
       }
       
-      [jourFilter, typeFilter, modeFilter, salleFilter, sortSelect].forEach(el => {
+      [jourFilter, typeFilter, modeFilter, sortSelect].forEach(el => {
           if (el) el.addEventListener('change', fetchResults);
       });
 

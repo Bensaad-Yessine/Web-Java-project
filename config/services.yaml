@@ -22,4 +22,27 @@ services:
             - '../src/Kernel.php'
 
     # add more service definitions when explicit configuration is needed
+
+    # listener that sends emails on seance events
+    App\SeanceNotificationBundle\EventSubscriber\SeanceSubscriber:
+        arguments:
+            $sender: '%env(MAILER_SENDER)%'
+        tags:
+            - { name: doctrine.event_listener, event: postPersist }
+            - { name: doctrine.event_listener, event: postUpdate }
+            - { name: doctrine.event_listener, event: postRemove }
+
     # please note that last definitions always *replace* previous ones
+
+    App\Service\AttendanceApiService:
+        arguments:
+            $apiBaseUrl:   '%env(ATTENDANCE_API_BASE_URL)%'
+            $apiKey:       '%env(ATTENDANCE_API_KEY)%'
+            $hmacSecret:   '%env(ATTENDANCE_HMAC_SECRET)%'
+            $offlineMode:  '%env(bool:ATTENDANCE_OFFLINE_MODE)%'
+
+    # Smart Room AI Service Configuration
+    App\Service\SmartRoomAIService:
+        arguments:
+            $apiBaseUrl:  '%env(SMARTROOM_API_BASE_URL)%'
+            $enabled:     '%env(bool:SMARTROOM_ENABLED)%'

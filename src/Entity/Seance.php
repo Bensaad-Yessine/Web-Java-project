@@ -41,8 +41,7 @@ class Seance
     private ?string $mode = null;
 
     #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: "La salle est obligatoire.")]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Salle $salle = null;
 
     // CHANGE THESE FROM DATE_MUTABLE TO DATETIME_MUTABLE
@@ -66,6 +65,15 @@ class Seance
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(length: 512, nullable: true)]
+    private ?string $qrToken = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $qrExpiresAt = null;
+
+    #[ORM\Column(length: 1024, nullable: true)]
+    private ?string $qrUrl = null;
 
     public function getId(): ?int { return $this->id; }
 
@@ -171,6 +179,32 @@ class Seance
         return $this;
     }
 
+    // Méthodes pour l'IA (utilisent les propriétés existantes)
+    public function getDuree(): ?int
+    {
+        if ($this->heureDebut && $this->heureFin) {
+            return ($this->heureFin->getTimestamp() - $this->heureDebut->getTimestamp()) / 60;
+        }
+        return 90; // Durée par défaut
+    }
+
+    public function setDuree(?int $duree): static
+    {
+        // Ne stocke pas la durée, elle est calculée depuis heureDebut/heureFin
+        return $this;
+    }
+
+    public function getGroupe(): ?string
+    {
+        return $this->classe?->getNom();
+    }
+
+    public function setGroupe(?string $groupe): static
+    {
+        // Ne stocke pas de groupe séparé, utilise la propriété classe
+        return $this;
+    }
+
     // Add a __toString method for better display
     public function __toString(): string
     {
@@ -187,6 +221,20 @@ class Seance
         $this->createdAt = $createdAt;
 
         return $this;
+    }
+
+    public function getQrToken(): ?string { return $this->qrToken; }
+    public function setQrToken(?string $qrToken): static { $this->qrToken = $qrToken; return $this; }
+
+    public function getQrExpiresAt(): ?\DateTimeInterface { return $this->qrExpiresAt; }
+    public function setQrExpiresAt(?\DateTimeInterface $qrExpiresAt): static { $this->qrExpiresAt = $qrExpiresAt; return $this; }
+
+    public function getQrUrl(): ?string { return $this->qrUrl; }
+    public function setQrUrl(?string $qrUrl): static { $this->qrUrl = $qrUrl; return $this; }
+
+    public function isQrValid(): bool
+    {
+        return $this->qrToken !== null;
     }
     
 }

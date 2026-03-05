@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -1098,7 +1099,19 @@
                                         </a>
                                     </div>
                                     
-                                    <div class="d-flex gap-2">
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        <a href="{{ path('app_attendance_qr_display', {'id': seance.id}) }}" class="btn btn-gradient-primary">
+                                            <i class="mdi mdi-qrcode me-1"></i>QR Présence
+                                        </a>
+
+                                        <a href="{{ path('app_attendance_dashboard', {'id': seance.id}) }}" class="btn btn-gradient-info" style="background:linear-gradient(135deg,#11998e,#38ef7d);color:#fff;border:none;">
+                                            <i class="mdi mdi-chart-bar me-1"></i>Présences
+                                        </a>
+
+                                        <a href="{{ path('app_seance_optimize', {'id': seance.id}) }}" class="btn btn-gradient-ai" style="background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;">
+                                            <i class="mdi mdi-brain me-1"></i>Optimiser IA
+                                        </a>
+
                                         <a href="{{ path('app_seance_edit', {'id': seance.id}) }}" class="btn btn-gradient-warning">
                                             <i class="mdi mdi-pencil me-1"></i>Modifier
                                         </a>

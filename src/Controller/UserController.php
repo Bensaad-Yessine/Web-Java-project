@@ -239,6 +239,7 @@ public function dashboard(TacheRepository $tacheRepository): Response
 
     return $this->render('user/FrontOffice.html.twig', [
         'tasks' => $tasks,
+        'current_page' => 'dashboard',
     ]);
 }
  #[Route('/dashboard', name: 'app_my_tasks', methods: ['GET'])]
@@ -257,6 +258,7 @@ public function mytasks(TacheRepository $tacheRepository): Response
 
     return $this->render('user/FrontOffice.html.twig', [
         'tasks' => $tasks,
+        'current_page' => 'tasks',
     ]);
 }
 

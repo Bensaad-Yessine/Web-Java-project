@@ -1,0 +1,6 @@
+seance_id,jour_semaine,heure_debut,duree_min,type_seance,mode,matiere,groupe,salle_capacite_initiale,moy_presence_groupe_30j,taux_absence_groupe_30j,presence_moyenne_matiere,presence_moyenne_creneau,attendance_real
+1,1,8,60,TD,presentiel,Mathematiques,GroupeA,30,0.75,0.25,0.80,0.70,22
+2,2,10,120,TP,presentiel,Physique,GroupeB,25,0.85,0.15,0.90,0.85,21
+3,3,14,90,COURS,hybride,Informatique,GroupeC,40,0.60,0.40,0.65,0.60,24
+4,4,16,60,TD,en_ligne,Mathematiques,GroupeA,30,0.70,0.30,0.75,0.65,18
+5,5,8,90,TP,presentiel,Physique,GroupeB,25,0.90,0.10,0.95,0.80,23
