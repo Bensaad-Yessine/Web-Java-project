@@ -1,0 +1,2288 @@
+<?php
+
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Extension\CoreExtension;
+use Twig\Extension\SandboxExtension;
+use Twig\Markup;
+use Twig\Sandbox\SecurityError;
+use Twig\Sandbox\SecurityNotAllowedTagError;
+use Twig\Sandbox\SecurityNotAllowedFilterError;
+use Twig\Sandbox\SecurityNotAllowedFunctionError;
+use Twig\Source;
+use Twig\Template;
+use Twig\TemplateWrapper;
+
+/* user/FrontOffice.html.twig */
+class __TwigTemplate_17d763ee66395fc7560ad866614956be extends Template
+{
+    private Source $source;
+    /**
+     * @var array<string, Template>
+     */
+    private array $macros = [];
+
+    public function __construct(Environment $env)
+    {
+        parent::__construct($env);
+
+        $this->source = $this->getSourceContext();
+
+        $this->parent = false;
+
+        $this->blocks = [
+        ];
+    }
+
+    protected function doDisplay(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2 = $this->extensions["Symfony\\Bundle\\WebProfilerBundle\\Twig\\WebProfilerExtension"];
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2->enter($__internal_5a27a8ba21ca79b61932376b2fa922d2_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "template", "user/FrontOffice.html.twig"));
+
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "template", "user/FrontOffice.html.twig"));
+
+        // line 1
+        yield "<!DOCTYPE html>
+<html lang=\"fr\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>ESPRIT — Mes Tâches</title>
+    <style>
+        :root {
+            --font-size: 16px;
+            --primary-red: #DC2626;
+            --primary-red-dark: #B91C1C;
+            --primary-red-light: #FEE2E2;
+            --primary-gradient: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+            --secondary: #10B981;
+            --secondary-dark: #059669;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        html { 
+            font-size: var(--font-size); 
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+            color: var(--gray-900);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 20px rgba(220, 38, 38, 0.05);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        .brand {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--gray-200);
+            flex-shrink: 0;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            background: var(--primary-gradient);
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+        }
+
+        .brand-title {
+            font-weight: 800;
+            font-size: 20px;
+            color: var(--primary-red);
+        }
+
+        .brand-sub {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .user-session {
+            margin-top: 24px;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .user-session::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .user-details h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 2px;
+        }
+
+        .user-details p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .session-info {
+            font-size: 12px;
+            color: var(--gray-600);
+            padding-top: 16px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .session-info div {
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .session-info strong {
+            color: var(--gray-800);
+            font-weight: 600;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 24px;
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .nav::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: var(--radius-lg);
+            color: var(--gray-700);
+            text-decoration: none;
+            transition: all var(--transition);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .nav a:hover {
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            transform: translateX(4px);
+        }
+
+        .nav a.active {
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            font-weight: 600;
+            border-left: 3px solid var(--primary-red);
+        }
+
+        .nav a .icon {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2;
+            flex-shrink: 0;
+        }
+
+        .nav-section {
+            margin-top: 24px;
+            margin-bottom: 8px;
+            padding-left: 16px;
+        }
+
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .main {
+            flex: 1;
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header-content h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin: 0;
+            color: var(--gray-900);
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-content p {
+            color: var(--gray-500);
+            margin-top: 8px;
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-lg);
+            border: none;
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+        }
+
+        .task-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-red-light);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .tasks-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .tasks-header {
+            padding: 24px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .tasks-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 24px;
+        }
+
+        .task-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-red-light);
+        }
+
+        .task-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--gray-300);
+        }
+
+        .task-card.high-priority::before {
+            background: var(--primary-red);
+        }
+
+        .task-card.medium-priority::before {
+            background: var(--warning);
+        }
+
+        .task-card.low-priority::before {
+            background: var(--secondary);
+        }
+
+        .task-card.completed::before {
+            background: var(--secondary);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .task-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .task-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-in-progress {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .status-completed {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .task-description {
+            color: var(--gray-600);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .task-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--gray-700);
+        }
+
+        .detail-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--gray-500);
+        }
+
+        .task-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .task-tag {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .tag-type-cours {
+            background: rgba(59, 130, 246, 0.1);
+            color: #2563EB;
+        }
+
+        .tag-type-examen {
+            background: rgba(239, 68, 68, 0.1);
+            color: #DC2626;
+        }
+
+        .tag-type-reunion {
+            background: rgba(245, 158, 11, 0.1);
+            color: #D97706;
+        }
+
+        .tag-type-personnel {
+            background: rgba(156, 163, 175, 0.1);
+            color: #4B5563;
+        }
+
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--gray-100);
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--gray-300);
+            background: white;
+            color: var(--gray-700);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .action-btn.primary {
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            border-color: var(--primary-red);
+        }
+
+        .action-btn.primary:hover {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        .task-date {
+            font-size: 12px;
+            color: var(--gray-500);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-500);
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray-500);
+            font-size: 12px;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 1200px) {
+            .app-shell {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 16px;
+                max-height: 80vh;
+            }
+            
+            .main {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .header-content h1 {
+                font-size: 28px;
+            }
+            
+            .task-grid {
+                grid-template-columns: 1fr;
+                padding: 16px;
+            }
+            
+            .task-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class=\"app-shell\">
+        <aside class=\"sidebar\">
+            <div class=\"brand\">
+                <div class=\"brand-row\">
+                    <div class=\"brand-icon\">ES</div>
+                    <div>
+                        <div class=\"brand-title\">ESPRIT</div>
+                        <div class=\"brand-sub\">Assistant Étudiant</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class=\"user-session\">
+                <div class=\"user-info\">
+                    <div class=\"avatar\">
+                        ";
+        // line 690
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::first($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 690, $this->source); })()), "user", [], "any", false, false, false, 690), "nom", [], "any", false, false, false, 690)), "html", null, true);
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::first($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 690, $this->source); })()), "user", [], "any", false, false, false, 690), "prenom", [], "any", false, false, false, 690)), "html", null, true);
+        yield "
+                    </div>
+                    <div class=\"user-details\">
+                        <h3>";
+        // line 693
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 693, $this->source); })()), "user", [], "any", false, false, false, 693), "nom", [], "any", false, false, false, 693), "html", null, true);
+        yield " ";
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 693, $this->source); })()), "user", [], "any", false, false, false, 693), "prenom", [], "any", false, false, false, 693), "html", null, true);
+        yield "</h3>
+                        <p>📚 ";
+        // line 694
+        yield (((($tmp =  !(null === CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 694, $this->source); })()), "user", [], "any", false, false, false, 694), "classe", [], "any", false, false, false, 694))) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 694, $this->source); })()), "user", [], "any", false, false, false, 694), "classe", [], "any", false, false, false, 694), "nom", [], "any", false, false, false, 694), "html", null, true)) : ("Aucune classe"));
+        yield "</p>
+                    </div>
+                </div>
+                <div class=\"session-info\">
+                    <div><strong>Email :</strong> ";
+        // line 698
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 698, $this->source); })()), "user", [], "any", false, false, false, 698), "email", [], "any", false, false, false, 698), "html", null, true);
+        yield "</div>
+                    <div><strong>Rôle :</strong> ";
+        // line 699
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::capitalize($this->env->getCharset(), Twig\Extension\CoreExtension::replace(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 699, $this->source); })()), "user", [], "any", false, false, false, 699), "roles", [], "any", false, false, false, 699), 0, [], "array", false, false, false, 699), ["ROLE_" => ""])), "html", null, true);
+        yield "</div>
+                </div>
+            </div>
+
+            <!-- Updated Navigation Bar -->
+            <nav class=\"nav\">
+                <div class=\"nav-section\">
+                    <div class=\"nav-section-title\">Général</div>
+                    <a href=\"";
+        // line 707
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_dashboard");
+        yield "\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M3 9l9-7 9 7\"/><path d=\"M9 22V12h6v10\"/>
+                        </svg>
+                        Tableau de bord
+                    </a>
+                    <a href=\"";
+        // line 713
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_my_tasks");
+        yield "\" >
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M9 11l3 3 8-8\"/><path d=\"M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11\"/>
+                        </svg>
+                        Mes Tâches
+                    </a>
+                    <a href=\"#\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M22 12h-4l-3 9L9 3l-3 9H2\"/>
+                            <circle cx=\"12\" cy=\"12\" r=\"10\"/>
+                        </svg>
+                        Objectifs
+                    </a>
+                    <a href=\"";
+        // line 726
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("front_objectif_sante_index");
+        yield "\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"/>
+                            <path d=\"M8 12h8\"/>
+                            <path d=\"M12 8v8\"/>
+                        </svg>
+                        Santé
+                    </a>
+                </div>
+
+                <div class=\"nav-section\">
+                    <div class=\"nav-section-title\">Académique</div>
+                    ";
+        // line 738
+        if ((($tmp = CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 738, $this->source); })()), "user", [], "any", false, false, false, 738), "classe", [], "any", false, false, false, 738)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
+            // line 739
+            yield "                    <a href=\"";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_classe_front_show", ["id" => CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 739, $this->source); })()), "user", [], "any", false, false, false, 739), "classe", [], "any", false, false, false, 739), "id", [], "any", false, false, false, 739)]), "html", null, true);
+            yield "\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M4 19.5A2.5 2.5 0 0 1 6.5 17H20\"/>
+                            <path d=\"M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z\"/>
+                        </svg>
+                        Ma Classe
+                    </a>
+                    <a href=\"";
+            // line 746
+            yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_matiere_classe_front_index");
+            yield "\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253\"/>
+                        </svg>
+                        Mes Matières
+                    </a>
+                    ";
+        }
+        // line 753
+        yield "                    <a href=\"#\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <rect x=\"3\" y=\"7\" width=\"18\" height=\"13\" rx=\"2\" ry=\"2\"/>
+                            <path d=\"M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\"/>
+                            <line x1=\"12\" y1=\"12\" x2=\"12\" y2=\"12\"/>
+                            <line x1=\"8\" y1=\"17\" x2=\"16\" y2=\"17\"/>
+                        </svg>
+                        Salles
+                    </a>
+                </div>
+
+                <div class=\"nav-section\">
+                    <div class=\"nav-section-title\">Cours & Groupes</div>
+                    ";
+        // line 766
+        if ((($tmp = CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 766, $this->source); })()), "user", [], "any", false, false, false, 766), "classe", [], "any", false, false, false, 766)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
+            // line 767
+            yield "                    <a href=\"";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_seance_by_classe", ["id" => CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 767, $this->source); })()), "user", [], "any", false, false, false, 767), "classe", [], "any", false, false, false, 767), "id", [], "any", false, false, false, 767)]), "html", null, true);
+            yield "\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <circle cx=\"12\" cy=\"12\" r=\"10\"/>
+                            <polyline points=\"12 6 12 12 16 14\"/>
+                            <line x1=\"12\" y1=\"12\" x2=\"12\" y2=\"12\"/>
+                        </svg>
+                        Séances
+                    </a>
+                    ";
+        }
+        // line 776
+        yield "                    <a href=\"";
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("front_groupe_projet_index");
+        yield "\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\"/>
+                            <circle cx=\"9\" cy=\"7\" r=\"4\"/>
+                            <path d=\"M23 21v-2a4 4 0 0 0-3-3.87\"/>
+                            <path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/>
+                        </svg>
+                        Groupes
+                    </a>
+                </div>
+
+                <div class=\"nav-section\">
+                    <div class=\"nav-section-title\">Compte</div>
+                    <a href=\"";
+        // line 789
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_profile");
+        yield "\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"/>
+                            <circle cx=\"12\" cy=\"7\" r=\"4\"/>
+                        </svg>
+                        Profil
+                    </a>
+                    <a href=\"";
+        // line 796
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_logout");
+        yield "\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\"/><path d=\"M16 17l5-5-5-5\"/><path d=\"M21 12H9\"/>
+                        </svg>
+                        Déconnexion
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Rest of the content remains the same -->
+        <main class=\"main\">
+            <header class=\"header\">
+                <div class=\"header-content\">
+                    <h1>Mes Tâches</h1>
+                    <p>Gérez et suivez toutes vos tâches académiques</p>
+                </div>
+                <a href=\"";
+        // line 813
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_tache_new");
+        yield "\" class=\"btn\">
+                    <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                        <path d=\"M12 5v14M5 12h14\"/>
+                    </svg>
+                    Nouvelle Tâche
+                </a>
+            </header>
+
+            ";
+        // line 821
+        $context["totalTasks"] = Twig\Extension\CoreExtension::length($this->env->getCharset(), (isset($context["tasks"]) || array_key_exists("tasks", $context) ? $context["tasks"] : (function () { throw new RuntimeError('Variable "tasks" does not exist.', 821, $this->source); })()));
+        // line 822
+        yield "            ";
+        $context["completedTasks"] = Twig\Extension\CoreExtension::length($this->env->getCharset(), Twig\Extension\CoreExtension::filter($this->env, (isset($context["tasks"]) || array_key_exists("tasks", $context) ? $context["tasks"] : (function () { throw new RuntimeError('Variable "tasks" does not exist.', 822, $this->source); })()), function ($__t__) use ($context, $macros) { $context["t"] = $__t__; return (((CoreExtension::getAttribute($this->env, $this->source, ($context["t"] ?? null), "statut", [], "any", true, true, false, 822)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, (isset($context["t"]) || array_key_exists("t", $context) ? $context["t"] : (function () { throw new RuntimeError('Variable "t" does not exist.', 822, $this->source); })()), "statut", [], "any", false, false, false, 822), "A_FAIRE")) : ("A_FAIRE")) == "TERMINEE"); }));
+        // line 823
+        yield "            ";
+        $context["pendingTasks"] = ((isset($context["totalTasks"]) || array_key_exists("totalTasks", $context) ? $context["totalTasks"] : (function () { throw new RuntimeError('Variable "totalTasks" does not exist.', 823, $this->source); })()) - (isset($context["completedTasks"]) || array_key_exists("completedTasks", $context) ? $context["completedTasks"] : (function () { throw new RuntimeError('Variable "completedTasks" does not exist.', 823, $this->source); })()));
+        // line 824
+        yield "            ";
+        $context["highPriorityTasks"] = Twig\Extension\CoreExtension::length($this->env->getCharset(), Twig\Extension\CoreExtension::filter($this->env, (isset($context["tasks"]) || array_key_exists("tasks", $context) ? $context["tasks"] : (function () { throw new RuntimeError('Variable "tasks" does not exist.', 824, $this->source); })()), function ($__t__) use ($context, $macros) { $context["t"] = $__t__; return (((CoreExtension::getAttribute($this->env, $this->source, ($context["t"] ?? null), "priorite", [], "any", true, true, false, 824)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, (isset($context["t"]) || array_key_exists("t", $context) ? $context["t"] : (function () { throw new RuntimeError('Variable "t" does not exist.', 824, $this->source); })()), "priorite", [], "any", false, false, false, 824), "MOYEN")) : ("MOYEN")) == "ELEVEE"); }));
+        // line 825
+        yield "
+            <div class=\"task-stats\">
+                <div class=\"stat-card\">
+                    <div class=\"stat-value\">";
+        // line 828
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["totalTasks"]) || array_key_exists("totalTasks", $context) ? $context["totalTasks"] : (function () { throw new RuntimeError('Variable "totalTasks" does not exist.', 828, $this->source); })()), "html", null, true);
+        yield "</div>
+                    <div class=\"stat-label\">📋 Tâches totales</div>
+                </div>
+                <div class=\"stat-card\">
+                    <div class=\"stat-value\">";
+        // line 832
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["completedTasks"]) || array_key_exists("completedTasks", $context) ? $context["completedTasks"] : (function () { throw new RuntimeError('Variable "completedTasks" does not exist.', 832, $this->source); })()), "html", null, true);
+        yield "</div>
+                    <div class=\"stat-label\">✅ Complétées</div>
+                </div>
+                <div class=\"stat-card\">
+                    <div class=\"stat-value\">";
+        // line 836
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["pendingTasks"]) || array_key_exists("pendingTasks", $context) ? $context["pendingTasks"] : (function () { throw new RuntimeError('Variable "pendingTasks" does not exist.', 836, $this->source); })()), "html", null, true);
+        yield "</div>
+                    <div class=\"stat-label\">⏳ En attente</div>
+                </div>
+                <div class=\"stat-card\">
+                    <div class=\"stat-value\">";
+        // line 840
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["highPriorityTasks"]) || array_key_exists("highPriorityTasks", $context) ? $context["highPriorityTasks"] : (function () { throw new RuntimeError('Variable "highPriorityTasks" does not exist.', 840, $this->source); })()), "html", null, true);
+        yield "</div>
+                    <div class=\"stat-label\">🚨 Haute priorité</div>
+                </div>
+            </div>
+
+
+            <div class=\"tasks-container\">
+                <div class=\"tasks-header\">
+                    <h2 class=\"tasks-title\">Toutes les tâches (";
+        // line 848
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["totalTasks"]) || array_key_exists("totalTasks", $context) ? $context["totalTasks"] : (function () { throw new RuntimeError('Variable "totalTasks" does not exist.', 848, $this->source); })()), "html", null, true);
+        yield ")</h2>
+                </div>
+
+                <div class=\"task-grid\" id=\"taskList\">
+                    ";
+        // line 852
+        if ((($tmp =  !Twig\Extension\CoreExtension::testEmpty((isset($context["tasks"]) || array_key_exists("tasks", $context) ? $context["tasks"] : (function () { throw new RuntimeError('Variable "tasks" does not exist.', 852, $this->source); })()))) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
+            // line 853
+            yield "                        ";
+            $context['_parent'] = $context;
+            $context['_seq'] = CoreExtension::ensureTraversable((isset($context["tasks"]) || array_key_exists("tasks", $context) ? $context["tasks"] : (function () { throw new RuntimeError('Variable "tasks" does not exist.', 853, $this->source); })()));
+            foreach ($context['_seq'] as $context["_key"] => $context["task"]) {
+                // line 854
+                yield "                            ";
+                $context["taskType"] = ((CoreExtension::getAttribute($this->env, $this->source, $context["task"], "type", [], "any", true, true, false, 854)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, $context["task"], "type", [], "any", false, false, false, 854), "personnel")) : ("personnel"));
+                // line 855
+                yield "                            ";
+                $context["taskPriority"] = ((CoreExtension::getAttribute($this->env, $this->source, $context["task"], "priorite", [], "any", true, true, false, 855)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, $context["task"], "priorite", [], "any", false, false, false, 855), "MOYEN")) : ("MOYEN"));
+                // line 856
+                yield "                            ";
+                $context["rawStatus"] = ((CoreExtension::getAttribute($this->env, $this->source, $context["task"], "statut", [], "any", true, true, false, 856)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, $context["task"], "statut", [], "any", false, false, false, 856), "A_FAIRE")) : ("A_FAIRE"));
+                // line 857
+                yield "                            ";
+                $context["isCompleted"] = ((isset($context["rawStatus"]) || array_key_exists("rawStatus", $context) ? $context["rawStatus"] : (function () { throw new RuntimeError('Variable "rawStatus" does not exist.', 857, $this->source); })()) == "TERMINEE");
+                // line 858
+                yield "                            ";
+                $context["statusLabels"] = ["A_FAIRE" => "En attente", "EN_COURS" => "En cours", "TERMINEE" => "Terminée", "EN_RETARD" => "En retard", "PAUSED" => "En pause"];
+                // line 859
+                yield "                            ";
+                $context["statusSlugMap"] = ["A_FAIRE" => "pending", "EN_COURS" => "in_progress", "TERMINEE" => "completed", "EN_RETARD" => "overdue", "PAUSED" => "paused"];
+                // line 860
+                yield "                            ";
+                $context["statusSlug"] = ((CoreExtension::getAttribute($this->env, $this->source, ($context["statusSlugMap"] ?? null), (isset($context["rawStatus"]) || array_key_exists("rawStatus", $context) ? $context["rawStatus"] : (function () { throw new RuntimeError('Variable "rawStatus" does not exist.', 860, $this->source); })()), [], "array", true, true, false, 860)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, (isset($context["statusSlugMap"]) || array_key_exists("statusSlugMap", $context) ? $context["statusSlugMap"] : (function () { throw new RuntimeError('Variable "statusSlugMap" does not exist.', 860, $this->source); })()), (isset($context["rawStatus"]) || array_key_exists("rawStatus", $context) ? $context["rawStatus"] : (function () { throw new RuntimeError('Variable "rawStatus" does not exist.', 860, $this->source); })()), [], "array", false, false, false, 860), "pending")) : ("pending"));
+                // line 861
+                yield "                            ";
+                $context["priorityMap"] = ["ELEVEE" => "high", "MOYEN" => "medium", "FAIBLE" => "low"];
+                // line 862
+                yield "                            ";
+                $context["priorityClassMap"] = ["ELEVEE" => "high", "MOYEN" => "medium", "FAIBLE" => "low"];
+                // line 863
+                yield "                            ";
+                $context["priorityLabelMap"] = ["ELEVEE" => "Haute", "MOYEN" => "Moyenne", "FAIBLE" => "Basse"];
+                // line 864
+                yield "                            ";
+                $context["priorityClass"] = ((CoreExtension::getAttribute($this->env, $this->source, ($context["priorityClassMap"] ?? null), (isset($context["taskPriority"]) || array_key_exists("taskPriority", $context) ? $context["taskPriority"] : (function () { throw new RuntimeError('Variable "taskPriority" does not exist.', 864, $this->source); })()), [], "array", true, true, false, 864)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, (isset($context["priorityClassMap"]) || array_key_exists("priorityClassMap", $context) ? $context["priorityClassMap"] : (function () { throw new RuntimeError('Variable "priorityClassMap" does not exist.', 864, $this->source); })()), (isset($context["taskPriority"]) || array_key_exists("taskPriority", $context) ? $context["taskPriority"] : (function () { throw new RuntimeError('Variable "taskPriority" does not exist.', 864, $this->source); })()), [], "array", false, false, false, 864), "medium")) : ("medium"));
+                // line 865
+                yield "                            
+                            <div class=\"task-card ";
+                // line 866
+                yield (((($tmp = (isset($context["isCompleted"]) || array_key_exists("isCompleted", $context) ? $context["isCompleted"] : (function () { throw new RuntimeError('Variable "isCompleted" does not exist.', 866, $this->source); })())) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("completed") : (""));
+                yield " ";
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["priorityClass"]) || array_key_exists("priorityClass", $context) ? $context["priorityClass"] : (function () { throw new RuntimeError('Variable "priorityClass" does not exist.', 866, $this->source); })()), "html", null, true);
+                yield "-priority\">
+                                <div class=\"task-header\">
+                                    <h3 class=\"task-title\">";
+                // line 868
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, $context["task"], "titre", [], "any", true, true, false, 868)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, $context["task"], "titre", [], "any", false, false, false, 868), "Tâche sans titre")) : ("Tâche sans titre")), "html", null, true);
+                yield "</h3>
+                                    <span class=\"task-status status-";
+                // line 869
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["statusSlug"]) || array_key_exists("statusSlug", $context) ? $context["statusSlug"] : (function () { throw new RuntimeError('Variable "statusSlug" does not exist.', 869, $this->source); })()), "html", null, true);
+                yield "\">
+                                        ";
+                // line 870
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["statusLabels"] ?? null), (isset($context["rawStatus"]) || array_key_exists("rawStatus", $context) ? $context["rawStatus"] : (function () { throw new RuntimeError('Variable "rawStatus" does not exist.', 870, $this->source); })()), [], "array", true, true, false, 870)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, (isset($context["statusLabels"]) || array_key_exists("statusLabels", $context) ? $context["statusLabels"] : (function () { throw new RuntimeError('Variable "statusLabels" does not exist.', 870, $this->source); })()), (isset($context["rawStatus"]) || array_key_exists("rawStatus", $context) ? $context["rawStatus"] : (function () { throw new RuntimeError('Variable "rawStatus" does not exist.', 870, $this->source); })()), [], "array", false, false, false, 870), "En attente")) : ("En attente")), "html", null, true);
+                yield "
+                                    </span>
+                                </div>
+                                
+                                ";
+                // line 874
+                if ((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["task"], "description", [], "any", false, false, false, 874)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
+                    // line 875
+                    yield "                                <div class=\"task-description\">
+                                    ";
+                    // line 876
+                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["task"], "description", [], "any", false, false, false, 876), "html", null, true);
+                    yield "
+                                </div>
+                                ";
+                }
+                // line 879
+                yield "                                
+                                <div class=\"task-details\">
+                                    <div class=\"detail-item\">
+                                        <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                            <path d=\"M12 8v4l3 3\"/>
+                                            <circle cx=\"12\" cy=\"12\" r=\"10\"/>
+                                        </svg>
+                                        <span>Priorité : 
+                                            <strong style=\"color: 
+                                                ";
+                // line 888
+                if (((isset($context["priorityClass"]) || array_key_exists("priorityClass", $context) ? $context["priorityClass"] : (function () { throw new RuntimeError('Variable "priorityClass" does not exist.', 888, $this->source); })()) == "high")) {
+                    yield "var(--primary-red)
+                                                ";
+                } elseif ((                // line 889
+(isset($context["priorityClass"]) || array_key_exists("priorityClass", $context) ? $context["priorityClass"] : (function () { throw new RuntimeError('Variable "priorityClass" does not exist.', 889, $this->source); })()) == "medium")) {
+                    yield "var(--warning)
+                                                ";
+                } else {
+                    // line 890
+                    yield "var(--secondary)";
+                }
+                yield "\">
+                                                ";
+                // line 891
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["priorityLabelMap"]) || array_key_exists("priorityLabelMap", $context) ? $context["priorityLabelMap"] : (function () { throw new RuntimeError('Variable "priorityLabelMap" does not exist.', 891, $this->source); })()), (isset($context["taskPriority"]) || array_key_exists("taskPriority", $context) ? $context["taskPriority"] : (function () { throw new RuntimeError('Variable "taskPriority" does not exist.', 891, $this->source); })()), [], "array", false, false, false, 891), "html", null, true);
+                yield "
+                                            </strong>
+                                        </span>
+                                    </div>
+                                    
+                                    ";
+                // line 896
+                if ((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["task"], "dateEcheance", [], "any", false, false, false, 896)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
+                    // line 897
+                    yield "                                    <div class=\"detail-item\">
+                                        <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                            <rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"/>
+                                            <line x1=\"16\" y1=\"2\" x2=\"16\" y2=\"6\"/>
+                                            <line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"6\"/>
+                                            <line x1=\"3\" y1=\"10\" x2=\"21\" y2=\"10\"/>
+                                        </svg>
+                                        <span>Échéance : <strong>";
+                    // line 904
+                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatDate(CoreExtension::getAttribute($this->env, $this->source, $context["task"], "dateEcheance", [], "any", false, false, false, 904), "d/m/Y"), "html", null, true);
+                    yield "</strong></span>
+                                    </div>
+                                    ";
+                }
+                // line 907
+                yield "                                    
+                                    ";
+                // line 908
+                if ((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["task"], "createdAt", [], "any", false, false, false, 908)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) {
+                    // line 909
+                    yield "                                    <div class=\"detail-item\">
+                                        <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                            <path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"/>
+                                            <circle cx=\"12\" cy=\"7\" r=\"4\"/>
+                                        </svg>
+                                        <span>Créée le : ";
+                    // line 914
+                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatDate(CoreExtension::getAttribute($this->env, $this->source, $context["task"], "createdAt", [], "any", false, false, false, 914), "d/m/Y"), "html", null, true);
+                    yield "</span>
+                                    </div>
+                                    ";
+                }
+                // line 917
+                yield "                                </div>
+                                
+                                <div class=\"task-tags\">
+                                    <span class=\"task-tag tag-type-";
+                // line 920
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["taskType"]) || array_key_exists("taskType", $context) ? $context["taskType"] : (function () { throw new RuntimeError('Variable "taskType" does not exist.', 920, $this->source); })()), "html", null, true);
+                yield "\">
+                                        ";
+                // line 921
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::capitalize($this->env->getCharset(), (isset($context["taskType"]) || array_key_exists("taskType", $context) ? $context["taskType"] : (function () { throw new RuntimeError('Variable "taskType" does not exist.', 921, $this->source); })())), "html", null, true);
+                yield "
+                                    </span>
+                                </div>
+                                
+                                <div class=\"task-footer\">
+                                    <div class=\"task-actions\">
+                                        <a class=\"action-btn primary\" href=\"";
+                // line 927
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_task_show", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["task"], "id", [], "any", false, false, false, 927)]), "html", null, true);
+                yield "\">
+                                            <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                                <circle cx=\"12\" cy=\"12\" r=\"10\"/>
+                                                <path d=\"M12 16v-4\"/>
+                                                <circle cx=\"12\" cy=\"8\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\"/>
+                                            </svg>
+                                            Voir détails
+                                        </a>
+                                        <a class=\"action-btn\" href=\"";
+                // line 935
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_tache_edit", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["task"], "id", [], "any", false, false, false, 935)]), "html", null, true);
+                yield "\">
+                                            <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                                <path d=\"M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7\"/>
+                                                <path d=\"M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z\"/>
+                                            </svg>
+                                            Modifier
+                                        </a>
+                                    </div>
+                                    <div class=\"task-date\">
+                                        <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                            <circle cx=\"12\" cy=\"12\" r=\"10\"/>
+                                            <polyline points=\"12 6 12 12 16 14\"/>
+                                        </svg>
+                                        ";
+                // line 948
+                yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["task"], "updatedAt", [], "any", false, false, false, 948)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("Modifiée") : ("Créée"));
+                yield " le ";
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatDate((((CoreExtension::getAttribute($this->env, $this->source, $context["task"], "updatedAt", [], "any", true, true, false, 948) &&  !(null === CoreExtension::getAttribute($this->env, $this->source, $context["task"], "updatedAt", [], "any", false, false, false, 948)))) ? (CoreExtension::getAttribute($this->env, $this->source, $context["task"], "updatedAt", [], "any", false, false, false, 948)) : ((((CoreExtension::getAttribute($this->env, $this->source, $context["task"], "createdAt", [], "any", true, true, false, 948) &&  !(null === CoreExtension::getAttribute($this->env, $this->source, $context["task"], "createdAt", [], "any", false, false, false, 948)))) ? (CoreExtension::getAttribute($this->env, $this->source, $context["task"], "createdAt", [], "any", false, false, false, 948)) : ("now")))), "d/m/Y"), "html", null, true);
+                yield "
+                                    </div>
+                                </div>
+                            </div>
+                        ";
+            }
+            $_parent = $context['_parent'];
+            unset($context['_seq'], $context['_key'], $context['task'], $context['_parent']);
+            $context = array_intersect_key($context, $_parent) + $_parent;
+            // line 953
+            yield "                    ";
+        } else {
+            // line 954
+            yield "                        <div class=\"empty-state\">
+                            <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                <path d=\"M9 11l3 3 8-8\"/><path d=\"M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11\"/>
+                            </svg>
+                            <h3>Aucune tâche pour le moment</h3>
+                            <p>Créez votre première tâche pour commencer à organiser votre travail</p>
+                            <a href=\"";
+            // line 960
+            yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_tache_new");
+            yield "\" class=\"btn\" style=\"margin-top: 20px;\">
+                                <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                    <path d=\"M12 5v14M5 12h14\"/>
+                                </svg>
+                                Créer une tâche
+                            </a>
+                        </div>
+                    ";
+        }
+        // line 968
+        yield "                </div>
+            </div>
+
+            <div class=\"footer\">
+                <p>ESPRIT Assistant Étudiant • © ";
+        // line 972
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatDate("now", "Y"), "html", null, true);
+        yield " • Tous droits réservés</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleTask(taskId) {
+            fetch(`/tasks/\${taskId}/toggle`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Tâche mise à jour:', data);
+                location.reload();
+            })
+            .catch(error => console.error('Erreur:', error));
+        }
+
+        // Highlight active section based on current page
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav a');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>";
+        
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2->leave($__internal_5a27a8ba21ca79b61932376b2fa922d2_prof);
+
+        
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
+
+        yield from [];
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getTemplateName(): string
+    {
+        return "user/FrontOffice.html.twig";
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function isTraitable(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getDebugInfo(): array
+    {
+        return array (  1210 => 972,  1204 => 968,  1193 => 960,  1185 => 954,  1182 => 953,  1169 => 948,  1153 => 935,  1142 => 927,  1133 => 921,  1129 => 920,  1124 => 917,  1118 => 914,  1111 => 909,  1109 => 908,  1106 => 907,  1100 => 904,  1091 => 897,  1089 => 896,  1081 => 891,  1076 => 890,  1071 => 889,  1067 => 888,  1056 => 879,  1050 => 876,  1047 => 875,  1045 => 874,  1038 => 870,  1034 => 869,  1030 => 868,  1023 => 866,  1020 => 865,  1017 => 864,  1014 => 863,  1011 => 862,  1008 => 861,  1005 => 860,  1002 => 859,  999 => 858,  996 => 857,  993 => 856,  990 => 855,  987 => 854,  982 => 853,  980 => 852,  973 => 848,  962 => 840,  955 => 836,  948 => 832,  941 => 828,  936 => 825,  933 => 824,  930 => 823,  927 => 822,  925 => 821,  914 => 813,  894 => 796,  884 => 789,  867 => 776,  854 => 767,  852 => 766,  837 => 753,  827 => 746,  816 => 739,  814 => 738,  799 => 726,  783 => 713,  774 => 707,  763 => 699,  759 => 698,  752 => 694,  746 => 693,  739 => 690,  48 => 1,);
+    }
+
+    public function getSourceContext(): Source
+    {
+        return new Source("<!DOCTYPE html>
+<html lang=\"fr\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>ESPRIT — Mes Tâches</title>
+    <style>
+        :root {
+            --font-size: 16px;
+            --primary-red: #DC2626;
+            --primary-red-dark: #B91C1C;
+            --primary-red-light: #FEE2E2;
+            --primary-gradient: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+            --secondary: #10B981;
+            --secondary-dark: #059669;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --gray-50: #F9FAFB;
+            --gray-100: #F3F4F6;
+            --gray-200: #E5E7EB;
+            --gray-300: #D1D5DB;
+            --gray-400: #9CA3AF;
+            --gray-500: #6B7280;
+            --gray-600: #4B5563;
+            --gray-700: #374151;
+            --gray-800: #1F2937;
+            --gray-900: #111827;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.15);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        html { 
+            font-size: var(--font-size); 
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fef2f2 0%, #ffffff 100%);
+            color: var(--gray-900);
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 20px rgba(220, 38, 38, 0.05);
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        .brand {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--gray-200);
+            flex-shrink: 0;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            background: var(--primary-gradient);
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+        }
+
+        .brand-title {
+            font-weight: 800;
+            font-size: 20px;
+            color: var(--primary-red);
+        }
+
+        .brand-sub {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .user-session {
+            margin-top: 24px;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .user-session::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 18px;
+            border: 3px solid white;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+        }
+
+        .user-details h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 2px;
+        }
+
+        .user-details p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+
+        .session-info {
+            font-size: 12px;
+            color: var(--gray-600);
+            padding-top: 16px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .session-info div {
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .session-info strong {
+            color: var(--gray-800);
+            font-weight: 600;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 24px;
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .nav::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: var(--radius-lg);
+            color: var(--gray-700);
+            text-decoration: none;
+            transition: all var(--transition);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .nav a:hover {
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            transform: translateX(4px);
+        }
+
+        .nav a.active {
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            font-weight: 600;
+            border-left: 3px solid var(--primary-red);
+        }
+
+        .nav a .icon {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2;
+            flex-shrink: 0;
+        }
+
+        .nav-section {
+            margin-top: 24px;
+            margin-bottom: 8px;
+            padding-left: 16px;
+        }
+
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .main {
+            flex: 1;
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .header-content h1 {
+            font-size: 36px;
+            font-weight: 800;
+            margin: 0;
+            color: var(--gray-900);
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-content p {
+            color: var(--gray-500);
+            margin-top: 8px;
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-lg);
+            border: none;
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.35);
+        }
+
+        .task-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-red-light);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .tasks-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .tasks-header {
+            padding: 24px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .tasks-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 0;
+        }
+
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 24px;
+        }
+
+        .task-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .task-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-red-light);
+        }
+
+        .task-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--gray-300);
+        }
+
+        .task-card.high-priority::before {
+            background: var(--primary-red);
+        }
+
+        .task-card.medium-priority::before {
+            background: var(--warning);
+        }
+
+        .task-card.low-priority::before {
+            background: var(--secondary);
+        }
+
+        .task-card.completed::before {
+            background: var(--secondary);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .task-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .task-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .status-in-progress {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .status-completed {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .task-description {
+            color: var(--gray-600);
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .task-details {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--gray-700);
+        }
+
+        .detail-item svg {
+            width: 16px;
+            height: 16px;
+            color: var(--gray-500);
+        }
+
+        .task-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .task-tag {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .tag-type-cours {
+            background: rgba(59, 130, 246, 0.1);
+            color: #2563EB;
+        }
+
+        .tag-type-examen {
+            background: rgba(239, 68, 68, 0.1);
+            color: #DC2626;
+        }
+
+        .tag-type-reunion {
+            background: rgba(245, 158, 11, 0.1);
+            color: #D97706;
+        }
+
+        .tag-type-personnel {
+            background: rgba(156, 163, 175, 0.1);
+            color: #4B5563;
+        }
+
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid var(--gray-100);
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--gray-300);
+            background: white;
+            color: var(--gray-700);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+
+        .action-btn.primary {
+            background: var(--primary-red-light);
+            color: var(--primary-red);
+            border-color: var(--primary-red);
+        }
+
+        .action-btn.primary:hover {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        .task-date {
+            font-size: 12px;
+            color: var(--gray-500);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-500);
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray-500);
+            font-size: 12px;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 1200px) {
+            .app-shell {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 16px;
+                max-height: 80vh;
+            }
+            
+            .main {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+            
+            .header-content h1 {
+                font-size: 28px;
+            }
+            
+            .task-grid {
+                grid-template-columns: 1fr;
+                padding: 16px;
+            }
+            
+            .task-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class=\"app-shell\">
+        <aside class=\"sidebar\">
+            <div class=\"brand\">
+                <div class=\"brand-row\">
+                    <div class=\"brand-icon\">ES</div>
+                    <div>
+                        <div class=\"brand-title\">ESPRIT</div>
+                        <div class=\"brand-sub\">Assistant Étudiant</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class=\"user-session\">
+                <div class=\"user-info\">
+                    <div class=\"avatar\">
+                        {{ app.user.nom|first }}{{ app.user.prenom|first }}
+                    </div>
+                    <div class=\"user-details\">
+                        <h3>{{ app.user.nom }} {{ app.user.prenom }}</h3>
+                        <p>📚 {{ app.user.classe is not null ? app.user.classe.nom : 'Aucune classe' }}</p>
+                    </div>
+                </div>
+                <div class=\"session-info\">
+                    <div><strong>Email :</strong> {{ app.user.email }}</div>
+                    <div><strong>Rôle :</strong> {{ app.user.roles[0]|replace({'ROLE_': ''})|capitalize }}</div>
+                </div>
+            </div>
+
+            <!-- Updated Navigation Bar -->
+            <nav class=\"nav\">
+                <div class=\"nav-section\">
+                    <div class=\"nav-section-title\">Général</div>
+                    <a href=\"{{ path('app_dashboard') }}\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M3 9l9-7 9 7\"/><path d=\"M9 22V12h6v10\"/>
+                        </svg>
+                        Tableau de bord
+                    </a>
+                    <a href=\"{{ path('app_my_tasks') }}\" >
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M9 11l3 3 8-8\"/><path d=\"M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11\"/>
+                        </svg>
+                        Mes Tâches
+                    </a>
+                    <a href=\"#\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M22 12h-4l-3 9L9 3l-3 9H2\"/>
+                            <circle cx=\"12\" cy=\"12\" r=\"10\"/>
+                        </svg>
+                        Objectifs
+                    </a>
+                    <a href=\"{{path('front_objectif_sante_index')}}\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"/>
+                            <path d=\"M8 12h8\"/>
+                            <path d=\"M12 8v8\"/>
+                        </svg>
+                        Santé
+                    </a>
+                </div>
+
+                <div class=\"nav-section\">
+                    <div class=\"nav-section-title\">Académique</div>
+                    {% if app.user.classe %}
+                    <a href=\"{{ path('app_classe_front_show', {'id': app.user.classe.id}) }}\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M4 19.5A2.5 2.5 0 0 1 6.5 17H20\"/>
+                            <path d=\"M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z\"/>
+                        </svg>
+                        Ma Classe
+                    </a>
+                    <a href=\"{{ path('app_matiere_classe_front_index') }}\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253\"/>
+                        </svg>
+                        Mes Matières
+                    </a>
+                    {% endif %}
+                    <a href=\"#\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <rect x=\"3\" y=\"7\" width=\"18\" height=\"13\" rx=\"2\" ry=\"2\"/>
+                            <path d=\"M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\"/>
+                            <line x1=\"12\" y1=\"12\" x2=\"12\" y2=\"12\"/>
+                            <line x1=\"8\" y1=\"17\" x2=\"16\" y2=\"17\"/>
+                        </svg>
+                        Salles
+                    </a>
+                </div>
+
+                <div class=\"nav-section\">
+                    <div class=\"nav-section-title\">Cours & Groupes</div>
+                    {% if app.user.classe %}
+                    <a href=\"{{path('app_seance_by_classe',{'id': app.user.classe.id})}}\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <circle cx=\"12\" cy=\"12\" r=\"10\"/>
+                            <polyline points=\"12 6 12 12 16 14\"/>
+                            <line x1=\"12\" y1=\"12\" x2=\"12\" y2=\"12\"/>
+                        </svg>
+                        Séances
+                    </a>
+                    {% endif %}
+                    <a href=\"{{path('front_groupe_projet_index')}}\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\"/>
+                            <circle cx=\"9\" cy=\"7\" r=\"4\"/>
+                            <path d=\"M23 21v-2a4 4 0 0 0-3-3.87\"/>
+                            <path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/>
+                        </svg>
+                        Groupes
+                    </a>
+                </div>
+
+                <div class=\"nav-section\">
+                    <div class=\"nav-section-title\">Compte</div>
+                    <a href=\"{{ path('app_profile') }}\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"/>
+                            <circle cx=\"12\" cy=\"7\" r=\"4\"/>
+                        </svg>
+                        Profil
+                    </a>
+                    <a href=\"{{ path('app_logout') }}\">
+                        <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                            <path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\"/><path d=\"M16 17l5-5-5-5\"/><path d=\"M21 12H9\"/>
+                        </svg>
+                        Déconnexion
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Rest of the content remains the same -->
+        <main class=\"main\">
+            <header class=\"header\">
+                <div class=\"header-content\">
+                    <h1>Mes Tâches</h1>
+                    <p>Gérez et suivez toutes vos tâches académiques</p>
+                </div>
+                <a href=\"{{ path('app_tache_new') }}\" class=\"btn\">
+                    <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                        <path d=\"M12 5v14M5 12h14\"/>
+                    </svg>
+                    Nouvelle Tâche
+                </a>
+            </header>
+
+            {% set totalTasks = tasks|length %}
+            {% set completedTasks = tasks|filter(t => (t.statut|default('A_FAIRE')) == 'TERMINEE')|length %}
+            {% set pendingTasks = totalTasks - completedTasks %}
+            {% set highPriorityTasks = tasks|filter(t => (t.priorite|default('MOYEN')) == 'ELEVEE')|length %}
+
+            <div class=\"task-stats\">
+                <div class=\"stat-card\">
+                    <div class=\"stat-value\">{{ totalTasks }}</div>
+                    <div class=\"stat-label\">📋 Tâches totales</div>
+                </div>
+                <div class=\"stat-card\">
+                    <div class=\"stat-value\">{{ completedTasks }}</div>
+                    <div class=\"stat-label\">✅ Complétées</div>
+                </div>
+                <div class=\"stat-card\">
+                    <div class=\"stat-value\">{{ pendingTasks }}</div>
+                    <div class=\"stat-label\">⏳ En attente</div>
+                </div>
+                <div class=\"stat-card\">
+                    <div class=\"stat-value\">{{ highPriorityTasks }}</div>
+                    <div class=\"stat-label\">🚨 Haute priorité</div>
+                </div>
+            </div>
+
+
+            <div class=\"tasks-container\">
+                <div class=\"tasks-header\">
+                    <h2 class=\"tasks-title\">Toutes les tâches ({{ totalTasks }})</h2>
+                </div>
+
+                <div class=\"task-grid\" id=\"taskList\">
+                    {% if tasks is not empty %}
+                        {% for task in tasks %}
+                            {% set taskType = task.type|default('personnel') %}
+                            {% set taskPriority = task.priorite|default('MOYEN') %}
+                            {% set rawStatus = task.statut|default('A_FAIRE') %}
+                            {% set isCompleted = rawStatus == 'TERMINEE' %}
+                            {% set statusLabels = {'A_FAIRE': 'En attente', 'EN_COURS': 'En cours', 'TERMINEE': 'Terminée', 'EN_RETARD': 'En retard', 'PAUSED': 'En pause'} %}
+                            {% set statusSlugMap = {'A_FAIRE':'pending', 'EN_COURS':'in_progress', 'TERMINEE':'completed', 'EN_RETARD':'overdue', 'PAUSED':'paused'} %}
+                            {% set statusSlug = statusSlugMap[rawStatus]|default('pending') %}
+                            {% set priorityMap = {'ELEVEE': 'high', 'MOYEN': 'medium', 'FAIBLE': 'low'} %}
+                            {% set priorityClassMap = {'ELEVEE': 'high', 'MOYEN': 'medium', 'FAIBLE': 'low'} %}
+                            {% set priorityLabelMap = {'ELEVEE': 'Haute', 'MOYEN': 'Moyenne', 'FAIBLE': 'Basse'} %}
+                            {% set priorityClass = priorityClassMap[taskPriority]|default('medium') %}
+                            
+                            <div class=\"task-card {{ isCompleted ? 'completed' : '' }} {{ priorityClass }}-priority\">
+                                <div class=\"task-header\">
+                                    <h3 class=\"task-title\">{{ task.titre|default('Tâche sans titre') }}</h3>
+                                    <span class=\"task-status status-{{ statusSlug }}\">
+                                        {{ statusLabels[rawStatus]|default('En attente') }}
+                                    </span>
+                                </div>
+                                
+                                {% if task.description %}
+                                <div class=\"task-description\">
+                                    {{ task.description }}
+                                </div>
+                                {% endif %}
+                                
+                                <div class=\"task-details\">
+                                    <div class=\"detail-item\">
+                                        <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                            <path d=\"M12 8v4l3 3\"/>
+                                            <circle cx=\"12\" cy=\"12\" r=\"10\"/>
+                                        </svg>
+                                        <span>Priorité : 
+                                            <strong style=\"color: 
+                                                {% if priorityClass == 'high' %}var(--primary-red)
+                                                {% elseif priorityClass == 'medium' %}var(--warning)
+                                                {% else %}var(--secondary){% endif %}\">
+                                                {{ priorityLabelMap[taskPriority] }}
+                                            </strong>
+                                        </span>
+                                    </div>
+                                    
+                                    {% if task.dateEcheance %}
+                                    <div class=\"detail-item\">
+                                        <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                            <rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"/>
+                                            <line x1=\"16\" y1=\"2\" x2=\"16\" y2=\"6\"/>
+                                            <line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"6\"/>
+                                            <line x1=\"3\" y1=\"10\" x2=\"21\" y2=\"10\"/>
+                                        </svg>
+                                        <span>Échéance : <strong>{{ task.dateEcheance|date('d/m/Y') }}</strong></span>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    {% if task.createdAt %}
+                                    <div class=\"detail-item\">
+                                        <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                            <path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"/>
+                                            <circle cx=\"12\" cy=\"7\" r=\"4\"/>
+                                        </svg>
+                                        <span>Créée le : {{ task.createdAt|date('d/m/Y') }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class=\"task-tags\">
+                                    <span class=\"task-tag tag-type-{{ taskType }}\">
+                                        {{ taskType|capitalize }}
+                                    </span>
+                                </div>
+                                
+                                <div class=\"task-footer\">
+                                    <div class=\"task-actions\">
+                                        <a class=\"action-btn primary\" href=\"{{ path('app_task_show', {'id': task.id}) }}\">
+                                            <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                                <circle cx=\"12\" cy=\"12\" r=\"10\"/>
+                                                <path d=\"M12 16v-4\"/>
+                                                <circle cx=\"12\" cy=\"8\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\"/>
+                                            </svg>
+                                            Voir détails
+                                        </a>
+                                        <a class=\"action-btn\" href=\"{{ path('app_tache_edit', {'id': task.id}) }}\">
+                                            <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                                <path d=\"M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7\"/>
+                                                <path d=\"M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z\"/>
+                                            </svg>
+                                            Modifier
+                                        </a>
+                                    </div>
+                                    <div class=\"task-date\">
+                                        <svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                            <circle cx=\"12\" cy=\"12\" r=\"10\"/>
+                                            <polyline points=\"12 6 12 12 16 14\"/>
+                                        </svg>
+                                        {{ task.updatedAt ? 'Modifiée' : 'Créée' }} le {{ (task.updatedAt ?? task.createdAt ?? \"now\")|date('d/m/Y') }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class=\"empty-state\">
+                            <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                <path d=\"M9 11l3 3 8-8\"/><path d=\"M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11\"/>
+                            </svg>
+                            <h3>Aucune tâche pour le moment</h3>
+                            <p>Créez votre première tâche pour commencer à organiser votre travail</p>
+                            <a href=\"{{ path('app_tache_new') }}\" class=\"btn\" style=\"margin-top: 20px;\">
+                                <svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                    <path d=\"M12 5v14M5 12h14\"/>
+                                </svg>
+                                Créer une tâche
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class=\"footer\">
+                <p>ESPRIT Assistant Étudiant • © {{ \"now\"|date(\"Y\") }} • Tous droits réservés</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleTask(taskId) {
+            fetch(`/tasks/\${taskId}/toggle`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Tâche mise à jour:', data);
+                location.reload();
+            })
+            .catch(error => console.error('Erreur:', error));
+        }
+
+        // Highlight active section based on current page
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav a');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>", "user/FrontOffice.html.twig", "C:\\Users\\islem\\OneDrive\\Bureau\\PIdev\\templates\\user\\FrontOffice.html.twig");
+    }
+}

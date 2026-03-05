@@ -1,0 +1,2787 @@
+<?php
+
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Extension\CoreExtension;
+use Twig\Extension\SandboxExtension;
+use Twig\Markup;
+use Twig\Sandbox\SecurityError;
+use Twig\Sandbox\SecurityNotAllowedTagError;
+use Twig\Sandbox\SecurityNotAllowedFilterError;
+use Twig\Sandbox\SecurityNotAllowedFunctionError;
+use Twig\Source;
+use Twig\Template;
+use Twig\TemplateWrapper;
+
+/* Front/objectif_sante/show.html.twig */
+class __TwigTemplate_b695f9eed4430a74ec667bc30735b4ef extends Template
+{
+    private Source $source;
+    /**
+     * @var array<string, Template>
+     */
+    private array $macros = [];
+
+    public function __construct(Environment $env)
+    {
+        parent::__construct($env);
+
+        $this->source = $this->getSourceContext();
+
+        $this->parent = false;
+
+        $this->blocks = [
+        ];
+    }
+
+    protected function doDisplay(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2 = $this->extensions["Symfony\\Bundle\\WebProfilerBundle\\Twig\\WebProfilerExtension"];
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2->enter($__internal_5a27a8ba21ca79b61932376b2fa922d2_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "template", "Front/objectif_sante/show.html.twig"));
+
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "template", "Front/objectif_sante/show.html.twig"));
+
+        // line 1
+        yield "<!DOCTYPE html>
+<html lang=\"fr\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>ESPRIT — Détails Objectif Santé</title>
+    <style>
+        :root {
+            --font-size: 16px;
+            --bg: #ffffff;
+            --fg: #111827;
+            
+            --red-50: #fef2f2;
+            --red-100: #fee2e2;
+            --red-200: #fecaca;
+            --red-300: #fca5a5;
+            --red-400: #f87171;
+            --red-500: #ef4444;
+            --red-600: #dc2626;
+            --red-700: #b91c1c;
+            --red-800: #991b1b;
+            --red-900: #7f1d1d;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --blue-50: #eff6ff;
+            --blue-100: #dbeafe;
+            --blue-200: #bfdbfe;
+            --blue-300: #93c5fd;
+            --blue-400: #60a5fa;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --blue-800: #1e40af;
+            --blue-900: #1e3a8a;
+            
+            --purple-50: #faf5ff;
+            --purple-100: #f3e8ff;
+            --purple-200: #e9d5ff;
+            --purple-300: #d8b4fe;
+            --purple-400: #c084fc;
+            --purple-500: #a855f7;
+            --purple-600: #9333ea;
+            --purple-700: #7e22ce;
+            --purple-800: #6b21a8;
+            --purple-900: #581c87;
+            
+            --green-50: #f0fdf4;
+            --green-100: #dcfce7;
+            --green-200: #bbf7d0;
+            --green-300: #86efac;
+            --green-400: #4ade80;
+            --green-500: #22c55e;
+            --green-600: #16a34a;
+            --green-700: #15803d;
+            --green-800: #166534;
+            --green-900: #14532d;
+            
+            --orange-50: #fff7ed;
+            --orange-100: #ffedd5;
+            --orange-200: #fed7aa;
+            --orange-300: #fdba74;
+            --orange-400: #fb923c;
+            --orange-500: #f97316;
+            --orange-600: #ea580c;
+            --orange-700: #c2410c;
+            --orange-800: #9a3412;
+            --orange-900: #7c2d12;
+            
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+            
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-2xl: 24px;
+            
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        html { 
+            font-size: var(--font-size); 
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, #ffffff 30%, var(--gray-50) 100%);
+            color: var(--fg);
+            min-height: 100vh;
+            line-height: 1.6;
+            font-feature-settings: 'ss01', 'ss02', 'cv01', 'cv02';
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Main Layout with Glassmorphism */
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+            background: linear-gradient(135deg, 
+                rgba(249, 250, 251, 0.95) 0%, 
+                rgba(255, 255, 255, 0.97) 50%, 
+                rgba(249, 250, 251, 0.95) 100%);
+            backdrop-filter: blur(20px);
+        }
+
+        /* Premium Sidebar with Glass Effect */
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(165deg, 
+                rgba(255, 255, 255, 0.92) 0%, 
+                rgba(249, 250, 251, 0.88) 100%);
+            border-right: 1px solid rgba(229, 231, 235, 0.6);
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        /* Premium Brand Section */
+        .brand {
+            margin-bottom: 36px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
+            position: relative;
+        }
+
+        .brand::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--red-500), var(--red-300));
+            border-radius: 2px;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--red-700) 100%);
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+            transition: all var(--transition);
+        }
+
+        .brand-icon:hover {
+            transform: rotate(-5deg) scale(1.05);
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.35);
+        }
+
+        .brand-title {
+            font-weight: 800;
+            font-size: 20px;
+            line-height: 1;
+            color: var(--gray-900);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-sub {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: 6px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        /* Premium User Session Card */
+        .user-session {
+            margin-top: 28px;
+            padding: 24px;
+            background: linear-gradient(145deg, 
+                rgba(255, 255, 255, 0.95) 0%, 
+                rgba(249, 250, 251, 0.9) 100%);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition);
+        }
+
+        .user-session::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .user-session:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(229, 231, 235, 0.8);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.2);
+            border: 3px solid white;
+            transition: all var(--transition);
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3);
+        }
+
+        .user-details h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            line-height: 1.4;
+        }
+
+        .user-details p {
+            margin: 6px 0 0;
+            font-size: 14px;
+            color: #4b5563;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .user-details p::before {
+            content: '📚';
+            font-size: 12px;
+        }
+
+        .session-info {
+            font-size: 13px;
+            color: #4b5563;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-weight: 500;
+        }
+
+        .session-info div {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            transition: all var(--transition-fast);
+        }
+
+        .session-info div:hover {
+            background: rgba(249, 250, 251, 0.5);
+            border-radius: var(--radius-sm);
+            padding: 6px 8px;
+        }
+
+        .session-info strong {
+            color: #1f2937;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Premium Navigation */
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 32px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            border-radius: var(--radius-lg);
+            color: #374151;
+            text-decoration: none;
+            transition: all var(--transition);
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            font-size: 15px;
+        }
+
+        .nav a:hover {
+            background: linear-gradient(90deg, 
+                rgba(254, 242, 242, 0.7) 0%, 
+                rgba(254, 242, 242, 0.4) 100%);
+            color: var(--red-600);
+            transform: translateX(8px);
+            box-shadow: var(--shadow-xs);
+        }
+
+        .nav a.active {
+            background: linear-gradient(90deg, 
+                rgba(254, 242, 242, 0.9) 0%, 
+                rgba(254, 242, 242, 0.6) 100%);
+            color: var(--red-600);
+            font-weight: 600;
+            border-left: 4px solid var(--red-500);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav a.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, var(--red-500), var(--orange-500));
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+
+        .nav a .icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            stroke-width: 2;
+            transition: all var(--transition);
+        }
+
+        .nav a:hover .icon {
+            transform: scale(1.1);
+        }
+
+        /* Premium Main Content */
+        .main {
+            flex: 1;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Premium Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--red-500), transparent);
+            border-radius: 2px;
+        }
+
+        .h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin: 0;
+            color: #111827;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .muted {
+            color: #6b7280;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .session-display {
+            text-align: right;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.9) 0%, 
+                rgba(249, 250, 251, 0.8) 100%);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(229, 231, 235, 0.6);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+        }
+
+        .session-display:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .session-display div:first-child {
+            font-size: 12px;
+            color: var(--gray-500);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .session-display div:last-child {
+            font-weight: 700;
+            font-size: 15px;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .session-display div:last-child::before {
+            content: '';
+            width: 8px;
+            height = 8px;
+            background: var(--green-500);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Premium Card Design */
+        .card {
+            background: linear-gradient(145deg, 
+                rgba(255, 255, 255, 0.95) 0%, 
+                rgba(249, 250, 251, 0.9) 100%);
+            border: 1px solid rgba(229, 231, 235, 0.6);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 28px;
+            overflow: hidden;
+            transition: all var(--transition);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(229, 231, 235, 0.8);
+        }
+
+        .card-header {
+            padding: 28px 28px 0;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 6px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--red-500), var(--orange-500));
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .card-content {
+            padding: 28px;
+        }
+
+        /* Premium Buttons */
+        .btn {
+            appearance: none;
+            border: 2px solid transparent;
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: 16px 28px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all var(--transition);
+            font-size: 15px;
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+            text-decoration: none;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, var(--red-600) 0%, var(--orange-600) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #374151;
+            border-color: #d1d5db;
+            font-weight: 500;
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: #f3f4f6;
+            color: #111827;
+            border-color: #9ca3af;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, var(--green-500) 0%, var(--green-700) 100%);
+            box-shadow: 0 4px 16px rgba(22, 163, 74, 0.2);
+        }
+
+        .btn-green:hover {
+            background: linear-gradient(135deg, var(--green-600) 0%, var(--green-800) 100%);
+            box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3);
+        }
+
+        .btn-blue {
+            background: linear-gradient(135deg, var(--blue-500) 0%, var(--blue-700) 100%);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-blue:hover {
+            background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-800) 100%);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Badge Design */
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            box-shadow: var(--shadow-xs);
+            border: 1px solid transparent;
+        }
+
+        .badge-primary {
+            background: linear-gradient(135deg, var(--blue-100) 0%, var(--blue-50) 100%);
+            color: var(--blue-700);
+            border-color: var(--blue-200);
+        }
+
+        .badge-success {
+            background: linear-gradient(135deg, var(--green-100) 0%, var(--green-50) 100%);
+            color: var(--green-700);
+            border-color: var(--green-200);
+        }
+
+        .badge-warning {
+            background: linear-gradient(135deg, var(--orange-100) 0%, var(--orange-50) 100%);
+            color: var(--orange-700);
+            border-color: var(--orange-200);
+        }
+
+        .badge-danger {
+            background: linear-gradient(135deg, var(--red-100) 0%, var(--red-50) 100%);
+            color: var(--red-700);
+            border-color: var(--red-200);
+        }
+
+        .badge-info {
+            background: linear-gradient(135deg, var(--purple-100) 0%, var(--purple-50) 100%);
+            color: var(--purple-700);
+            border-color: var(--purple-200);
+        }
+
+        /* Detail Grid */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .detail-item {
+            background: linear-gradient(145deg, 
+                rgba(255, 255, 255, 0.9) 0%, 
+                rgba(249, 250, 251, 0.8) 100%);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid rgba(229, 231, 235, 0.4);
+            transition: all var(--transition);
+        }
+
+        .detail-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(229, 231, 235, 0.6);
+        }
+
+        .detail-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-label::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--red-400);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin: 0;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 32px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: var(--gray-200);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green-500), var(--green-600));
+            border-radius: 6px;
+            transition: width 1s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .breadcrumb a {
+            color: var(--blue-600);
+            text-decoration: none;
+            transition: all var(--transition);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--blue-700);
+            text-decoration: underline;
+        }
+
+        .breadcrumb .separator {
+            color: var(--gray-400);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .app-shell {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 24px;
+                border-right: none;
+                border-bottom: 1px solid rgba(229, 231, 235, 0.6);
+            }
+            
+            .main {
+                padding: 32px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            
+            .h1 {
+                font-size: 36px;
+            }
+            
+            .session-display {
+                width: 100%;
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main {
+                padding: 24px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main {
+                padding: 20px;
+            }
+            
+            .card-content {
+                padding: 20px;
+            }
+            
+            .detail-item {
+                padding: 20px;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(249, 250, 251, 0.8);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--red-300), var(--orange-300));
+            border-radius: 10px;
+            border: 2px solid rgba(249, 250, 251, 0.8);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--red-400), var(--orange-400));
+        }
+    </style>
+</head>
+<body>
+    <div class=\"app-shell\">
+        <!-- Sidebar with session info -->
+        <aside class=\"sidebar\">
+            <div class=\"brand\">
+                <div class=\"brand-row\">
+                    <div class=\"brand-icon\">ES</div>
+                    <div>
+                        <div class=\"brand-title\">ESPRIT</div>
+                        <div class=\"brand-sub\">Student Assistant</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User session information -->
+            <div class=\"user-session\">
+                <div class=\"user-info\">
+                    <div class=\"avatar\">
+                        ";
+        // line 937
+        yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 937, $this->source); })()), "user", [], "any", false, false, false, 937)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "user", [], "any", false, true, false, 937), "initials", [], "any", true, true, false, 937)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 937, $this->source); })()), "user", [], "any", false, false, false, 937), "initials", [], "any", false, false, false, 937), (Twig\Extension\CoreExtension::first($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 937, $this->source); })()), "user", [], "any", false, false, false, 937), "nom", [], "any", false, false, false, 937)) . Twig\Extension\CoreExtension::first($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 937, $this->source); })()), "user", [], "any", false, false, false, 937), "prenom", [], "any", false, false, false, 937))))) : ((Twig\Extension\CoreExtension::first($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 937, $this->source); })()), "user", [], "any", false, false, false, 937), "nom", [], "any", false, false, false, 937)) . Twig\Extension\CoreExtension::first($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 937, $this->source); })()), "user", [], "any", false, false, false, 937), "prenom", [], "any", false, false, false, 937))))), "html", null, true)) : ("JD"));
+        yield "
+                    </div>
+                    <div class=\"user-details\">
+                        <h3>";
+        // line 940
+        yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 940, $this->source); })()), "user", [], "any", false, false, false, 940)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 940, $this->source); })()), "user", [], "any", false, false, false, 940), "nom", [], "any", false, false, false, 940) . " ") . CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 940, $this->source); })()), "user", [], "any", false, false, false, 940), "prenom", [], "any", false, false, false, 940)), "html", null, true)) : ("John Doe"));
+        yield "</h3>
+                        <p>";
+        // line 941
+        yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 941, $this->source); })()), "user", [], "any", false, false, false, 941)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "user", [], "any", false, true, false, 941), "classe", [], "any", false, true, false, 941), "nom", [], "any", true, true, false, 941)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 941, $this->source); })()), "user", [], "any", false, false, false, 941), "classe", [], "any", false, false, false, 941), "nom", [], "any", false, false, false, 941), "4SE-G1")) : ("4SE-G1")), "html", null, true)) : ("4SE-G1"));
+        yield "</p>
+                    </div>
+                </div>
+                <div class=\"session-info\">
+                    <div><strong>Email:</strong> ";
+        // line 945
+        yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 945, $this->source); })()), "user", [], "any", false, false, false, 945)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 945, $this->source); })()), "user", [], "any", false, false, false, 945), "email", [], "any", false, false, false, 945), "html", null, true)) : ("student@esprit.tn"));
+        yield "</div>
+                    <div><strong>Role:</strong> ";
+        // line 946
+        yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 946, $this->source); })()), "user", [], "any", false, false, false, 946)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::capitalize($this->env->getCharset(), Twig\Extension\CoreExtension::replace(Twig\Extension\CoreExtension::first($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 946, $this->source); })()), "user", [], "any", false, false, false, 946), "roles", [], "any", false, false, false, 946)), ["ROLE_" => ""])), "html", null, true)) : ("Student"));
+        yield "</div>
+                    <div><strong>Member since:</strong> ";
+        // line 947
+        yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 947, $this->source); })()), "user", [], "any", false, false, false, 947)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatDate(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 947, $this->source); })()), "user", [], "any", false, false, false, 947), "createdAt", [], "any", false, false, false, 947), "M Y"), "html", null, true)) : ("Jan 2024"));
+        yield "</div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class=\"nav\">
+                <a href=\"";
+        // line 953
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_dashboard");
+        yield "\">
+                    <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                        <path d=\"M3 9l9-7 9 7\"/><path d=\"M9 22V12h6v10\"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href=\"#\">
+                    <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                        <path d=\"M9 11l3 3 8-8\"/><path d=\"M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11\"/>
+                    </svg>
+                    My Tasks
+                </a>
+                <a href=\"";
+        // line 965
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_profile");
+        yield "\">
+                    <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                        <path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"/>
+                        <circle cx=\"12\" cy=\"7\" r=\"4\"/>
+                    </svg>
+                    Profile
+                </a>
+                <a href=\"";
+        // line 972
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("front_objectif_sante_index");
+        yield "\" class=\"active\">
+                    <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                        <path d=\"M12 2v20\"/><path d=\"M2 12h20\"/>
+                    </svg>
+                    Objectifs Santé
+                </a>
+                <a href=\"#\">
+                    <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                        <circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 a2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z\"/>
+                    </svg>
+                    Settings
+                </a>
+                <a href=\"";
+        // line 984
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_logout");
+        yield "\">
+                    <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                        <path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\"/><path d=\"M16 17l5-5-5-5\"/><path d=\"M21 12H9\"/>
+                    </svg>
+                    Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <main class=\"main\">
+            <header class=\"header\">
+                <div>
+                    <h1 class=\"h1\">Détails de l'Objectif</h1>
+                    <p class=\"muted\">Visualisez et gérez votre objectif de santé</p>
+                </div>
+                <div class=\"session-display\">
+                    <div>Session actuelle</div>
+                    <div>";
+        // line 1002
+        yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 1002, $this->source); })()), "user", [], "any", false, false, false, 1002)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["app"]) || array_key_exists("app", $context) ? $context["app"] : (function () { throw new RuntimeError('Variable "app" does not exist.', 1002, $this->source); })()), "user", [], "any", false, false, false, 1002), "email", [], "any", false, false, false, 1002), "html", null, true)) : ("student@esprit.tn"));
+        yield "</div>
+                </div>
+            </header>
+
+            <!-- Breadcrumb -->
+            <div class=\"breadcrumb\">
+                <a href=\"";
+        // line 1008
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("front_objectif_sante_index");
+        yield "\">Mes Objectifs Santé</a>
+                <span class=\"separator\">/</span>
+                <span>Détails</span>
+            </div>
+
+            <!-- Objectif Details Card -->
+            <div class=\"card\">
+                <div class=\"card-header\">
+                    <h2 class=\"card-title\">";
+        // line 1016
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1016, $this->source); })()), "titre", [], "any", false, false, false, 1016), "html", null, true);
+        yield "</h2>
+                </div>
+                <div class=\"card-content\">
+                    <!-- Progress Bar -->
+                    <div class=\"progress-container\">
+                        <div class=\"progress-label\">
+                            <span>Score Moyen</span>
+                            <span>";
+        // line 1023
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1023, $this->source); })()), "scoreMoyen", [], "any", false, false, false, 1023), "html", null, true);
+        yield "/100</span>
+                        </div>
+                        <div class=\"progress-bar\">
+                            <div class=\"progress-fill\" style=\"width: ";
+        // line 1026
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1026, $this->source); })()), "scoreMoyen", [], "any", false, false, false, 1026), "html", null, true);
+        yield "%\"></div>
+                        </div>
+                    </div>
+
+                    <!-- Details Grid -->
+                    <div class=\"detail-grid\">
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">Type</div>
+                            <div class=\"detail-value\">
+                                ";
+        // line 1035
+        if ((CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1035, $this->source); })()), "type", [], "any", false, false, false, 1035) == "SOMMEIL")) {
+            // line 1036
+            yield "                                    <span class=\"badge badge-info\">Sommeil</span>
+                                ";
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 1037
+(isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1037, $this->source); })()), "type", [], "any", false, false, false, 1037) == "SPORT")) {
+            // line 1038
+            yield "                                    <span class=\"badge badge-success\">Sport</span>
+                                ";
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 1039
+(isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1039, $this->source); })()), "type", [], "any", false, false, false, 1039) == "ALIMENTATION")) {
+            // line 1040
+            yield "                                    <span class=\"badge badge-warning\">Alimentation</span>
+                                ";
+        } else {
+            // line 1042
+            yield "                                    <span class=\"badge badge-primary\">";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1042, $this->source); })()), "type", [], "any", false, false, false, 1042), "html", null, true);
+            yield "</span>
+                                ";
+        }
+        // line 1044
+        yield "                            </div>
+                        </div>
+
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">Valeur Cible</div>
+                            <p class=\"detail-value\">";
+        // line 1049
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1049, $this->source); })()), "getValeurCibleAvecUnite", [], "method", false, false, false, 1049), "html", null, true);
+        yield "</p>
+                        </div>
+
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">Priorité</div>
+                            <div class=\"detail-value\">
+                                ";
+        // line 1055
+        if ((CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1055, $this->source); })()), "priorite", [], "any", false, false, false, 1055) == "HAUTE")) {
+            // line 1056
+            yield "                                    <span class=\"badge badge-danger\">Haute</span>
+                                ";
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 1057
+(isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1057, $this->source); })()), "priorite", [], "any", false, false, false, 1057) == "MOYENNE")) {
+            // line 1058
+            yield "                                    <span class=\"badge badge-warning\">Moyenne</span>
+                                ";
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 1059
+(isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1059, $this->source); })()), "priorite", [], "any", false, false, false, 1059) == "BASSE")) {
+            // line 1060
+            yield "                                    <span class=\"badge badge-success\">Basse</span>
+                                ";
+        } else {
+            // line 1062
+            yield "                                    <span class=\"badge badge-primary\">";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1062, $this->source); })()), "priorite", [], "any", false, false, false, 1062), "html", null, true);
+            yield "</span>
+                                ";
+        }
+        // line 1064
+        yield "                            </div>
+                        </div>
+
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">Statut</div>
+                            <div class=\"detail-value\">
+                                ";
+        // line 1070
+        if ((CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1070, $this->source); })()), "statut", [], "any", false, false, false, 1070) == "EN_COURS")) {
+            // line 1071
+            yield "                                    <span class=\"badge badge-info\">En cours</span>
+                                ";
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 1072
+(isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1072, $this->source); })()), "statut", [], "any", false, false, false, 1072) == "ATTEINT")) {
+            // line 1073
+            yield "                                    <span class=\"badge badge-success\">Atteint</span>
+                                ";
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 1074
+(isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1074, $this->source); })()), "statut", [], "any", false, false, false, 1074) == "ABANDONNE")) {
+            // line 1075
+            yield "                                    <span class=\"badge badge-danger\">Abandonné</span>
+                                ";
+        } else {
+            // line 1077
+            yield "                                    <span class=\"badge badge-primary\">";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1077, $this->source); })()), "statut", [], "any", false, false, false, 1077), "html", null, true);
+            yield "</span>
+                                ";
+        }
+        // line 1079
+        yield "                            </div>
+                        </div>
+
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">Date de Début</div>
+                            <p class=\"detail-value\">";
+        // line 1084
+        yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1084, $this->source); })()), "dateDebut", [], "any", false, false, false, 1084)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatDate(CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1084, $this->source); })()), "dateDebut", [], "any", false, false, false, 1084), "d/m/Y"), "html", null, true)) : ("Non définie"));
+        yield "</p>
+                        </div>
+
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">Date de Fin</div>
+                            <p class=\"detail-value\">";
+        // line 1089
+        yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1089, $this->source); })()), "dateFin", [], "any", false, false, false, 1089)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatDate(CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1089, $this->source); })()), "dateFin", [], "any", false, false, false, 1089), "d/m/Y"), "html", null, true)) : ("Non définie"));
+        yield "</p>
+                        </div>
+
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">Utilisateur</div>
+                            <p class=\"detail-value\">";
+        // line 1094
+        yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1094, $this->source); })()), "user", [], "any", false, false, false, 1094)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1094, $this->source); })()), "user", [], "any", false, false, false, 1094), "email", [], "any", false, false, false, 1094), "html", null, true)) : ("Non assigné"));
+        yield "</p>
+                        </div>
+
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">ID</div>
+                            <p class=\"detail-value\">#";
+        // line 1099
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1099, $this->source); })()), "id", [], "any", false, false, false, 1099), "html", null, true);
+        yield "</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class=\"action-buttons\">
+                        <a href=\"";
+        // line 1105
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("front_objectif_sante_edit", ["id" => CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1105, $this->source); })()), "id", [], "any", false, false, false, 1105)]), "html", null, true);
+        yield "\" class=\"btn btn-blue\">
+                            <svg style=\"width: 20px; height: 20px;\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                <path d=\"M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7\"/>
+                                <path d=\"M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z\"/>
+                            </svg>
+                            Modifier
+                        </a>
+                        
+                        ";
+        // line 1113
+        yield Twig\Extension\CoreExtension::include($this->env, $context, "front/objectif_sante/_delete_form.html.twig");
+        yield "
+                        
+                        <a href=\"";
+        // line 1115
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("front_objectif_sante_index");
+        yield "\" class=\"btn btn-outline\">
+                            <svg style=\"width: 20px; height: 20px;\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                <path d=\"M19 12H6M12 5l-7 7 7 7\"/>
+                            </svg>
+                            Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips Card -->
+            <div class=\"card\">
+                <div class=\"card-header\">
+                    <h2 class=\"card-title\">💡 Conseils pour cet objectif</h2>
+                </div>
+                <div class=\"card-content\">
+                    <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;\">
+                        ";
+        // line 1132
+        if ((CoreExtension::getAttribute($this->env, $this->source, (isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1132, $this->source); })()), "type", [], "any", false, false, false, 1132) == "SOMMEIL")) {
+            // line 1133
+            yield "                            <div style=\"padding: 20px; background: linear-gradient(135deg, var(--blue-50) 0%, var(--blue-100) 100%); border-radius: var(--radius);\">
+                                <div style=\"font-size: 32px; margin-bottom: 12px;\">😴</div>
+                                <h3 style=\"margin: 0 0 8px; font-size: 16px; color: var(--blue-800);\">Routine du soir</h3>
+                                <p style=\"margin: 0; font-size: 14px; color: var(--blue-600);\">
+                                    Couchez-vous à la même heure chaque soir et évitez les écrans 1h avant le coucher.
+                                </p>
+                            </div>
+                            
+                            <div style=\"padding: 20px; background: linear-gradient(135deg, var(--blue-50) 0%, var(--blue-100) 100%); border-radius: var(--radius);\">
+                                <div style=\"font-size: 32px; margin-bottom: 12px;\">🌙</div>
+                                <h3 style=\"margin: 0 0 8px; font-size: 16px; color: var(--blue-800);\">Environnement</h3>
+                                <p style=\"margin: 0; font-size: 14px; color: var(--blue-600);\">
+                                    Gardez votre chambre sombre, fraîche et silencieuse pour un sommeil optimal.
+                                </p>
+                            </div>
+                            
+                        ";
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 1149
+(isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1149, $this->source); })()), "type", [], "any", false, false, false, 1149) == "SPORT")) {
+            // line 1150
+            yield "                            <div style=\"padding: 20px; background: linear-gradient(135deg, var(--green-50) 0%, var(--green-100) 100%); border-radius: var(--radius);\">
+                                <div style=\"font-size: 32px; margin-bottom: 12px;\">🏃‍♂️</div>
+                                <h3 style=\"margin: 0 0 8px; font-size: 16px; color: var(--green-800);\">Progression graduelle</h3>
+                                <p style=\"margin: 0; font-size: 14px; color: var(--green-600);\">
+                                    Augmentez progressivement l'intensité et la durée de vos séances.
+                                </p>
+                            </div>
+                            
+                            <div style=\"padding: 20px; background: linear-gradient(135deg, var(--green-50) 0%, var(--green-100) 100%); border-radius: var(--radius);\">
+                                <div style=\"font-size: 32px; margin-bottom: 12px;\">💧</div>
+                                <h3 style=\"margin: 0 0 8px; font-size: 16px; color: var(--green-800);\">Hydratation</h3>
+                                <p style=\"margin: 0; font-size: 14px; color: var(--green-600);\">
+                                    Buvez suffisamment d'eau avant, pendant et après l'exercice.
+                                </p>
+                            </div>
+                            
+                        ";
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 1166
+(isset($context["objectif_sante"]) || array_key_exists("objectif_sante", $context) ? $context["objectif_sante"] : (function () { throw new RuntimeError('Variable "objectif_sante" does not exist.', 1166, $this->source); })()), "type", [], "any", false, false, false, 1166) == "ALIMENTATION")) {
+            // line 1167
+            yield "                            <div style=\"padding: 20px; background: linear-gradient(135deg, var(--orange-50) 0%, var(--orange-100) 100%); border-radius: var(--radius);\">
+                                <div style=\"font-size: 32px; margin-bottom: 12px;\">🥗</div>
+                                <h3 style=\"margin: 0 0 8px; font-size: 16px; color: var(--orange-800);\">Repas équilibrés</h3>
+                                <p style=\"margin: 0; font-size: 14px; color: var(--orange-600);\">
+                                    Incluez des protéines, légumes et céréales complètes à chaque repas.
+                                </p>
+                            </div>
+                            
+                            <div style=\"padding: 20px; background: linear-gradient(135deg, var(--orange-50) 0%, var(--orange-100) 100%); border-radius: var(--radius);\">
+                                <div style=\"font-size: 32px; margin-bottom: 12px;\">⏰</div>
+                                <h3 style=\"margin: 0 0 8px; font-size: 16px; color: var(--orange-800);\">Régularité</h3>
+                                <p style=\"margin: 0; font-size: 14px; color: var(--orange-600);\">
+                                    Mangez à heures régulières pour stabiliser votre métabolisme.
+                                </p>
+                            </div>
+                            
+                        ";
+        }
+        // line 1184
+        yield "                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Détails objectif page loaded');
+            
+            // Animation des cartes
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-8px)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Ripple effect pour les boutons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(255, 255, 255, 0.3);
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        width: \${size}px;
+                        height: \${size}px;
+                        top: \${y}px;
+                        left: \${x}px;
+                        pointer-events: none;
+                    `;
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+
+            // Confirmation pour la suppression
+            const deleteForm = document.querySelector('form[action*=\"delete\"]');
+            if (deleteForm) {
+                deleteForm.addEventListener('submit', function(e) {
+                    if (!confirm('Êtes-vous sûr de vouloir supprimer cet objectif ? Cette action est irréversible.')) {
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            // Animate progress bar
+            const progressFill = document.querySelector('.progress-fill');
+            if (progressFill) {
+                // Reset width to 0 then animate to actual value
+                const finalWidth = progressFill.style.width;
+                progressFill.style.width = '0%';
+                
+                setTimeout(() => {
+                    progressFill.style.transition = 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                    progressFill.style.width = finalWidth;
+                }, 300);
+            }
+
+            // Add ripple animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+                
+                @keyframes shimmer {
+                    0% { left: -100%; }
+                    100% { left: 100%; }
+                }
+                
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.5; }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>";
+        
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2->leave($__internal_5a27a8ba21ca79b61932376b2fa922d2_prof);
+
+        
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
+
+        yield from [];
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getTemplateName(): string
+    {
+        return "Front/objectif_sante/show.html.twig";
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function isTraitable(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getDebugInfo(): array
+    {
+        return array (  1356 => 1184,  1337 => 1167,  1335 => 1166,  1317 => 1150,  1315 => 1149,  1297 => 1133,  1295 => 1132,  1275 => 1115,  1270 => 1113,  1259 => 1105,  1250 => 1099,  1242 => 1094,  1234 => 1089,  1226 => 1084,  1219 => 1079,  1213 => 1077,  1209 => 1075,  1207 => 1074,  1204 => 1073,  1202 => 1072,  1199 => 1071,  1197 => 1070,  1189 => 1064,  1183 => 1062,  1179 => 1060,  1177 => 1059,  1174 => 1058,  1172 => 1057,  1169 => 1056,  1167 => 1055,  1158 => 1049,  1151 => 1044,  1145 => 1042,  1141 => 1040,  1139 => 1039,  1136 => 1038,  1134 => 1037,  1131 => 1036,  1129 => 1035,  1117 => 1026,  1111 => 1023,  1101 => 1016,  1090 => 1008,  1081 => 1002,  1060 => 984,  1045 => 972,  1035 => 965,  1020 => 953,  1011 => 947,  1007 => 946,  1003 => 945,  996 => 941,  992 => 940,  986 => 937,  48 => 1,);
+    }
+
+    public function getSourceContext(): Source
+    {
+        return new Source("<!DOCTYPE html>
+<html lang=\"fr\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>ESPRIT — Détails Objectif Santé</title>
+    <style>
+        :root {
+            --font-size: 16px;
+            --bg: #ffffff;
+            --fg: #111827;
+            
+            --red-50: #fef2f2;
+            --red-100: #fee2e2;
+            --red-200: #fecaca;
+            --red-300: #fca5a5;
+            --red-400: #f87171;
+            --red-500: #ef4444;
+            --red-600: #dc2626;
+            --red-700: #b91c1c;
+            --red-800: #991b1b;
+            --red-900: #7f1d1d;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --blue-50: #eff6ff;
+            --blue-100: #dbeafe;
+            --blue-200: #bfdbfe;
+            --blue-300: #93c5fd;
+            --blue-400: #60a5fa;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --blue-700: #1d4ed8;
+            --blue-800: #1e40af;
+            --blue-900: #1e3a8a;
+            
+            --purple-50: #faf5ff;
+            --purple-100: #f3e8ff;
+            --purple-200: #e9d5ff;
+            --purple-300: #d8b4fe;
+            --purple-400: #c084fc;
+            --purple-500: #a855f7;
+            --purple-600: #9333ea;
+            --purple-700: #7e22ce;
+            --purple-800: #6b21a8;
+            --purple-900: #581c87;
+            
+            --green-50: #f0fdf4;
+            --green-100: #dcfce7;
+            --green-200: #bbf7d0;
+            --green-300: #86efac;
+            --green-400: #4ade80;
+            --green-500: #22c55e;
+            --green-600: #16a34a;
+            --green-700: #15803d;
+            --green-800: #166534;
+            --green-900: #14532d;
+            
+            --orange-50: #fff7ed;
+            --orange-100: #ffedd5;
+            --orange-200: #fed7aa;
+            --orange-300: #fdba74;
+            --orange-400: #fb923c;
+            --orange-500: #f97316;
+            --orange-600: #ea580c;
+            --orange-700: #c2410c;
+            --orange-800: #9a3412;
+            --orange-900: #7c2d12;
+            
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+            
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --radius-2xl: 24px;
+            
+            --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0;
+            padding: 0;
+        }
+        
+        html { 
+            font-size: var(--font-size); 
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, var(--gray-50) 0%, #ffffff 30%, var(--gray-50) 100%);
+            color: var(--fg);
+            min-height: 100vh;
+            line-height: 1.6;
+            font-feature-settings: 'ss01', 'ss02', 'cv01', 'cv02';
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Main Layout with Glassmorphism */
+        .app-shell {
+            display: flex;
+            min-height: 100vh;
+            background: linear-gradient(135deg, 
+                rgba(249, 250, 251, 0.95) 0%, 
+                rgba(255, 255, 255, 0.97) 50%, 
+                rgba(249, 250, 251, 0.95) 100%);
+            backdrop-filter: blur(20px);
+        }
+
+        /* Premium Sidebar with Glass Effect */
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(165deg, 
+                rgba(255, 255, 255, 0.92) 0%, 
+                rgba(249, 250, 251, 0.88) 100%);
+            border-right: 1px solid rgba(229, 231, 235, 0.6);
+            padding: 28px 24px;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+            z-index: 10;
+        }
+
+        /* Premium Brand Section */
+        .brand {
+            margin-bottom: 36px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
+            position: relative;
+        }
+
+        .brand::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--red-500), var(--red-300));
+            border-radius: 2px;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--red-700) 100%);
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
+            transition: all var(--transition);
+        }
+
+        .brand-icon:hover {
+            transform: rotate(-5deg) scale(1.05);
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.35);
+        }
+
+        .brand-title {
+            font-weight: 800;
+            font-size: 20px;
+            line-height: 1;
+            color: var(--gray-900);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-sub {
+            font-size: 13px;
+            color: var(--gray-500);
+            margin-top: 6px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+
+        /* Premium User Session Card */
+        .user-session {
+            margin-top: 28px;
+            padding: 24px;
+            background: linear-gradient(145deg, 
+                rgba(255, 255, 255, 0.95) 0%, 
+                rgba(249, 250, 251, 0.9) 100%);
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition);
+        }
+
+        .user-session::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+
+        .user-session:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(229, 231, 235, 0.8);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 6px 16px rgba(220, 38, 38, 0.2);
+            border: 3px solid white;
+            transition: all var(--transition);
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3);
+        }
+
+        .user-details h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1f2937;
+            line-height: 1.4;
+        }
+
+        .user-details p {
+            margin: 6px 0 0;
+            font-size: 14px;
+            color: #4b5563;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .user-details p::before {
+            content: '📚';
+            font-size: 12px;
+        }
+
+        .session-info {
+            font-size: 13px;
+            color: #4b5563;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            font-weight: 500;
+        }
+
+        .session-info div {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            transition: all var(--transition-fast);
+        }
+
+        .session-info div:hover {
+            background: rgba(249, 250, 251, 0.5);
+            border-radius: var(--radius-sm);
+            padding: 6px 8px;
+        }
+
+        .session-info strong {
+            color: #1f2937;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Premium Navigation */
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-top: 32px;
+        }
+
+        .nav a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            border-radius: var(--radius-lg);
+            color: #374151;
+            text-decoration: none;
+            transition: all var(--transition);
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+            font-size: 15px;
+        }
+
+        .nav a:hover {
+            background: linear-gradient(90deg, 
+                rgba(254, 242, 242, 0.7) 0%, 
+                rgba(254, 242, 242, 0.4) 100%);
+            color: var(--red-600);
+            transform: translateX(8px);
+            box-shadow: var(--shadow-xs);
+        }
+
+        .nav a.active {
+            background: linear-gradient(90deg, 
+                rgba(254, 242, 242, 0.9) 0%, 
+                rgba(254, 242, 242, 0.6) 100%);
+            color: var(--red-600);
+            font-weight: 600;
+            border-left: 4px solid var(--red-500);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav a.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, var(--red-500), var(--orange-500));
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+
+        .nav a .icon {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            stroke-width: 2;
+            transition: all var(--transition);
+        }
+
+        .nav a:hover .icon {
+            transform: scale(1.1);
+        }
+
+        /* Premium Main Content */
+        .main {
+            flex: 1;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Premium Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 48px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(229, 231, 235, 0.4);
+            position: relative;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 120px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--red-500), transparent);
+            border-radius: 2px;
+        }
+
+        .h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin: 0;
+            color: #111827;
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+
+        .muted {
+            color: #6b7280;
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .session-display {
+            text-align: right;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.9) 0%, 
+                rgba(249, 250, 251, 0.8) 100%);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(229, 231, 235, 0.6);
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+        }
+
+        .session-display:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .session-display div:first-child {
+            font-size: 12px;
+            color: var(--gray-500);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .session-display div:last-child {
+            font-weight: 700;
+            font-size: 15px;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .session-display div:last-child::before {
+            content: '';
+            width: 8px;
+            height = 8px;
+            background: var(--green-500);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Premium Card Design */
+        .card {
+            background: linear-gradient(145deg, 
+                rgba(255, 255, 255, 0.95) 0%, 
+                rgba(249, 250, 251, 0.9) 100%);
+            border: 1px solid rgba(229, 231, 235, 0.6);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 28px;
+            overflow: hidden;
+            transition: all var(--transition);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--red-500), var(--orange-500));
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(229, 231, 235, 0.8);
+        }
+
+        .card-header {
+            padding: 28px 28px 0;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 6px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--red-500), var(--orange-500));
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .card-content {
+            padding: 28px;
+        }
+
+        /* Premium Buttons */
+        .btn {
+            appearance: none;
+            border: 2px solid transparent;
+            background: linear-gradient(135deg, var(--red-500) 0%, var(--orange-500) 100%);
+            color: white;
+            border-radius: var(--radius-lg);
+            padding: 16px 28px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all var(--transition);
+            font-size: 15px;
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+            text-decoration: none;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, var(--red-600) 0%, var(--orange-600) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #374151;
+            border-color: #d1d5db;
+            font-weight: 500;
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: #f3f4f6;
+            color: #111827;
+            border-color: #9ca3af;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, var(--green-500) 0%, var(--green-700) 100%);
+            box-shadow: 0 4px 16px rgba(22, 163, 74, 0.2);
+        }
+
+        .btn-green:hover {
+            background: linear-gradient(135deg, var(--green-600) 0%, var(--green-800) 100%);
+            box-shadow: 0 8px 24px rgba(22, 163, 74, 0.3);
+        }
+
+        .btn-blue {
+            background: linear-gradient(135deg, var(--blue-500) 0%, var(--blue-700) 100%);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-blue:hover {
+            background: linear-gradient(135deg, var(--blue-600) 0%, var(--blue-800) 100%);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Badge Design */
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 24px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            box-shadow: var(--shadow-xs);
+            border: 1px solid transparent;
+        }
+
+        .badge-primary {
+            background: linear-gradient(135deg, var(--blue-100) 0%, var(--blue-50) 100%);
+            color: var(--blue-700);
+            border-color: var(--blue-200);
+        }
+
+        .badge-success {
+            background: linear-gradient(135deg, var(--green-100) 0%, var(--green-50) 100%);
+            color: var(--green-700);
+            border-color: var(--green-200);
+        }
+
+        .badge-warning {
+            background: linear-gradient(135deg, var(--orange-100) 0%, var(--orange-50) 100%);
+            color: var(--orange-700);
+            border-color: var(--orange-200);
+        }
+
+        .badge-danger {
+            background: linear-gradient(135deg, var(--red-100) 0%, var(--red-50) 100%);
+            color: var(--red-700);
+            border-color: var(--red-200);
+        }
+
+        .badge-info {
+            background: linear-gradient(135deg, var(--purple-100) 0%, var(--purple-50) 100%);
+            color: var(--purple-700);
+            border-color: var(--purple-200);
+        }
+
+        /* Detail Grid */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .detail-item {
+            background: linear-gradient(145deg, 
+                rgba(255, 255, 255, 0.9) 0%, 
+                rgba(249, 250, 251, 0.8) 100%);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid rgba(229, 231, 235, 0.4);
+            transition: all var(--transition);
+        }
+
+        .detail-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: rgba(229, 231, 235, 0.6);
+        }
+
+        .detail-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-label::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--red-400);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .detail-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-800);
+            margin: 0;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin: 32px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: var(--gray-200);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green-500), var(--green-600));
+            border-radius: 6px;
+            transition: width 1s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.3), 
+                transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+
+        .breadcrumb a {
+            color: var(--blue-600);
+            text-decoration: none;
+            transition: all var(--transition);
+        }
+
+        .breadcrumb a:hover {
+            color: var(--blue-700);
+            text-decoration: underline;
+        }
+
+        .breadcrumb .separator {
+            color: var(--gray-400);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .app-shell {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 24px;
+                border-right: none;
+                border-bottom: 1px solid rgba(229, 231, 235, 0.6);
+            }
+            
+            .main {
+                padding: 32px;
+            }
+            
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+            
+            .h1 {
+                font-size: 36px;
+            }
+            
+            .session-display {
+                width: 100%;
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main {
+                padding: 24px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main {
+                padding: 20px;
+            }
+            
+            .card-content {
+                padding: 20px;
+            }
+            
+            .detail-item {
+                padding: 20px;
+            }
+        }
+
+        /* Loading Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(249, 250, 251, 0.8);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--red-300), var(--orange-300));
+            border-radius: 10px;
+            border: 2px solid rgba(249, 250, 251, 0.8);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--red-400), var(--orange-400));
+        }
+    </style>
+</head>
+<body>
+    <div class=\"app-shell\">
+        <!-- Sidebar with session info -->
+        <aside class=\"sidebar\">
+            <div class=\"brand\">
+                <div class=\"brand-row\">
+                    <div class=\"brand-icon\">ES</div>
+                    <div>
+                        <div class=\"brand-title\">ESPRIT</div>
+                        <div class=\"brand-sub\">Student Assistant</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User session information -->
+            <div class=\"user-session\">
+                <div class=\"user-info\">
+                    <div class=\"avatar\">
+                        {{ app.user ? app.user.initials|default(app.user.nom|first ~ app.user.prenom|first) : 'JD' }}
+                    </div>
+                    <div class=\"user-details\">
+                        <h3>{{ app.user ? app.user.nom ~ ' ' ~ app.user.prenom : 'John Doe' }}</h3>
+                        <p>{{ app.user ? app.user.classe.nom|default('4SE-G1') : '4SE-G1' }}</p>
+                    </div>
+                </div>
+                <div class=\"session-info\">
+                    <div><strong>Email:</strong> {{ app.user ? app.user.email : 'student@esprit.tn' }}</div>
+                    <div><strong>Role:</strong> {{ app.user ? app.user.roles|first|replace({'ROLE_': ''})|capitalize : 'Student' }}</div>
+                    <div><strong>Member since:</strong> {{ app.user ? app.user.createdAt|date('M Y') : 'Jan 2024' }}</div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <nav class=\"nav\">
+                <a href=\"{{ path('app_dashboard') }}\">
+                    <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                        <path d=\"M3 9l9-7 9 7\"/><path d=\"M9 22V12h6v10\"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href=\"#\">
+                    <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                        <path d=\"M9 11l3 3 8-8\"/><path d=\"M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11\"/>
+                    </svg>
+                    My Tasks
+                </a>
+                <a href=\"{{ path('app_profile') }}\">
+                    <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                        <path d=\"M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\"/>
+                        <circle cx=\"12\" cy=\"7\" r=\"4\"/>
+                    </svg>
+                    Profile
+                </a>
+                <a href=\"{{ path('front_objectif_sante_index') }}\" class=\"active\">
+                    <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                        <path d=\"M12 2v20\"/><path d=\"M2 12h20\"/>
+                    </svg>
+                    Objectifs Santé
+                </a>
+                <a href=\"#\">
+                    <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                        <circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 a2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z\"/>
+                    </svg>
+                    Settings
+                </a>
+                <a href=\"{{ path('app_logout') }}\">
+                    <svg class=\"icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                        <path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\"/><path d=\"M16 17l5-5-5-5\"/><path d=\"M21 12H9\"/>
+                    </svg>
+                    Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main content -->
+        <main class=\"main\">
+            <header class=\"header\">
+                <div>
+                    <h1 class=\"h1\">Détails de l'Objectif</h1>
+                    <p class=\"muted\">Visualisez et gérez votre objectif de santé</p>
+                </div>
+                <div class=\"session-display\">
+                    <div>Session actuelle</div>
+                    <div>{{ app.user ? app.user.email : 'student@esprit.tn' }}</div>
+                </div>
+            </header>
+
+            <!-- Breadcrumb -->
+            <div class=\"breadcrumb\">
+                <a href=\"{{ path('front_objectif_sante_index') }}\">Mes Objectifs Santé</a>
+                <span class=\"separator\">/</span>
+                <span>Détails</span>
+            </div>
+
+            <!-- Objectif Details Card -->
+            <div class=\"card\">
+                <div class=\"card-header\">
+                    <h2 class=\"card-title\">{{ objectif_sante.titre }}</h2>
+                </div>
+                <div class=\"card-content\">
+                    <!-- Progress Bar -->
+                    <div class=\"progress-container\">
+                        <div class=\"progress-label\">
+                            <span>Score Moyen</span>
+                            <span>{{ objectif_sante.scoreMoyen }}/100</span>
+                        </div>
+                        <div class=\"progress-bar\">
+                            <div class=\"progress-fill\" style=\"width: {{ objectif_sante.scoreMoyen }}%\"></div>
+                        </div>
+                    </div>
+
+                    <!-- Details Grid -->
+                    <div class=\"detail-grid\">
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">Type</div>
+                            <div class=\"detail-value\">
+                                {% if objectif_sante.type == 'SOMMEIL' %}
+                                    <span class=\"badge badge-info\">Sommeil</span>
+                                {% elseif objectif_sante.type == 'SPORT' %}
+                                    <span class=\"badge badge-success\">Sport</span>
+                                {% elseif objectif_sante.type == 'ALIMENTATION' %}
+                                    <span class=\"badge badge-warning\">Alimentation</span>
+                                {% else %}
+                                    <span class=\"badge badge-primary\">{{ objectif_sante.type }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">Valeur Cible</div>
+                            <p class=\"detail-value\">{{ objectif_sante.getValeurCibleAvecUnite() }}</p>
+                        </div>
+
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">Priorité</div>
+                            <div class=\"detail-value\">
+                                {% if objectif_sante.priorite == 'HAUTE' %}
+                                    <span class=\"badge badge-danger\">Haute</span>
+                                {% elseif objectif_sante.priorite == 'MOYENNE' %}
+                                    <span class=\"badge badge-warning\">Moyenne</span>
+                                {% elseif objectif_sante.priorite == 'BASSE' %}
+                                    <span class=\"badge badge-success\">Basse</span>
+                                {% else %}
+                                    <span class=\"badge badge-primary\">{{ objectif_sante.priorite }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">Statut</div>
+                            <div class=\"detail-value\">
+                                {% if objectif_sante.statut == 'EN_COURS' %}
+                                    <span class=\"badge badge-info\">En cours</span>
+                                {% elseif objectif_sante.statut == 'ATTEINT' %}
+                                    <span class=\"badge badge-success\">Atteint</span>
+                                {% elseif objectif_sante.statut == 'ABANDONNE' %}
+                                    <span class=\"badge badge-danger\">Abandonné</span>
+                                {% else %}
+                                    <span class=\"badge badge-primary\">{{ objectif_sante.statut }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">Date de Début</div>
+                            <p class=\"detail-value\">{{ objectif_sante.dateDebut ? objectif_sante.dateDebut|date('d/m/Y') : 'Non définie' }}</p>
+                        </div>
+
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">Date de Fin</div>
+                            <p class=\"detail-value\">{{ objectif_sante.dateFin ? objectif_sante.dateFin|date('d/m/Y') : 'Non définie' }}</p>
+                        </div>
+
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">Utilisateur</div>
+                            <p class=\"detail-value\">{{ objectif_sante.user ? objectif_sante.user.email : 'Non assigné' }}</p>
+                        </div>
+
+                        <div class=\"detail-item\">
+                            <div class=\"detail-label\">ID</div>
+                            <p class=\"detail-value\">#{{ objectif_sante.id }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class=\"action-buttons\">
+                        <a href=\"{{ path('front_objectif_sante_edit', {'id': objectif_sante.id}) }}\" class=\"btn btn-blue\">
+                            <svg style=\"width: 20px; height: 20px;\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                <path d=\"M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7\"/>
+                                <path d=\"M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z\"/>
+                            </svg>
+                            Modifier
+                        </a>
+                        
+                        {{ include('front/objectif_sante/_delete_form.html.twig') }}
+                        
+                        <a href=\"{{ path('front_objectif_sante_index') }}\" class=\"btn btn-outline\">
+                            <svg style=\"width: 20px; height: 20px;\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\">
+                                <path d=\"M19 12H6M12 5l-7 7 7 7\"/>
+                            </svg>
+                            Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips Card -->
+            <div class=\"card\">
+                <div class=\"card-header\">
+                    <h2 class=\"card-title\">💡 Conseils pour cet objectif</h2>
+                </div>
+                <div class=\"card-content\">
+                    <div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;\">
+                        {% if objectif_sante.type == 'SOMMEIL' %}
+                            <div style=\"padding: 20px; background: linear-gradient(135deg, var(--blue-50) 0%, var(--blue-100) 100%); border-radius: var(--radius);\">
+                                <div style=\"font-size: 32px; margin-bottom: 12px;\">😴</div>
+                                <h3 style=\"margin: 0 0 8px; font-size: 16px; color: var(--blue-800);\">Routine du soir</h3>
+                                <p style=\"margin: 0; font-size: 14px; color: var(--blue-600);\">
+                                    Couchez-vous à la même heure chaque soir et évitez les écrans 1h avant le coucher.
+                                </p>
+                            </div>
+                            
+                            <div style=\"padding: 20px; background: linear-gradient(135deg, var(--blue-50) 0%, var(--blue-100) 100%); border-radius: var(--radius);\">
+                                <div style=\"font-size: 32px; margin-bottom: 12px;\">🌙</div>
+                                <h3 style=\"margin: 0 0 8px; font-size: 16px; color: var(--blue-800);\">Environnement</h3>
+                                <p style=\"margin: 0; font-size: 14px; color: var(--blue-600);\">
+                                    Gardez votre chambre sombre, fraîche et silencieuse pour un sommeil optimal.
+                                </p>
+                            </div>
+                            
+                        {% elseif objectif_sante.type == 'SPORT' %}
+                            <div style=\"padding: 20px; background: linear-gradient(135deg, var(--green-50) 0%, var(--green-100) 100%); border-radius: var(--radius);\">
+                                <div style=\"font-size: 32px; margin-bottom: 12px;\">🏃‍♂️</div>
+                                <h3 style=\"margin: 0 0 8px; font-size: 16px; color: var(--green-800);\">Progression graduelle</h3>
+                                <p style=\"margin: 0; font-size: 14px; color: var(--green-600);\">
+                                    Augmentez progressivement l'intensité et la durée de vos séances.
+                                </p>
+                            </div>
+                            
+                            <div style=\"padding: 20px; background: linear-gradient(135deg, var(--green-50) 0%, var(--green-100) 100%); border-radius: var(--radius);\">
+                                <div style=\"font-size: 32px; margin-bottom: 12px;\">💧</div>
+                                <h3 style=\"margin: 0 0 8px; font-size: 16px; color: var(--green-800);\">Hydratation</h3>
+                                <p style=\"margin: 0; font-size: 14px; color: var(--green-600);\">
+                                    Buvez suffisamment d'eau avant, pendant et après l'exercice.
+                                </p>
+                            </div>
+                            
+                        {% elseif objectif_sante.type == 'ALIMENTATION' %}
+                            <div style=\"padding: 20px; background: linear-gradient(135deg, var(--orange-50) 0%, var(--orange-100) 100%); border-radius: var(--radius);\">
+                                <div style=\"font-size: 32px; margin-bottom: 12px;\">🥗</div>
+                                <h3 style=\"margin: 0 0 8px; font-size: 16px; color: var(--orange-800);\">Repas équilibrés</h3>
+                                <p style=\"margin: 0; font-size: 14px; color: var(--orange-600);\">
+                                    Incluez des protéines, légumes et céréales complètes à chaque repas.
+                                </p>
+                            </div>
+                            
+                            <div style=\"padding: 20px; background: linear-gradient(135deg, var(--orange-50) 0%, var(--orange-100) 100%); border-radius: var(--radius);\">
+                                <div style=\"font-size: 32px; margin-bottom: 12px;\">⏰</div>
+                                <h3 style=\"margin: 0 0 8px; font-size: 16px; color: var(--orange-800);\">Régularité</h3>
+                                <p style=\"margin: 0; font-size: 14px; color: var(--orange-600);\">
+                                    Mangez à heures régulières pour stabiliser votre métabolisme.
+                                </p>
+                            </div>
+                            
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Détails objectif page loaded');
+            
+            // Animation des cartes
+            const cards = document.querySelectorAll('.card');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-8px)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Ripple effect pour les boutons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        border-radius: 50%;
+                        background: rgba(255, 255, 255, 0.3);
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        width: \${size}px;
+                        height: \${size}px;
+                        top: \${y}px;
+                        left: \${x}px;
+                        pointer-events: none;
+                    `;
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+
+            // Confirmation pour la suppression
+            const deleteForm = document.querySelector('form[action*=\"delete\"]');
+            if (deleteForm) {
+                deleteForm.addEventListener('submit', function(e) {
+                    if (!confirm('Êtes-vous sûr de vouloir supprimer cet objectif ? Cette action est irréversible.')) {
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            // Animate progress bar
+            const progressFill = document.querySelector('.progress-fill');
+            if (progressFill) {
+                // Reset width to 0 then animate to actual value
+                const finalWidth = progressFill.style.width;
+                progressFill.style.width = '0%';
+                
+                setTimeout(() => {
+                    progressFill.style.transition = 'width 1.5s cubic-bezier(0.4, 0, 0.2, 1)';
+                    progressFill.style.width = finalWidth;
+                }, 300);
+            }
+
+            // Add ripple animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes ripple {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
+                }
+                
+                @keyframes shimmer {
+                    0% { left: -100%; }
+                    100% { left: 100%; }
+                }
+                
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.5; }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>", "Front/objectif_sante/show.html.twig", "C:\\Users\\islem\\OneDrive\\Bureau\\PIdev\\templates\\Front\\objectif_sante\\show.html.twig");
+    }
+}

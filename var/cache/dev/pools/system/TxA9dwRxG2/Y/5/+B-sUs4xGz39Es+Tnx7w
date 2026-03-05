@@ -1,0 +1,3 @@
+<?php //359256bc5fc6c577dd904d03429ca96c
+
+return [PHP_INT_MAX, 'vendor/chart.js/chart.js.index.js'];
