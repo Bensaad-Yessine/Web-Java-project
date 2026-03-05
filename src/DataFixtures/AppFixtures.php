@@ -1093,4 +1093,4 @@ class AppFixtures extends Fixture
         echo "  Quiz Qs      : " . count($quizQuestions) . "\n";
         echo "────────────────────────────────────────\n";
     }
-}
+}    

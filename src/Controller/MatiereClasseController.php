@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/matiereclasse')]
+#[Route('/matiereclasse')] 
 final class MatiereClasseController extends AbstractController
 {
     #[Route(name: 'app_matiere_classe_index', methods: ['GET'])]

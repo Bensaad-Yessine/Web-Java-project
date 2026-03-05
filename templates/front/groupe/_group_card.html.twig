@@ -12,7 +12,7 @@
                 <img src="{{ vich_uploader_asset(groupe, 'logoImageFile') }}" 
                      alt="Logo de {{ groupe.nomProjet }}"
                      style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; z-index: 0;">
-                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.3); z-index: 1;"></div>
+                <div style="position:  absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.3); z-index: 1;"></div>
             {% endif %}
             <div class="group-avatar" style="width: 40px; height: 40px; font-size: 16px; {% if not groupe.logoImageName %}background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #667eea; font-weight: bold;{% else %}color: white;{% endif %}; z-index: 2; position: relative;">
                 {% if not groupe.logoImageName %}GP{{ groupe.id }}{% endif %}

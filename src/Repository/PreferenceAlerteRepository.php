@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Entity\PreferenceAlerte;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-
+use App\Entity\User; // ✅ CORRECT
 /**
  * @extends ServiceEntityRepository<PreferenceAlerte>
  */

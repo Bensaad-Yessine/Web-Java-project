@@ -67,7 +67,7 @@ Nouvelles routes :
 
 #### `templates/classe/index.html.twig`
 - **Panneau de filtres** avec:
-  - Recherche par texte (temps réel, 300ms debounce)
+  - Recherche par texte (temps réel, 300 ms debounce)
   - Filtre par niveau
   - Filtre par filière
   - Sélection du tri (6 options)

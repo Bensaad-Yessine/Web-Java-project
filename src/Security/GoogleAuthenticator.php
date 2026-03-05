@@ -17,6 +17,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
+use Psr\Log\LoggerInterface;
 
 class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationEntryPointInterface
 {
@@ -24,7 +25,8 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
         private ClientRegistry $clientRegistry,
         private EntityManagerInterface $entityManager,
         private UserRepository $userRepository,
-        private RouterInterface $router
+        private RouterInterface $router,
+        private LoggerInterface $logger
     ) {}
 
     public function supports(Request $request): ?bool
@@ -39,37 +41,66 @@ class GoogleAuthenticator extends OAuth2Authenticator implements AuthenticationE
 
         return new SelfValidatingPassport(
             new UserBadge($accessToken->getToken(), function() use ($accessToken, $client) {
-                $googleUser = $client->fetchUserFromToken($accessToken);
+                try {
+                    $googleUser = $client->fetchUserFromToken($accessToken);
+                    $email = $googleUser->getEmail();
 
-                $email = $googleUser->getEmail();
-                
-                // Check if user exists
-                $user = $this->userRepository->findOneBy(['email' => $email]);
+                    $this->logger->info('Google OAuth: Processing user', ['email' => $email]);
+                    
+                    // Check if user exists
+                    $user = $this->userRepository->findOneBy(['email' => $email]);
 
-                if (!$user) {
-                    // Create new user
-                    $user = new User();
-                    $user->setEmail($email);
-                    
-                    // Extract name from Google
-                    $fullName = $googleUser->getName();
-                    $nameParts = explode(' ', $fullName, 2);
-                    $user->setPrenom($nameParts[0] ?? 'User');
-                    $user->setNom($nameParts[1] ?? 'Google');
-                    
-                    // Set default values
-                    $user->setDateDeNaissance(new \DateTime('-18 years'));
-                    $user->setSexe('Homme');
-                    $user->setIsVerified(true); // Google accounts are pre-verified
-                    
-                    // Generate random password (won't be used for OAuth login)
-                    $user->setPassword(bin2hex(random_bytes(32)));
-                    
-                    $this->entityManager->persist($user);
-                    $this->entityManager->flush();
+                    if (!$user) {
+                        $this->logger->info('Google OAuth: Creating new user', ['email' => $email]);
+                        
+                        // Create new user
+                        $user = new User();
+                        $user->setEmail($email);
+                        
+                        // Extract name from Google
+                        $fullName = $googleUser->getName();
+                        $nameParts = explode(' ', $fullName, 2);
+                        
+                        // Set first name
+                        $firstName = trim($nameParts[0] ?? 'User');
+                        if (strlen($firstName) < 2) {
+                            $firstName = 'GoogleUser';
+                        }
+                        $user->setPrenom($firstName);
+                        
+                        // Set last name  
+                        $lastName = trim($nameParts[1] ?? '');
+                        if (strlen($lastName) < 2) {
+                            $lastName = substr(str_replace([' ', '.'], '', $fullName), 0, 100) ?: 'Account';
+                        }
+                        $user->setNom($lastName);
+                        
+                        // Set default values
+                        $user->setDateDeNaissance(new \DateTime('-25 years'));
+                        $user->setSexe('Homme'); // Default to male, can be changed in profile
+                        $user->setIsVerified(true); // Google accounts are pre-verified
+                        $user->setRoles(['ROLE_USER']); // Explicitly set user role
+                        
+                        // Generate random password (won't be used for OAuth login)
+                        $user->setPassword(bin2hex(random_bytes(32)));
+                        
+                        $this->entityManager->persist($user);
+                        $this->entityManager->flush();
+                        
+                        $this->logger->info('Google OAuth: User created successfully', 
+                            ['email' => $email, 'firstName' => $firstName, 'lastName' => $lastName, 'userId' => $user->getId()]);
+                    } else {
+                        $this->logger->info('Google OAuth: User already exists', ['email' => $email, 'userId' => $user->getId()]);
+                    }
+
+                    return $user;
+                } catch (\Exception $e) {
+                    $this->logger->error('Google OAuth: User creation failed', [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
+                    throw new AuthenticationException('Failed to create user from Google OAuth: ' . $e->getMessage());
                 }
-
-                return $user;
             })
         );
     }

@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api', name: 'api_')]
 class MapApiController extends AbstractController
-{
+{ 
     private array $allSlots = [
         ['09:00', '10:30'],
         ['10:45', '12:15'],

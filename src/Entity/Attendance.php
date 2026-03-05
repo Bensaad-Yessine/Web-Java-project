@@ -29,7 +29,7 @@ class Attendance
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $student = null;
 
-    #[ORM\Column(length: 20)]
+    #[ORM\Column(length: 20)]  
     private string $status = self::STATUS_ABSENT;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]

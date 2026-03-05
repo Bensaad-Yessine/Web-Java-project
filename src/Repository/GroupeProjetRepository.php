@@ -18,6 +18,44 @@ class GroupeProjetRepository extends ServiceEntityRepository
     }
 
     /**
+     * All active groups for a given matière that the user has NOT joined yet.
+     *
+     * @return GroupeProjet[]
+     */
+    public function findByMatiereForMatching(string $matiere, User $user): array
+    {
+        $groups = $this->createQueryBuilder('g')
+            ->where('g.matiere = :matiere')
+            ->andWhere('g.statut = :statut')
+            ->setParameter('matiere', $matiere)
+            ->setParameter('statut', 'Actif')
+            ->orderBy('g.CreatedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        // Exclude groups the user already belongs to
+        return array_values(array_filter($groups, static fn(GroupeProjet $g) => !$g->getIdUser()->contains($user)));
+    }
+
+    /**
+     * All distinct matieres used across all groups.
+     *
+     * @return string[]
+     */
+    public function findDistinctMatieres(): array
+    {
+        $rows = $this->createQueryBuilder('g')
+            ->select('g.matiere')
+            ->where('g.matiere IS NOT NULL')
+            ->groupBy('g.matiere')
+            ->orderBy('g.matiere', 'ASC')
+            ->getQuery()
+            ->getScalarResult();
+
+        return array_column($rows, 'matiere');
+    }
+
+    /**
      * Groupes dont l'utilisateur fait partie (un membre ne voit que ses groupes).
      *
      * @return GroupeProjet[]

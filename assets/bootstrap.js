@@ -6,3 +6,4 @@ app.register('face-login', FaceLoginController);
 window.stimulusApp = app;
 
 // Controllers are auto-discovered from assets/controllers/*_controller.js
+ 

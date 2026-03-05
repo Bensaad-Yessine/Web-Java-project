@@ -88,6 +88,18 @@ class GroupeProjet
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $logoImageName = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $niveauGroupe = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $objectifGroupe = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $styleGroupe = null;
+
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $disponibilites = null;
+
     public function __construct()
     {
         $this->idUser = new ArrayCollection();
@@ -273,6 +285,50 @@ class GroupeProjet
     {
         $this->logoImageName = $logoImageName;
 
+        return $this;
+    }
+
+    public function getNiveauGroupe(): ?string
+    {
+        return $this->niveauGroupe;
+    }
+
+    public function setNiveauGroupe(?string $niveauGroupe): static
+    {
+        $this->niveauGroupe = $niveauGroupe;
+        return $this;
+    }
+
+    public function getObjectifGroupe(): ?string
+    {
+        return $this->objectifGroupe;
+    }
+
+    public function setObjectifGroupe(?string $objectifGroupe): static
+    {
+        $this->objectifGroupe = $objectifGroupe;
+        return $this;
+    }
+
+    public function getStyleGroupe(): ?string
+    {
+        return $this->styleGroupe;
+    }
+
+    public function setStyleGroupe(?string $styleGroupe): static
+    {
+        $this->styleGroupe = $styleGroupe;
+        return $this;
+    }
+
+    public function getDisponibilites(): ?array
+    {
+        return $this->disponibilites;
+    }
+
+    public function setDisponibilites(?array $disponibilites): static
+    {
+        $this->disponibilites = $disponibilites;
         return $this;
     }
 }

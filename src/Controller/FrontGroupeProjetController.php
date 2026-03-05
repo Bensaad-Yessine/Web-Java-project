@@ -7,6 +7,7 @@ use App\Entity\PropositionReunion;
 use App\Form\GroupeProjetType;
 use App\Form\PropositionReunionType;
 use App\Repository\GroupeProjetRepository;
+use App\Service\SmartGroupMatcherService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,10 +21,12 @@ final class FrontGroupeProjetController extends AbstractController
     public function index(Request $request, GroupeProjetRepository $groupeProjetRepository): Response
     {
         $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
         // Un membre ne voit que les groupes dont il fait partie
-        $groupesProjets = $user
-            ? $groupeProjetRepository->findByMember($user)
-            : [];
+        $groupesProjets = $groupeProjetRepository->findByMember($user);
 
         $search = $request->get('search', '');
         $sortBy = $request->get('sortBy', 'createdAt');
@@ -116,6 +119,99 @@ final class FrontGroupeProjetController extends AbstractController
             'form' => $form,
             'tasks' => [],
         ]);
+    }
+
+    #[Route('/find', name: 'front_groupe_projet_find', methods: ['GET', 'POST'])]
+    public function find(
+        Request $request,
+        GroupeProjetRepository $groupeProjetRepository,
+        SmartGroupMatcherService $matcher,
+        \App\Repository\MatiereClasseRepository $matiereRepo
+    ): Response {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $results   = [];
+        $submitted = false;
+        $criteria  = [
+            'matiere'        => '',
+            'niveau'         => '',
+            'disponibilites' => [],
+            'objectif'       => '',
+            'style'          => '',
+        ];
+
+        // Build full matières list from MatiereClasse
+        $matieres = [];
+        foreach ($matiereRepo->findAll() as $m) {
+            if ($m->getNom()) {
+                $matieres[] = $m->getNom();
+            }
+        }
+        // Fallback: also include matieres used in existing groups
+        foreach ($groupeProjetRepository->findDistinctMatieres() as $mat) {
+            if (!in_array($mat, $matieres, true)) {
+                $matieres[] = $mat;
+            }
+        }
+        sort($matieres);
+
+        if ($request->isMethod('POST')) {
+            $allPost = $request->request->all();
+            $criteria = [
+                'matiere'        => $request->request->get('matiere', ''),
+                'niveau'         => $request->request->get('niveau', ''),
+                'disponibilites' => isset($allPost['disponibilites']) ? (array) $allPost['disponibilites'] : [],
+                'objectif'       => $request->request->get('objectif', ''),
+                'style'          => $request->request->get('style', ''),
+            ];
+
+            if ($criteria['matiere']) {
+                $groups  = $groupeProjetRepository->findByMatiereForMatching($criteria['matiere'], $user);
+                $results = $matcher->rankGroups($groups, $criteria);
+            }
+            $submitted = true;
+        }
+
+        return $this->render('front/groupe/find.html.twig', [
+            'results'   => $results,
+            'submitted' => $submitted,
+            'criteria'  => $criteria,
+            'matieres'  => $matieres,
+        ]);
+    }
+
+    #[Route('/{id}/join', name: 'front_groupe_projet_join', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function join(Request $request, GroupeProjet $groupeProjet, EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        if (!$this->isCsrfTokenValid('join'.$groupeProjet->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'RequÃªte invalide.');
+            return $this->redirectToRoute('front_groupe_projet_find');
+        }
+
+        if ($groupeProjet->getIdUser()->contains($user)) {
+            $this->addFlash('info', 'Vous êtes déjà membre de ce groupe.');
+            return $this->redirectToRoute('front_groupe_projet_show', ['id' => $groupeProjet->getId()]);
+        }
+
+        if ($groupeProjet->getIdUser()->count() >= 10) {
+            $this->addFlash('error', 'Ce groupe est complet (maximum 10 membres).');
+            return $this->redirectToRoute('front_groupe_projet_find');
+        }
+
+        $groupeProjet->addIdUser($user);
+        $groupeProjet->setNbrMembre($groupeProjet->getIdUser()->count());
+        $entityManager->flush();
+
+        $this->addFlash('success', '🎉 Vous avez rejoint le groupe "' . $groupeProjet->getNomProjet() . '" !');
+        return $this->redirectToRoute('front_groupe_projet_show', ['id' => $groupeProjet->getId()]);
     }
 
     #[Route('/{id}/proposition/new', name: 'front_proposition_reunion_new', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]

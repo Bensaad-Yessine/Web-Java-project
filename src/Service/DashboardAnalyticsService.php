@@ -19,18 +19,16 @@ class DashboardAnalyticsService
         $suivis = $this->suiviRepo->findByObjectifOrdered($objectifId);
         $humeurs = $this->suiviRepo->getHumeurDistribution($objectifId);
 
-        $nbSuivis = (int) ($stats['nbSuivis'] ?? 0);
-
-        if ($nbSuivis === 0 || empty($suivis)) {
+        if (!$stats['nbSuivis']) {
             return [
                 "objectifId" => $objectifId,
                 "message" => "Aucun suivi disponible pour générer les statistiques."
             ];
         }
 
-        $firstScore = $suivis[0]?->getScore() ?? 0;
-        $lastScore = end($suivis)?->getScore() ?? 0;
-        $previousScore = count($suivis) > 1 ? ($suivis[count($suivis)-2]->getScore() ?? 0) : null;
+        $firstScore = $suivis[0]?->getScore();
+        $lastScore = end($suivis)?->getScore();
+        $previousScore = count($suivis) > 1 ? $suivis[count($suivis)-2]->getScore() : null;
 
         $delta = ($lastScore !== null && $previousScore !== null)
             ? round($lastScore - $previousScore, 1)
@@ -40,16 +38,16 @@ class DashboardAnalyticsService
             ? round($lastScore - $firstScore, 1)
             : null;
 
-        $completionRate = $this->calculateCompletionRate($objectif, $nbSuivis);
+        $completionRate = $this->calculateCompletionRate($objectif, (int)$stats['nbSuivis']);
 
         return [
             "objectifId" => $objectifId,
-            "nbSuivis" => $nbSuivis,
+            "nbSuivis" => (int)$stats['nbSuivis'],
 
             "scores" => [
-                "avg" => round((float) ($stats['avgScore'] ?? 0), 1),
-                "best" => round((float) ($stats['maxScore'] ?? 0), 1),
-                "worst" => round((float) ($stats['minScore'] ?? 0), 1),
+                "avg" => round($stats['avgScore'], 1),
+                "best" => round($stats['maxScore'], 1),
+                "worst" => round($stats['minScore'], 1),
                 "last" => $lastScore,
                 "previous" => $previousScore,
                 "delta" => $delta,
@@ -57,10 +55,10 @@ class DashboardAnalyticsService
             ],
 
             "indicatorsAvg" => [
-                "sommeil" => round((float) ($stats['avgSleep'] ?? 0), 1),
-                "energie" => round((float) ($stats['avgEnergy'] ?? 0), 1),
-                "stress" => round((float) ($stats['avgStress'] ?? 0), 1),
-                "alimentation" => round((float) ($stats['avgFood'] ?? 0), 1),
+                "sommeil" => round($stats['avgSleep'], 1),
+                "energie" => round($stats['avgEnergy'], 1),
+                "stress" => round($stats['avgStress'], 1),
+                "alimentation" => round($stats['avgFood'], 1),
             ],
 
             "completionRate" => $completionRate,

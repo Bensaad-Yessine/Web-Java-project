@@ -71,6 +71,56 @@ class GroupeProjetType extends AbstractType
                 'placeholder' => 'Choisir des membres',
                 'label' => 'Membres du groupe',
             ])
+            ->add('niveauGroupe', ChoiceType::class, [
+                'label'    => '🧠 Niveau du groupe',
+                'choices'  => [
+                    'Débutant'       => 'débutant',
+                    'Intermédiaire'  => 'intermédiaire',
+                    'Avancé'         => 'avancé',
+                ],
+                'expanded' => true,
+                'multiple' => false,
+                'required' => false,
+                'placeholder' => false,
+            ])
+            ->add('objectifGroupe', ChoiceType::class, [
+                'label'    => '🎯 Objectif principal',
+                'choices'  => [
+                    'Avoir de bonnes notes' => 'bonnes_notes',
+                    'Apprendre en profondeur' => 'apprendre',
+                    'Finir vite'            => 'finir_vite',
+                ],
+                'expanded' => true,
+                'multiple' => false,
+                'required' => false,
+                'placeholder' => false,
+            ])
+            ->add('styleGroupe', ChoiceType::class, [
+                'label'    => '💪 Style de travail',
+                'choices'  => [
+                    'Intense'    => 'intense',
+                    'Détendu'    => 'détendu',
+                    'Équilibré'  => 'équilibré',
+                ],
+                'expanded' => true,
+                'multiple' => false,
+                'required' => false,
+                'placeholder' => false,
+            ])
+            ->add('disponibilites', ChoiceType::class, [
+                'label'    => '📅 Disponibilités du groupe',
+                'choices'  => [
+                    'Lundi'    => 'lundi',
+                    'Mardi'    => 'mardi',
+                    'Mercredi' => 'mercredi',
+                    'Jeudi'    => 'jeudi',
+                    'Vendredi' => 'vendredi',
+                    'Samedi'   => 'samedi',
+                ],
+                'multiple' => true,
+                'expanded' => true,
+                'required' => false,
+            ])
         ;
     }
 

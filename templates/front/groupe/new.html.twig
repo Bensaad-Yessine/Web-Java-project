@@ -4,137 +4,442 @@
 
 {% block body %}
 <main class="main">
-<header class="header">
-    <div>
-        <h1 class="h1">Créer un Nouveau Groupe</h1>
-        <p class="muted">Remplissez les informations pour créer votre groupe de projet</p>
+    <style>
+        :root {
+            --esprit-red: #dc2626;
+            --esprit-red-light: #fee2e2;
+            --esprit-red-dark: #b91c1c;
+            --esprit-gray-50: #f9fafb;
+            --esprit-gray-100: #f3f4f6;
+            --esprit-gray-200: #e5e7eb;
+            --esprit-gray-300: #d1d5db;
+            --esprit-gray-400: #9ca3af;
+            --esprit-gray-500: #6b7280;
+            --esprit-gray-600: #4b5563;
+            --esprit-gray-700: #374151;
+            --esprit-gray-800: #1f2937;
+            --esprit-gray-900: #111827;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--esprit-gray-900) 0%, var(--esprit-gray-800) 100%);
+            padding: 2.5rem 2rem;
+            border-radius: 24px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+        }
+        .page-header h1 { color: white; font-size: 2.2rem; font-weight: 700; margin: 0 0 0.5rem 0; letter-spacing: -0.02em; }
+        .page-header .muted { color: var(--esprit-gray-300); font-size: 1rem; margin: 0; }
+
+        .back-button { padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .back-button:hover { background: rgba(255,255,255,0.2); transform: translateX(-4px); }
+
+        .form-card { background: white; border-radius: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05), 0 10px 10px -5px rgba(0,0,0,0.01); overflow: hidden; }
+        .form-card-header { padding: 1.5rem 2rem; background: linear-gradient(to right, var(--esprit-red-light), white); border-bottom: 2px solid var(--esprit-red); }
+        .form-card-header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; color: var(--esprit-gray-800); display: flex; align-items: center; gap: 0.75rem; }
+        .form-card-body { padding: 2rem; }
+
+        .form-section { background: var(--esprit-gray-50); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid var(--esprit-gray-200); }
+        .form-section-title { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--esprit-gray-200); }
+        .form-section-title span { font-size: 1.1rem; font-weight: 700; color: var(--esprit-gray-800); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .form-group-modern { margin-bottom: 1.5rem; }
+        .form-label-modern { display: block; font-weight: 600; font-size: 0.95rem; color: var(--esprit-gray-700); margin-bottom: 0.5rem; letter-spacing: 0.3px; }
+        .form-control-modern { width: 100%; padding: 0.875rem 1.25rem; border: 2px solid var(--esprit-gray-200); border-radius: 14px; font-size: 0.95rem; transition: all 0.2s ease; background: white; }
+        .form-control-modern:focus { outline: none; border-color: var(--esprit-red); box-shadow: 0 0 0 4px rgba(220,38,38,0.1); }
+
+        .image-upload-area { border: 3px dashed var(--esprit-gray-300); border-radius: 20px; background: var(--esprit-gray-50); padding: 2rem; text-align: center; cursor: pointer; transition: all 0.2s ease; }
+        .image-upload-area:hover { border-color: var(--esprit-red); background: var(--esprit-red-light); }
+        .image-upload-area svg { width: 48px; height: 48px; stroke: var(--esprit-gray-400); margin-bottom: 1rem; transition: stroke 0.2s ease; display: block; margin: 0 auto 1rem; }
+        .image-upload-area:hover svg { stroke: var(--esprit-red); }
+        .image-upload-title { font-weight: 700; color: var(--esprit-gray-700); margin-bottom: 0.25rem; }
+        .image-upload-subtitle { color: var(--esprit-gray-500); font-size: 0.875rem; }
+
+        .statut-group { display: flex; flex-wrap: wrap; gap: 1rem; padding: 1rem; background: white; border-radius: 14px; border: 2px solid var(--esprit-gray-200); }
+        .statut-option { flex: 1; min-width: 120px; }
+        .statut-option input[type="radio"] { display: none; }
+        .statut-option label { display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1rem; background: var(--esprit-gray-100); border: 2px solid transparent; border-radius: 12px; font-weight: 600; color: var(--esprit-gray-600); cursor: pointer; transition: all 0.2s ease; }
+        .statut-option input[type="radio"]:checked + label { background: var(--esprit-red); color: white; border-color: var(--esprit-red-dark); box-shadow: 0 4px 6px -1px rgba(220,38,38,0.2); }
+        .statut-option label:hover { background: var(--esprit-gray-200); transform: translateY(-2px); }
+        .statut-option input[type="radio"]:checked + label:hover { background: var(--esprit-red-dark); }
+
+        .smart-profile-box { background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%); border: 2px solid var(--esprit-red-light); border-radius: 20px; padding: 1.5rem; margin-top: 2rem; }
+        .smart-profile-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+        .smart-profile-header-icon { width: 48px; height: 48px; background: var(--esprit-red); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; }
+        .smart-profile-header-text h3 { margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--esprit-gray-800); }
+        .smart-profile-header-text p { margin: 0.25rem 0 0; color: var(--esprit-gray-500); font-size: 0.875rem; }
+        .smart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+        .smart-card { background: white; border: 1px solid var(--esprit-gray-200); border-radius: 16px; padding: 1.25rem; transition: all 0.2s ease; }
+        .smart-card:hover { border-color: var(--esprit-red); box-shadow: 0 4px 12px rgba(220,38,38,0.1); }
+        .smart-card-wide { grid-column: 1 / -1; }
+        .smart-card-label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--esprit-gray-500); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.6px; }
+
+        /* ── Pill toggle ── */
+        .pill-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .pill-group .form-check { margin: 0; padding: 0; }
+        .pill-group .form-check-input { display: none !important; }
+        .pill-group .form-check-label { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 1rem; background: var(--esprit-gray-100); border: 1.5px solid var(--esprit-gray-200); border-radius: 999px; font-size: 0.875rem; font-weight: 500; color: var(--esprit-gray-700); cursor: pointer; transition: all 0.18s ease; white-space: nowrap; user-select: none; }
+        .pill-group .form-check-label:hover { background: var(--esprit-red-light); border-color: var(--esprit-red); color: var(--esprit-red-dark); transform: translateY(-1px); }
+        .pill-group .form-check-input:checked + .form-check-label { background: var(--esprit-red); border-color: var(--esprit-red-dark); color: white; box-shadow: 0 3px 10px rgba(220,38,38,0.25); transform: translateY(-1px); }
+
+        /* ── Day tiles ── */
+        .day-tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.75rem; }
+        .day-tile-item { position: relative; }
+        .day-tile-item input[type="checkbox"] { display: none !important; }
+        .day-tile-item label { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.3rem; padding: 0.75rem 0.5rem; background: var(--esprit-gray-100); border: 2px solid var(--esprit-gray-200); border-radius: 14px; font-size: 0.8rem; font-weight: 600; color: var(--esprit-gray-600); cursor: pointer; transition: all 0.18s ease; text-align: center; user-select: none; }
+        .day-tile-item label .day-emoji { font-size: 1.3rem; line-height: 1; }
+        .day-tile-item label:hover { background: var(--esprit-red-light); border-color: var(--esprit-red); color: var(--esprit-red-dark); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(220,38,38,0.15); }
+        .day-tile-item input[type="checkbox"]:checked + label { background: var(--esprit-red); border-color: var(--esprit-red-dark); color: white; box-shadow: 0 4px 12px rgba(220,38,38,0.3); transform: translateY(-2px); }
+        .day-tile-item input[type="checkbox"]:checked + label::after { content: '✓'; position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; background: white; color: var(--esprit-red); border-radius: 50%; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); line-height: 18px; text-align: center; }
+
+        /* ══════════════════════════════════
+           MATIÈRE TILES
+        ══════════════════════════════════ */
+        .search-bar { width: 100%; padding: 0.875rem 1.25rem; border: 2px solid var(--esprit-gray-200); border-radius: 14px; font-size: 0.95rem; margin-bottom: 0.75rem; background: white; transition: all 0.2s ease; }
+        .search-bar:focus { outline: none; border-color: var(--esprit-red); box-shadow: 0 0 0 4px rgba(220,38,38,0.1); }
+
+        .tiles-scroll-wrapper { max-height: 220px; overflow-y: auto; padding: 0.5rem; border: 2px solid var(--esprit-gray-200); border-radius: 16px; background: white; }
+        .tiles-scroll-wrapper::-webkit-scrollbar { width: 6px; }
+        .tiles-scroll-wrapper::-webkit-scrollbar-track { background: var(--esprit-gray-100); border-radius: 4px; }
+        .tiles-scroll-wrapper::-webkit-scrollbar-thumb { background: var(--esprit-gray-300); border-radius: 4px; }
+        .tiles-scroll-wrapper::-webkit-scrollbar-thumb:hover { background: var(--esprit-red); }
+
+        .matiere-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.6rem; }
+        .matiere-tiles .form-check { margin: 0; padding: 0; position: relative; }
+        .matiere-tiles .form-check-input { display: none !important; }
+        .matiere-tiles .form-check-label { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.75rem 0.5rem; background: var(--esprit-gray-100); border: 2px solid var(--esprit-gray-200); border-radius: 14px; font-size: 0.78rem; font-weight: 600; color: var(--esprit-gray-700); cursor: pointer; transition: all 0.18s ease; text-align: center; user-select: none; min-height: 72px; line-height: 1.3; word-break: break-word; }
+        .matiere-tiles .form-check-label .tile-emoji { font-size: 1.3rem; line-height: 1; }
+        .matiere-tiles .form-check-label:hover { background: var(--esprit-red-light); border-color: var(--esprit-red); color: var(--esprit-red-dark); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(220,38,38,0.15); }
+        .matiere-tiles .form-check-input:checked + .form-check-label { background: var(--esprit-red); border-color: var(--esprit-red-dark); color: white; box-shadow: 0 4px 12px rgba(220,38,38,0.3); transform: translateY(-2px); }
+        .matiere-tiles .form-check-input:checked + .form-check-label .tile-emoji { filter: brightness(0) invert(1); }
+        .matiere-tiles .form-check-input:checked + .form-check-label::after { content: '✓'; position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; background: white; color: var(--esprit-red); border-radius: 50%; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); line-height: 18px; text-align: center; }
+
+        /* ══════════════════════════════════
+           MEMBRE TILES
+        ══════════════════════════════════ */
+        .member-tiles-wrapper { max-height: 320px; overflow-y: auto; padding: 0.75rem; border: 2px solid var(--esprit-gray-200); border-radius: 16px; background: white; }
+        .member-tiles-wrapper::-webkit-scrollbar { width: 6px; }
+        .member-tiles-wrapper::-webkit-scrollbar-track { background: var(--esprit-gray-100); border-radius: 4px; }
+        .member-tiles-wrapper::-webkit-scrollbar-thumb { background: var(--esprit-gray-300); border-radius: 4px; }
+        .member-tiles-wrapper::-webkit-scrollbar-thumb:hover { background: var(--esprit-red); }
+
+        .member-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.75rem; }
+        .member-tiles .form-check { margin: 0; padding: 0; position: relative; }
+        .member-tiles .form-check-input { display: none !important; }
+        .member-tiles .form-check-label { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; padding: 1rem 0.5rem 0.75rem; background: var(--esprit-gray-50); border: 2px solid var(--esprit-gray-200); border-radius: 16px; font-size: 0.78rem; font-weight: 600; color: var(--esprit-gray-700); cursor: pointer; transition: all 0.2s ease; text-align: center; user-select: none; min-height: 100px; line-height: 1.3; word-break: break-word; }
+        .member-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; flex-shrink: 0; transition: all 0.2s ease; border: 2px solid transparent; }
+        .member-tiles .form-check-label:hover { background: var(--esprit-red-light); border-color: var(--esprit-red); color: var(--esprit-red-dark); transform: translateY(-3px); box-shadow: 0 6px 16px rgba(220,38,38,0.15); }
+        .member-tiles .form-check-label:hover .member-avatar { background: linear-gradient(135deg, #ffd5d5, var(--esprit-red-light)) !important; color: var(--esprit-red-dark) !important; border-color: var(--esprit-red) !important; }
+        .member-tiles .form-check-input:checked + .form-check-label { background: linear-gradient(135deg, var(--esprit-red-light), #fff0f0); border-color: var(--esprit-red); color: var(--esprit-red-dark); box-shadow: 0 6px 18px rgba(220,38,38,0.2); transform: translateY(-3px); }
+        .member-tiles .form-check-input:checked + .form-check-label .member-avatar { background: linear-gradient(135deg, var(--esprit-red), var(--esprit-red-dark)) !important; color: white !important; border-color: var(--esprit-red-dark) !important; transform: scale(1.1); box-shadow: 0 4px 10px rgba(220,38,38,0.4); }
+        .member-tiles .form-check-input:checked + .form-check-label::after { content: '✓'; position: absolute; top: -7px; right: -7px; width: 20px; height: 20px; background: var(--esprit-red); color: white; border-radius: 50%; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(220,38,38,0.4); line-height: 20px; text-align: center; }
+
+        /* ── Buttons ── */
+        .btn-primary { flex: 1; padding: 1rem 2rem; background: linear-gradient(135deg, var(--esprit-red), var(--esprit-red-dark)); color: white; border: none; border-radius: 16px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 6px -1px rgba(220,38,38,0.2); display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(220,38,38,0.3); }
+        .btn-secondary { flex: 0.4; padding: 1rem 2rem; background: white; color: var(--esprit-gray-700); text-decoration: none; border: 2px solid var(--esprit-gray-200); border-radius: 16px; font-weight: 600; font-size: 1rem; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
+        .btn-secondary:hover { background: var(--esprit-gray-50); border-color: var(--esprit-gray-300); transform: translateY(-2px); }
+
+        .error-message { color: var(--esprit-red); font-size: 0.875rem; margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+            .smart-grid { grid-template-columns: 1fr; }
+            .day-tiles { grid-template-columns: repeat(3, 1fr); }
+        }
+    </style>
+
+    <div class="page-header">
+        <div>
+            <h1>Créer un Nouveau Groupe</h1>
+            <p class="muted">Remplissez les informations pour créer votre groupe de projet</p>
+        </div>
+        <a href="{{ path('front_groupe_projet_index') }}" class="back-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+            </svg>
+            Retour
+        </a>
     </div>
-    <a href="{{ path('front_groupe_projet_index') }}" style="padding: 12px 24px; background: white; color: var(--gray-700); text-decoration: none; border-radius: var(--radius-lg); font-weight: 600; border: 1px solid var(--gray-300); transition: all var(--transition); display: inline-flex; align-items: center; gap: 8px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-        </svg>
-        Retour
-    </a>
-</header>
 
-<div class="profile-container">
-    <div style="max-width: 800px; margin: 0 auto;">
-        <div class="card">
-            <div class="card-content">
-                {{ form_start(form, {'attr': {'id': 'groupForm'}}) }}
-                
-                <div class="form-group">
-                    {{ form_label(form.nomProjet, 'Nom du Projet', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
-                    {{ form_widget(form.nomProjet, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px; transition: all var(--transition); background: white;', 'placeholder': 'Ex: Application Mobile ESPRIT'}}) }}
-                    {{ form_errors(form.nomProjet) }}
-                </div>
+    <div class="form-card">
+        <div class="form-card-header">
+            <h2>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--esprit-red)" stroke-width="2">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+                Informations du groupe
+            </h2>
+        </div>
 
-                <div class="form-group">
-                    {{ form_label(form.logoImageFile, 'Logo/Image du groupe', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
-                    <div style="padding: 16px; border: 2px dashed var(--gray-300); border-radius: var(--radius-lg); background: var(--gray-50); text-align: center;">
-                        {{ form_widget(form.logoImageFile, {'attr': {'class': 'form-control', 'style': 'display: none;'}}) }}
-                        <div onclick="document.querySelector('input[type=file]').click();" style="cursor: pointer; padding: 20px;">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="2" style="margin: 0 auto 12px; display: block;">
-                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
-                            </svg>
-                            <p style="margin: 0 0 8px 0; color: var(--gray-600); font-weight: 600;">Cliquez ou glissez une image</p>
-                            <p style="margin: 0; color: var(--gray-500); font-size: 14px;">PNG, JPG, GIF jusqu'à 5MB</p>
-                        </div>
+        <div class="form-card-body">
+            {{ form_start(form, {'attr': {'id': 'groupForm'}}) }}
+
+            {# ── Informations de base ── #}
+            <div class="form-section">
+                <div class="form-section-title"><i>📋</i><span>Informations de base</span></div>
+                <div class="grid-2">
+                    <div class="form-group-modern">
+                        {{ form_label(form.nomProjet, 'Nom du Projet', {'label_attr': {'class': 'form-label-modern'}}) }}
+                        {{ form_widget(form.nomProjet, {'attr': {'class': 'form-control-modern', 'placeholder': 'Ex: Application Mobile ESPRIT'}}) }}
+                        {{ form_errors(form.nomProjet, {'attr': {'class': 'error-message'}}) }}
                     </div>
-                    {{ form_errors(form.logoImageFile) }}
+                    <div class="form-group-modern">
+                        {{ form_label(form.nbrMembre, 'Nombre de Membres', {'label_attr': {'class': 'form-label-modern'}}) }}
+                        {{ form_widget(form.nbrMembre, {'attr': {'class': 'form-control-modern', 'min': '1', 'max': '10'}}) }}
+                        {{ form_errors(form.nbrMembre) }}
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    {{ form_label(form.description, 'Description', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
-                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px; transition: all var(--transition); background: white; min-height: 120px; resize: vertical;', 'placeholder': 'Décrivez votre projet...', 'rows': 5}}) }}
+                <div class="form-group-modern">
+                    {{ form_label(form.description, 'Description', {'label_attr': {'class': 'form-label-modern'}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control-modern', 'placeholder': 'Décrivez votre projet en détail...', 'rows': 4}}) }}
                     {{ form_errors(form.description) }}
                 </div>
+            </div>
 
-                <div class="form-group">
-                    {{ form_label(form.nbrMembre, 'Nombre de Membres', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
-                    {{ form_widget(form.nbrMembre, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px; transition: all var(--transition); background: white;', 'min': '1', 'max': '10'}}) }}
-                    {{ form_errors(form.nbrMembre) }}
-                </div>
-
-                <div class="form-group">
-                    {{ form_label(form.matiere, 'Matière', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
-                    {{ form_widget(form.matiere, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px; transition: all var(--transition); background: white;', 'placeholder': 'Ex: Math, Informatique...'}}) }}
+            {# ── Matière tiles ── #}
+            <div class="form-section">
+                <div class="form-section-title"><i>📚</i><span>Matière</span></div>
+                <div class="form-group-modern">
+                    <label class="form-label-modern">Choisissez une matière</label>
+                    <input type="text" id="matiereSearch" class="search-bar" placeholder="🔍 Rechercher une matière...">
+                    <div class="tiles-scroll-wrapper">
+                        <div class="matiere-tiles" id="matiereTilesGrid">
+                            {% for child in form.matiere %}
+                                <div class="form-check matiere-tile-item">
+                                    {{ form_widget(child) }}
+                                    <label for="{{ child.vars.id }}" class="form-check-label">
+                                        <span class="tile-emoji">📖</span>
+                                        {{ child.vars.label }}
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                     {{ form_errors(form.matiere) }}
                 </div>
+            </div>
 
-                <div class="form-group">
-                    {{ form_label(form.CreatedAt, 'Créé le', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
-                    {{ form_widget(form.CreatedAt, {'attr': {'class': 'form-control', 'style': 'width: 100%; padding: 14px 18px; border: 1px solid var(--gray-300); border-radius: var(--radius); font-size: 15px; transition: all var(--transition); background: white;'}}) }}
-                    {{ form_errors(form.CreatedAt) }}
-                </div>
-
-                <div class="form-group" style="padding: 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); background: var(--gray-50);">
-                    {{ form_label(form.statut, 'Statut du groupe', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
-                    <div class="d-flex flex-wrap gap-3">
-                        {{ form_widget(form.statut) }}
+            {# ── Membres tiles ── #}
+            <div class="form-section">
+                <div class="form-section-title"><i>👥</i><span>Médias & Équipe</span></div>
+                <div class="grid-2" style="margin-bottom:1.5rem;">
+                    <div class="form-group-modern">
+                        {{ form_label(form.logoImageFile, 'Logo/Image du groupe', {'label_attr': {'class': 'form-label-modern'}}) }}
+                        <div class="image-upload-area" onclick="document.querySelector('input[type=file]').click();">
+                            {{ form_widget(form.logoImageFile, {'attr': {'style': 'display:none;'}}) }}
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                            </svg>
+                            <div class="image-upload-title">Cliquez ou glissez une image</div>
+                            <div class="image-upload-subtitle">PNG, JPG, GIF jusqu'à 5MB</div>
+                        </div>
+                        {{ form_errors(form.logoImageFile) }}
                     </div>
-                    {{ form_errors(form.statut) }}
+                    <div></div>
                 </div>
 
                 {% if form.idUser is defined %}
-                <div class="form-group" style="padding: 16px; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); background: var(--gray-50);">
-                    {{ form_label(form.idUser, 'Membres du Groupe', {'label_attr': {'style': 'font-weight: 600; font-size: 15px; color: var(--gray-800); margin-bottom: 10px; display: block;'}}) }}
-                    <div class="d-grid" style="grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px;">
-                        {{ form_widget(form.idUser) }}
+                <div class="form-group-modern">
+                    <label class="form-label-modern">Membres du Groupe</label>
+                    <input type="text" id="memberSearch" class="search-bar" placeholder="🔍 Rechercher un membre...">
+                    <div class="member-tiles-wrapper">
+                        <div class="member-tiles" id="memberTilesGrid">
+                            {% for child in form.idUser %}
+                                <div class="form-check member-tile-item">
+                                    {{ form_widget(child) }}
+                                    <label for="{{ child.vars.id }}" class="form-check-label">
+                                        <span class="member-avatar">
+                                            {{ child.vars.label|split(' ')|map(w => w|first|upper)|join('')|slice(0,2) }}
+                                        </span>
+                                        <span>{{ child.vars.label }}</span>
+                                    </label>
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
+                    <p id="memberSearchEmpty" style="display:none; margin-top:0.75rem; color:var(--esprit-red); font-size:0.875rem;">
+                        ⚠️ Aucun membre ne correspond à la recherche.
+                    </p>
                     {{ form_errors(form.idUser) }}
                 </div>
                 {% endif %}
-
-                <!-- Action Buttons -->
-                <div style="display: flex; gap: 12px; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--gray-200);">
-                    <button type="submit" style="flex: 1; padding: 16px; background: linear-gradient(135deg, var(--green-500), var(--green-600)); color: white; border: none; border-radius: var(--radius-lg); font-weight: 700; font-size: 16px; cursor: pointer; transition: all var(--transition); box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center; gap: 10px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
-                        </svg>
-                        Créer le Groupe
-                    </button>
-                    
-                    <a href="{{ path('front_groupe_projet_index') }}" style="flex: 0.4; padding: 16px; background: white; color: var(--gray-700); text-decoration: none; border: 1px solid var(--gray-300); border-radius: var(--radius-lg); font-weight: 600; font-size: 16px; transition: all var(--transition); display: flex; align-items: center; justify-content: center; gap: 10px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                        Annuler
-                    </a>
-                </div>
-
-                {{ form_end(form) }}
             </div>
+
+            {# ── Configuration ── #}
+            <div class="form-section">
+                <div class="form-section-title"><i>⚙️</i><span>Configuration</span></div>
+                <div class="grid-2">
+                    <div class="form-group-modern">
+                        {{ form_label(form.CreatedAt, 'Date de création', {'label_attr': {'class': 'form-label-modern'}}) }}
+                        {{ form_widget(form.CreatedAt, {'attr': {'class': 'form-control-modern'}}) }}
+                        {{ form_errors(form.CreatedAt) }}
+                    </div>
+                    <div class="form-group-modern">
+                        {{ form_label(form.statut, 'Statut du groupe', {'label_attr': {'class': 'form-label-modern'}}) }}
+                        <div class="statut-group">{{ form_widget(form.statut) }}</div>
+                        {{ form_errors(form.statut) }}
+                    </div>
+                </div>
+            </div>
+
+            {# ── SmartGroup Matcher ── #}
+            <div class="smart-profile-box">
+                <div class="smart-profile-header">
+                    <div class="smart-profile-header-icon">✨</div>
+                    <div class="smart-profile-header-text">
+                        <h3>SmartGroup Matcher</h3>
+                        <p>Profil intelligent du groupe pour de meilleures correspondances</p>
+                    </div>
+                </div>
+                <div class="smart-grid">
+                    <div class="smart-card">
+                        <span class="smart-card-label">🎓 {{ form_label(form.niveauGroupe) }}</span>
+                        <div class="pill-group">{{ form_widget(form.niveauGroupe) }}</div>
+                        {{ form_errors(form.niveauGroupe) }}
+                    </div>
+                    <div class="smart-card">
+                        <span class="smart-card-label">🎯 {{ form_label(form.objectifGroupe) }}</span>
+                        <div class="pill-group">{{ form_widget(form.objectifGroupe) }}</div>
+                        {{ form_errors(form.objectifGroupe) }}
+                    </div>
+                    <div class="smart-card">
+                        <span class="smart-card-label">🤝 {{ form_label(form.styleGroupe) }}</span>
+                        <div class="pill-group">{{ form_widget(form.styleGroupe) }}</div>
+                        {{ form_errors(form.styleGroupe) }}
+                    </div>
+                    <div class="smart-card smart-card-wide">
+                        <span class="smart-card-label">📅 Disponibilités</span>
+                        <div style="display:none;">{{ form_widget(form.disponibilites) }}</div>
+                        <div class="day-tiles" id="dayTilesUI">
+                            <div class="day-tile-item"><input type="checkbox" id="day_lundi" data-day="lundi"><label for="day_lundi"><span class="day-emoji">🌙</span>Lundi</label></div>
+                            <div class="day-tile-item"><input type="checkbox" id="day_mardi" data-day="mardi"><label for="day_mardi"><span class="day-emoji">🔥</span>Mardi</label></div>
+                            <div class="day-tile-item"><input type="checkbox" id="day_mercredi" data-day="mercredi"><label for="day_mercredi"><span class="day-emoji">⚡</span>Mercredi</label></div>
+                            <div class="day-tile-item"><input type="checkbox" id="day_jeudi" data-day="jeudi"><label for="day_jeudi"><span class="day-emoji">🌟</span>Jeudi</label></div>
+                            <div class="day-tile-item"><input type="checkbox" id="day_vendredi" data-day="vendredi"><label for="day_vendredi"><span class="day-emoji">🎉</span>Vendredi</label></div>
+                            <div class="day-tile-item"><input type="checkbox" id="day_samedi" data-day="samedi"><label for="day_samedi"><span class="day-emoji">☀️</span>Samedi</label></div>
+                        </div>
+                        {{ form_errors(form.disponibilites) }}
+                    </div>
+                </div>
+            </div>
+
+            {# ── Actions ── #}
+            <div style="display:flex; gap:1rem; margin-top:2rem;">
+                <button type="submit" class="btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+                    </svg>
+                    Créer le Groupe
+                </button>
+                <a href="{{ path('front_groupe_projet_index') }}" class="btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                    Annuler
+                </a>
+            </div>
+
+            {{ form_end(form) }}
         </div>
     </div>
-</div>
-
-<style>
-.form-control:focus {
-    outline: none;
-    border-color: var(--red-500);
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-}
-
-.form-group {
-    margin-bottom: 24px;
-}
-
-button[type="submit"]:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-}
-
-a[href*="front_groupe_projet_index"]:hover {
-    background: var(--gray-50);
-    border-color: var(--gray-400);
-}
-
-.form-errors {
-    color: var(--red-600);
-    font-size: 14px;
-    margin-top: 6px;
-}
-</style>
 </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ── Avatar colors (cycle through palette) ─────────────────
+    const palette = [
+        ['#fee2e2','#b91c1c'], ['#dbeafe','#1d4ed8'], ['#dcfce7','#15803d'],
+        ['#fef9c3','#a16207'], ['#f3e8ff','#7e22ce'], ['#ffedd5','#c2410c'],
+        ['#e0f2fe','#0369a1'], ['#fce7f3','#be185d'], ['#d1fae5','#065f46'],
+        ['#ede9fe','#5b21b6'],
+    ];
+    document.querySelectorAll('.member-avatar').forEach(function (el, i) {
+        const [bg, fg] = palette[i % palette.length];
+        el.style.background = bg;
+        el.style.color = fg;
+        el.style.border = '2px solid ' + fg + '33';
+    });
+
+    // ── Matière emoji auto-detect ──────────────────────────────
+    const emojiMap = {
+        'algo':'🔢','math':'📐','réseau':'🌐','web':'💻','base':'🗄️',
+        'sécurité':'🔒','uml':'📊','design':'🎨','test':'🧪','devops':'⚙️',
+        'agile':'🏃','micro':'🔬','stat':'📈','python':'🐍','machine':'🤖',
+        'deep':'🧠','big':'📦','nlp':'💬','vision':'👁️','système':'🖥️',
+        'logiciel':'💾','réseau':'🌐',
+    };
+    document.querySelectorAll('.matiere-tile-item').forEach(function (item) {
+        const text  = item.textContent.toLowerCase();
+        const emoji = item.querySelector('.tile-emoji');
+        if (!emoji) return;
+        for (const [kw, icon] of Object.entries(emojiMap)) {
+            if (text.includes(kw)) { emoji.textContent = icon; return; }
+        }
+    });
+
+    // ── Member search ──────────────────────────────────────────
+    const memberSearch = document.getElementById('memberSearch');
+    const memberGrid   = document.getElementById('memberTilesGrid');
+    const memberEmpty  = document.getElementById('memberSearchEmpty');
+    if (memberSearch && memberGrid) {
+        memberSearch.addEventListener('input', function () {
+            const q = this.value.trim().toLowerCase();
+            let visible = 0;
+            memberGrid.querySelectorAll('.member-tile-item').forEach(function (item) {
+                const show = !q || item.textContent.toLowerCase().includes(q);
+                item.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            if (memberEmpty) memberEmpty.style.display = visible === 0 ? 'block' : 'none';
+        });
+    }
+
+    // ── Matière search ─────────────────────────────────────────
+    const matiereSearch = document.getElementById('matiereSearch');
+    const matiereGrid   = document.getElementById('matiereTilesGrid');
+    if (matiereSearch && matiereGrid) {
+        matiereSearch.addEventListener('input', function () {
+            const q = this.value.trim().toLowerCase();
+            matiereGrid.querySelectorAll('.matiere-tile-item').forEach(function (item) {
+                item.style.display = (!q || item.textContent.toLowerCase().includes(q)) ? '' : 'none';
+            });
+        });
+    }
+
+    // ── Image preview ──────────────────────────────────────────
+    const fileInput  = document.querySelector('input[type=file]');
+    const uploadArea = document.querySelector('.image-upload-area');
+    if (fileInput && uploadArea) {
+        fileInput.addEventListener('change', function (e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    uploadArea.innerHTML = `
+                        <img src="${e.target.result}" style="max-width:100%;max-height:150px;border-radius:12px;object-fit:cover;">
+                        <div class="image-upload-subtitle" style="margin-top:0.5rem;">Image sélectionnée ✅</div>`;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+    }
+
+    // ── Day tiles → sync hidden Symfony checkboxes ────────────
+    document.querySelectorAll('#dayTilesUI input[type="checkbox"]').forEach(function (tile) {
+        tile.addEventListener('change', function () {
+            const sym = document.querySelector('[name*="disponibilites"][value="' + this.dataset.day + '"]');
+            if (sym) sym.checked = this.checked;
+        });
+    });
+
+});
+</script>
 {% endblock %}
